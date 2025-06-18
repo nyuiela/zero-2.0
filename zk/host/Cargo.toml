@@ -17,3 +17,5 @@ car-auction-core = { path = "../methods/core"}
 axum = "0.8.4"
 sea-orm = "1.1.12"
 serde_json = "1.0.140"
+ethers = "2.0.14"
+hex-literal = "1.0.0"

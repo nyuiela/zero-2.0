@@ -3,6 +3,7 @@ pub mod car;
 pub mod bid;
 pub mod auction;
 pub mod overall;
+pub mod auth;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SessionStats {

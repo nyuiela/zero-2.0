@@ -64,7 +64,7 @@ pub fn init_car(leaves: Vec<String>) -> Result<CarCommit, String> {
     let env = ExecutorEnv::builder().write(&leaves).unwrap().build().unwrap();
     let prover = default_prover();
     let prove_info = prover.prove(env, INIT_CAR_ELF).unwrap();
-    let auction_commit = CarCommit {
+    let car_commit = CarCommit {
         receipt: prove_info.receipt,
         stats: SessionStats {
             segments: prove_info.stats.segments,
@@ -74,7 +74,7 @@ pub fn init_car(leaves: Vec<String>) -> Result<CarCommit, String> {
             reserved_cycles: prove_info.stats.reserved_cycles,
         },
     };
-    Ok(auction_commit)
+    Ok(car_commit)
     // prove_info.receipt
 }
 
