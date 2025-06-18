@@ -1,4 +1,4 @@
-use db::{ establish_connection, get_all_cars };
+use db::{ car::get_all_cars, establish_connection };
 use entity::{ auction, bid, car, AuctionModel, BidModel, CarModel };
 // use rust_decimal::prelude::ToPrimitive;
 use sea_orm::{ ActiveModelTrait, Set };

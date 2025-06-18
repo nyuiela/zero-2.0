@@ -3,3 +3,5 @@
 pub use super::auction::Entity as Auction;
 pub use super::bid::Entity as Bid;
 pub use super::car::Entity as Car;
+pub use super::comment::Entity as Comment;
+pub use super::saved_auction::Entity as SavedAuction;

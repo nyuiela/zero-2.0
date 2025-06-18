@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::Json;
 use car_auction_core::BidState;
-use db::get_all_bids;
+use db::bid::get_all_bids;
 use entity::BidModel;
 use methods::{ INIT_BID_ELF, INIT_BID_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };

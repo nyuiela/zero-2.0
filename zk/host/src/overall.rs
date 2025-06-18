@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::Json;
 use car_auction_core::OverallState;
-use db::{ get_all_auctions, get_all_bids, get_all_cars };
+use db::{ auction::get_all_auctions, bid::get_all_bids, car::get_all_cars };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
 use serde::{ Deserialize, Serialize };
 use serde_json::{ json, Value };

@@ -2,9 +2,9 @@
 
 use super::sea_orm_active_enums::Status;
 use sea_orm::entity::prelude::*;
-use serde::{ Serialize, Deserialize };
+use serde::{ Deserialize, Serialize };
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize, Serialize)]
 #[sea_orm(table_name = "car")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -21,17 +21,41 @@ pub struct Model {
     pub exterior_color: String,
     pub interior_color: String,
     pub odometer: i32,
+    #[sea_orm(column_type = "Text")]
     pub description: String,
-    pub image_url: String,
+    pub image_url: Option<Vec<String>>,
     pub auction_id: i32,
     pub starting_price: i32,
     pub current_price: i32,
     pub auction_status: Option<Status>,
+    #[sea_orm(column_type = "Text")]
+    pub summary: String,
+    pub report: Json,
+    pub included: Json,
+    pub features: Json,
+    #[sea_orm(column_type = "Text")]
+    pub vehicale_overview: String,
+    pub location: String,
+    pub seller: String,
+    pub seller_type: String,
+    pub lot: String,
+    pub highlight: Option<Vec<String>>,
+    pub token_id: i32,
+    pub owner: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "super::auction::Entity")]
+    Auction,
+}
+
+impl Related<super::auction::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Auction.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

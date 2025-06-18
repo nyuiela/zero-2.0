@@ -7,15 +7,9 @@ use axum::Router;
 use db::{ establish_connection };
 
 use db::{
-    get_all_cars_handler,
-    create_auction,
-    create_bid,
-    create_car,
-    get_auction_by_id,
-    get_auctions,
-    get_bid_by_id,
-    get_bids,
-    get_car_by_id,
+    car::{ get_all_cars_handler, create_car, get_car_by_id },
+    auction::{ get_auction_by_id, get_auctions, create_auction },
+    bid::{ get_bid_by_id, get_bids, create_bid },
 };
 
 use host::overall::init_overall_handler;

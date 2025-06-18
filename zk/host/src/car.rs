@@ -1,6 +1,6 @@
 use axum::Json;
 use car_auction_core::CarState;
-use db::get_all_cars;
+use db::car::get_all_cars;
 use entity::CarModel;
 use methods::{ INIT_CAR_ELF, INIT_CAR_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
@@ -15,7 +15,7 @@ pub fn get_car_leaves(cars: &Vec<CarModel>) -> Vec<String> {
     // let tree: Vec<&'static str> = vec!["s", "ss"];
     for car in cars {
         let car_record = format!(
-            "{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{:?}:{}:{}",
+            "{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{:?}:{}:{}:{}:{:?}:{}:{}",
             car.id,
             car.make,
             car.model,
@@ -30,7 +30,7 @@ pub fn get_car_leaves(cars: &Vec<CarModel>) -> Vec<String> {
             car.interior_color,
             car.odometer,
             car.description,
-            car.image_url,
+            car.image_url.as_ref(),
             car.auction_id,
             car.starting_price,
             car.current_price,

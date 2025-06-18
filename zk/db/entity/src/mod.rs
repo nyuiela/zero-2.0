@@ -5,4 +5,6 @@ pub mod prelude;
 pub mod auction;
 pub mod bid;
 pub mod car;
+pub mod comment;
+pub mod saved_auction;
 pub mod sea_orm_active_enums;

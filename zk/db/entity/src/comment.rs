@@ -4,13 +4,14 @@ use sea_orm::entity::prelude::*;
 use serde::{ Deserialize, Serialize };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize, Serialize)]
-#[sea_orm(table_name = "bid")]
+#[sea_orm(table_name = "comment")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub auction_id: i32,
-    pub bidder_id: i32,
-    pub amount: i32,
+    pub user: String,
+    #[sea_orm(column_type = "Text")]
+    pub content: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
@@ -22,7 +23,7 @@ pub enum Relation {
         from = "Column::AuctionId",
         to = "super::auction::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "Cascade"
     )]
     Auction,
 }
