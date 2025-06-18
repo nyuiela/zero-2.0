@@ -274,9 +274,11 @@ impl OverallState {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum CarAction {
     INIT,
-    CREATE,
-    UPDATE,
-    DELETE,
+    CREATE, // insert car
+    UPDATE, // update car info
+    BUY, // buy car
+    SELL, // Sell car
+    // DELETE, // delete car
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
