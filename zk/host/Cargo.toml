@@ -1,0 +1,19 @@
+[package]
+name = "host"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+methods = { path = "../methods" }
+risc0-zkvm = { version = "^2.1.0" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.0", features = ["full", "macros", "rt-multi-thread"] }
+db = { path = "../db" }
+entity = { path = "../db/entity" }
+sha2 = "0.10.9"
+chrono = "0.4.41"
+car-auction-core = { path = "../methods/core"}
+axum = "0.8.4"
+sea-orm = "1.1.12"
+serde_json = "1.0.140"
