@@ -24,7 +24,7 @@ pub async fn create_comment(
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     Ok(Json(json!({
     "status": "success",
-    "message": "bid created succesfully"
+    "message": "Comment created succesfully"
   })))
 }
 pub async fn get_comments(

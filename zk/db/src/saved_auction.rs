@@ -21,14 +21,10 @@ pub async fn create_saved_auction(
         .insert(&*db).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    Ok(
-        Json(
-            json!({
+    Ok(Json(json!({
         "status": "success",
-        "message": "Auction saved successfully"
-    })
-        )
-    )
+        "message": "Auction added to saved"
+    })))
 }
 
 // GET: Fetch all saved auctions by auction ID (or filter by user if preferred)

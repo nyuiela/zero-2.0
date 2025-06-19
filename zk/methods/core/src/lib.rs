@@ -1,11 +1,25 @@
 // #![cfg_attr(not(test), no_std)]
-
 use serde::{ Deserialize, Serialize };
-// use sha2::{ Digest, Sha256 };
-// use tinyvec::*;
 use risc0_zkp::core::digest::Digest;
 use tiny_keccak::{ Hasher, Keccak };
-use chrono::{ DateTime, Local, Utc };
+use chrono::{ DateTime, Local };
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct VerifyParams {
+    pub message: String,
+    pub signature_bytes: Vec<u8>,
+    pub expected_addr: Vec<u8>,
+    pub timestamp: i64,
+    pub username: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct VerifyCommit {
+    pub verified: bool,
+    pub address: Vec<u8>,
+    pub timestamp: i64,
+    pub username: String,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct OverallParams {
@@ -335,3 +349,5 @@ impl CarState {
 
     pub fn sync() {}
 }
+
+// message: &[u8], signature_bytes: &[u8; 65]
