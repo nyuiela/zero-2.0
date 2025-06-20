@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin, Clock, Users, Eye, Heart, Share2, Phone, Mail, CheckCircle } from 'lucide-react'
-import { CarListing, RelatedAuction } from '@/lib/data'
+import { CarListing } from '@/lib/data'
+import { Auction } from '@/lib/auction'
 
 interface ListingClientProps {
     listing: CarListing
-    relatedAuctions: RelatedAuction[]
+    relatedAuctions: Auction[]
 }
 
 export default function ListingClient({ listing, relatedAuctions }: ListingClientProps) {

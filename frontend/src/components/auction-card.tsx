@@ -22,10 +22,6 @@ interface AuctionCardProps {
 }
 
 const AuctionCard = ({ auction }: AuctionCardProps) => {
-  const generateSlug = () => {
-    return `${auction.year.toLowerCase()}-${auction.make.toLowerCase().replace(/\s+/g, '-')}-${auction.model.toLowerCase().replace(/\s+/g, '-')}`
-  }
-
   return (
     <div className="group bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-800 hover:border-gray-700">
       <Link href={`/listing/${auction.id}`} className="block">
@@ -38,18 +34,17 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           />
-          
+
           {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 
           {/* Reserve Status Badge */}
           {auction.reserve && (
             <div className="absolute top-3 left-3 z-10">
-              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-                auction.reserve === 'Reserve Almost Met'
-                  ? 'bg-orange-500/90 text-white'
-                  : 'bg-green-500/90 text-white'
-              }`}>
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${auction.reserve === 'Reserve Almost Met'
+                ? 'bg-orange-500/90 text-white'
+                : 'bg-green-500/90 text-white'
+                }`}>
                 {auction.reserve}
               </span>
             </div>
@@ -117,7 +112,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
             className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-4 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg"
             asChild
           >
-            <Link href={`/listing/${auction.id}/${generateSlug()}`}>
+            <Link href={`/listing/${auction.id}`}>
               Place Bid
             </Link>
           </Button>

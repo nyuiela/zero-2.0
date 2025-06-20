@@ -58,7 +58,7 @@ export interface RelatedAuction {
 }
 
 // Mock data for car listings
-const listings: CarListing[] = [
+export const listings: CarListing[] = [
     {
         id: 330,
         year: '2022',
@@ -243,6 +243,212 @@ const listings: CarListing[] = [
         auctionEnd: '2025-06-20T19:00:00Z',
         views: 3156,
         watchers: 203
+    },
+    {
+        id: 334,
+        year: '2011',
+        make: 'Morgan',
+        model: 'Aero 8 Supersports',
+        location: 'Dubai, United Arab Emirates',
+        currentBid: 'US$96,000',
+        timeLeft: '14:36:33',
+        bidCount: 22,
+        reserve: 'Reserve Almost Met',
+        country: 'UAE',
+        description: 'A rare Morgan Aero 8 Supersports, combining British craftsmanship with modern performance. Low mileage, well maintained.',
+        images: [
+            'https://ext.same-assets.com/360451443/3233359261.jpeg',
+            'https://ext.same-assets.com/360451443/428281940.jpeg',
+            'https://ext.same-assets.com/360451443/3638646694.jpeg',
+        ],
+        specifications: {
+            engine: '4.8L V8',
+            power: '367 hp',
+            torque: '370 Nm',
+            transmission: '6-Speed Automatic',
+            drivetrain: 'Rear-Wheel Drive',
+            topSpeed: '170 mph',
+            acceleration: '0-60 mph in 4.5 seconds',
+            weight: '1,180 kg',
+            fuel: 'Petrol',
+            exterior: 'Silver',
+            interior: 'Black Leather',
+            wheels: 'Alloy',
+            brakes: 'Disc'
+        },
+        features: [
+            'Convertible Roof',
+            'Premium Audio',
+            'Navigation',
+            'Leather Seats',
+        ],
+        history: 'Single owner, always garaged.',
+        provenance: 'Dubai Import • Full Service History',
+        seller: {
+            name: 'Morgan Dubai',
+            location: 'Dubai, UAE',
+            phone: '+971 4 123 4567',
+            email: 'info@morgandubai.com',
+            verified: true
+        },
+        startingBid: 'US$80,000',
+        estimatedValue: 'US$100,000 - US$120,000',
+        auctionEnd: '2025-06-21T18:00:00Z',
+        views: 1200,
+        watchers: 45
+    },
+    {
+        id: 335,
+        year: '2016',
+        make: 'Ferrari',
+        model: '488 Spider',
+        location: 'Dubai, United Arab Emirates',
+        currentBid: '675,000 AED',
+        timeLeft: '14:56:33',
+        bidCount: 19,
+        country: 'UAE',
+        description: 'A stunning Ferrari 488 Spider in pristine condition, finished in classic Rosso Corsa.',
+        images: [
+            'https://ext.same-assets.com/360451443/428281940.jpeg',
+            'https://ext.same-assets.com/360451443/3233359261.jpeg',
+            'https://ext.same-assets.com/360451443/3638646694.jpeg',
+        ],
+        specifications: {
+            engine: '3.9L Twin-Turbo V8',
+            power: '661 hp',
+            torque: '760 Nm',
+            transmission: '7-Speed Dual-Clutch',
+            drivetrain: 'Rear-Wheel Drive',
+            topSpeed: '211 mph',
+            acceleration: '0-60 mph in 3.0 seconds',
+            weight: '1,420 kg',
+            fuel: 'Petrol',
+            exterior: 'Red',
+            interior: 'Black Leather',
+            wheels: 'Forged Alloy',
+            brakes: 'Carbon-Ceramic'
+        },
+        features: [
+            'Convertible',
+            'Carbon Fiber Trim',
+            'Premium Audio',
+        ],
+        history: 'Dealer maintained, accident free.',
+        provenance: 'UAE Delivery • Full Service History',
+        seller: {
+            name: 'Ferrari Dubai',
+            location: 'Dubai, UAE',
+            phone: '+971 4 555 1234',
+            email: 'sales@ferraridubai.com',
+            verified: true
+        },
+        startingBid: '600,000 AED',
+        estimatedValue: '700,000 - 800,000 AED',
+        auctionEnd: '2025-06-22T18:00:00Z',
+        views: 900,
+        watchers: 30
+    },
+    {
+        id: 343,
+        year: '2020',
+        make: 'Mercedes-Benz',
+        model: 'AMG GT 63 S Brabus 800',
+        location: 'Dubai, United Arab Emirates',
+        currentBid: '285,000 AED',
+        timeLeft: '2 days',
+        bidCount: 24,
+        country: 'UAE',
+        description: 'A rare Brabus 800 edition of the AMG GT 63 S, with full options and low mileage.',
+        images: [
+            'https://ext.same-assets.com/360451443/3057433556.jpeg',
+            'https://ext.same-assets.com/360451443/428281940.jpeg',
+            'https://ext.same-assets.com/360451443/3638646694.jpeg',
+        ],
+        specifications: {
+            engine: '4.0L V8 Biturbo',
+            power: '800 hp',
+            torque: '1,000 Nm',
+            transmission: '9-Speed Automatic',
+            drivetrain: 'All-Wheel Drive',
+            topSpeed: '196 mph',
+            acceleration: '0-60 mph in 2.9 seconds',
+            weight: '2,045 kg',
+            fuel: 'Petrol',
+            exterior: 'Black',
+            interior: 'Red Leather',
+            wheels: 'Brabus Monoblock',
+            brakes: 'Carbon-Ceramic'
+        },
+        features: [
+            'Brabus Package',
+            'Panoramic Roof',
+            'Burmester Audio',
+        ],
+        history: 'One owner, showroom condition.',
+        provenance: 'Dubai Brabus • Full Service History',
+        seller: {
+            name: 'Brabus Dubai',
+            location: 'Dubai, UAE',
+            phone: '+971 4 777 8888',
+            email: 'info@brabusdubai.com',
+            verified: true
+        },
+        startingBid: '250,000 AED',
+        estimatedValue: '300,000 - 350,000 AED',
+        auctionEnd: '2025-06-23T18:00:00Z',
+        views: 1100,
+        watchers: 40
+    },
+    {
+        id: 289,
+        year: '2024',
+        make: 'Bentley',
+        model: 'GT W12 Speed - 55km',
+        location: 'Bautzen, Germany',
+        currentBid: '€201,000',
+        timeLeft: '36:36:33',
+        bidCount: 27,
+        country: 'Germany',
+        description: 'Brand new Bentley GT W12 Speed with only 55km on the clock. Ultimate luxury and performance.',
+        images: [
+            'https://ext.same-assets.com/360451443/3638646694.jpeg',
+            'https://ext.same-assets.com/360451443/3096838199.jpeg',
+            'https://ext.same-assets.com/360451443/428281940.jpeg',
+        ],
+        specifications: {
+            engine: '6.0L W12 Twin-Turbo',
+            power: '650 hp',
+            torque: '900 Nm',
+            transmission: '8-Speed Automatic',
+            drivetrain: 'All-Wheel Drive',
+            topSpeed: '208 mph',
+            acceleration: '0-60 mph in 3.5 seconds',
+            weight: '2,244 kg',
+            fuel: 'Petrol',
+            exterior: 'Blue',
+            interior: 'White Leather',
+            wheels: '21" Alloy',
+            brakes: 'Carbon-Ceramic'
+        },
+        features: [
+            'Heated Seats',
+            'Massage Seats',
+            'Premium Audio',
+        ],
+        history: 'Brand new, delivery mileage.',
+        provenance: 'German Delivery • One Owner',
+        seller: {
+            name: 'Bentley Bautzen',
+            location: 'Bautzen, Germany',
+            phone: '+49 3591 123456',
+            email: 'sales@bentleybautzen.de',
+            verified: true
+        },
+        startingBid: '€180,000',
+        estimatedValue: '€220,000 - €250,000',
+        auctionEnd: '2025-06-24T18:00:00Z',
+        views: 800,
+        watchers: 25
     }
 ]
 

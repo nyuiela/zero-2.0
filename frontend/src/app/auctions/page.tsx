@@ -1,16 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import AuctionCard from '@/components/auction-card'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import AuctionGridClient from '@/components/auction-grid-client'
 
 interface Auction {
   id: number
@@ -253,36 +246,7 @@ export default function AuctionsPage() {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Live Auctions Section */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-foreground">
-              Live Auctions: <span className="text-brand">({displayedAuctions})</span>
-            </h1>
-
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">Country:</span>
-              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">ALL</SelectItem>
-                  <SelectItem value="Germany">Germany</SelectItem>
-                  <SelectItem value="UAE">UAE</SelectItem>
-                  <SelectItem value="USA">USA</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-sm text-brand">{totalAuctions}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredAuctions.map((auction) => (
-              <AuctionCard key={auction.id} auction={auction} />
-            ))}
-          </div>
-        </section>
+        <AuctionGridClient />
 
         {/* Preview Auctions Section */}
         <section className="mb-12">

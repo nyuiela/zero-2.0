@@ -170,3 +170,18 @@ export const auctions = [
       auctionStart: '18 June'
     }
   ]
+
+
+export interface Auction {
+  id: number
+  year: string
+  make: string
+  model: string
+  location: string
+  image: string
+  currentBid: string
+  timeLeft: string
+  bidCount: number
+  reserve?: string
+  country: string
+}
