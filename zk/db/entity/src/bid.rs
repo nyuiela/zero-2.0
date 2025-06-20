@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub auction_id: i32,
-    pub bidder_id: i32,
+    pub bidder_id: String,
     pub amount: i32,
     pub created_at: DateTime,
     pub updated_at: DateTime,

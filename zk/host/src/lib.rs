@@ -6,6 +6,8 @@ pub mod overall;
 pub mod auth;
 pub mod jwt;
 pub mod redis;
+pub mod comment;
+pub mod saved_auction;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SessionStats {
     /// Count of segments in this proof request

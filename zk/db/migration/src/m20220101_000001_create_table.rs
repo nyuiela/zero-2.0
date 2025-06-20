@@ -258,7 +258,7 @@ impl MigrationTrait for Migration {
                 .if_not_exists()
                 .col(pk_auto(Bid::Id))
                 .col(integer(Bid::AuctionId))
-                .col(integer(Bid::BidderId))
+                .col(string(Bid::BidderId))
                 .col(integer(Bid::Amount))
                 .col(timestamp(Bid::CreatedAt))
                 .col(timestamp(Bid::UpdatedAt))

@@ -4,12 +4,21 @@ use axum::{ response::{ Json } };
 use sea_orm::{ EntityTrait };
 use serde_json::{ Value, json };
 use std::sync::Arc;
+use host::auth::{ Claims, USER };
 
 #[axum::debug_handler]
 pub async fn create_car(
     axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
     Json(car_data): Json<CarModel>
 ) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
+    // Access the user from the task_local
+    let current_user = USER.with(|user| user.clone());
+
+    // You can now use the user's data.
+    // For example, let's print the user's address and set it as the car owner.
+    println!("Request from user: {}", current_user.addr);
+    println!("Request from username: {}", current_user.username);
+
     use sea_orm::ActiveValue::Set;
 
     let car_model = car::ActiveModel {
@@ -43,7 +52,8 @@ pub async fn create_car(
         lot: Set(car_data.lot.to_owned()),
         highlight: Set(car_data.highlight.clone()), // Option<Vec<String>>
         token_id: Set(car_data.token_id),
-        owner: Set(car_data.owner.to_owned()),
+        // Set the owner to the address from the JWT
+        owner: Set(current_user.addr),
         created_at: Set(car_data.created_at),
         updated_at: Set(car_data.updated_at),
         ..Default::default()

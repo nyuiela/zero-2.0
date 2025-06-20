@@ -1,0 +1,92 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: car_auction_postgres
+    environment:
+      POSTGRES_DB: zero
+      POSTGRES_USER: kaleel
+      POSTGRES_PASSWORD: kaleel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - car_auction_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kaleel -d zero"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: car_auction_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - car_auction_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Rust Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: car_auction_backend
+    environment:
+      - DATABASE_URL=postgres://kaleel:kaleel@postgres:5432/zero
+      - REDIS_URL=redis://redis:6379
+      - RUST_LOG=info
+      - RISC0_DEV_MODE=1
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - car_auction_network
+    volumes:
+      - ./target:/app/target
+      - cargo_cache:/usr/local/cargo/registry
+      - cargo_target_cache:/usr/local/cargo/target
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: car_auction_frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_WS_URL=ws://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - car_auction_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  cargo_cache:
+  cargo_target_cache:
+
+networks:
+  car_auction_network:
+    driver: bridge

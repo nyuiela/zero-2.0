@@ -11,11 +11,11 @@ use migration::{ Migrator, MigratorTrait };
 
 // use entity::{ auction, bid, car, AuctionModel, BidModel, CarModel };
 
-pub mod car;
-pub mod bid;
-pub mod auction;
-pub mod comment;
-pub mod saved_auction;
+// pub mod car;
+// pub mod bid;
+// pub mod auction;
+// pub mod comment;
+// pub mod saved_auction;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Car {

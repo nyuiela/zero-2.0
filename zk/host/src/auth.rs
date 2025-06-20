@@ -115,23 +115,27 @@ pub async fn verify_signature(Json(payload): Json<SignaturePayload>) -> Result<
 pub async fn get_verify_handler(
     // axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
     // Json(payload): Json<NoncePayload>
-) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
+) -> Result<Json<Value>, (StatusCode, String)> {
     // convert to Vec
     let nonce = uuid::Uuid::new_v4().to_string();
     // let now = chrono::Utc::now().timestamp();
     let rs = store_nonce(&nonce).await.unwrap();
     Ok(Json(json!({
-      "token": rs.0,
+      "nonce": rs.0,
       "msg": rs.1
     })))
 }
 pub async fn verify_signature_handler(
     // axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
     Json(payload): Json<VerifyPayload>
-) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
+) -> Result<Json<Value>, (StatusCode, String)> {
     // convert to Vec
-    let message = get_nonce(&payload.nonce).await.unwrap();
-    print!("Get nonce {}", message);
+    let message = get_nonce(&payload.nonce).await;
+    let message = message.ok_or_else(|| (
+        StatusCode::BAD_REQUEST,
+        "Failed to verify nonce".to_string(),
+    ))?;
+    eprint!("Get nonce {}", message);
     let signature_bytes: [u8; 65] = hex
         ::decode(&payload.signature_bytes)
         .expect("Invalid hex")
