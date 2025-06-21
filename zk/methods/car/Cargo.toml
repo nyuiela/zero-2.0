@@ -1,0 +1,17 @@
+[package]
+name = "car"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { version = "^2.1.0", default-features = false, features = ['std'] }
+sha2 = "0.10.9"
+car-auction-core = { path = "../core"}
+k256 = { version = "0.13.4", default-features = false, features = ["ecdsa"] }
+ecdsa = { version = "0.16", default-features = false }
+tiny-keccak = { version = "2.0", default-features = false, features = ["keccak"] }
+elliptic-curve = { version = "0.13", default-features = false, features = ["sec1"] }
+sha3 = "0.10.8"
+generic-array = "1.2.0"
