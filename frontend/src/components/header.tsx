@@ -166,7 +166,7 @@ const Header = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700">
                         {availableChains.map((networkChain) => (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             key={networkChain.id}
                             onClick={() => handleNetworkSwitch(networkChain.id)}
                             className={`text-gray-300 hover:bg-gray-700 ${chainId === networkChain.id ? 'bg-amber-900/20 text-amber-400' : ''}`}
@@ -200,7 +200,7 @@ const Header = () => {
                           Saved Auctions
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-gray-600" />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={handleDisconnect}
                           className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
                         >
@@ -292,10 +292,10 @@ const Header = () => {
                           </Button>
                           <div className="text-sm text-gray-400 mb-2 mt-4">Available Networks:</div>
                           {availableChains.map((networkChain) => (
-                            <Button 
+                            <Button
                               key={networkChain.id}
-                              variant="outline" 
-                              size="sm" 
+                              variant="outline"
+                              size="sm"
                               onClick={() => handleNetworkSwitch(networkChain.id)}
                               className={`text-gray-300 border-gray-600 hover:border-amber-400 hover:text-amber-400 ${chainId === networkChain.id ? 'bg-amber-900/20 text-amber-400 border-amber-400' : ''}`}
                             >
@@ -308,9 +308,9 @@ const Header = () => {
                             <Wallet className="h-4 w-4 mr-2" />
                             {address?.slice(0, 6)}...{address?.slice(-4)}
                           </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={handleDisconnect}
                             className="text-red-400 border-red-600 hover:bg-red-900/20 hover:text-red-300"
                           >

@@ -10,18 +10,26 @@ const mockAuth = {
 export async function fetchNonce() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auth`)
+    console.log("fetchNone ", res);
     if (!res.ok) {
       console.warn('Auth API failed, using mock nonce')
-      return mockAuth.fetchNonce()
+      // return mockAuth.fetchNonce()
     }
     return res.json()
   } catch (error) {
-    console.error('Error fetching nonce, using mock:', error)
-    return mockAuth.fetchNonce()
+    return console.error('Error fetching nonce, using mock:', error)
+    // return mockAuth.fetchNonce()
   }
 }
 
-export async function verifySignature(body: any) {
+interface AuthParams {
+  message: string,
+  nonce: string,
+  signature_bytes: string,
+  expected_addr: string,
+  username: string
+}
+export async function verifySignature(body: AuthParams) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auth`, {
       method: 'POST',
@@ -29,13 +37,13 @@ export async function verifySignature(body: any) {
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      console.warn('Auth verification failed, using mock')
-      return mockAuth.verifySignature()
+      return console.warn('Auth verification failed, using mock')
+      // return mockAuth.verifySignature()
     }
     return res.json()
   } catch (error) {
-    console.error('Error verifying signature, using mock:', error)
-    return mockAuth.verifySignature()
+    return console.error('Error verifying signature, using mock:', error)
+    // return mockAuth.verifySignature()
   }
 }
 
