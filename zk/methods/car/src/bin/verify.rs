@@ -10,21 +10,6 @@ use sha3::{ Digest, Keccak256 };
 // use generic_array::GenericArray;
 // use k256::elliptic_curve::generic_array::GenericArray;
 use car_auction_core::{ VerifyParams, VerifyCommit };
-// use ethers::utils::hex::hex;
-
-fn keccak256(data: &[u8]) -> [u8; 32] {
-    let mut hasher = Keccak256::new();
-    hasher.update(data);
-    let result = hasher.finalize();
-    let mut output = [0u8; 32];
-    output.copy_from_slice(&result);
-    output
-}
-
-// fn ethereum_prefixed_message(message: &[u8]) -> [u8; 32] {
-//     let prefix = format!("\x19Ethereum Signed Message:\n{}", message.len());
-//     keccak256([prefix.as_bytes(), message].concat().as_slice())
-// }
 
 fn recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 20], String> {
     let signature_bytes = hex
@@ -117,24 +102,24 @@ fn recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 2
 // }
 
 // assert_eq!(recovered_key, expected_key);
-fn vec_to_array(vec: Vec<u8>) -> Option<[u8; 65]> {
-    if vec.len() == 65 {
-        let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
-        let boxed_array: Box<[u8; 65]> = boxed_slice.try_into().ok()?;
-        Some(*boxed_array)
-    } else {
-        None
-    }
-}
-fn vec_to_array_addr(vec: Vec<u8>) -> Option<[u8; 20]> {
-    if vec.len() == 20 {
-        let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
-        let boxed_array: Box<[u8; 20]> = boxed_slice.try_into().ok()?;
-        Some(*boxed_array)
-    } else {
-        None
-    }
-}
+// fn vec_to_array(vec: Vec<u8>) -> Option<[u8; 65]> {
+//     if vec.len() == 65 {
+//         let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
+//         let boxed_array: Box<[u8; 65]> = boxed_slice.try_into().ok()?;
+//         Some(*boxed_array)
+//     } else {
+//         None
+//     }
+// }
+// fn vec_to_array_addr(vec: Vec<u8>) -> Option<[u8; 20]> {
+//     if vec.len() == 20 {
+//         let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
+//         let boxed_array: Box<[u8; 20]> = boxed_slice.try_into().ok()?;
+//         Some(*boxed_array)
+//     } else {
+//         None
+//     }
+// }
 
 fn main() {
     let input: VerifyParams = env::read();
@@ -161,15 +146,15 @@ fn main() {
     //     None => env::commit(&false),
     // }
     // assert_eq!(expected_addr, recovered_addr);
-    eprintln!("expected addr : {}", input.expected_addr.clone().to_lowercase());
-    eprintln!("Recovered addr : {}", &eth_address);
+    //  eprintln!("expected addr : {}", input.expected_addr.clone().to_lowercase());
+    //  eprintln!("Recovered addr : {}", &eth_address);
     let res = input.expected_addr.to_lowercase() == eth_address;
     let commit = VerifyCommit {
-        timestamp: input.timestamp,
-        verified: res,
-        address: input.expected_addr,
-        username: input.username,
+        timestamp: input.timestamp.clone(),
+        verified: res.clone(),
+        address: input.expected_addr.clone(),
+        username: input.username.clone(),
     };
-    env::commit(&commit);
-    eprintln!("{:?}", &commit);
+    env::commit(&commit)
+    //  eprintln!("{:?}", &commit);
 }

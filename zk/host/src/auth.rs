@@ -241,13 +241,13 @@ pub async fn verify_signature_handler(
         timestamp: now,
         username: payload.username,
     };
-    let recovered_addr = recover_ethereum_address(&payload.signature_bytes, &message).map_err(|e| {
-        (StatusCode::BAD_REQUEST, e)
-    })?;
-    let eth_address = format!("0x{}", hex::encode(recovered_addr));
-    println!("{}", eth_address);
+    //  let recovered_addr = recover_ethereum_address(&payload.signature_bytes, &message).map_err(|e| {
+    //      (StatusCode::BAD_REQUEST, e)
+    //  })?;
+    //  let eth_address = format!("0x{}", hex::encode(recovered_addr));
+    //  println!("{}", eth_address);
 
-    eprintln!("Recovered address{:?}", eth_address);
+    //  eprintln!("Recovered address{:?}", eth_address);
 
     let env = ExecutorEnv::builder().write(&vec_payload).unwrap().build().unwrap();
     let prover = default_prover();
