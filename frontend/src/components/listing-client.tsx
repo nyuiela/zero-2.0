@@ -18,8 +18,8 @@ interface ListingClientProps {
 }
 
 export default function ListingClient({ listing, relatedAuctions }: ListingClientProps) {
-    const [selectedImage, setSelectedImage] = useState(0)
-    const [isWatching, setIsWatching] = useState(false)
+    const [selectedImage, setSelectedImage] = useState<number>(0)
+    const [isWatching, setIsWatching] = useState<boolean>(false)
 
     return (
         <>

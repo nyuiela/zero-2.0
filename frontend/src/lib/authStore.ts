@@ -4,6 +4,7 @@ interface User {
   address: string
   username?: string
   jwt?: string
+  verified?: boolean
 }
 
 interface AuthState {
