@@ -7,8 +7,8 @@ use chrono::{ DateTime, Local };
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct VerifyParams {
     pub message: String,
-    pub signature_bytes: Vec<u8>,
-    pub expected_addr: Vec<u8>,
+    pub signature_bytes: String,
+    pub expected_addr: String,
     pub timestamp: i64,
     pub username: String,
 }
@@ -16,7 +16,7 @@ pub struct VerifyParams {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct VerifyCommit {
     pub verified: bool,
-    pub address: Vec<u8>,
+    pub address: String,
     pub timestamp: i64,
     pub username: String,
 }
