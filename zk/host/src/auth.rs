@@ -8,11 +8,19 @@ use methods::{ VERIFY_ELF, VERIFY_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
 use sea_orm::sqlx::types::uuid;
 use serde::{ Deserialize, Serialize };
-use ethers::{ types::Address, utils::hex::hex };
+use ethers::{ types::Address, utils::hex::{ encode, hex } };
 use ethers::utils::{ hash_message };
 use axum::{ Json };
 use serde_json::{ json, Value };
 use jsonwebtoken::{ decode, DecodingKey, Validation };
+use k256::{
+    ecdsa::{ RecoveryId, Signature, VerifyingKey },
+    elliptic_curve::sec1::ToEncodedPoint,
+    Secp256k1,
+};
+// use ecdsa::SigningKey;
+use k256::elliptic_curve::generic_array::GenericArray;
+use sha3::{ Digest, Keccak256 };
 
 use crate::{ jwt::{ issue_token, Claims }, redis::{ get_nonce, store_nonce }, SessionStats };
 
@@ -26,8 +34,8 @@ pub struct SignaturePayload {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct VerifyParams {
     pub message: String,
-    pub signature_bytes: Vec<u8>,
-    pub expected_addr: Vec<u8>,
+    pub signature_bytes: String,
+    pub expected_addr: String,
     pub timestamp: i64,
     pub username: String,
 }
@@ -49,7 +57,7 @@ pub struct VerifyCommit {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct VerifyState {
     pub verified: bool,
-    pub address: Vec<u8>,
+    pub address: String,
     pub timestamp: i64,
     pub username: String,
 }
@@ -86,10 +94,10 @@ pub async fn verify_signature(Json(payload): Json<SignaturePayload>) -> Result<
     };
 
     // Hash the message with Ethereum's prefixing
-    let message_hash = hash_message(&payload.message);
+    // let message_hash = hash_message(&payload.message);
 
     // Recover address from signature
-    let recovered = match signature.recover(message_hash) {
+    let recovered = match signature.recover(payload.message) {
         Ok(addr) => addr,
         Err(_) => {
             return Err((StatusCode::UNAUTHORIZED, "Signature verification failed".into()));
@@ -125,49 +133,138 @@ pub async fn get_verify_handler(
       "msg": rs.1
     })))
 }
+fn keccak256(data: &[u8]) -> [u8; 32] {
+    let mut hasher = Keccak256::new();
+    hasher.update(data);
+    let result = hasher.finalize();
+    let mut output = [0u8; 32];
+    output.copy_from_slice(&result);
+    output
+}
+// fn recover_ethereum_address(message: &[u8], signature_bytes: [u8; 65]) -> Option<[u8; 20]> {
+//     // let msg_hash = ethereum_prefixed_message(message);
+//     let message_hash = hash_message(message);
+//     // let sig = Signature::from_bytes(&signature_bytes[..64]).ok()?;
+//     let sig = Signature::from_bytes(GenericArray::from_slice(&signature_bytes[..64])).ok()?;
+
+//     let recovery_id = Id::new(signature_bytes[64] % 27, false).ok()?; // recovery_id should be 0 or 1
+//     let recoverable_sig = Signature::new(&sig, recovery_id).ok()?;
+
+//     // Recover public key
+//     let pubkey = recoverable_sig.recover_verify_key_from_digest_bytes(message_hash.into()).ok()?;
+
+//     // Compute Ethereum address
+//     let pubkey_encoded = pubkey.to_encoded_point(false);
+//     let pubkey_bytes = pubkey_encoded.as_bytes();
+//     let hash = keccak256(&pubkey_bytes[1..]); // Remove 0x04 prefix
+//     let mut addr = [0u8; 20];
+//     addr.copy_from_slice(&hash[12..]);
+//     Some(addr)
+// }
+
+fn recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 20], String> {
+    let signature_bytes = hex
+        ::decode(signature_hex.strip_prefix("0x").unwrap_or(signature_hex))
+        .map_err(|e| format!("Invalid signature hex: {}", e))?;
+
+    if signature_bytes.len() != 65 {
+        return Err(format!("Expected 65-byte signature, got {}", signature_bytes.len()));
+    }
+
+    let signature = Signature::try_from(&signature_bytes[..64]).map_err(|e|
+        format!("Invalid signature: {}", e)
+    )?;
+
+    let v = signature_bytes[64];
+    let recovery_id_val = if v >= 27 { v - 27 } else { v % 2 };
+    let recid = RecoveryId::try_from(recovery_id_val).map_err(|e|
+        format!("Invalid recovery ID: {}", e)
+    )?;
+
+    // Create Ethereum message hash with proper prefix
+    let message_bytes = message.as_bytes();
+    let prefix = format!("\x19Ethereum Signed Message:\n{}", message_bytes.len());
+    let mut hasher = Keccak256::new();
+    hasher.update(prefix.as_bytes());
+    hasher.update(message_bytes);
+    let message_hash = hasher.finalize();
+    // let msg_hh = Keccak256::digest(message_hash);
+
+    let recovered_key = VerifyingKey::recover_from_prehash(
+        &message_hash,
+        &signature,
+        recid
+    ).map_err(|e| format!("Failed to recover public key: {}", e))?;
+
+    let encoded_point = recovered_key.to_encoded_point(false);
+    let public_key_bytes = encoded_point.as_bytes();
+
+    let hash = Keccak256::digest(&public_key_bytes[1..]);
+
+    let mut address = [0u8; 20];
+    address.copy_from_slice(&hash[12..]);
+
+    Ok(address)
+}
 pub async fn verify_signature_handler(
     // axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
     Json(payload): Json<VerifyPayload>
 ) -> Result<Json<Value>, (StatusCode, String)> {
     // convert to Vec
+    // let message = get_nonce(&payload.nonce).await;
+    // let message = payload.message.clone();
     let message = get_nonce(&payload.nonce).await;
-    let message = message.ok_or_else(|| (
-        StatusCode::BAD_REQUEST,
-        "Failed to verify nonce".to_string(),
-    ))?;
-    eprint!("Get nonce {}", message);
-    let signature_bytes: [u8; 65] = hex
-        ::decode(&payload.signature_bytes)
-        .expect("Invalid hex")
-        .try_into()
-        .expect("expected 65 bytes");
-    let expected_addr: [u8; 20] = hex
-        ::decode(&payload.expected_addr)
-        .expect("Invalid hex")
-        .try_into()
-        .expect("expected 20 bytes");
+    let message = message.ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, "Failed to verify nonce".to_string())
+    })?;
+    // let message = message.ok_or_else(|| {
+    //     (StatusCode::BAD_REQUEST, "Failed to verify nonce".to_string())
+    // })?;
+    eprintln!("Get nonce {}", message);
+    // let message_bytes: [u8] = hex::decode(&message).expect("Invalid mesg");
+    // let signature_bytes: [u8; 65] = hex
+    //     ::decode(&payload.signature_bytes)
+    //     .expect("Invalid hex")
+    //     .try_into()
+    //     .expect("expected 65 bytes");
+    // let expected_addr: [u8; 20] = hex
+    //     ::decode(&payload.expected_addr)
+    //     .expect("Invalid hex")
+    //     .try_into()
+    //     .expect("expected 20 bytes");
+
     let now = chrono::Utc::now().timestamp();
     let vec_payload = VerifyParams {
-        message: message,
-        signature_bytes: signature_bytes.to_vec(),
-        expected_addr: expected_addr.to_vec(),
+        message: message.clone(),
+        signature_bytes: payload.signature_bytes.clone(),
+        expected_addr: payload.expected_addr.clone(),
         timestamp: now,
         username: payload.username,
     };
+    //  let recovered_addr = recover_ethereum_address(&payload.signature_bytes, &message).map_err(|e| {
+    //      (StatusCode::BAD_REQUEST, e)
+    //  })?;
+    //  let eth_address = format!("0x{}", hex::encode(recovered_addr));
+    //  println!("{}", eth_address);
+
+    //  eprintln!("Recovered address{:?}", eth_address);
+
     let env = ExecutorEnv::builder().write(&vec_payload).unwrap().build().unwrap();
     let prover = default_prover();
     let prove_info = prover.prove(env, VERIFY_ELF).unwrap();
-    let verify_commit = VerifyCommit {
-        receipt: prove_info.receipt,
-        stats: SessionStats {
-            segments: prove_info.stats.segments,
-            total_cycles: prove_info.stats.total_cycles,
-            user_cycles: prove_info.stats.user_cycles,
-            paging_cycles: prove_info.stats.paging_cycles,
-            reserved_cycles: prove_info.stats.reserved_cycles,
-        },
-    };
-    Ok(Json(json!(verify_commit)))
+    eprint!("Prove info {:?}", prove_info.stats);
+    // let verify_commit = VerifyCommit {
+    //     receipt: prove_info.receipt,
+    //     stats: SessionStats {
+    //         segments: prove_info.stats.segments,
+    //         total_cycles: prove_info.stats.total_cycles,
+    //         user_cycles: prove_info.stats.user_cycles,
+    //         paging_cycles: prove_info.stats.paging_cycles,
+    //         reserved_cycles: prove_info.stats.reserved_cycles,
+    //     },
+    // };
+    // eprint!("{:?}", verify_commit);
+    Ok(Json(json!("hi")))
 }
 
 pub async fn verify_auth_handler(
@@ -181,11 +278,11 @@ pub async fn verify_auth_handler(
         .unwrap();
     // .ok()
     // .unwrap();
-    let addr = std::str::from_utf8(&commit.address).unwrap();
+    // let addr = std::str::from_utf8(&commit.address).unwrap();
 
     let mut key: Option<String> = None;
     if !commit.verified {
-        key = Some(issue_token(addr, &commit.username));
+        key = Some(issue_token(&commit.address, &commit.username));
     } else {
         return Err(StatusCode::UNAUTHORIZED);
     }
@@ -200,7 +297,7 @@ pub async fn verify_auth_handler(
     Ok((headers, Json(json!(commit))).into_response())
     // Ok(Json(json!(commit)))
 }
-use tokio::task_local;
+use tokio::{ task::Id, task_local };
 
 task_local! {
     pub static USER: Claims;
