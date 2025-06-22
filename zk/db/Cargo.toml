@@ -1,0 +1,18 @@
+[package]
+name = "db"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+entity = { path = "./entity"}
+sea-orm = { version = "1.1.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
+serde = { version = "1.0", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1.0", features = ["full", "macros", "rt-multi-thread"] }
+async-trait = "0.1"
+rust_decimal = { version = "1.32", features = ["serde"] }
+migration = { path = "./migration"}
+uuid = { version = "1.17.0", features = ["v4"] }
+axum = { version = "0.8.4", features = ["macros"] }
+serde_json = "1.0.140"
+dotenv = "0.15"
