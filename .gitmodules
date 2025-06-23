@@ -1,3 +1,12 @@
 [submodule "contract/lib/forge-std"]
 	path = contract/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "contract/lib/foundry-chainlink-toolkit"]
+	path = contract/lib/foundry-chainlink-toolkit
+	url = https://github.com/smartcontractkit/foundry-chainlink-toolkit
+[submodule "contract/lib/chainlink"]
+	path = contract/lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
+[submodule "contract/lib/openzeppelin-contracts-upgradeable"]
+	path = contract/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
