@@ -1,0 +1,10 @@
+@chainlink/contracts-ccip/=lib/chainlink/contracts/src/v0.8/ccip/
+@chainlink/contracts/=lib/chainlink/contracts/src/v0.8/
+@openzeppelin/contracts/=lib/foundry-chainlink-toolkit/lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+chainlink-brownie-contracts/=lib/foundry-chainlink-toolkit/lib/chainlink-brownie-contracts/contracts/src/v0.8/
+@chainlink/=lib/chainlink/contracts/
+ds-test/=lib/foundry-chainlink-toolkit/lib/forge-std/lib/ds-test/src/
+forge-std/=lib/forge-std/src/
+foundry-chainlink-toolkit/=lib/foundry-chainlink-toolkit/
+openzeppelin-contracts/=lib/foundry-chainlink-toolkit/lib/openzeppelin-contracts/

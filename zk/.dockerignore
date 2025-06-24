@@ -1,0 +1,6 @@
+# Ignore build artifacts
+target/
+
+# Ignore git files
+.git/
+.gitignore 

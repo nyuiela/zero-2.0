@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # PostgreSQL Database
   postgres:
@@ -17,7 +15,7 @@ services:
     networks:
       - car_auction_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kaleel -d zero"]
+      test: [ "CMD-SHELL", "pg_isready -U kaleel -d zero" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,7 +31,7 @@ services:
     networks:
       - car_auction_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,8 +47,9 @@ services:
       - REDIS_URL=redis://redis:6379
       - RUST_LOG=info
       - RISC0_DEV_MODE=1
+      - RISC0_INFO=1
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,18 +62,18 @@ services:
       - cargo_cache:/usr/local/cargo/registry
       - cargo_target_cache:/usr/local/cargo/target
     restart: unless-stopped
-
   # React Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: car_auction_frontend
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://localhost:3000
       - REACT_APP_WS_URL=ws://localhost:3000
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
     depends_on:
       - backend
     networks:
@@ -86,6 +85,7 @@ volumes:
   redis_data:
   cargo_cache:
   cargo_target_cache:
+
 
 networks:
   car_auction_network:
