@@ -12,6 +12,7 @@ tinyvec = "1.9.0"
 risc0-zkp = { version = "2.0.1", features = ["std"] }
 tiny-keccak = { version = "2.0.2", features = ["keccak"] }
 chrono = "0.4.41"
+arrayvec = "0.7.6"
 
 [patch.crates-io]
 # Adding RISC Zero keccak precompile support

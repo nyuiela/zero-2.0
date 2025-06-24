@@ -12,6 +12,13 @@ pub struct VerifyParams {
     pub timestamp: i64,
     pub username: String,
 }
+// pub struct VerifyParams {
+//     pub message: String,
+//     pub signature_bytes: String,
+//     pub expected_addr: String,
+//     pub timestamp: i64,
+//     pub username: String,
+// }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct VerifyCommit {

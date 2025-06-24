@@ -1,7 +1,5 @@
-use std::env;
-
 // use redis;
-use redis::{ Client, Commands };
+use redis::{ Commands };
 
 pub async fn store_nonce(
     //  client: redis::Client,
