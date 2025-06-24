@@ -45,6 +45,7 @@ COPY . .
 
 # Build the project
 RUN RISC0_DEV_MODE=1 RUST_LOG=info RISC0_INFO=1 cargo build --release --package host
+RUN cargo build --release --bin db
 
 # Runtime stage
 FROM --platform=linux/amd64 debian:bookworm-slim
@@ -54,31 +55,32 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     libpq5 \
     libssl3 \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
-    
-# Seed the db
-# ENV DATABASE_URL=postgres://kaleel:kaleel@postgres:5432/zero
-# RUN cargo run --release --bin db
 
 # Create non-root user
-# RUN useradd -m -u 1000 rustuser
+RUN useradd -m -u 1000 rustuser
 
 # Set working directory
 WORKDIR /app
 
-# Copy the binary from builder stage
+# Copy the binaries from builder stage
 COPY --from=builder /app/target/release/host /app/host
+COPY --from=builder /app/target/release/db /app/db
 
 # Copy any necessary files (like methods ELF files)
 COPY --from=builder /app/methods /app/methods
+COPY --from=builder /app/db /app/db_files
 
-COPY --from=builder /app/db /app/db
+# Add entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# # Change ownership to non-root user
-# RUN chown -R rustuser:rustuser /app
+# Change ownership to non-root user
+RUN chown -R rustuser:rustuser /app
 
 # Switch to non-root user
-# USER rustuser
+USER rustuser
 
 # Expose port
 EXPOSE 3001
@@ -87,6 +89,5 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3001/api/cars || exit 1
 
-
-# Run the application
-CMD ["./host"]
+# Run the entrypoint script
+CMD ["/app/entrypoint.sh"]
