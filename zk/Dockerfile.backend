@@ -1,5 +1,5 @@
 # Use the official Rust image as base
-FROM rust:1.75-slim as builder
+FROM --platform=linux/amd64 debian:bookworm-slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,10 +9,23 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     curl \
     git \
+    cmake \
+    ninja-build \
     && rm -rf /var/lib/apt/lists/*
 
-# Install RISC0 toolchain
-RUN curl -L https://github.com/risc0/risc0/releases/download/v0.20.1/risc0-v0.20.1-linux-x86_64.tar.gz | tar -xz -C /usr/local/bin --strip-components=1
+# Install Rust via rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}" 
+
+
+# Install RISC0 toolchain (Manual method)
+WORKDIR /tmp
+RUN git clone https://github.com/risc0/risc0.git
+WORKDIR /tmp/risc0
+RUN git checkout release-2.1
+RUN cargo install --path rzup
+RUN rzup install
+# RUN cargo install --path risc0/cargo-risczero
 
 # Set working directory
 WORKDIR /app
@@ -21,19 +34,20 @@ WORKDIR /app
 COPY . .
 
 # Create a new empty project for cargo vendor
-RUN mkdir -p /tmp/vendor && cd /tmp/vendor && cargo init
+# RUN mkdir -p /tmp/vendor && cd /tmp/vendor && cargo init
 
-# Vendor dependencies for offline builds
-RUN cd /tmp/vendor && cargo vendor /app/vendor
+# # Vendor dependencies for offline builds
+# RUN cd /tmp/vendor && cargo vendor /app/vendor
 
-# Copy vendor directory to app
-RUN cp -r /tmp/vendor/vendor /app/
+# # Copy vendor directory to app
+# RUN cp -r /tmp/vendor/vendor /app/
+
 
 # Build the project
-RUN cargo build --release --package host
+RUN RISC0_DEV_MODE=1 RUST_LOG=info RISC0_INFO=1 cargo build --release --package host
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM --platform=linux/amd64 debian:bookworm-slim
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
@@ -41,6 +55,10 @@ RUN apt-get update && apt-get install -y \
     libpq5 \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
+    
+# Seed the db
+# ENV DATABASE_URL=postgres://kaleel:kaleel@postgres:5432/zero
+# RUN cargo run --release --bin db
 
 # Create non-root user
 RUN useradd -m -u 1000 rustuser
@@ -54,6 +72,8 @@ COPY --from=builder /app/target/release/host /app/host
 # Copy any necessary files (like methods ELF files)
 COPY --from=builder /app/methods /app/methods
 
+COPY --from=builder /app/db /app/db
+
 # Change ownership to non-root user
 RUN chown -R rustuser:rustuser /app
 
@@ -61,11 +81,12 @@ RUN chown -R rustuser:rustuser /app
 USER rustuser
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/api/cars || exit 1
+    CMD curl -f http://localhost:3001/api/cars || exit 1
+
 
 # Run the application
-CMD ["./host"] 
+CMD ["./host"]
