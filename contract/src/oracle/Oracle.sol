@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "./interfaces/IOracleMaster.sol";
-import "./interfaces/ICarOracle.sol";
-import "./interfaces/IPermissionManager.sol";
-import "./interfaces/IBrandPermissionManager.sol";
-import "./libraries/OracleCloneLib.sol";
-import "./libraries/PermissionModifiers.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
+import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
+import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
+import {IBrandPermissionManager} from "../Interface/Permissions/IBrandPermissionManager.sol";
+import {OracleCloneLib} from "../libs/OracleCloneLib.sol";
+import {PermissionModifier} from "../libs/PermissionModifier.sol";
 
 contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     using OracleCloneLib for address;
     using Strings for string;
-    using PermissionModifiers for address;
+    using PermissionModifier for address;
 
     // State variables
     address public oracleImplementation;

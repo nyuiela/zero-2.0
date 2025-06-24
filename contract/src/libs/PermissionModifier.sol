@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import "../interfaces/IPermissionManager.sol";
+import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 
 library PermissionModifiers {
     /**

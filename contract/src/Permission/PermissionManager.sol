@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "./interfaces/IPermissionManager.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
+import {IPermissionManager} from "./interfaces/IPermissionManager.sol";
 
 contract PermissionManager is IPermissionManager, Ownable, Pausable {
     // Storage
