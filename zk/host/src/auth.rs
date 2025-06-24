@@ -279,7 +279,16 @@ pub async fn verify_auth_handler(
     if commit.verified {
         key = Some(issue_token(&commit.address, &commit.username));
     } else {
-        return Err(StatusCode::UNAUTHORIZED);
+        return Ok(
+            (
+                Json(
+                    json!({
+          "message": "User not verified",
+          "status": "failed"
+        })
+                ),
+            ).into_response()
+        );
     }
     let mut headers = HeaderMap::new();
     headers.insert(
