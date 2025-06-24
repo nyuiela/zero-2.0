@@ -61,7 +61,7 @@ RUN apt-get update && apt-get install -y \
 # RUN cargo run --release --bin db
 
 # Create non-root user
-RUN useradd -m -u 1000 rustuser
+# RUN useradd -m -u 1000 rustuser
 
 # Set working directory
 WORKDIR /app
@@ -74,11 +74,11 @@ COPY --from=builder /app/methods /app/methods
 
 COPY --from=builder /app/db /app/db
 
-# Change ownership to non-root user
-RUN chown -R rustuser:rustuser /app
+# # Change ownership to non-root user
+# RUN chown -R rustuser:rustuser /app
 
 # Switch to non-root user
-USER rustuser
+# USER rustuser
 
 # Expose port
 EXPOSE 3001
