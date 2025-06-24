@@ -1,3 +1,4 @@
+#[warn(unused_assignments)]
 use axum::{
     extract::{ Request },
     http::{ header, HeaderMap, HeaderValue, StatusCode },
@@ -8,18 +9,12 @@ use methods::{ VERIFY_ELF, VERIFY_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
 use sea_orm::sqlx::types::uuid;
 use serde::{ Deserialize, Serialize };
-use ethers::{ types::Address, utils::hex::{ encode, hex } };
-use ethers::utils::{ hash_message };
+use ethers::{ types::Address, utils::hex::{ hex } };
 use axum::{ Json };
 use serde_json::{ json, Value };
 use jsonwebtoken::{ decode, DecodingKey, Validation };
-use k256::{
-    ecdsa::{ RecoveryId, Signature, VerifyingKey },
-    elliptic_curve::sec1::ToEncodedPoint,
-    Secp256k1,
-};
+use k256::{ ecdsa::{ RecoveryId, Signature, VerifyingKey } };
 // use ecdsa::SigningKey;
-use k256::elliptic_curve::generic_array::GenericArray;
 use sha3::{ Digest, Keccak256 };
 
 use crate::{ jwt::{ issue_token, Claims }, redis::{ get_nonce, store_nonce }, SessionStats };
@@ -133,7 +128,7 @@ pub async fn get_verify_handler(
       "msg": rs.1
     })))
 }
-fn keccak256(data: &[u8]) -> [u8; 32] {
+fn _keccak256(data: &[u8]) -> [u8; 32] {
     let mut hasher = Keccak256::new();
     hasher.update(data);
     let result = hasher.finalize();
@@ -162,7 +157,7 @@ fn keccak256(data: &[u8]) -> [u8; 32] {
 //     Some(addr)
 // }
 
-fn recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 20], String> {
+fn _recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 20], String> {
     let signature_bytes = hex
         ::decode(signature_hex.strip_prefix("0x").unwrap_or(signature_hex))
         .map_err(|e| format!("Invalid signature hex: {}", e))?;
@@ -253,18 +248,18 @@ pub async fn verify_signature_handler(
     let prover = default_prover();
     let prove_info = prover.prove(env, VERIFY_ELF).unwrap();
     eprint!("Prove info {:?}", prove_info.stats);
-    // let verify_commit = VerifyCommit {
-    //     receipt: prove_info.receipt,
-    //     stats: SessionStats {
-    //         segments: prove_info.stats.segments,
-    //         total_cycles: prove_info.stats.total_cycles,
-    //         user_cycles: prove_info.stats.user_cycles,
-    //         paging_cycles: prove_info.stats.paging_cycles,
-    //         reserved_cycles: prove_info.stats.reserved_cycles,
-    //     },
-    // };
+    let verify_commit = VerifyCommit {
+        receipt: prove_info.receipt,
+        stats: SessionStats {
+            segments: prove_info.stats.segments,
+            total_cycles: prove_info.stats.total_cycles,
+            user_cycles: prove_info.stats.user_cycles,
+            paging_cycles: prove_info.stats.paging_cycles,
+            reserved_cycles: prove_info.stats.reserved_cycles,
+        },
+    };
     // eprint!("{:?}", verify_commit);
-    Ok(Json(json!("hi")))
+    Ok(Json(json!(verify_commit)))
 }
 
 pub async fn verify_auth_handler(
@@ -279,12 +274,21 @@ pub async fn verify_auth_handler(
     // .ok()
     // .unwrap();
     // let addr = std::str::from_utf8(&commit.address).unwrap();
-
     let mut key: Option<String> = None;
-    if !commit.verified {
+    eprintln!("Verified {:?}", commit);
+    if commit.verified {
         key = Some(issue_token(&commit.address, &commit.username));
     } else {
-        return Err(StatusCode::UNAUTHORIZED);
+        return Ok(
+            (
+                Json(
+                    json!({
+          "message": "User not verified",
+          "status": "failed"
+        })
+                ),
+            ).into_response()
+        );
     }
     let mut headers = HeaderMap::new();
     headers.insert(
@@ -297,7 +301,7 @@ pub async fn verify_auth_handler(
     Ok((headers, Json(json!(commit))).into_response())
     // Ok(Json(json!(commit)))
 }
-use tokio::{ task::Id, task_local };
+use tokio::{ task_local };
 
 task_local! {
     pub static USER: Claims;

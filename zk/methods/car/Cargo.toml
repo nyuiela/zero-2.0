@@ -16,3 +16,5 @@ elliptic-curve = { version = "0.13", default-features = false, features = ["sec1
 sha3 = "0.10.8"
 generic-array = "1.2.0"
 hex = "0.4.3"
+arrayvec = "0.7.6"
+serde = "1.0.219"

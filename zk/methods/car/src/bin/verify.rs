@@ -1,160 +1,125 @@
 #![no_main]
-// #![no_std]
+#![no_std]
+
 use risc0_zkvm::guest::env;
-// use car_auction_core::{ AuctionState };
-risc0_zkvm::guest::entry!(main);
-use k256::{ ecdsa::{ Signature, VerifyingKey, RecoveryId }, elliptic_curve::sec1::ToEncodedPoint };
-use ecdsa::SigningKey;
-// use k256::ecdsa::SigningKey;
+use k256::{ ecdsa::{ RecoveryId, Signature, VerifyingKey }, elliptic_curve::sec1::ToEncodedPoint };
 use sha3::{ Digest, Keccak256 };
-// use generic_array::GenericArray;
-// use k256::elliptic_curve::generic_array::GenericArray;
-use car_auction_core::{ VerifyParams, VerifyCommit };
+use car_auction_core::{ VerifyCommit, VerifyParams };
+use arrayvec::ArrayString;
 
-fn recover_ethereum_address(signature_hex: &str, message: &str) -> Result<[u8; 20], String> {
-    let signature_bytes = hex
-        ::decode(signature_hex.strip_prefix("0x").unwrap_or(signature_hex))
-        .map_err(|e| format!("Invalid signature hex: {}", e))?;
+// #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+// pub struct VerifyParams {
+//     pub message: str,
+//     pub signature_bytes: str,
+//     pub expected_addr: str,
+//     pub timestamp: i64,
+//     pub username: str,
+// }
+// #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+// pub struct VerifyCommit {
+//     pub verified: bool,
+//     pub address: String,
+//     pub timestamp: i64,
+//     pub username: String,
+// }
 
-    if signature_bytes.len() != 65 {
-        return Err(format!("Expected 65-byte signature, got {}", signature_bytes.len()));
+fn write_usize_to_buf(n: usize, buf: &mut [u8]) -> Option<&str> {
+    let mut i = buf.len();
+    let mut n = n;
+    if n == 0 {
+        if i == 0 {
+            return None;
+        }
+        i -= 1;
+        buf[i] = b'0';
+    } else {
+        while n > 0 {
+            if i == 0 {
+                return None;
+            }
+            i -= 1;
+            buf[i] = b'0' + ((n % 10) as u8);
+            n /= 10;
+        }
     }
-
-    let signature = Signature::try_from(&signature_bytes[..64]).map_err(|e|
-        format!("Invalid signature: {}", e)
-    )?;
-
-    let v = signature_bytes[64];
-    let recovery_id_val = if v >= 27 { v - 27 } else { v % 2 };
-    let recid = RecoveryId::try_from(recovery_id_val).map_err(|e|
-        format!("Invalid recovery ID: {}", e)
-    )?;
-
-    // Create Ethereum message hash with proper prefix
-    let message_bytes = message.as_bytes();
-    let prefix = format!("\x19Ethereum Signed Message:\n{}", message_bytes.len());
-    let mut hasher = Keccak256::new();
-    hasher.update(prefix.as_bytes());
-    hasher.update(message_bytes);
-    let message_hash = hasher.finalize();
-    // let msg_hh = Keccak256::digest(message_hash);
-
-    let recovered_key = VerifyingKey::recover_from_prehash(
-        &message_hash,
-        &signature,
-        recid
-    ).map_err(|e| format!("Failed to recover public key: {}", e))?;
-
-    let encoded_point = recovered_key.to_encoded_point(false);
-    let public_key_bytes = encoded_point.as_bytes();
-
-    let hash = Keccak256::digest(&public_key_bytes[1..]);
-
-    let mut address = [0u8; 20];
-    address.copy_from_slice(&hash[12..]);
-
-    Ok(address)
+    core::str::from_utf8(&buf[i..]).ok()
 }
 
-// fn _recover_ethereum_address(message: &[u8], signature_bytes: [u8; 65]) -> Option<[u8; 20]> {
-//     // let msg_hash = ethereum_prefixed_message(message);
+fn recover_ethereum_address(sig_hex: &str, msg: &str) -> Result<[u8; 20], &'static str> {
+    let sig_bytes = hex
+        ::decode(sig_hex.strip_prefix("0x").unwrap_or(sig_hex))
+        .map_err(|_| "Invalid signature hex")?;
+    if sig_bytes.len() != 65 {
+        return Err("Signature is not 65 bytes");
+    }
+    let sig = Signature::try_from(&sig_bytes[..64]).map_err(|_| "Bad signature format")?;
+    let v = sig_bytes[64];
+    let recid = RecoveryId::try_from(if v >= 27 { v - 27 } else { v % 2 }).map_err(
+        |_| "Invalid recovery id"
+    )?;
 
-//     // let sig = Signature::from_bytes(&signature_bytes[..64]).ok()?;
-//     let sig = Signature::from_bytes(GenericArray::from_slice(&signature_bytes[..64])).ok()?;
+    let msg_bytes = msg.as_bytes();
 
-//     let recovery_id = RecoveryId::try_from(signature_bytes[64] % 2).ok()?;
+    // Build prefix: "\x19Ethereum Signed Message:\n<length>"
+    let mut prefix = ArrayString::<64>::new();
+    prefix.push_str("\x19Ethereum Signed Message:\n");
+    {
+        let mut numbuf = [0u8; 20];
+        let len_str = write_usize_to_buf(msg_bytes.len(), &mut numbuf).ok_or(
+            "Num buffer too small"
+        )?;
+        prefix.push_str(len_str);
+    }
 
-//     let pubkey = VerifyingKey::recover_from_digest::<Keccak256>(
-//         Keccak256::new_with_prefix(message),
-//         &sig,
-//         recovery_id
-//     ).ok()?;
+    // Hashing: keccak(prefix || message)
+    let mut hasher = Keccak256::new();
+    hasher.update(prefix.as_bytes());
+    hasher.update(msg_bytes);
+    let hash = hasher.finalize();
 
-//     // Convert to Ethereum address
-//     let binding = pubkey.to_encoded_point(false);
-//     let pubkey_bytes = binding.as_bytes();
-//     let hash = keccak256(&pubkey_bytes[1..]); // Skip prefix 0x04
-//     let mut addr = [0u8; 20];
-//     addr.copy_from_slice(&hash[12..]);
-//     Some(addr)
-// }
-// fn verify() {
-//     let msg = b"example message";
+    let key = VerifyingKey::recover_from_prehash(&hash, &sig, recid).map_err(
+        |_| "Failed key recovery"
+    )?;
+    let enc = key.to_encoded_point(false);
+    let pub_bytes = enc.as_bytes();
+    let addr_hash = Keccak256::digest(&pub_bytes[1..]);
+    let mut addr = [0u8; 20];
+    addr.copy_from_slice(&addr_hash[12..]);
 
-//     let signature = Signature::try_from(
-//         hex!(
-//             "46c05b6368a44b8810d79859441d819b8e7cdc8bfd371e35c53196f4bcacdb51
-//      35c7facce2a97b95eacba8a586d87b7958aaf8368ab29cee481f76e871dbd9cb"
-//         ).as_slice()
-//     )?;try_from
+    Ok(addr)
+}
 
-//     let recid = RecoveryId::(1u8)?;
-
-//     let recovered_key = VerifyingKey::recover_from_digest(
-//         Keccak256::new_with_prefix(msg),
-//         &signature,
-//         recid
-//     )?;
-
-//     let expected_key = VerifyingKey::from_sec1_bytes(
-//         &hex!("0200866db99873b09fc2fb1e3ba549b156e96d1a567e3284f5f0e859a83320cb8b")
-//     )?;
-// }
-
-// assert_eq!(recovered_key, expected_key);
-// fn vec_to_array(vec: Vec<u8>) -> Option<[u8; 65]> {
-//     if vec.len() == 65 {
-//         let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
-//         let boxed_array: Box<[u8; 65]> = boxed_slice.try_into().ok()?;
-//         Some(*boxed_array)
-//     } else {
-//         None
-//     }
-// }
-// fn vec_to_array_addr(vec: Vec<u8>) -> Option<[u8; 20]> {
-//     if vec.len() == 20 {
-//         let boxed_slice: Box<[u8]> = vec.into_boxed_slice();
-//         let boxed_array: Box<[u8; 20]> = boxed_slice.try_into().ok()?;
-//         Some(*boxed_array)
-//     } else {
-//         None
-//     }
-// }
-
+risc0_zkvm::guest::entry!(main);
 fn main() {
     let input: VerifyParams = env::read();
-    // let message = input.message.as_bytes();
-    // let signature_bytes = vec_to_array(input.signature_bytes).expect(
-    //     "Failed to convert vec to array"
-    // );
-    // let expected_addr = vec_to_array_addr(input.expected_addr).expect(
-    //     "Failed to convert vec to array"
-    // );
 
-    // let message = &[u8, 20];
-    // let signature = &[0, u8];
-    // let add = &[20, u8];
-    // verify_signature(message, signature, add);
-    let recovered_addr = recover_ethereum_address(&input.signature_bytes, &input.message).unwrap_or(
+    let recovered = recover_ethereum_address(&input.signature_bytes, &input.message).unwrap_or(
         [0u8; 20]
     );
-    let eth_address = format!("0x{}", hex::encode(recovered_addr));
-    // match recovered_addr {
-    //     Some(val) => {
-    //         env::commit(&true);
-    //     }
-    //     None => env::commit(&false),
-    // }
-    // assert_eq!(expected_addr, recovered_addr);
-    //  eprintln!("expected addr : {}", input.expected_addr.clone().to_lowercase());
-    //  eprintln!("Recovered addr : {}", &eth_address);
-    let res = input.expected_addr.to_lowercase() == eth_address;
-    let commit = VerifyCommit {
-        timestamp: input.timestamp.clone(),
-        verified: res.clone(),
-        address: input.expected_addr.clone(),
-        username: input.username.clone(),
+
+    // Convert recovered to hex-with-0x prefix using stack buffer
+    let mut hexbuf = [0u8; 40];
+    hex::encode_to_slice(&recovered, &mut hexbuf).expect("buffer size is correct");
+    let mut eth_addr = ArrayString::<42>::new();
+    eth_addr.push_str("0x");
+    eth_addr.push_str(core::str::from_utf8(&hexbuf).unwrap());
+
+    let expected = {
+        // lowercase input
+        let mut tmp = ArrayString::<42>::new();
+        for b in input.expected_addr.as_bytes() {
+            tmp.push((*b as char).to_ascii_lowercase() as u8 as char);
+        }
+        tmp
     };
-    env::commit(&commit)
-    //  eprintln!("{:?}", &commit);
+
+    let verified = expected.as_str() == eth_addr.as_str();
+
+    let commit = VerifyCommit {
+        timestamp: input.timestamp,
+        verified,
+        address: expected.as_str().try_into().unwrap(),
+        username: input.username,
+    };
+    env::commit(&commit);
 }
