@@ -43,12 +43,12 @@ export default function AuctionGridClient() {
                 <div className="flex items-center space-x-4">
                     <span className="text-sm text-muted-foreground">Country:</span>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                        <SelectTrigger className="w-32">
+                        <SelectTrigger className="w-32 text-black">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className='text-black'>
                             {countryOptions.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                <SelectItem className='text-black' key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>

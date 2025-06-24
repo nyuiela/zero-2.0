@@ -13,12 +13,12 @@ export async function fetchNonce() {
     console.log("fetchNone ", res);
     if (!res.ok) {
       console.warn('Auth API failed, using mock nonce')
-      // return mockAuth.fetchNonce()
+      return mockAuth.fetchNonce()
     }
     return res.json()
   } catch (error) {
-    return console.error('Error fetching nonce, using mock:', error)
-    // return mockAuth.fetchNonce()
+    console.error('Error fetching nonce, using mock:', error)
+    return mockAuth.fetchNonce()
   }
 }
 
@@ -29,6 +29,8 @@ interface AuthParams {
   expected_addr: string,
   username: string
 }
+
+// New polling-based verification function
 export async function verifySignature(body: AuthParams) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auth`, {
@@ -37,13 +39,27 @@ export async function verifySignature(body: AuthParams) {
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      return console.warn('Auth verification failed, using mock')
-      // return mockAuth.verifySignature()
+      console.warn('Auth verification failed, using mock')
+      return mockAuth.verifySignature()
     }
     return res.json()
   } catch (error) {
-    return console.error('Error verifying signature, using mock:', error)
-    // return mockAuth.verifySignature()
+    console.error('Error verifying signature, using mock:', error)
+    return mockAuth.verifySignature()
+  }
+}
+
+// New polling function to check verification status
+export async function pollVerificationStatus(verificationId: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/status/${verificationId}`)
+    if (!res.ok) {
+      throw new Error('Failed to check verification status')
+    }
+    return res.json()
+  } catch (error) {
+    console.error('Error polling verification status:', error)
+    throw error
   }
 }
 

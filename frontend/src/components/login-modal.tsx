@@ -15,6 +15,8 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { fetchNonce, verifySignature, getJwt } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/authStore'
+import { verificationService } from '@/lib/verificationService'
+import { toast } from 'sonner'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -69,21 +71,19 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }, [isConnected])
 
-  async function getNonce() {
-    const result = await fetchNonce();
-    return result;
-  }
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      verificationService.stopAllPolling()
+    }
+  }, [])
 
   useEffect(() => {
-
-    // if (nonceData) {
     if (nonceData) {
-
       setNonce(nonceData.nonce)
       setMessage(nonceData.msg)
       setLoading(false)
     }
-
   }, [nonceData])
 
   const handleSignAndVerify = async () => {
@@ -96,43 +96,88 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(true)
       setError(null)
       const signature = await signMessageAsync({
-        // message: { raw: '0x68656c6c6f20776f726c64' },
-        // message: '0x68656c6c6f20776f726c64',
         message,
       })
-      // Step 2: Verify signature (zk proof)
+      
+      // Step 1: Start verification (returns immediately with status)
       console.log(signature, nonce);
       console.log(signature.slice(2), nonce);
       const verifyRes: any = await verifySignatureMutation.mutateAsync({
         message,
-        // message: "0x68656c6c6f20776f726c64",
-        // message: "Login",
         signature_bytes: signature,
         expected_addr: address,
         username,
         nonce
       })
-      // const verifyRes: any = await verifySignatureMutation.mutateAsync({
-      //   message: "Login at 1750465371",
-      //   signature_bytes: "5c778bc0c8d1c68b64cfb8a9d3c3796a3f2e4b6c92a4e3d176dfb7be61b7307d4ea2d8e96563bb071c7b9d3f223f5f8198d56f787159d69e6ec8ff49039eb7761b",
-      //   expected_addr: "f0830060f836B8d54bF02049E5905F619487989e",
-      //   username: "kaleel",
-      //   nonce: "7440c859-0c16-4231-8b75-7535471b65fa:1750467617"
-
-      // })
-      console.log(verifyRes)
-      // Step 3: Get JWT
-      // const jwtRes: any = await getJwtMutation.mutateAsync({
-      //   receipt: verifyRes.receipt,
-      //   stats: verifyRes.stats
-      // })
-      // Success: set user in Zustand store
+      
+      console.log('Verification response:', verifyRes)
+      
+      // Check if verification is complete or needs polling
+      if (verifyRes.verified === true) {
+        // Verification completed immediately
+      const jwtRes: any = await getJwtMutation.mutateAsync({
+        receipt: verifyRes.receipt,
+        stats: verifyRes.stats
+      })
+        
+        setUser({
+          address,
+          username,
+          jwt: jwtRes.token || 'mock-jwt',
+          verified: true
+        })
+        
+        toast.success('Login successful!', {
+          description: 'Your account has been verified.',
+        })
+        
+        onClose()
+      } else if (verifyRes.verificationId) {
+        // Verification in progress, start polling using service
+        verificationService.startPolling(
+          verifyRes.verificationId,
+          {
+            onComplete: async (status) => {
+              // Get JWT with the completed verification
+              const jwtRes: any = await getJwtMutation.mutateAsync({
+                receipt: status.receipt,
+                stats: status.stats
+              })
+              
+              // Update user with JWT
+              setUser({
+                address,
+                username,
+                jwt: jwtRes.token || 'mock-jwt',
+                verified: true
+              })
+            },
+            onError: (error) => {
+              console.error('Verification failed:', error)
+              toast.error('Verification failed', {
+                description: error,
+              })
+            }
+          }
+        )
+        
+        // Log user in immediately with pending verification
       setUser({
         address,
         username,
-        jwt: jwtRes.token || 'mock-jwt'
-      })
+          jwt: 'pending-verification',
+          verified: false
+        })
+        
+        toast.info('Login successful!', {
+          description: 'Identity verification in progress...',
+        })
+        
       onClose()
+      } else {
+        throw new Error('Unexpected verification response')
+      }
+      
     } catch (err: any) {
       setError(err?.message || 'An unknown error occurred')
     } finally {
@@ -145,12 +190,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       openConnectModal?.()
     } else {
       handleSignAndVerify()
-
-      const nonceData = await fetchNonce();
-      setNonce(nonceData.nonce)
-      setMessage(nonceData.msg)
-
-      await handleSignAndVerify();
     }
   }
 
@@ -182,17 +221,15 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="bg-gray-800 border-gray-700 text-white"
-          // disabled={loading || isConnected}
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
         <div className="flex flex-col items-center gap-4">
           <Button
             onClick={handleButtonClick}
-            // disabled={isButtonDisabled()}
+            disabled={isButtonDisabled()}
             className="w-full"
           >
-            {/* Sign and login */}
             {getButtonText()}
           </Button>
           {isConnected && (

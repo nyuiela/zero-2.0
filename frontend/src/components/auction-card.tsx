@@ -23,7 +23,7 @@ interface AuctionCardProps {
 
 const AuctionCard = ({ auction }: AuctionCardProps) => {
   return (
-    <div className="group bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-800 hover:border-gray-700">
+    <div className="group bg-gray-600 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:border-gray-700">
       <Link href={`/listing/${auction.id}`} className="block">
         {/* Car Image */}
         <div className="relative overflow-hidden aspect-[4/3]">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { useAuthStore } from '@/lib/authStore'
@@ -35,19 +35,31 @@ export default function AuthGuard({ children, requireAuth = true }: AuthGuardPro
   const router = useRouter()
   const { isConnected } = useAccount()
   const { user } = useAuthStore()
+  const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    // Check if user meets the authentication requirements
-    const isAuthenticated = requireAuth ? (isConnected && user) : isConnected
+    // Add a small delay to allow auth state to settle
+    const timer = setTimeout(() => {
+      setIsChecking(false)
+    }, 1000)
 
-    if (!isAuthenticated) {
-      // Redirect to home page if not authenticated
-      router.push('/')
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (!isChecking) {
+      // Check if user meets the authentication requirements
+      const isAuthenticated = requireAuth ? (isConnected && user) : isConnected
+
+      if (!isAuthenticated) {
+        // Redirect to home page if not authenticated
+        router.push('/')
+      }
     }
-  }, [isConnected, user, requireAuth, router])
+  }, [isConnected, user, requireAuth, router, isChecking])
 
-  // Show loading or nothing while checking auth
-  if (!isConnected || (requireAuth && !user)) {
+  // Show loading while checking auth
+  if (isChecking || !isConnected || (requireAuth && !user)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
