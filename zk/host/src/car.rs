@@ -5,7 +5,7 @@ use entity::{ car, CarModel };
 use ethers::types::Address;
 use methods::{ INIT_CAR_ELF, INIT_CAR_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
-use sea_orm::{ DatabaseConnection, DbErr, EntityTrait, ActiveModelTrait };
+use sea_orm::{ ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, QueryOrder };
 use serde::{ Deserialize, Serialize };
 use serde_json::{ Value, json };
 use std::sync::Arc;
@@ -119,9 +119,14 @@ pub async fn create_car(
     eprintln!("Request from username: {}", current_user.username);
 
     use sea_orm::ActiveValue::Set;
-
+    let car_id = car::Entity
+        ::find()
+        .order_by_desc(car::Column::Id)
+        .one(&*db).await
+        .unwrap()
+        .unwrap();
     let car_model = car::ActiveModel {
-        id: Set(car_data.id.to_owned()),
+        id: Set(car_id.id + 1),
         make: Set(car_data.make.to_owned()),
         model: Set(car_data.model.to_owned()),
         year: Set(car_data.year),

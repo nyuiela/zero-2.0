@@ -1,25 +1,34 @@
 use ::entity::{ comment, CommentModel };
-use sea_orm::{ ActiveModelTrait, QueryFilter, Set, ColumnTrait };
+use sea_orm::{ ActiveModelTrait, ColumnTrait, QueryFilter, QueryOrder, Set };
 use axum::{ response::{ Json } };
 use sea_orm::{ EntityTrait };
 use serde_json::{ Value, json };
 use std::sync::Arc;
 
+use crate::auth::USER;
+
 pub async fn create_comment(
     axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
-    Json(bid_data): Json<CommentModel>
+    Json(com_data): Json<CommentModel>
 ) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
-    let bid_model = comment::ActiveModel {
-        id: Set(bid_data.id),
-        auction_id: Set(bid_data.auction_id),
-        user: Set(bid_data.user),
-        content: Set(bid_data.content),
-        created_at: Set(bid_data.created_at),
-        updated_at: Set(bid_data.updated_at),
+    let com_id = comment::Entity
+        ::find()
+        .order_by_desc(comment::Column::Id)
+        .one(&*db).await
+        .unwrap()
+        .unwrap();
+    let user = USER.get();
+    let com_model = comment::ActiveModel {
+        id: Set(com_id.id + 1),
+        auction_id: Set(com_data.auction_id),
+        user: Set(user.addr),
+        content: Set(com_data.content),
+        created_at: Set(com_data.created_at),
+        updated_at: Set(com_data.updated_at),
         ..Default::default()
     };
 
-    bid_model
+    com_model
         .insert(&*db).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     Ok(Json(json!({
