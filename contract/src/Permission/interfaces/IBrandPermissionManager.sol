@@ -18,6 +18,12 @@ interface IBrandPermissionManager {
     function getFunctionPermissions(bytes4 functionSelector) external view returns (Permission[] memory);
     function isPermissionExpired(address account, bytes4 functionSelector) external view returns (bool);
     function getActivePermissionsCount(address account) external view returns (uint256);
+    function getTotalPermissionsCount() external view returns (uint256);
+    function getBrandName() external view returns (string memory);
+    function getMasterOracle() external view returns (address);
+    function getBrandOwner() external view returns (address);
+    function cleanExpiredPermissions(address account) external;
+    function batchCleanExpiredPermissions(address[] memory accounts) external;
     event BatchPermissionsGranted(address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp);
     event BatchPermissionsRevoked(address indexed account, bytes4[] functionSelectors, uint256 timestamp);
 } 
