@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+//cloned
 
 contract MerkleVerifier {
     // Verifies a Merkle proof for a given root and leaf
@@ -20,3 +21,7 @@ contract MerkleVerifier {
         return computedHash == root;
     }
 }
+
+
+// store every car brands merkle verifier. 
+// using that merkleVerifier we can verifier the brand. db state. 
