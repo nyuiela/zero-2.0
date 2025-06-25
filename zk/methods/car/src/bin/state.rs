@@ -1,0 +1,24 @@
+#![no_main]
+// #![no_std]
+use risc0_zkvm::guest::env;
+use car_auction_core::{ CarState };
+risc0_zkvm::guest::entry!(main);
+
+// proof of state
+fn main() {
+    // TODO: Implement your guest code here
+
+    // read the input
+    let input: Vec<String> = env::read();
+    let state = CarState::init(input);
+    // state.update(
+    //     [Digest("6efeb890e3e88eb0b21c92b4974b786b7e7dc825c9a7f43cc2a5966f0a91f0a4")],
+    //     [Digest("4efeb890e3e88eb0b21c92b4974b786b7e7dc825c9a7f43cc2a5966f0a91f0a4")]
+    // );
+
+    // let output = sha256(input);
+    // TODO: do something with the input
+
+    // write public output to the journal
+    env::commit(&state);
+}
