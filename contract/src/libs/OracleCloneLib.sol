@@ -5,7 +5,8 @@ import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 
 
-/**@ * @title OracleCloneLib
+
+/*
    
  * @dev Library for creating and managing clones of car oracle contracts
  * This library provides functions to create clones, validate configurations,

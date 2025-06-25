@@ -96,7 +96,7 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
     function hasPermission(
         address account,
         bytes4 functionSelector
-    ) external view override returns (bool) {
+    )public view override returns (bool) {
         Permission memory permission = _permissions[account][functionSelector];
         
         if (!permission.isActive) {
@@ -230,7 +230,7 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
                 _totalPermissions--;
                 cleanedCount++;
                 
-                emit PermissionExpired(account, functionSelectors[i], block.timestamp);
+          //      emit PermissionExpired(account, functionSelectors[i], block.timestamp);
             }
         }
     }

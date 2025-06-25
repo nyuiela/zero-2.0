@@ -66,7 +66,7 @@ contract CarOracle is
         _currentRoundId = 1;
         _lastUpdateTime = block.timestamp;
         
-        __Ownable_init();
+        __Ownable_init(masterOracle);
         __Pausable_init();
         __ReentrancyGuard_init();
     }
@@ -155,17 +155,6 @@ contract CarOracle is
         _unpause();
     }
 
-    // Chainlink integration helper
-    function getChainlinkPrice() external view returns (int256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(_priceFeedAddress);
-        (, int256 price,, uint256 updatedAt,) = priceFeed.latestRoundData();
-        
-        require(updatedAt >= block.timestamp - _config.heartbeat, "Stale price feed");
-        require(price > 0, "Invalid price");
-        
-        return price;
-    }
-
     // Get price history range
     function getPriceHistoryRange(uint256 startRound, uint256 endRound) 
         external 
@@ -187,5 +176,19 @@ contract CarOracle is
     // Get current round ID
     function getCurrentRoundId() external view returns (uint256) {
         return _currentRoundId;
+    }
+
+    function addressToString(address _address) internal pure returns (string memory) {
+        bytes32 value = bytes32(uint256(uint160(_address)));
+        bytes memory alphabet = "0123456789abcdef";
+
+        bytes memory str = new bytes(2 + 20 * 2);
+        str[0] = '0';
+        str[1] = 'x';
+        for (uint256 i = 0; i < 20; i++) {
+            str[2 + i * 2] = alphabet[uint8(value[i + 12] >> 4)];
+            str[3 + i * 2] = alphabet[uint8(value[i + 12] & 0x0f)];
+        }
+        return string(str);
     }
 } 

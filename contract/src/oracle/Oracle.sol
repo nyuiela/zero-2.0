@@ -10,12 +10,12 @@ import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 import {IBrandPermissionManager} from "../Interface/Permissions/IBrandPermissionManager.sol";
 import {OracleCloneLib} from "../libs/OracleCloneLib.sol";
-import {PermissionModifier} from "../libs/PermissionModifier.sol";
+import { PermissionModifiers} from "../libs/PermissionModifier.sol";
 
 contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     using OracleCloneLib for address;
     using Strings for string;
-    using PermissionModifier for address;
+    using PermissionModifiers for address;
 
     // State variables
     address public oracleImplementation;
@@ -70,7 +70,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     function registerCarBrand(
         string memory brandName,
         string memory priceFeedAddress,
-        OracleConfig memory config,
+        ICarOracle.OracleConfig memory config,
         address brandOwner
     ) external override whenNotPaused nonReentrant returns (address oracleAddress) {
         // Check if caller is owner or has permission
@@ -135,7 +135,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
 
     function updateOracle(
         string memory brandName,
-        OracleConfig memory config
+        ICarOracle.OracleConfig memory config
     ) external override whenNotPaused {
         // Check if caller is owner or has permission
         require(
@@ -410,7 +410,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     }
 
     // Internal functions
-    function _validateOracleConfig(OracleConfig memory config) internal view {
+    function _validateOracleConfig(ICarOracle.OracleConfig memory config) internal view {
         require(
             config.updateInterval >= minUpdateInterval && 
             config.updateInterval <= maxUpdateInterval,
