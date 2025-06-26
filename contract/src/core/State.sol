@@ -53,7 +53,7 @@ contract StateManager {
     // onlyOnwer or register contract can cal  l this
     function initiate(string memory _brand) public /* onlyOnwer */ {
         // require()
-        require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "Statee: authorized");
+        require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "State: authorized");
 
         if (!true) {
             revert ActivationFailed(_brand, msg.sender);

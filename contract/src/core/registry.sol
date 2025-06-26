@@ -6,7 +6,7 @@ import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 import {StateManager} from "./State.sol";
 import {Profile} from "./profile.sol";
-import {InitFunction} from "../chainlink/InitFunction.sol";
+import {InitFunction} from "../chainlink/Init_function.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Reputation} from "./reputation.sol";
@@ -41,19 +41,21 @@ contract CarRegistry is Ownable {
     string brand;
     Status status;
     bytes32 request;
-    bytes32 response;
+    string response;
     string stateUrl;
   }
 
   // event
   event BrandRegistryRequested(string brand, bytes32 requestId);
   event BrandStaked(string brand, address staker);
+  event BrandActivated(string brand, string state);
   event ChangedProfile(address newp);
   event ChangedState(address newp);
   event ChangedChainFunction(address newp);
   event ChangedReputation(address newp);
   event ChangedInitFunction(address newp);
   event ChangedCCIP(address newp);
+
   // storage
 
   // constructor
@@ -128,8 +130,9 @@ contract CarRegistry is Ownable {
         // merkle clone
         // start merkle with root
         profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier);
-        registry[_brand].response = "";
+        registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
+        emit BrandActivated(_brand, _state);
     }
 
 
