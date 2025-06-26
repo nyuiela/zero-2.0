@@ -15,7 +15,7 @@ import {SafeERC20} from
  */
 
 /// @title - A simple contract for transferring tokens across chains.
-contract TokenTransferor is OwnerIsCreator {
+contract CrossToken is OwnerIsCreator {
     using SafeERC20 for IERC20;
 
     // Custom errors to provide more descriptive revert messages.

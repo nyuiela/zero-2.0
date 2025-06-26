@@ -47,6 +47,10 @@ contract Profile {
         _;
     }
     // called when registering brand;
+        constructor(address _registry, address _globalPermissionManager) {
+        registryContract = CarRegistry(_registry);
+        globalPermissionManager = _globalPermissionManager;
+    }
 
     function create(
         string memory _brand,
@@ -96,8 +100,5 @@ contract Profile {
         profile[_brand].locked = false;
     }
 
-    constructor(address _registry, address _globalPermissionManager) {
-        registryContract = CarRegistry(_registry);
-        globalPermissionManager = _globalPermissionManager;
-    }
+
 }

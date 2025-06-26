@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 import {IERC20} from "../../lib/foundry-chainlink-toolkit/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {ZeroNFT} from "../zeroNFT/ZeroNFT.sol";
+import {ZeroNFT} from "../tokens/ZeroNFT.sol";
 import {CarRegistry} from "./registry.sol";
 import {OracleMaster} from "../oracle/Oracle.sol";
 import {AggregatorV3Interface} from "../../lib/chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
