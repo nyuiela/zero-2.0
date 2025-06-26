@@ -27,21 +27,22 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
 export default function ListingClient({ listing, relatedAuctions }: ListingClientProps) {
     const [selectedImage, setSelectedImage] = useState<number>(0)
     const [isBidModalOpen, setIsBidModalOpen] = useState(false)
-    const [bidAmount, setBidAmount] = useState<number | string>(listing.currentBid)
+    const [bidAmount, setBidAmount] = useState<number | string>('')
     const [minBid, setMinBid] = useState<number>(typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) : listing.currentBid)
     const [currency, setCurrency] = useState<'ETH' | 'USDC'>('ETH')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [bidError, setBidError] = useState<string | null>(null)
 
-    // Calculate 12% stake
-    const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.12
+    // Calculate 5% stake
+    const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.05
 
     // Sync bidAmount with currentBid when modal opens
     useEffect(() => {
       if (isBidModalOpen) {
-        setBidAmount(listing.currentBid)
-        setMinBid(typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) : listing.currentBid)
+        const currentBidValue = typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) : listing.currentBid
+        setBidAmount(currentBidValue.toString())
+        setMinBid(currentBidValue)
         setBidError(null)
       }
     }, [isBidModalOpen, listing.currentBid])
@@ -51,7 +52,8 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       setBidAmount(value)
       const numValue = parseFloat(value)
       if (isNaN(numValue) || numValue < minBid) {
-        setBidError(`Bid must be at least ${formatCurrency(minBid, currency)}`)
+        const errorMsg = `Bid must be at least ${formatCurrency(minBid, currency)}`
+        setBidError(errorMsg)
       } else {
         setBidError(null)
       }
@@ -70,7 +72,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         setIsSubmitting(false)
         setIsBidModalOpen(false)
         // Redirect to bidding room
-        window.location.href = `/auctions/${listing.id}/bidding-room`
+        window.location.href = `/auctions/${listing.id}`
       }, 1200)
     }
 
@@ -85,13 +87,22 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <span className="text-foreground">{listing.year} {listing.make} {listing.model}</span>
             </nav>
 
+            {/* Current Bid Display */}
+            <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg">
+              <div className="text-center">
+                <div className="text-sm text-amber-700 mb-1">Current Highest Bid</div>
+                <div className="text-3xl font-bold text-amber-800">{formatCurrency(listing.currentBid, currency)}</div>
+                <div className="text-sm text-amber-600 mt-1">{listing.bidCount} bids placed</div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
               <Button className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={() => setIsBidModalOpen(true)}>
                 Place Bid
               </Button>
               <Button className="bg-gradient-to-r from-blue-600 to-cyan-400 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" asChild>
-                <Link href={`/auctions/${listing.id}/bidding-room`}>
+                <Link href={`/auctions/${listing.id}`}>
                   Join Bidding Room
                 </Link>
               </Button>
@@ -118,9 +129,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
                   </div>
-                  {bidError && <div className="text-red-500 text-sm mt-1">{bidError}</div>}
+                  {bidError && (
+                    <div className="text-red-600 text-sm mt-2 font-semibold bg-red-50 p-3 rounded-lg border-2 border-red-200 flex items-center">
+                      <span className="mr-2">⚠️</span>
+                      {bidError}
+                    </div>
+                  )}
                   <div className="mb-4 text-sm text-gray-700">
-                    <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (12% of bid)
+                    <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
                   </div>
                   <Button className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={handlePlaceBid} disabled={isSubmitting}>
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid & Enter Bidding Room'}

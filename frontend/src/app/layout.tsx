@@ -25,11 +25,11 @@ export default function RootLayout({
       <body className="font-sans bg-background text-foreground min-h-screen">
         <ClientBody>
           <div className="min-h-screen flex flex-col">
-            <Header className="glass sticky top-0 z-50" />
+            <Header />
             <main className="flex-1 flex flex-col">
               {children}
             </main>
-            <Footer className="glass" />
+            <Footer />
           </div>
         </ClientBody>
       </body>

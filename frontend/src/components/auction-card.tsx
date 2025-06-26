@@ -32,7 +32,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
   const currency = auction.currency || 'ETH'
   return (
-    <Link href={`/listing/${auction.id}`} className="block group bg-gradient-to-br from-[#232526] to-[#414345] rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 hover:border-amber-400">
+    <Link href={`/listing/${auction.id}`} className="block group bg-gradient-to-br from-[#3f8aaf] to-[#252c34] rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 hover:border-amber-400">
       {/* Car Image */}
       <div className="relative overflow-hidden aspect-[4/3]">
         <Image

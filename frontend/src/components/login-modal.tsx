@@ -207,10 +207,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-gray-900 border-gray-800 text-white">
+      <DialogContent className="sm:max-w-[425px] border-gray-800 text-[#202626]">
         <DialogHeader>
-          <DialogTitle>Login to Bid</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className='text-xl'>Login to Bid</DialogTitle>
+          <DialogDescription className='text-lg'>
             Enter a username (min 4 chars) and sign in with your wallet.
           </DialogDescription>
         </DialogHeader>
@@ -220,7 +220,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="bg-gray-800 border-gray-700 text-white"
+            className="border-gray-700 text-[#202626]"
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
@@ -228,7 +228,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <Button
             onClick={handleButtonClick}
             disabled={isButtonDisabled()}
-            className="w-full"
+            className="w-full bg-amber-400 text-white text-xl hover:bg-amber-600"
           >
             {getButtonText()}
           </Button>

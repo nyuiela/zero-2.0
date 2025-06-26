@@ -250,22 +250,24 @@ export default function AuctionsPage() {
         {/* Preview Auctions Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            Preview Auctions: <span className="text-brand">({upcomingAuctions.length})</span>
+            Preview Auctions: <span className="text-white">({upcomingAuctions.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {upcomingAuctions.map((auction) => (
-              <div key={auction.id} className="auction-card group">
-                <div className="relative overflow-hidden aspect-[4/3]">
+              <div key={auction.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34] rounded-xl">
+                <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
                   <Image
                     src={auction.image}
                     alt={`${auction.year} ${auction.make} ${auction.model}`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="p-5">
                   <div className="mb-3">
-                    <div className="text-brand text-sm font-semibold mb-1 tracking-wide">
+                    <div className="text-white text-sm font-semibold mb-1 tracking-wide">
                       {auction.year}
                     </div>
                     <h3 className="text-white text-xl font-bold leading-tight">
@@ -278,7 +280,7 @@ export default function AuctionsPage() {
                   <div className="text-sm text-gray-400 mb-4">
                     {auction.location}
                   </div>
-                  <div className="text-brand font-semibold">
+                  <div className="text-white font-semibold">
                     Auction Begins: {auction.auctionStart}
                   </div>
                 </div>
@@ -290,13 +292,13 @@ export default function AuctionsPage() {
         {/* Available Now Section */}
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            Available Now: <span className="text-brand">({availableNowCars.length})</span>
+            Available Now: <span className="text-white">({availableNowCars.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {availableNowCars.map((car) => (
-              <div key={car.id} className="auction-card group">
-                <div className="relative overflow-hidden aspect-[4/3]">
+              <div key={car.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34] rounded-xl">
+                <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
                   <Image
                     src={car.image}
                     alt={`${car.year} ${car.make} ${car.model}`}
@@ -307,7 +309,7 @@ export default function AuctionsPage() {
                 </div>
                 <div className="p-5">
                   <div className="mb-3">
-                    <div className="text-brand text-sm font-semibold mb-1 tracking-wide">
+                    <div className="text-white text-sm font-semibold mb-1 tracking-wide">
                       {car.year}
                     </div>
                     <h3 className="text-white text-xl font-bold leading-tight">
@@ -320,7 +322,7 @@ export default function AuctionsPage() {
                   <div className="text-sm text-gray-400 mb-4">
                     {car.location}
                   </div>
-                  <div className="text-brand font-semibold text-lg">
+                  <div className="text-white font-semibold text-lg">
                     Available Now
                   </div>
                 </div>

@@ -61,7 +61,7 @@ const Header = () => {
     <>
       <header className="w-full">
         {/* Main Navigation */}
-        <nav className="glass bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <nav className="glass bg-white/80 backdrop-blur-md border-none border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
@@ -81,31 +81,31 @@ const Header = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-8">
-                <Link href="/auctions" className="text-white hover:text-amber-400 font-medium transition-colors">
+                <Link href="/auctions" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                   Auctions
                 </Link>
                 {isWalletConnected && (
                   <>
-                    <Link href="/verify" className="text-white hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/verify" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                       Verify
                     </Link>
-                    <Link href="/preview" className="text-white hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/preview" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                       Preview
                     </Link>
-                    <Link href="/results" className="text-white hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/results" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                       Results
                     </Link>
                   </>
                 )}
                 {isSeller && (
-                  <Link href="/sell-your-car" className="text-white hover:text-amber-400 font-medium transition-colors">
+                  <Link href="/sell-your-car" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                     Sell Your Car
                   </Link>
                 )}
-                <Link href="/faq" className="text-white hover:text-amber-400 font-medium transition-colors">
+                <Link href="/faq" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                   FAQ
                 </Link>
-                <Link href="/about-us" className="text-white hover:text-amber-400 font-medium transition-colors">
+                <Link href="/about-us" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
                   About
                 </Link>
               </div>
@@ -115,12 +115,12 @@ const Header = () => {
                 {/* Search */}
                 <div className="hidden md:flex items-center">
                   {isSearchOpen ? (
-                    <div className="flex items-center space-x-2 bg-gray-800 rounded-lg px-3 py-2">
+                    <div className="flex items-center space-x-2 px-3 py-2">
                       <Search className="h-4 w-4 text-gray-400" />
                       <Input
                         type="text"
                         placeholder="Search auctions..."
-                        className="border-0 bg-transparent text-white placeholder-gray-400 focus:ring-0 w-64"
+                        className="border-0 bg-transparent text-[#202626] placeholder-gray-400 focus:ring-0 w-64"
                         autoFocus
                         onBlur={() => setIsSearchOpen(false)}
                       />
@@ -128,7 +128,7 @@ const Header = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsSearchOpen(false)}
-                        className="text-gray-400 hover:text-white p-1"
+                        className="text-gray-400 hover:text-[#202626] p-1"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -138,7 +138,7 @@ const Header = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => setIsSearchOpen(true)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-gray-400 hover:text-[#202626]"
                     >
                       <Search className="h-5 w-5" />
                     </Button>
@@ -150,7 +150,7 @@ const Header = () => {
                   // Login Button (when not authenticated)
                   <Button
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 rounded-md transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-amber-500 text-base"
+                    className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-amber-500 text-base"
                   >
                     <User className="h-5 w-5" />
                     Login
@@ -217,61 +217,61 @@ const Header = () => {
                 {/* Mobile Menu */}
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="sm" className="lg:hidden text-gray-400 hover:text-white">
+                    <Button variant="ghost" size="sm" className="lg:hidden text-gray-400 hover:text-[#202626]">
                       <Menu className="h-6 w-6" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="bg-[#202626] border-gray-700 w-80">
+                  <SheetContent side="right" className="border-gray-700 w-80">
                     <div className="flex flex-col space-y-4 mt-8">
                       {/* Mobile Search */}
-                      <div className="flex items-center space-x-2 bg-gray-800 rounded-lg px-3 py-2">
+                      <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2">
                         <Search className="h-4 w-4 text-gray-400" />
                         <Input
                           type="text"
                           placeholder="Search auctions..."
-                          className="border-0 bg-transparent text-white placeholder-gray-400 focus:ring-0"
+                          className="border-0 bg-transparent text-[#202626] placeholder-gray-400 focus:ring-0"
                         />
                       </div>
 
                       {/* Mobile Navigation Links */}
                       <div className="flex flex-col space-y-3 pt-4">
-                        <Link href="/auctions" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/auctions" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Auctions
                         </Link>
-                        <Link href="/verify" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/verify" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Verify
                         </Link>
                         {isWalletConnected && (
                           <>
-                            <Link href="/preview" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                            <Link href="/preview" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                               Preview
                             </Link>
-                            <Link href="/results" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                            <Link href="/results" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                               Results
                             </Link>
                           </>
                         )}
                         {isSeller && (
-                          <Link href="/sell-your-car" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                          <Link href="/sell-your-car" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                             Sell Your Car
                           </Link>
                         )}
-                        <Link href="/faq" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/faq" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           FAQ
                         </Link>
-                        <Link href="/about-us" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/about-us" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           About Us
                         </Link>
-                        <Link href="/team" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/team" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Team
                         </Link>
-                        <Link href="/press" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/press" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Press
                         </Link>
-                        <Link href="/careers" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/careers" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Careers
                         </Link>
-                        <Link href="/contact-us" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/contact-us" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
                           Contact Us
                         </Link>
                       </div>
@@ -280,7 +280,7 @@ const Header = () => {
                       {!isWalletConnected ? (
                         <Button
                           onClick={() => setIsLoginModalOpen(true)}
-                          className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-4 rounded-md transition-all duration-300 mt-4"
+                          className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-[#202626] font-semibold py-3 px-4 transition-all duration-300 mt-4"
                         >
                           <User className="h-4 w-4" />
                           Login

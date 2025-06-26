@@ -26,7 +26,7 @@ const Footer = () => {
         {/* Social Media and Branding */}
         <div className="flex flex-col lg:flex-row justify-center items-center gap-8 mb-12">
           {/* Logo */}
-          <div className="text-2xl lg:text-3xl font-bold text-brand">
+          <div className="text-2xl lg:text-3xl font-bold text-white">
             SBX CARS
           </div>
 
@@ -145,7 +145,7 @@ const Footer = () => {
               href="https://supercarblondie.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-brand font-bold text-xl lg:text-2xl hover:text-[#bcaf92] transition-colors"
+              className="inline-flex items-center text-white font-bold text-xl lg:text-2xl hover:text-[#bcaf92] transition-colors"
             >
               <svg
                 width="40"
