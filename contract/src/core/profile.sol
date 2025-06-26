@@ -11,6 +11,8 @@ contract Profile {
         address ccip;
         address merkleVerifier;
         bool locked;
+        address brandPermission;
+        address oracle;
     }
     // error
 
@@ -31,7 +33,9 @@ contract Profile {
         string memory _state,
         address _chainFunction,
         address _ccip,
-        address _merkleVerifier
+        address _merkleVerifier,
+        address _brandP,
+        address _oracle
     ) public /* onlyOwner */ {
         // require()
 
@@ -42,7 +46,9 @@ contract Profile {
             chainFunction: _chainFunction,
             ccip: _ccip,
             merkleVerifier: _merkleVerifier,
-            locked: false
+            locked: false,
+            brandPermission: _brandP,
+            oracle: _oracle
         });
         emit ProfileCreated(_brand, msg.sender);
     }

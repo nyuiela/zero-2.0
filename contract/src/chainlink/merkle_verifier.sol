@@ -2,27 +2,43 @@
 pragma solidity 0.8.28;
 //cloned
 
-contract MerkleVerifier {
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+
+contract MerkleVerifier is Initializable {
     // Verifies a Merkle proof for a given root and leaf
 
     // structs
 
     // error
+    error LeafNotFound(string  leaf);
 
     // events
+    event SetRoot(string _brand, address owner);
+    event AddedLeaf(string lastProof, string  newLeaf);
 
     // storage
-    bytes32 public root;
+    string  public root;
+    string public brand;
+    string [] proof;
     //mappings
 
     // constructor
     constructor() {}
 
-    function verifyProof(bytes32 leaf, bytes32[] calldata proof) external view returns (bool) {
+    function initialize(string memory _brand, string memory _root) public {
+        brand = _brand;
+        root = _root;
+    }
+
+    function getProof() public view returns (string[] memory) {
+        return proof;
+    }
+
+    function verifyProof(string memory leaf) public view returns (bool) {
         // 3 mains leaves after root. (car, auction, bid)
-        bytes32 computedHash = leaf;
+        bytes32 computedHash = keccak256(abi.encodePacked(leaf));
         for (uint256 i = 0; i < proof.length; i++) {
-            bytes32 proofElement = proof[i];
+bytes32 proofElement = keccak256(abi.encodePacked(proof[i]));
             if (computedHash <= proofElement) {
                 // Hash(current computed hash + current element of the proof)
                 computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
@@ -32,11 +48,23 @@ contract MerkleVerifier {
             }
         }
         // Check if the computed hash (root) is equal to the provided root
-        return computedHash == root;
+        return computedHash == keccak256(abi.encodePacked(root));
     }
 
-    function storeRoot(string memory _root) public {
-        root = keccak256(abi.encodePacked(_root));
+    // function setRoot(string memory _root) public /* only permissioned */ {
+    //     root = _root;
+    //     // changing root can trigger security concerns like editing user fields - not advisable
+    //     emit SetRoot(brand, msg.sender);
+    // }
+
+    function addLeave(string memory _leaf) external /* only permissioned user */ {
+        // verifier proof using Function
+
+        proof.push(_leaf);
+
+        //check if leaf exists
+        require(verifyProof(_leaf), LeafNotFound(_leaf));
+        emit AddedLeaf(proof[proof.length -1 ], _leaf);
     }
 }
 
