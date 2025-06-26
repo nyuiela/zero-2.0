@@ -14,7 +14,7 @@ import {CarOracle} from "../src/oracle/CarOracle.sol";
 import {BrandPermissionManager} from "../src/Permission/BrandPermissionManager.sol";
 import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 import {UsdcToken} from "./mocks/IUSDC.sol";
-import {Sync} from "../src/chainlink/function.sol";
+import {Sync} from "../src/chainlink/sync_function.sol";
 import {ICarOracle} from "../src/Interface/oracle/IcarOracle.sol";
 import {InitFunction} from "../src/chainlink/init_function.sol";
 

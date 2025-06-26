@@ -170,6 +170,7 @@ contract CarRegistry is Ownable {
         // CarOracle(_oracle).initialize();
         //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
         ICarOracle.OracleConfig memory config = registry[_brand].config;
+        
         (address oracleAdress, address permissionAddress) =
             oracle.registerCarBrand(_brand, "", config, registry[_brand].brandAdminAddr);
         IMerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
