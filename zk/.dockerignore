@@ -1,6 +1,61 @@
-# Ignore build artifacts
+# Git
+.git
+.gitignore
+.gitmodules
+
+# Documentation
+README.md
+*.md
+docs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test files
+tests/
+test/
+*_test.rs
+*_tests.rs
+
+# Build artifacts (will be rebuilt in container)
 target/
 
-# Ignore git files
-.git/
-.gitignore 
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Scripts (keep only essential ones)
+*.sh
+*.bat
+!entrypoint.sh
+!setup-local.sh
+!setup-local.bat
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# Cache directories
+.cargo/
+node_modules/
+.next/
+dist/
+build/ 

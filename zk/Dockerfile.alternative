@@ -1,0 +1,98 @@
+# Alternative Dockerfile without GitHub dependency
+FROM --platform=linux/amd64 debian:bookworm-slim as builder
+
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    curl \
+    git \
+    cmake \
+    ninja-build \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust via rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Alternative RISC0 installation (if GitHub is blocked)
+# We'll use cargo install directly or skip RISC0 for now
+RUN echo "Skipping RISC0 installation due to network issues" && \
+    echo "You can install it manually later or use a different approach"
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependency files first for better caching
+COPY Cargo.toml Cargo.lock ./
+COPY host/Cargo.toml ./host/
+COPY db/Cargo.toml ./db/
+COPY methods/Cargo.toml ./methods/
+
+# Create dummy source files to build dependencies
+RUN mkdir -p host/src db/src methods/src
+RUN echo "fn main() {}" > host/src/main.rs
+RUN echo "fn main() {}" > db/src/main.rs
+RUN echo "fn main() {}" > methods/src/lib.rs
+
+# Build dependencies only (this layer will be cached)
+RUN RISC0_DEV_MODE=1 cargo build --release --package host
+RUN cargo build --release --bin db
+
+# Remove dummy files and copy real source code
+RUN rm -rf host/src db/src methods/src
+COPY . .
+
+# Build the actual project
+RUN RISC0_DEV_MODE=1 RUST_LOG=info RISC0_INFO=1 cargo build --release --package host
+RUN cargo build --release --bin db
+
+# Runtime stage
+FROM --platform=linux/amd64 debian:bookworm-slim
+
+# Install runtime dependencies including PostgreSQL client tools
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libpq5 \
+    libssl3 \
+    postgresql-client \
+    curl \
+    sed \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 rustuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy the binaries from builder stage
+COPY --from=builder /app/target/release/host /app/host
+COPY --from=builder /app/target/release/db /app/db
+
+# Copy any necessary files (like methods ELF files)
+COPY --from=builder /app/methods /app/methods
+COPY --from=builder /app/db /app/db_files
+
+# Add entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Change ownership to non-root user
+RUN chown -R rustuser:rustuser /app
+
+# Switch to non-root user
+USER rustuser
+
+# Expose port
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3001/api/cars || exit 1
+
+# Run the entrypoint script with proper bash and sed command for Windows line endings
+ENTRYPOINT ["/bin/bash", "-c", "sed -i 's/\r//' /app/entrypoint.sh && bash /app/entrypoint.sh"] 

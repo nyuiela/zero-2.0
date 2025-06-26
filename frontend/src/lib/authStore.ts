@@ -5,6 +5,8 @@ interface User {
   username?: string
   jwt?: string
   verified?: boolean
+  roleRequestStatus?: 'none' | 'pending' | 'approved' | 'rejected'
+  sellerRole?: boolean
 }
 
 interface AuthState {

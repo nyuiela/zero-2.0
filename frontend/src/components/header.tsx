@@ -43,6 +43,8 @@ const Header = () => {
   // Get current chain name
   const currentChain = availableChains.find(chain => chain.id === chainId)
 
+  const isSeller = user?.sellerRole || user?.roleRequestStatus === 'approved'
+
   const handleDisconnect = () => {
     disconnect()
     logout()
@@ -95,9 +97,9 @@ const Header = () => {
                     </Link>
                   </>
                 )}
-                {isDealer && (
-                  <Link href="/sell-your-vehicle" className="text-white hover:text-amber-400 font-medium transition-colors">
-                    Sell Your Supercar
+                {isSeller && (
+                  <Link href="/sell-your-car" className="text-white hover:text-amber-400 font-medium transition-colors">
+                    Sell Your Car
                   </Link>
                 )}
                 <Link href="/faq" className="text-white hover:text-amber-400 font-medium transition-colors">
@@ -249,9 +251,9 @@ const Header = () => {
                             </Link>
                           </>
                         )}
-                        {isDealer && (
-                          <Link href="/sell-your-vehicle" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
-                            Sell Your Supercar
+                        {isSeller && (
+                          <Link href="/sell-your-car" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">
+                            Sell Your Car
                           </Link>
                         )}
                         <Link href="/faq" className="text-white hover:text-amber-400 font-medium py-2 transition-colors">

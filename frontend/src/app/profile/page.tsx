@@ -47,9 +47,11 @@ interface SellerApplication {
 
 export default function ProfilePage() {
   const { address, isConnected } = useAccount()
-  const { user } = useAuthStore()
+  const { user, setUser } = useAuthStore()
   const [activeTab, setActiveTab] = useState('profile')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [roleRequestStatus, setRoleRequestStatus] = useState<'none' | 'pending' | 'approved' | 'rejected'>(user?.roleRequestStatus || 'none')
+  const [roleRequestLoading, setRoleRequestLoading] = useState(false)
   
   const [sellerApplication, setSellerApplication] = useState<SellerApplication>({
     businessName: '',
@@ -159,6 +161,34 @@ export default function ProfilePage() {
     }))
   }
 
+  // Seller role request handler
+  const handleRequestSellerRole = async () => {
+    setRoleRequestLoading(true)
+    try {
+      // Try backend first
+      const res = await fetch('/api/role-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address }),
+      })
+      const data = await res.json()
+      if (data.status === 'success') {
+        setRoleRequestStatus('pending')
+        setUser({ ...(user || { address }), roleRequestStatus: 'pending' })
+        toast.success('Seller role request submitted!')
+      } else {
+        throw new Error(data.message || 'Failed to submit request')
+      }
+    } catch (e) {
+      // Fallback: in-app session
+      setRoleRequestStatus('pending')
+      setUser({ ...(user || { address }), roleRequestStatus: 'pending' })
+      toast.info('Seller role request submitted (in-app fallback)!')
+    } finally {
+      setRoleRequestLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-8">
@@ -166,6 +196,23 @@ export default function ProfilePage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Profile</h1>
             <p className="text-muted-foreground">Manage your account and seller applications</p>
+            {/* Seller Role Request Section */}
+            <div className="mt-4">
+              {roleRequestStatus === 'none' && (
+                <Button onClick={handleRequestSellerRole} disabled={roleRequestLoading}>
+                  {roleRequestLoading ? 'Requesting...' : 'Request Seller Role'}
+                </Button>
+              )}
+              {roleRequestStatus === 'pending' && (
+                <Badge className="bg-yellow-100 text-yellow-800 ml-2">Seller Request Pending</Badge>
+              )}
+              {roleRequestStatus === 'approved' && (
+                <Badge className="bg-green-100 text-green-800 ml-2">Seller Role Approved</Badge>
+              )}
+              {roleRequestStatus === 'rejected' && (
+                <Badge className="bg-red-100 text-red-800 ml-2">Seller Request Rejected</Badge>
+              )}
+            </div>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

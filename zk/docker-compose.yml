@@ -40,7 +40,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile
     container_name: car_auction_backend
     environment:
       - DATABASE_URL=postgres://kaleel:kaleel@postgres:5432/zero
@@ -62,7 +62,7 @@ services:
       - cargo_cache:/usr/local/cargo/registry
       - cargo_target_cache:/usr/local/cargo/target
     restart: unless-stopped
-    # command: /app/target/release/db
+
   # React Frontend
   frontend:
     build:
