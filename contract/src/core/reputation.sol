@@ -5,6 +5,7 @@ import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+
 contract Reputation {
     using PermissionModifiers for address;
 
@@ -31,6 +32,20 @@ contract Reputation {
     }
 
     mapping(string => BrandStakeInfo) public brandStakeInfo; // brand address => stake info
+
+    constructor(
+        uint256 _requireStake,
+        address _stakeToken,
+        address carRegistry,
+        address _globalPermissionManager
+    ) {
+        stakeToken = _stakeToken;
+        requireStake = _requireStake;
+        _carRegistry = carRegistry;
+      //  permissionManagerImplementation = _permissionManagerImplementation;
+        globalPermissionManager = _globalPermissionManager;
+    }
+
 
     function stake(string memory _brand, bool isEth) external payable onlyCarRegistry {
         if (isEth) {
@@ -85,19 +100,6 @@ contract Reputation {
     function stakeAmountset(uint256 amount) public {
         require(globalPermissionManager.hasPermission(msg.sender, SET_STAKE_AMOUNT), "Reputation: Unauthorized");
         requireStake = amount;
-    }
-
-    constructor(
-        uint256 _requireStake,
-        address _stakeToken,
-        address carRegistry,
-        address _globalPermissionManager
-    ) {
-        stakeToken = _stakeToken;
-        requireStake = _requireStake;
-        _carRegistry = carRegistry;
-      //  permissionManagerImplementation = _permissionManagerImplementation;
-        globalPermissionManager = _globalPermissionManager;
     }
 
     modifier onlyCarRegistry() {

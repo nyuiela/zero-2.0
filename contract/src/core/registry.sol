@@ -107,7 +107,7 @@ contract CarRegistry is Ownable {
 
     function registerBrand(
         string memory _brand,
-        address oracleAddre,
+        // address oracleAddre,
         ICarOracle.OracleConfig memory config,
         address brandAdminAddr,
         uint64 subscriptionId,
