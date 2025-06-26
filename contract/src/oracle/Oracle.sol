@@ -11,10 +11,12 @@ import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.so
 import {IBrandPermissionManager} from "../Interface/Permissions/IBrandPermissionManager.sol";
 import {OracleCloneLib} from "../libs/OracleCloneLib.sol";
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     using OracleCloneLib for address;
     using Strings for string;
+    using Clones for address;
     using PermissionModifiers for address;
 
     // State variables
@@ -96,8 +98,10 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
             OracleCloneLib.createOracleClone(oracleImplementation, brandName, priceFeedAddress, config, address(this));
 
         // Create new permission manager clone
+        //oracle address
+     address clonedPermission =    permissionManagerImplementation.clone();
         address permissionManagerAddress = OracleCloneLib.createOracleClone(
-            permissionManagerImplementation, brandName, priceFeedAddress, config, address(this)
+          clonedPermission , brandName, priceFeedAddress, config, address(this)
         );
 
         // Initialize the permission manager
