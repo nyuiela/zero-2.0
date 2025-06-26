@@ -6,16 +6,18 @@ import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 import {StateManager} from "./State.sol";
 import {Profile} from "./profile.sol";
-import {InitFunction} from "../chainlink/Init_function.sol";
+import {InitFunction} from "../chainlink/init_function.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Reputation} from "./reputation.sol";
 import {MerkleVerifier} from "../chainlink/merkle_verifier.sol";
 import {CarOracle} from "../oracle/CarOracle.sol";
-import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
+//import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
+import "../oracle/Oracle.sol";
 
 contract CarRegistry is Ownable {
     using Clones for address;
+    OracleMaster oracle;
 
     // contracts
     Profile public profileContract;
@@ -31,7 +33,7 @@ contract CarRegistry is Ownable {
     address public reputationAddr;
     address public brandPermission;
     address public permissionManager;
-    address public oracle;
+    //address public oracle;
 
     //errors
     error BrandAlreadyInRegistry(string brand);
@@ -52,6 +54,8 @@ contract CarRegistry is Ownable {
         bytes32 request;
         string response;
         string stateUrl;
+        ICarOracle.OracleConfig config;
+        address brandAdminAddr;
     }
 
     // event
@@ -74,10 +78,12 @@ contract CarRegistry is Ownable {
         address _chainFunctionAddr,
         address _ccipAddr,
         address _merkleVerifierAddr,
-        address payable _reputationAddr
+        address payable _reputationAddr,
+        address _oracle
     ) {
         profileAddr = _profileAddr;
         stateAddr = _stateAddr;
+        oracle = OracleMaster(_oracle);
         profileContract = Profile(_profileAddr);
         stateContract = StateManager(_stateAddr);
         reputation = Reputation(_reputationAddr);
@@ -114,10 +120,11 @@ contract CarRegistry is Ownable {
         // provide what??
         // proof of ownership
         // clone
+        
         //-
         bytes32 requestId = initFunction.sendRequest(subscriptionId, args, _brand);
         registry[_brand] =
-            Registry({brand: _brand, status: Status.PENDING, request: requestId, response: "", stateUrl: _stateUrl});
+            Registry({brand: _brand, status: Status.PENDING, request: requestId, response: "", stateUrl: _stateUrl, config: config, brandAdminAddr: brandAdminAddr});
         emit BrandRegistryRequested(_brand, requestId);
     }
 
@@ -138,12 +145,13 @@ contract CarRegistry is Ownable {
         address _chainFunction = chainFunctionAddr.clone();
         address _ccip = ccipAddr.clone();
         address _merkleVerifier = merkleVerifierAddr.clone();
-        address _brandPermission = brandPermission.clone();
-        address _oracle = oracle.clone();
+      //  address _brandPermission = brandPermission.clone();
+      //  address _oracle = oracle.clone();
         // CarOracle(_oracle).initialize();
-        BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
+      //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
+        (address oracleAdress, address permissionAddress) = oracle.registerCarBrand(_brand, "", registry[_brand].config, registry[_brand].brandAdminAddr);
         MerkleVerifier(_merkleVerifier).initialize(_brand, _state); // replace with Interface;
-        profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, _brandPermission, _oracle);
+        profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress);
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
         emit BrandActivated(_brand, _state);

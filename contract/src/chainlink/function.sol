@@ -4,7 +4,7 @@ pragma solidity 0.8.28;
 import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
-import {StateManager} from "../core/state.sol";
+import {StateManager} from "../core/State.sol";
 // cloned
 /**
  * @title Sync - auto sync state every hour.

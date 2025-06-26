@@ -28,7 +28,7 @@ interface IOracleMaster {
         string memory priceFeedAddress,
         ICarOracle.OracleConfig memory config,
         address brandOwner
-    ) external returns (address oracleAddress);
+    ) external returns (address oracleAddress, address permissionAddress);
 
     function updateOracle(string memory brandName, ICarOracle.OracleConfig memory config) external;
 
@@ -43,4 +43,6 @@ interface IOracleMaster {
     function isOracleActive(string memory brandName) external view returns (bool);
 
     function getLastUpdateTime(string memory brandName) external view returns (uint256);
+
+    function getActiveBrands() external view returns (string[] memory);
 }
