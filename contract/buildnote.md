@@ -66,4 +66,22 @@ can bid with either usdc or eth
 highest bidder replaces the lowest
 
 ## Zero NFT
+done with implementation
 
+## Auction started 
+-- shoukd we lock bids in contract and refun when they dont win?
+-- or which other method can i use to save on gas
+-- epoch based auction 
+
+---- bidPlacement
+newbid should be bigger than old big
+//initial auction 50 50 60
+// initial bidder should be less than or equal to the first bid
+
+// fair chance thresshold 
+-- stake 
+----------
+after the winner has been slected we change the state accross all the chains
+updated the proofs etc
+anything that has to do with giving new owner owner righ
+meaning i need to start the transferrights  in the register contract
