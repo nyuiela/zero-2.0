@@ -31,8 +31,6 @@ uint256 public stakeSlashed; // total amount slashed from brands
     }
 
 mapping(address => BrandStakeInfo) public brandStakeInfo; // brand address => stake info
-    function stake(address staker, bool isEth) external payable onlyCarRegistry{
-
     function stake(address staker, bool isEth) external payable onlyCarRegistry {
         if (isEth) {
             require(msg.value == requireStake, "Reputation: Insufficient stake amount");
