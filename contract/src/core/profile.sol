@@ -25,6 +25,7 @@ contract Profile {
     // BrandProfile[] public profile;
     //
 
+    // called when registering brand;
     function create(
         string memory _brand,
         string memory _state,
@@ -51,8 +52,15 @@ contract Profile {
     }
 
     function updateState(string memory _brand, string memory _state) public /* only Permissioned users */ {
-        // check permission or simply allow only state contract to update the state. 
+        // check permission or simply allow only state contract to update the state.
         profile[_brand].state = _state;
         emit UpdatedState(_brand, _state);
+    }
+
+    function lockBrand(string memory _brand) public {
+      profile[_brand].locked = true;
+    }
+    function unlockBrand(string memory _brand) public {
+      profile[_brand].locked = false;
     }
 }

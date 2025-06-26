@@ -6,5 +6,4 @@ contract MerkleVerifier {
 
 // what exatly ??
 // every brand has a uinque clone of this
-
 }

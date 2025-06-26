@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
+import {Profile} from "./profile.sol";
+
 contract StateManager {
     // // structs
     // struct BrandInfo {
@@ -25,9 +27,18 @@ contract StateManager {
     mapping(string => string) public states;
     mapping(string => bool) public locked;
     address public profile;
+    Profile public profileContract;
     // get all function/ccip/cloned contracts.
 
-    // onlyOnwer or register contract can cal  l this
+    // onlyOnwer or register contract can call this
+    // call this function when Brand is registering
+
+    // contructor
+    constructor(address _profile) {
+        profile = _profile;
+        profileContract = Profile(profile);
+    }
+
     function initiate(string memory _brand) public /* onlyOnwer */ {
         // require()
 
@@ -37,12 +48,14 @@ contract StateManager {
         emit Activated(_brand);
     }
 
+    // PermissionedUser like Chainlink Function;
     function setState(string memory _brand, string memory _new_state) public /* permissioned users */ {
         // check the brand permission and check authorized users who needs to do that.
         // require(msg.sender, )
         require(!locked[_brand], ContractLockedError());
         states[_brand] = _new_state;
-
+        // change state in profile
+        profileContract.updateState(_brand, _new_state);
         emit ChangeState(_brand, _new_state, msg.sender);
     }
 
@@ -51,6 +64,7 @@ contract StateManager {
     function lockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
         require(!locked[_brand], ContractLockedError());
         locked[_brand] = true;
+         profileContract.lockBrand(_brand);
         emit ContractLocked(_brand, _reason, msg.sender);
     }
 
@@ -58,13 +72,14 @@ contract StateManager {
         require(locked[_brand], ContractLockedError());
         locked[_brand] = false;
         // unlock from contract;
+        profileContract.unlockBrand(_brand);
         emit ContractUnlocked(_brand, _reason, msg.sender);
     }
 
     function setProfile(address _profile) public /* onlyOwner */ {
-      profile = _profile;
-      emit UpdatedProfileContract(_profile);
+        profile = _profile;
+        emit UpdatedProfileContract(_profile);
     }
 
-    // what is the changes 
+    // what is the changes
 }
