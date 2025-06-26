@@ -55,3 +55,15 @@ deadline mode just use direct trans
 fer methods
 added fee implementation for protocol
 about to start brand/sell wise fee 
+
+## Auction
+- creation auction ------ >> epoch 
+- start Auction
+- Bid
+- winner
+can bid with either usdc or eth
+
+highest bidder replaces the lowest
+
+## Zero NFT
+
