@@ -87,4 +87,8 @@ contract Fee {
         require(msg.sender == address(auctionContract), "Fee: unauthorized");
         _;
     }
+
+    receive() external payable {
+        totalFeeAccummulated += msg.value;
+    }
 }

@@ -1,7 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import{IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
+import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 
 contract StateManager {
+    using PermissionModifiers for address;
+
     // // structs
     // struct BrandInfo {
     //   string state;
@@ -27,9 +31,16 @@ contract StateManager {
     address public profile;
     // get all function/ccip/cloned contracts.
 
+    bytes4 public constant SET_STATE = bytes4(keccak256("setState(string,string)"));
+    bytes4 public constant LOCK_CONTRACT = bytes4(keccak256("lockContract(string,string)"));
+    bytes4 public constant UNLOCK_CONTRACT = bytes4(keccak256("unlockContract(string,string)"));
+    bytes4 public constant INITIATE = bytes4(keccak256("initiate(string)"));
+    bytes4 public constant SET_PROFILE = bytes4(keccak256("setProfile(address)"));
+
     // onlyOnwer or register contract can cal  l this
     function initiate(string memory _brand) public /* onlyOnwer */ {
         // require()
+        require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "Statee: authorized");
 
         if (!true) {
             revert ActivationFailed(_brand, msg.sender);
@@ -38,6 +49,7 @@ contract StateManager {
     }
 
     function setState(string memory _brand, string memory _new_state) public /* permissioned users */ {
+        require(IPermissionManager(profile).hasPermission(msg.sender, SET_STATE), "state: unauthorized");
         // check the brand permission and check authorized users who needs to do that.
         // require(msg.sender, )
         require(!locked[_brand], ContractLockedError());
@@ -49,12 +61,14 @@ contract StateManager {
     // only some selected few can lock a contract e.g Chainlink Function
 
     function lockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
+        require(IPermissionManager(profile).hasPermission(msg.sender, LOCK_CONTRACT), "State: unauthorized");
         require(!locked[_brand], ContractLockedError());
         locked[_brand] = true;
         emit ContractLocked(_brand, _reason, msg.sender);
     }
 
     function unlockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
+        require(IPermissionManager(profile).hasPermission(msg.sender, UNLOCK_CONTRACT), "State: unauthorized");
         require(locked[_brand], ContractLockedError());
         locked[_brand] = false;
         // unlock from contract;
@@ -62,6 +76,7 @@ contract StateManager {
     }
 
     function setProfile(address _profile) public /* onlyOwner */ {
+        require(IPermissionManager(profile).hasPermission(msg.sender, SET_PROFILE), "State: unauthorized");
       profile = _profile;
       emit UpdatedProfileContract(_profile);
     }
