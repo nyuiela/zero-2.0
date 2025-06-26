@@ -25,6 +25,7 @@ contract Fee {
     address private receiver;
     uint256 fee;
     uint256 private totalFeeAccummulated;
+    uint256 public stakeAmountRequired;
 
     using PermissionModifiers for address;
 
@@ -68,12 +69,13 @@ contract Fee {
         return a * b;
     }
 
-    constructor(address _protocolFeeReceiver, address _auctionContract, address _globalPermissionManager) {
+    constructor(address _protocolFeeReceiver, address _auctionContract, address _globalPermissionManager, uint256 _stakeAmount) {
         require(_globalPermissionManager != address(0), "Invalid global permission manager address");
 
         globalPermissionManager = _globalPermissionManager;
         receiver = _protocolFeeReceiver;
         auctionContract = _auctionContract;
+        stakeAmountRequired = _stakeAmount;
     }
 
     modifier onlyauction() {

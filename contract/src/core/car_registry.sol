@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import "contract/src/oracle/Oracle.sol";
+//import "contract/src/oracle/Oracle.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 
@@ -16,10 +16,10 @@ contract CarRegistry {
 
     function registercar(string memory _brand, address oracleAddre, ICarOracle.OracleConfig memory config, address brandAdminAddr) external {
         IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
-        oracleMaster.registerCarBrand(_brand,config, brandAdminAddr);
+      //  oracleMaster.registerCarBrand(_brand,oracleAddre,config, brandAdminAddr);
 
-        bytes ownershipright = keccak256(msg.send, proofhoash, sign akdd);
-        merk.storfroffg(owneshipt);
+     //   bytes ownershipright = keccak256(msg.send, proofhoash, sign akdd);
+      //  merk.storfroffg(owneshipt);
         // provide what??
 // proof of ownership
     }
@@ -34,6 +34,12 @@ contract CarRegistry {
     function activate() external {}
 
     function stake() external {}
+
+    function storeOntree() internal{}
+
+
+// only staked brands can ativate 
+    function isActive() public {}
 
 
    // --- register --- state -- activate 
