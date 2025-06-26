@@ -8,8 +8,9 @@ import {StateManager} from "./State.sol";
 import {Profile} from "./profile.sol";
 import {InitFunction} from "../chainlink/InitFunction.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Reputation} from "./reputation.sol";
-contract CarRegistry {
+contract CarRegistry is Ownable {
   using Clones for address;
 
   // contracts
@@ -47,11 +48,17 @@ contract CarRegistry {
   // event
   event BrandRegistryRequested(string brand, bytes32 requestId);
   event BrandStaked(string brand, address staker);
+  event ChangedProfile(address newp);
+  event ChangedState(address newp);
+  event ChangedChainFunction(address newp);
+  event ChangedReputation(address newp);
+  event ChangedInitFunction(address newp);
+  event ChangedCCIP(address newp);
   // storage
 
   // constructor
   constructor(address _profileAddr, address _stateAddr, address _chainFunctionAddr, address _ccipAddr, address _merkleVerifierAddr, address payable _reputationAddr)
-   {
+    {
     profileAddr = _profileAddr;
     stateAddr = _stateAddr;
     profileContract = Profile(_profileAddr);
@@ -139,5 +146,35 @@ contract CarRegistry {
     // only staked brands can ativate
     function isActive() public {}
 
+    function setProfile(address _newp) public onlyOwner {
+      profileAddr = _newp;
+      profileContract = Profile(_newp);
+      emit ChangedProfile(_newp);
+    }
+    function setState(address _newp) public onlyOwner {
+      stateAddr = _newp;
+      stateContract = StateManager(_newp);
+      emit ChangedState(_newp);
+    }
+    function setCCIP(address _newp) public onlyOwner {
+      ccipAddr = _newp;
+      // ccipContract = Profile(_newp);
+      emit ChangedCCIP(_newp);
+    }
+    function setInitFunction(address _newp) public onlyOwner {
+      initFunctionAddr = _newp;
+      initFunction = InitFunction(_newp);
+      emit ChangedInitFunction(_newp);
+    }
+    function setReputatioin(address payable _newp) public onlyOwner {
+      reputationAddr = _newp;
+      reputation = Reputation(_newp);
+      emit ChangedReputation(_newp);
+    }
+    function setChainFunction(address _newp) public onlyOwner {
+      chainFunctionAddr = _newp;
+
+      emit ChangedChainFunction(_newp);
+    }
     // --- register --- state -- activate
 }
