@@ -8,6 +8,7 @@ import {StateManager} from "./State.sol";
 import {Profile} from "./profile.sol";
 import {InitFunction} from "../chainlink/InitFunction.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {Reputation} from "./reputation.sol";
 contract CarRegistry {
   using Clones for address;
 
@@ -15,43 +16,51 @@ contract CarRegistry {
   Profile public profileContract;
   StateManager public stateContract;
   InitFunction public initFunction;
+  Reputation public reputation;
   address public profileAddr;
   address public stateAddr;
   address public chainFunctionAddr;
   address public ccipAddr;
   address public merkleVerifierAddr;
   address public initFunctionAddr;
+  address public reputationAddr;
 
   //errors
   error BrandAlreadyInRegistry(string brand);
-
+  error StatusNotStaked(string brand);
   // structs
   enum Status {
+    NOT_INITIATIED,
     PENDING,
-    ACTIVE,
-    COMPLETED
+    STAKED,
+    ACTIVE
+    // COMPLETED
   }
   struct Registry {
     string brand;
     Status status;
     bytes32 request;
     bytes32 response;
+    string stateUrl;
   }
 
   // event
   event BrandRegistryRequested(string brand, bytes32 requestId);
-
+  event BrandStaked(string brand, address staker);
   // storage
 
   // constructor
-  constructor(address _profileAddr, address _stateAddr, address _chainFunctionAddr, address _ccipAddr, address _merkleVerifierAddr) {
+  constructor(address _profileAddr, address _stateAddr, address _chainFunctionAddr, address _ccipAddr, address _merkleVerifierAddr, address payable _reputationAddr)
+   {
     profileAddr = _profileAddr;
     stateAddr = _stateAddr;
     profileContract = Profile(_profileAddr);
     stateContract = StateManager(_stateAddr);
+    reputation = Reputation(_reputationAddr);
     chainFunctionAddr = _chainFunctionAddr;
     ccipAddr = _ccipAddr;
     merkleVerifierAddr = _merkleVerifierAddr;
+    reputationAddr = _reputationAddr;
   }
     // first timer
     //register or ownership !! protol can regisrer or general??
@@ -66,6 +75,7 @@ contract CarRegistry {
         ICarOracle.OracleConfig memory config,
         address brandAdminAddr,
         uint64 subscriptionId,
+        string memory _stateUrl,
         string[] memory args
     ) external {
         IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
@@ -85,7 +95,8 @@ contract CarRegistry {
             brand: _brand,
             status: Status.PENDING,
             request: requestId,
-            response: ""
+            response: "",
+            stateUrl: _stateUrl
           });
           emit BrandRegistryRequested(_brand, requestId);
     }
@@ -98,23 +109,30 @@ contract CarRegistry {
     }
 
     function activate(string memory _brand) external {
-        
-        
+        require(registry[_brand].status == Status.STAKED, StatusNotStaked(_brand));
         stateContract.initiate(_brand);
         //init Function will initiate db and return state;
         // ccip clone
         // address _state = stateAddr.clone();
-        string memory _state = "";
+        string memory _state =  initFunction.getResponse(_brand);
         address _chainFunction = chainFunctionAddr.clone();
         address _ccip = ccipAddr.clone();
         address _merkleVerifier = merkleVerifierAddr.clone();
         // merkle clone
+        // start merkle with root
         profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier);
         registry[_brand].response = "";
         registry[_brand].status = Status.ACTIVE;
     }
 
-    function stake() external {}
+
+    // move this to reputation - for better payment ways. 
+    function stake(string memory _brand) external {
+      // CHANGE STATUS TO STAKED
+      reputation.stake(_brand, true);
+      registry[_brand].status == Status.STAKED;
+      emit BrandStaked(_brand, msg.sender);
+    }
 
     function storeOntree() internal {}
 

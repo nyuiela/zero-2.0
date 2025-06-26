@@ -75,8 +75,8 @@ contract Sync is FunctionsClient, ConfirmedOwner {
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
     constructor(address _stateAddr) FunctionsClient(router) ConfirmedOwner(msg.sender) {
-      stateAddress = _stateAddr;
-      stateContract = StateManager(_stateAddr);
+        stateAddress = _stateAddr;
+        stateContract = StateManager(_stateAddr);
     }
 
     /**
@@ -121,9 +121,9 @@ contract Sync is FunctionsClient, ConfirmedOwner {
         bytes32 s1 = keccak256(abi.encodePacked(state));
         bytes32 s2 = keccak256(abi.encodePacked(_state));
         if (s1 == s2) {
-          state = string(response);
+            state = string(response);
         } else {
-          stateContract.lockContract(brand, "State Differs");
+            stateContract.lockContract(brand, "State Differs");
         }
         // Emit an event to log the response
         emit Response(requestId, state, s_lastResponse, s_lastError);

@@ -26,7 +26,7 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
     StateManager public stateContract;
 
     mapping(string => bytes32) public request;
-    mapping(bytes32 => bytes) private response;
+    mapping(bytes32 => string) private response;
 
     // Custom error type
     error UnexpectedRequestID(bytes32 requestId);
@@ -78,8 +78,8 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
     constructor(address _stateAddr) FunctionsClient(router) ConfirmedOwner(msg.sender) {
-      stateAddress = _stateAddr;
-      stateContract = StateManager(_stateAddr);
+        stateAddress = _stateAddr;
+        stateContract = StateManager(_stateAddr);
     }
 
     /**
@@ -131,7 +131,12 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
         //   stateContract.lockContract(brand, "State Differs");
         // }
         // Emit an event to log the response
-        response[requestId] = _response;
+        response[requestId] = string(_response);
         emit Response(requestId, state, s_lastResponse, s_lastError);
+    }
+
+    function getResponse(string memory _brand) public view returns (string memory) {
+        bytes32 id = request[_brand];
+        return response[id];
     }
 }
