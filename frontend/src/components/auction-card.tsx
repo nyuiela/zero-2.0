@@ -107,13 +107,22 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
 
       {/* Bid Button - Outside of Link to prevent nesting */}
       <div className="px-5 pb-5">
-        <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+        <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 space-y-2">
           <Button
             className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-4 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg"
             asChild
           >
             <Link href={`/listing/${auction.id}`}>
               Place Bid
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-white font-semibold py-3 px-4 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg"
+            asChild
+          >
+            <Link href={`/auctions/${auction.id}/bidding-room`}>
+              Join Bidding Room
             </Link>
           </Button>
         </div>

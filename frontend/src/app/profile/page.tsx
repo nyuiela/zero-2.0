@@ -174,7 +174,7 @@ export default function ProfilePage() {
       const data = await res.json()
       if (data.status === 'success') {
         setRoleRequestStatus('pending')
-        setUser({ ...(user || { address }), roleRequestStatus: 'pending' })
+        setUser({ ...(user || { address: address as string }), roleRequestStatus: 'pending' })
         toast.success('Seller role request submitted!')
       } else {
         throw new Error(data.message || 'Failed to submit request')
@@ -182,7 +182,7 @@ export default function ProfilePage() {
     } catch (e) {
       // Fallback: in-app session
       setRoleRequestStatus('pending')
-      setUser({ ...(user || { address }), roleRequestStatus: 'pending' })
+      setUser({ ...(user || { address: address as string }), roleRequestStatus: 'pending' })
       toast.info('Seller role request submitted (in-app fallback)!')
     } finally {
       setRoleRequestLoading(false)
