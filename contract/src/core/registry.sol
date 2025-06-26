@@ -109,7 +109,7 @@ contract CarRegistry is Ownable {
         string memory _stateUrl,
         string[] memory args
     ) external {
-        IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
+        //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
         bytes32 s_brand = keccak256(abi.encodePacked(_brand));
         bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand));
         require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
@@ -156,6 +156,17 @@ contract CarRegistry is Ownable {
         registry[_brand].status = Status.ACTIVE;
         emit BrandActivated(_brand, _state);
     }
+
+function isActivate(string memory brandName) public view returns(bool){
+ 
+
+  if(registry[brandName].status == Status.ACTIVE){
+    return true;
+  }else{
+    return false;
+  }
+}
+  
 
     // move this to reputation - for better payment ways.
     function stake(string memory _brand) external payable {

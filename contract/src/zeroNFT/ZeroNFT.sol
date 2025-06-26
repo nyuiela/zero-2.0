@@ -198,8 +198,8 @@ address auctionContract;
     }
     function isBrandActive(string memory brandName) public view returns(bool){
         // TODO: Implement actual activation logic or remove this stub
-        // carRegistry.isActivated(); // Removed invalid call
-        return true;
+         // Removed invalid call
+        return carRegistry. isActivate(brandName); 
     }
     /**
      * @dev Check if a brand has completed staking requirements
@@ -522,7 +522,7 @@ address auctionContract;
 
 error ZeroNFT__cannot_burn();
     
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    function _burn(uint256 /*tokenId*/) internal override(ERC721, ERC721URIStorage) {
         revert ZeroNFT__cannot_burn();
         // super._burn(tokenId);
     }
