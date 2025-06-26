@@ -58,9 +58,10 @@ contract Profile {
     }
 
     function lockBrand(string memory _brand) public {
-      profile[_brand].locked = true;
+        profile[_brand].locked = true;
     }
+
     function unlockBrand(string memory _brand) public {
-      profile[_brand].locked = false;
+        profile[_brand].locked = false;
     }
 }

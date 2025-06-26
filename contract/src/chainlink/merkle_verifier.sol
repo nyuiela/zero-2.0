@@ -4,7 +4,21 @@ pragma solidity 0.8.28;
 
 contract MerkleVerifier {
     // Verifies a Merkle proof for a given root and leaf
-    function verifyProof(bytes32 root, bytes32 leaf, bytes32[] calldata proof) external pure returns (bool) {
+
+    // structs
+
+    // error
+
+    // events
+
+    // storage
+    bytes32 public root;
+    //mappings
+
+    // constructor
+    constructor() {}
+
+    function verifyProof(bytes32 leaf, bytes32[] calldata proof) external view returns (bool) {
         // 3 mains leaves after root. (car, auction, bid)
         bytes32 computedHash = leaf;
         for (uint256 i = 0; i < proof.length; i++) {
@@ -19,6 +33,10 @@ contract MerkleVerifier {
         }
         // Check if the computed hash (root) is equal to the provided root
         return computedHash == root;
+    }
+
+    function storeRoot(string memory _root) public {
+        root = keccak256(abi.encodePacked(_root));
     }
 }
 

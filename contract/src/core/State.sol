@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
-import{IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
+
+import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 
 import {Profile} from "./profile.sol";
@@ -52,7 +53,7 @@ contract StateManager {
     // onlyOnwer or register contract can cal  l this
     function initiate(string memory _brand) public /* onlyOnwer */ {
         // require()
-        require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "Statee: authorized");
+        require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "State: authorized");
 
         if (!true) {
             revert ActivationFailed(_brand, msg.sender);
@@ -78,7 +79,7 @@ contract StateManager {
         require(IPermissionManager(profile).hasPermission(msg.sender, LOCK_CONTRACT), "State: unauthorized");
         require(!locked[_brand], ContractLockedError());
         locked[_brand] = true;
-         profileContract.lockBrand(_brand);
+        profileContract.lockBrand(_brand);
         emit ContractLocked(_brand, _reason, msg.sender);
     }
 
@@ -93,8 +94,8 @@ contract StateManager {
 
     function setProfile(address _profile) public /* onlyOwner */ {
         require(IPermissionManager(profile).hasPermission(msg.sender, SET_PROFILE), "State: unauthorized");
-      profile = _profile;
-      emit UpdatedProfileContract(_profile);
+        profile = _profile;
+        emit UpdatedProfileContract(_profile);
     }
 
     // what is the changes
