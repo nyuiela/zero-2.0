@@ -5,7 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {IBrandPermissionManager} from "./interfaces/IBrandPermissionManager.sol";
+import {IBrandPermissionManager} from "../interface/permissions/IBrandPermissionManager.sol";
 
 contract BrandPermissionManager is
     IBrandPermissionManager,

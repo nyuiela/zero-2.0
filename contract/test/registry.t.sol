@@ -14,7 +14,7 @@ import {CarOracle} from "../src/oracle/CarOracle.sol";
 import {BrandPermissionManager} from "../src/permission/BrandPermissionManager.sol";
 import {PermissionManager} from "../src/permission/PermissionManager.sol";
 import {UsdcToken} from "./mocks/IUSDC.sol";
-import {Sync} from "../src/chainlink/function.sol";
+import {Sync} from "../src/chainlink/sync_function.sol";
 contract RegistryTest is Test {
   CarRegistry registry;
   Profile profile;
@@ -52,23 +52,23 @@ contract RegistryTest is Test {
         permission = new PermissionManager();
         brandPermission = new BrandPermissionManager();
         ccip = new CrossToken(ROUTER, LINK_TOKEN);
-        merkleVerifier = new MerkleVerifier();
-        merkleVerifier.initialize("brand", "000", address(0), address(0));
 
         // address _oracleImplementation
         // address _permissionManagerImplementation
         // address _globalPermissionManager
         profile = new Profile(
-          address(registry),
           address(permission)
         );
         state = new StateManager(address(profile));
+        carOracle = new CarOracle();
         oracle = new OracleMaster(
           address(carOracle),
           address(brandPermission),
           address(permission)
         );
         syncer = new ProofSync(address(merkleVerifier));
+        merkleVerifier = new MerkleVerifier();
+        merkleVerifier.initialize("brand", "000", address(0), address(0));
 
         //         uint256 _requireStake,
         // address _stakeToken,
