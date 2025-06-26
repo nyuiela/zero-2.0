@@ -76,7 +76,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         string memory priceFeedAddress,
         ICarOracle.OracleConfig memory config,
         address brandOwner
-    ) external override whenNotPaused nonReentrant returns (address oracleAddress) {
+    ) external override whenNotPaused nonReentrant returns (address oracleAddress, address ) {
         // Check if caller is owner or has permission
         require(
             msg.sender == owner() || globalPermissionManager.hasPermission(msg.sender, REGISTER_CAR_BRAND_SELECTOR),
@@ -120,7 +120,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         emit CarBrandRegistered(brandName, oracleAddress, priceFeedAddress, block.timestamp);
         emit BrandPermissionManagerCreated(brandName, permissionManagerAddress, brandOwner);
 
-        return oracleAddress;
+        return (oracleAddress, permissionManagerAddress);
     }
 
     function updateOracle(string memory brandName, ICarOracle.OracleConfig memory config)

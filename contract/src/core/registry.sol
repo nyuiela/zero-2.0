@@ -193,4 +193,7 @@ contract CarRegistry is Ownable {
         emit ChangedChainFunction(_newp);
     }
     // --- register --- state -- activate
+
+    // geter
+  
 }
