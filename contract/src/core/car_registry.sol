@@ -11,7 +11,6 @@ contract CarRegistry {
     // car brand --- number avaliable ?? instock
     // stake / eth or usdc(bool espression for that ) // collateral on the brand
     // merke verifier cloned
-
     function registercar(
         string memory _brand,
         address oracleAddre,

@@ -1,59 +1,70 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-/*
-* This contract will store and retrive all state
-* Will be used accross multiple contracts to store and retrive state
-*
-*
-* */
-contract State {
+contract StateManager {
+    // // structs
+    // struct BrandInfo {
+    //   string state;
+    //   uint256 date;
+    // }
 
+    // errors
+    error UserNotPermitted();
+    error ContractLockedError();
+    error ContractAlreadyUnlocked();
+    error ActivationFailed(string brand, address owner);
 
-   
-//     struct CarBrand {
-//         string name;
-//         address oracleAddress;
-//         string priceFeedAddress;
-//         uint256 lastUpdateTime;
-//         bool isActive; // will remove this
-//         uint256 totalProducts;
-//     }
+    //events
+    event Activated(string _brand);
+    event ChangeState(string brand, string new_state, address owner);
+    event ContractLocked(string brand, string reason, address owner);
+    event ContractUnlocked(string brand, string reason, address owner);
+    event UpdatedProfileContract(address profile);
+    // mappings / storage
 
-//     struct BrandStakeInfo{
-//      bool isActive;
-//      uint256 stakeAmount;
-//     uint256 stakeepoch;
-// }
+    mapping(string => string) public states;
+    mapping(string => bool) public locked;
+    address public profile;
+    // get all function/ccip/cloned contracts.
 
-// struct StateInfoStake{
-   
-//     mapping(address => BrandStakeInfo) brandStateInfo;
-// }
-// struct StateInfoBrand{
-//  mapping(address => CarBrand) carbrandInfo;
-// }
+    // onlyOnwer or register contract can cal  l this
+    function initiate(string memory _brand) public /* onlyOnwer */ {
+        // require()
 
-// function updateStateBrand(StateInfoStake memory stateinfo) public {
+        if (!true) {
+            revert ActivationFailed(_brand, msg.sender);
+        }
+        emit Activated(_brand);
+    }
 
-// }
+    function setState(string memory _brand, string memory _new_state) public /* permissioned users */ {
+        // check the brand permission and check authorized users who needs to do that.
+        // require(msg.sender, )
+        require(!locked[_brand], ContractLockedError());
+        states[_brand] = _new_state;
 
-// function updateStateBrand(StateInfoBrand memory sbrandInfo) public {
+        emit ChangeState(_brand, _new_state, msg.sender);
+    }
 
-// }
+    // only some selected few can lock a contract e.g Chainlink Function
 
-// function getStakeinfo(address ) public view returns( StateInfoStake memory){
+    function lockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
+        require(!locked[_brand], ContractLockedError());
+        locked[_brand] = true;
+        emit ContractLocked(_brand, _reason, msg.sender);
+    }
 
-// }
-// function getbrandinfo(address) public view returns( StateInfoBrand memory){
+    function unlockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
+        require(locked[_brand], ContractLockedError());
+        locked[_brand] = false;
+        // unlock from contract;
+        emit ContractUnlocked(_brand, _reason, msg.sender);
+    }
 
-// }
+    function setProfile(address _profile) public /* onlyOwner */ {
+      profile = _profile;
+      emit UpdatedProfileContract(_profile);
+    }
 
-// ?? what is going to be the current ? 
-// --- from -- to??
-
-
-
-
-    
+    // what is the changes 
 }
