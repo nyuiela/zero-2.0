@@ -143,7 +143,7 @@ export default function BiddingRoomPage({ params }: { params: { id: string } }) 
   const progressWidth = `${(timer / 60) * 100}%`
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#232526] to-[#414345] flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center relative overflow-hidden">
       {/* Confetti */}
       {showConfetti && (
         <div className="absolute inset-0 z-50 pointer-events-none animate-fade-in">

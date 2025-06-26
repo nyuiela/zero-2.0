@@ -28,9 +28,11 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
     const [selectedImage, setSelectedImage] = useState<number>(0)
     const [isBidModalOpen, setIsBidModalOpen] = useState(false)
     const [bidAmount, setBidAmount] = useState<number | string>(listing.currentBid)
+    const [minBid, setMinBid] = useState<number>(typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) : listing.currentBid)
     const [currency, setCurrency] = useState<'ETH' | 'USDC'>('ETH')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [bidError, setBidError] = useState<string | null>(null)
 
     // Calculate 12% stake
     const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.12
@@ -39,10 +41,28 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
     useEffect(() => {
       if (isBidModalOpen) {
         setBidAmount(listing.currentBid)
+        setMinBid(typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) : listing.currentBid)
+        setBidError(null)
       }
     }, [isBidModalOpen, listing.currentBid])
 
+    const handleBidAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setBidAmount(value)
+      const numValue = parseFloat(value)
+      if (isNaN(numValue) || numValue < minBid) {
+        setBidError(`Bid must be at least ${formatCurrency(minBid, currency)}`)
+      } else {
+        setBidError(null)
+      }
+    }
+
     const handlePlaceBid = async () => {
+      const numValue = typeof bidAmount === 'string' ? parseFloat(bidAmount) : bidAmount
+      if (isNaN(numValue) || numValue < minBid) {
+        setBidError(`Bid must be at least ${formatCurrency(minBid, currency)}`)
+        return
+      }
       setIsSubmitting(true)
       setError(null)
       // TODO: Place bid API call here
@@ -92,16 +112,16 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     <label className="block text-gray-700 mb-1 font-medium">Bid Amount ({currency})</label>
                     <input
                       type="number"
-                      min={typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) + 0.01 : (listing.currentBid as number) + 0.01}
+                      min={minBid}
                       value={bidAmount}
-                      onChange={e => setBidAmount(e.target.value)}
+                      onChange={handleBidAmountChange}
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
                   </div>
+                  {bidError && <div className="text-red-500 text-sm mt-1">{bidError}</div>}
                   <div className="mb-4 text-sm text-gray-700">
                     <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (12% of bid)
                   </div>
-                  {error && <div className="text-red-500 mb-2">{error}</div>}
                   <Button className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={handlePlaceBid} disabled={isSubmitting}>
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid & Enter Bidding Room'}
                   </Button>
