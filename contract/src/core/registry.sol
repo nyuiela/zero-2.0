@@ -17,6 +17,7 @@ import "../oracle/Oracle.sol";
 
 contract CarRegistry is Ownable {
     using Clones for address;
+
     OracleMaster oracle;
 
     // contracts
@@ -34,6 +35,7 @@ contract CarRegistry is Ownable {
     address public brandPermission;
     address public permissionManager;
     //address public oracle;
+    address public syncerAddr;
 
     //errors
     error BrandAlreadyInRegistry(string brand);
@@ -56,6 +58,7 @@ contract CarRegistry is Ownable {
         string stateUrl;
         ICarOracle.OracleConfig config;
         address brandAdminAddr;
+        address owner;
     }
 
     // event
@@ -79,7 +82,8 @@ contract CarRegistry is Ownable {
         address _ccipAddr,
         address _merkleVerifierAddr,
         address payable _reputationAddr,
-        address _oracle
+        address _oracle,
+        address _syncerAddr
     ) {
         profileAddr = _profileAddr;
         stateAddr = _stateAddr;
@@ -91,6 +95,7 @@ contract CarRegistry is Ownable {
         ccipAddr = _ccipAddr;
         merkleVerifierAddr = _merkleVerifierAddr;
         reputationAddr = _reputationAddr;
+        syncerAddr = _syncerAddr;
     }
     // first timer
     //register or ownership !! protol can regisrer or general??
@@ -120,11 +125,19 @@ contract CarRegistry is Ownable {
         // provide what??
         // proof of ownership
         // clone
-        
+
         //-
         bytes32 requestId = initFunction.sendRequest(subscriptionId, args, _brand);
-        registry[_brand] =
-            Registry({brand: _brand, status: Status.PENDING, request: requestId, response: "", stateUrl: _stateUrl, config: config, brandAdminAddr: brandAdminAddr});
+        registry[_brand] = Registry({
+            brand: _brand,
+            status: Status.PENDING,
+            request: requestId,
+            response: "",
+            stateUrl: _stateUrl,
+            config: config,
+            brandAdminAddr: brandAdminAddr,
+            owner: msg.sender
+        });
         emit BrandRegistryRequested(_brand, requestId);
     }
 
@@ -145,28 +158,27 @@ contract CarRegistry is Ownable {
         address _chainFunction = chainFunctionAddr.clone();
         address _ccip = ccipAddr.clone();
         address _merkleVerifier = merkleVerifierAddr.clone();
-      //  address _brandPermission = brandPermission.clone();
-      //  address _oracle = oracle.clone();
+        address _syncer = syncerAddr.clone();
+        //  address _brandPermission = brandPermission.clone();
+        //  address _oracle = oracle.clone();
         // CarOracle(_oracle).initialize();
-      //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
-        (address oracleAdress, address permissionAddress) = oracle.registerCarBrand(_brand, "", registry[_brand].config, registry[_brand].brandAdminAddr);
-        MerkleVerifier(_merkleVerifier).initialize(_brand, _state); // replace with Interface;
-        profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress);
+        //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
+        (address oracleAdress, address permissionAddress) =
+            oracle.registerCarBrand(_brand, "", registry[_brand].config, registry[_brand].brandAdminAddr);
+        MerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
+        profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress, _syncer);
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
         emit BrandActivated(_brand, _state);
     }
 
-function isActivate(string memory brandName) public view returns(bool){
- 
-
-  if(registry[brandName].status == Status.ACTIVE){
-    return true;
-  }else{
-    return false;
-  }
-}
-  
+    function isActivate(string memory brandName) public view returns (bool) {
+        if (registry[brandName].status == Status.ACTIVE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     // move this to reputation - for better payment ways.
     function stake(string memory _brand) external payable {
@@ -214,5 +226,4 @@ function isActivate(string memory brandName) public view returns(bool){
     // --- register --- state -- activate
 
     // geter
-  
 }

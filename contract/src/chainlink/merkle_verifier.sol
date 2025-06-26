@@ -10,35 +10,57 @@ contract MerkleVerifier is Initializable {
     // structs
 
     // error
-    error LeafNotFound(string  leaf);
+    error LeafNotFound(string leaf);
+    error NotSyncer(address sender);
+
 
     // events
     event SetRoot(string _brand, address owner);
-    event AddedLeaf(string lastProof, string  newLeaf);
-
+    event AddedLeaf(string lastProof, string newLeaf);
+    event ChangedSyncer(address syncer);
     // storage
-    string  public root;
+    string public root;
     string public brand;
-    string [] proof;
+    string[] proof;
+    address syncer;
+    address owner;
     //mappings
 
     // constructor
     constructor() {}
 
-    function initialize(string memory _brand, string memory _root) public {
+    // modifier
+    modifier onlyOwner() {
+      require(msg.sender == owner, "merkle_verifier: Not owner");
+      _;
+    }
+
+    modifier onlySyncer() {
+      require(syncer == msg.sender, NotSyncer(msg.sender));
+      _;
+    }
+
+    function initialize(string memory _brand, string memory _root, address _syncer,address _owner) public {
         brand = _brand;
         root = _root;
+        syncer = _syncer;
+        owner = _owner;
     }
 
     function getProof() public view returns (string[] memory) {
         return proof;
     }
 
+    function setSyncer(address _syncer) public onlyOwner {
+      syncer = _syncer;
+      emit ChangedSyncer(_syncer);
+    }
+
     function verifyProof(string memory leaf) public view returns (bool) {
         // 3 mains leaves after root. (car, auction, bid)
         bytes32 computedHash = keccak256(abi.encodePacked(leaf));
         for (uint256 i = 0; i < proof.length; i++) {
-bytes32 proofElement = keccak256(abi.encodePacked(proof[i]));
+            bytes32 proofElement = keccak256(abi.encodePacked(proof[i]));
             if (computedHash <= proofElement) {
                 // Hash(current computed hash + current element of the proof)
                 computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
@@ -57,14 +79,14 @@ bytes32 proofElement = keccak256(abi.encodePacked(proof[i]));
     //     emit SetRoot(brand, msg.sender);
     // }
 
-    function addLeave(string memory _leaf) external /* only permissioned user */ {
+    function addLeave(string memory _leaf) external onlySyncer /* only permissioned user */ {
         // verifier proof using Function
 
         proof.push(_leaf);
 
         //check if leaf exists
         require(verifyProof(_leaf), LeafNotFound(_leaf));
-        emit AddedLeaf(proof[proof.length -1 ], _leaf);
+        emit AddedLeaf(proof[proof.length - 1], _leaf);
     }
 }
 
