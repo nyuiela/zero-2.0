@@ -5,4 +5,6 @@ contract MerkleVerifier {
 // do this how will it work accross the different chains
 
 // what exatly ??
+// every brand has a uinque clone of this
+
 }
