@@ -6,6 +6,7 @@ interface IBrandPermissionManager {
         bool isActive;
         uint256 expiresAt;
     }
+
     function initialize(string memory brandName, address masterOracle, address brandOwner) external;
     function grantPermission(address account, bytes4 functionSelector, uint256 expiresAt) external;
     function grantBatchPermissions(address account, bytes4[] memory functionSelectors, uint256 expiresAt) external;
@@ -24,6 +25,9 @@ interface IBrandPermissionManager {
     function getBrandOwner() external view returns (address);
     function cleanExpiredPermissions(address account) external;
     function batchCleanExpiredPermissions(address[] memory accounts) external;
-    event BatchPermissionsGranted(address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp);
+
+    event BatchPermissionsGranted(
+        address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp
+    );
     event BatchPermissionsRevoked(address indexed account, bytes4[] functionSelectors, uint256 timestamp);
-} 
+}

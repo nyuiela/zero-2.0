@@ -9,7 +9,7 @@ interface IPermissionManager {
         uint256 grantedAt;
         uint256 expiresAt;
     }
-    
+
     function grantPermission(address account, bytes4 functionSelector, uint256 expiresAt) external;
     function grantBatchPermissions(address account, bytes4[] memory functionSelectors, uint256 expiresAt) external;
     function revokePermission(address account, bytes4 functionSelector) external;
@@ -24,9 +24,13 @@ interface IPermissionManager {
     function getTotalPermissionsCount() external view returns (uint256);
     function pause() external;
     function unpause() external;
-    
-    event PermissionGranted(address indexed account, bytes4 indexed functionSelector, uint256 expiresAt, uint256 timestamp);
+
+    event PermissionGranted(
+        address indexed account, bytes4 indexed functionSelector, uint256 expiresAt, uint256 timestamp
+    );
     event PermissionRevoked(address indexed account, bytes4 indexed functionSelector, uint256 timestamp);
-    event BatchPermissionsGranted(address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp);
+    event BatchPermissionsGranted(
+        address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp
+    );
     event BatchPermissionsRevoked(address indexed account, bytes4[] functionSelectors, uint256 timestamp);
-} 
+}

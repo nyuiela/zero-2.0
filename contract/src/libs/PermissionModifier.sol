@@ -10,10 +10,7 @@ library PermissionModifiers {
      * @param functionSelector The function selector to check permission for
      */
     modifier onlyWithPermission(address permissionManager, bytes4 functionSelector) {
-        require(
-            IPermissionManager(permissionManager).hasPermission(msg.sender, functionSelector),
-            "Permission denied"
-        );
+        require(IPermissionManager(permissionManager).hasPermission(msg.sender, functionSelector), "Permission denied");
         _;
     }
 
@@ -24,14 +21,14 @@ library PermissionModifiers {
      */
     modifier onlyWithAnyPermission(address permissionManager, bytes4[] memory functionSelectors) {
         bool hasAnyPermissionFlag = false;
-        
+
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             if (IPermissionManager(permissionManager).hasPermission(msg.sender, functionSelectors[i])) {
                 hasAnyPermissionFlag = true;
                 break;
             }
         }
-        
+
         require(hasAnyPermissionFlag, "No permission for any function");
         _;
     }
@@ -58,11 +55,11 @@ library PermissionModifiers {
      * @param functionSelector The function selector to check permission for
      * @return True if the account has permission, false otherwise
      */
-    function hasPermission(
-        address permissionManager,
-        address account,
-        bytes4 functionSelector
-    ) internal view returns (bool) {
+    function hasPermission(address permissionManager, address account, bytes4 functionSelector)
+        internal
+        view
+        returns (bool)
+    {
         return IPermissionManager(permissionManager).hasPermission(account, functionSelector);
     }
 
@@ -73,11 +70,11 @@ library PermissionModifiers {
      * @param functionSelectors Array of function selectors to check permissions for
      * @return True if the account has permission for any function, false otherwise
      */
-    function hasAnyPermission(
-        address permissionManager,
-        address account,
-        bytes4[] memory functionSelectors
-    ) internal view returns (bool) {
+    function hasAnyPermission(address permissionManager, address account, bytes4[] memory functionSelectors)
+        internal
+        view
+        returns (bool)
+    {
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             if (IPermissionManager(permissionManager).hasPermission(account, functionSelectors[i])) {
                 return true;
@@ -93,11 +90,11 @@ library PermissionModifiers {
      * @param functionSelectors Array of function selectors to check permissions for
      * @return True if the account has permission for all functions, false otherwise
      */
-    function hasAllPermissions(
-        address permissionManager,
-        address account,
-        bytes4[] memory functionSelectors
-    ) internal view returns (bool) {
+    function hasAllPermissions(address permissionManager, address account, bytes4[] memory functionSelectors)
+        internal
+        view
+        returns (bool)
+    {
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             if (!IPermissionManager(permissionManager).hasPermission(account, functionSelectors[i])) {
                 return false;
@@ -113,11 +110,11 @@ library PermissionModifiers {
      * @param functionSelector The function selector to get permission details for
      * @return Permission struct containing the permission details
      */
-    function getPermission(
-        address permissionManager,
-        address account,
-        bytes4 functionSelector
-    ) internal view returns (IPermissionManager.Permission memory) {
+    function getPermission(address permissionManager, address account, bytes4 functionSelector)
+        internal
+        view
+        returns (IPermissionManager.Permission memory)
+    {
         return IPermissionManager(permissionManager).getPermission(account, functionSelector);
     }
 
@@ -128,11 +125,11 @@ library PermissionModifiers {
      * @param functionSelector The function selector to check
      * @return True if the permission is expired, false otherwise
      */
-    function isPermissionExpired(
-        address permissionManager,
-        address account,
-        bytes4 functionSelector
-    ) internal view returns (bool) {
+    function isPermissionExpired(address permissionManager, address account, bytes4 functionSelector)
+        internal
+        view
+        returns (bool)
+    {
         return IPermissionManager(permissionManager).isPermissionExpired(account, functionSelector);
     }
-} 
+}

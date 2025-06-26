@@ -17,19 +17,9 @@ interface ICarOracle {
         uint256 maxAnswer;
     }
 
-    event PriceUpdated(
-        uint256 indexed roundId,
-        uint256 price,
-        uint256 timestamp,
-        string brandName
-    );
+    event PriceUpdated(uint256 indexed roundId, uint256 price, uint256 timestamp, string brandName);
 
-    event ConfigUpdated(
-        uint256 updateInterval,
-        uint256 deviationThreshold,
-        uint256 heartbeat,
-        uint256 timestamp
-    );
+    event ConfigUpdated(uint256 updateInterval, uint256 deviationThreshold, uint256 heartbeat, uint256 timestamp);
 
     function initialize(
         string memory brandName,
@@ -57,4 +47,4 @@ interface ICarOracle {
     function isStale() external view returns (bool);
 
     function getLastUpdateTime() external view returns (uint256);
-} 
+}

@@ -35,10 +35,12 @@ contract ProofSync {
         require(msg.sender == owner, "ProofSync: Not owner");
         _;
     }
+
     modifier onlyAllowedSyncers() {
         require(allowedSyncers[msg.sender], "ProofSync: Not allowed syncer");
         _;
     }
+
     modifier notLocked() {
         require(!locked, "ProofSync: Locked");
         _;
@@ -54,13 +56,16 @@ contract ProofSync {
         allowedSyncers[syncer] = true;
         emit SyncPermissionGranted(syncer);
     }
+
     function revokeSyncPermission(address syncer) external onlyOwner {
         allowedSyncers[syncer] = false;
         emit SyncPermissionRevoked(syncer);
     }
+
     function allowChain(uint64 chainSelector) external onlyOwner {
         chainsAllowed[chainSelector] = true;
     }
+
     function revokeChain(uint64 chainSelector) external onlyOwner {
         chainsAllowed[chainSelector] = false;
     }
@@ -70,6 +75,7 @@ contract ProofSync {
         locked = true;
         emit ContractLockedEvent(reason);
     }
+
     function unlockContract() external onlyOwner {
         locked = false;
         emit ContractUnlocked();
@@ -90,14 +96,12 @@ contract ProofSync {
         emit ProofSynced(s_lastSubmittedProof, chainSelectors);
     }
 
-
     function triggerReSync(uint64 chainSelector) external onlyAllowedSyncers notLocked {
         if (!chainsAllowed[chainSelector]) revert ChainNotAllowListed();
         // Re-send the last proof to the specified chain
         // If fail, revert or emit error
         emit ProofSynced(s_lastSubmittedProof, _toArray(chainSelector));
     }
-
 
     function _toArray(uint64 chainSelector) internal pure returns (uint64[] memory arr) {
         arr = new uint64[](1);

@@ -50,5 +50,8 @@ interworks with the ccip
 - merkle verifier ---> proof lib ----> adds prrof to tree
 - car registry --- two kinds of registry, one for fist time car registar and transfer of ownership registry ..... both cases use the merkel verfier and update across the chains.
 
-  
-
+  ## today 25th
+deadline mode just use direct trans
+fer methods
+added fee implementation for protocol
+about to start brand/sell wise fee 

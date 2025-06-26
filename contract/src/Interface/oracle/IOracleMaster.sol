@@ -14,24 +14,14 @@ interface IOracleMaster {
     }
 
     event CarBrandRegistered(
-        string indexed brandName,
-        address indexed oracleAddress,
-        string priceFeedAddress,
-        uint256 timestamp
+        string indexed brandName, address indexed oracleAddress, string priceFeedAddress, uint256 timestamp
     );
 
     event OracleUpdated(
-        string indexed brandName,
-        address indexed oracleAddress,
-        uint256 lastUpdateTime,
-        uint256 timestamp
+        string indexed brandName, address indexed oracleAddress, uint256 lastUpdateTime, uint256 timestamp
     );
 
-    event OracleDeactivated(
-        string indexed brandName,
-        address indexed oracleAddress,
-        uint256 timestamp
-    );
+    event OracleDeactivated(string indexed brandName, address indexed oracleAddress, uint256 timestamp);
 
     function registerCarBrand(
         string memory brandName,
@@ -40,10 +30,7 @@ interface IOracleMaster {
         address brandOwner
     ) external returns (address oracleAddress);
 
-    function updateOracle(
-        string memory brandName,
-        ICarOracle.OracleConfig memory config
-    ) external;
+    function updateOracle(string memory brandName, ICarOracle.OracleConfig memory config) external;
 
     function deactivateOracle(string memory brandName) external;
 
@@ -56,4 +43,4 @@ interface IOracleMaster {
     function isOracleActive(string memory brandName) external view returns (bool);
 
     function getLastUpdateTime(string memory brandName) external view returns (uint256);
-} 
+}

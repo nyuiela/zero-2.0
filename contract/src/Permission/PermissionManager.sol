@@ -11,7 +11,7 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
     mapping(address => bytes4[]) private _accountFunctionSelectors;
     mapping(bytes4 => address[]) private _functionAccounts;
     mapping(address => uint256) private _accountPermissionCount;
-    
+
     uint256 private _totalPermissions;
 
     // Constants
@@ -39,19 +39,25 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
         _transferOwnership(msg.sender);
     }
 
-    function grantPermission(
-        address account,
-        bytes4 functionSelector,
-        uint256 expiresAt
-    ) external override onlyOwner validAccount(account) validExpirationTime(expiresAt) whenNotPaused {
+    function grantPermission(address account, bytes4 functionSelector, uint256 expiresAt)
+        external
+        override
+        onlyOwner
+        validAccount(account)
+        validExpirationTime(expiresAt)
+        whenNotPaused
+    {
         _grantPermission(account, functionSelector, expiresAt);
     }
 
-    function grantBatchPermissions(
-        address account,
-        bytes4[] memory functionSelectors,
-        uint256 expiresAt
-    ) external override onlyOwner validAccount(account) validExpirationTime(expiresAt) whenNotPaused {
+    function grantBatchPermissions(address account, bytes4[] memory functionSelectors, uint256 expiresAt)
+        external
+        override
+        onlyOwner
+        validAccount(account)
+        validExpirationTime(expiresAt)
+        whenNotPaused
+    {
         require(functionSelectors.length > 0, "Empty function selectors array");
         require(functionSelectors.length <= 50, "Too many function selectors");
 
@@ -62,17 +68,21 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
         emit BatchPermissionsGranted(account, functionSelectors, expiresAt, block.timestamp);
     }
 
-    function revokePermission(
-        address account,
-        bytes4 functionSelector
-    ) external override onlyOwner validAccount(account) {
+    function revokePermission(address account, bytes4 functionSelector)
+        external
+        override
+        onlyOwner
+        validAccount(account)
+    {
         _revokePermission(account, functionSelector);
     }
 
-    function revokeBatchPermissions(
-        address account,
-        bytes4[] memory functionSelectors
-    ) external override onlyOwner validAccount(account) {
+    function revokeBatchPermissions(address account, bytes4[] memory functionSelectors)
+        external
+        override
+        onlyOwner
+        validAccount(account)
+    {
         require(functionSelectors.length > 0, "Empty function selectors array");
         require(functionSelectors.length <= 50, "Too many function selectors");
 
@@ -85,7 +95,7 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
 
     function revokeAllPermissions(address account) external override onlyOwner validAccount(account) {
         bytes4[] memory functionSelectors = _accountFunctionSelectors[account];
-        
+
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             if (_permissions[account][functionSelectors[i]].isActive) {
                 _revokePermission(account, functionSelectors[i]);
@@ -93,12 +103,9 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
         }
     }
 
-    function hasPermission(
-        address account,
-        bytes4 functionSelector
-    )public view override returns (bool) {
+    function hasPermission(address account, bytes4 functionSelector) public view override returns (bool) {
         Permission memory permission = _permissions[account][functionSelector];
-        
+
         if (!permission.isActive) {
             return false;
         }
@@ -110,43 +117,38 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
         return true;
     }
 
-    function getPermission(
-        address account,
-        bytes4 functionSelector
-    ) external view override returns (Permission memory) {
+    function getPermission(address account, bytes4 functionSelector)
+        external
+        view
+        override
+        returns (Permission memory)
+    {
         return _permissions[account][functionSelector];
     }
 
-    function getAccountPermissions(
-        address account
-    ) external view override returns (Permission[] memory) {
+    function getAccountPermissions(address account) external view override returns (Permission[] memory) {
         bytes4[] memory functionSelectors = _accountFunctionSelectors[account];
         Permission[] memory permissions = new Permission[](functionSelectors.length);
-        
+
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             permissions[i] = _permissions[account][functionSelectors[i]];
         }
-        
+
         return permissions;
     }
 
-    function getFunctionPermissions(
-        bytes4 functionSelector
-    ) external view override returns (Permission[] memory) {
+    function getFunctionPermissions(bytes4 functionSelector) external view override returns (Permission[] memory) {
         address[] memory accounts = _functionAccounts[functionSelector];
         Permission[] memory permissions = new Permission[](accounts.length);
-        
+
         for (uint256 i = 0; i < accounts.length; i++) {
             permissions[i] = _permissions[accounts[i]][functionSelector];
         }
-        
+
         return permissions;
     }
 
-    function isPermissionExpired(
-        address account,
-        bytes4 functionSelector
-    ) external view override returns (bool) {
+    function isPermissionExpired(address account, bytes4 functionSelector) external view override returns (bool) {
         Permission memory permission = _permissions[account][functionSelector];
         return permission.isActive && permission.expiresAt <= block.timestamp;
     }
@@ -169,13 +171,9 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
     }
 
     // Internal functions
-    function _grantPermission(
-        address account,
-        bytes4 functionSelector,
-        uint256 expiresAt
-    ) internal {
+    function _grantPermission(address account, bytes4 functionSelector, uint256 expiresAt) internal {
         Permission storage permission = _permissions[account][functionSelector];
-        
+
         // If permission doesn't exist, add to tracking arrays
         if (!permission.isActive) {
             _accountFunctionSelectors[account].push(functionSelector);
@@ -183,7 +181,7 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
             _accountPermissionCount[account]++;
             _totalPermissions++;
         }
-        
+
         permission.account = account;
         permission.functionSelector = functionSelector;
         permission.isActive = true;
@@ -193,12 +191,9 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
         emit PermissionGranted(account, functionSelector, expiresAt, block.timestamp);
     }
 
-    function _revokePermission(
-        address account,
-        bytes4 functionSelector
-    ) internal {
+    function _revokePermission(address account, bytes4 functionSelector) internal {
         Permission storage permission = _permissions[account][functionSelector];
-        
+
         if (permission.isActive) {
             permission.isActive = false;
             _accountPermissionCount[account]--;
@@ -220,17 +215,17 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
     function cleanExpiredPermissions(address account) external {
         bytes4[] memory functionSelectors = _accountFunctionSelectors[account];
         uint256 cleanedCount = 0;
-        
+
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             Permission storage permission = _permissions[account][functionSelectors[i]];
-            
+
             if (permission.isActive && permission.expiresAt <= block.timestamp) {
                 permission.isActive = false;
                 _accountPermissionCount[account]--;
                 _totalPermissions--;
                 cleanedCount++;
-                
-          //      emit PermissionExpired(account, functionSelectors[i], block.timestamp);
+
+                //      emit PermissionExpired(account, functionSelectors[i], block.timestamp);
             }
         }
     }
@@ -242,25 +237,25 @@ contract PermissionManager is IPermissionManager, Ownable, Pausable {
     }
 
     // Admin functions
-    function updateMaxExpirationTime(uint256 newMaxExpirationTime) external onlyOwner {
+    function updateMaxExpirationTime(uint256 newMaxExpirationTime) external view onlyOwner {
         require(newMaxExpirationTime > MIN_EXPIRATION_TIME, "Max expiration time too low");
         require(newMaxExpirationTime <= 2 * 365 days, "Max expiration time too high");
-        
+
         // This would require adding a state variable for MAX_EXPIRATION_TIME
         // For now, we'll keep it as a constant
     }
 
-    function getPermissionStats() external view returns (
-        uint256 totalPermissions,
-        uint256 activePermissions,
-        uint256 expiredPermissions
-    ) {
+    function getPermissionStats()
+        external
+        view
+        returns (uint256 totalPermissions, uint256 activePermissions, uint256 expiredPermissions)
+    {
         totalPermissions = _totalPermissions;
         activePermissions = 0;
         expiredPermissions = 0;
-        
+
         // This would require iterating through all permissions
         // For efficiency, we could add additional tracking variables
         return (totalPermissions, activePermissions, expiredPermissions);
     }
-} 
+}

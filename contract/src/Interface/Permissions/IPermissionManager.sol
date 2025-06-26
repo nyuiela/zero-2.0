@@ -17,86 +17,40 @@ interface IPermissionManager {
     }
 
     event PermissionGranted(
-        address indexed account,
-        bytes4 indexed functionSelector,
-        uint256 expiresAt,
-        uint256 timestamp
+        address indexed account, bytes4 indexed functionSelector, uint256 expiresAt, uint256 timestamp
     );
 
-    event PermissionRevoked(
-        address indexed account,
-        bytes4 indexed functionSelector,
-        uint256 timestamp
-    );
+    event PermissionRevoked(address indexed account, bytes4 indexed functionSelector, uint256 timestamp);
 
-    event PermissionExpired(
-        address indexed account,
-        bytes4 indexed functionSelector,
-        uint256 timestamp
-    );
+    event PermissionExpired(address indexed account, bytes4 indexed functionSelector, uint256 timestamp);
 
     event BatchPermissionsGranted(
-        address indexed account,
-        bytes4[] functionSelectors,
-        uint256 expiresAt,
-        uint256 timestamp
+        address indexed account, bytes4[] functionSelectors, uint256 expiresAt, uint256 timestamp
     );
 
-    event BatchPermissionsRevoked(
-        address indexed account,
-        bytes4[] functionSelectors,
-        uint256 timestamp
-    );
+    event BatchPermissionsRevoked(address indexed account, bytes4[] functionSelectors, uint256 timestamp);
 
-    function grantPermission(
-        address account,
-        bytes4 functionSelector,
-        uint256 expiresAt
-    ) external;
+    function grantPermission(address account, bytes4 functionSelector, uint256 expiresAt) external;
 
-    function grantBatchPermissions(
-        address account,
-        bytes4[] memory functionSelectors,
-        uint256 expiresAt
-    ) external;
+    function grantBatchPermissions(address account, bytes4[] memory functionSelectors, uint256 expiresAt) external;
 
-    function revokePermission(
-        address account,
-        bytes4 functionSelector
-    ) external;
+    function revokePermission(address account, bytes4 functionSelector) external;
 
-    function revokeBatchPermissions(
-        address account,
-        bytes4[] memory functionSelectors
-    ) external;
+    function revokeBatchPermissions(address account, bytes4[] memory functionSelectors) external;
 
     function revokeAllPermissions(address account) external;
 
-    function hasPermission(
-        address account,
-        bytes4 functionSelector
-    ) external view returns (bool);
+    function hasPermission(address account, bytes4 functionSelector) external view returns (bool);
 
-    function getPermission(
-        address account,
-        bytes4 functionSelector
-    ) external view returns (Permission memory);
+    function getPermission(address account, bytes4 functionSelector) external view returns (Permission memory);
 
-    function getAccountPermissions(
-        address account
-    ) external view returns (Permission[] memory);
+    function getAccountPermissions(address account) external view returns (Permission[] memory);
 
-    function getFunctionPermissions(
-        bytes4 functionSelector
-    ) external view returns (Permission[] memory);
+    function getFunctionPermissions(bytes4 functionSelector) external view returns (Permission[] memory);
 
-    function isPermissionExpired(
-        address account,
-        bytes4 functionSelector
-    ) external view returns (bool);
+    function isPermissionExpired(address account, bytes4 functionSelector) external view returns (bool);
 
     function getActivePermissionsCount(address account) external view returns (uint256);
 
     function getTotalPermissionsCount() external view returns (uint256);
-    
-} 
+}
