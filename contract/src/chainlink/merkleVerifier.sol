@@ -22,6 +22,5 @@ contract MerkleVerifier {
     }
 }
 
-
-// store every car brands merkle verifier. 
-// using that merkleVerifier we can verifier the brand. db state. 
+// store every car brands merkle verifier.
+// using that merkleVerifier we can verifier the brand. db state.

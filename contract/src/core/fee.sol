@@ -69,7 +69,12 @@ contract Fee {
         return a * b;
     }
 
-    constructor(address _protocolFeeReceiver, address _auctionContract, address _globalPermissionManager, uint256 _stakeAmount) {
+    constructor(
+        address _protocolFeeReceiver,
+        address _auctionContract,
+        address _globalPermissionManager,
+        uint256 _stakeAmount
+    ) {
         require(_globalPermissionManager != address(0), "Invalid global permission manager address");
 
         globalPermissionManager = _globalPermissionManager;

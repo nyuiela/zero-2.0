@@ -5,6 +5,4 @@ contract MerkleVerifier {
 // do this how will it work accross the different chains
 
 // what exatly ??
-
-
 }
