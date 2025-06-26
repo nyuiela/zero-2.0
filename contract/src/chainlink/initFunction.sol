@@ -13,7 +13,7 @@ import {StateManager} from "../core/state.sol";
  */
 
 //CheckState
-contract Sync is FunctionsClient, ConfirmedOwner {
+contract InitFunction is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
     // State variables to store the last request ID, response, and error
@@ -24,6 +24,9 @@ contract Sync is FunctionsClient, ConfirmedOwner {
 
     address public stateAddress;
     StateManager public stateContract;
+
+    mapping(string => bytes32) public request;
+    mapping(bytes32 => bytes) private response;
 
     // Custom error type
     error UnexpectedRequestID(bytes32 requestId);
@@ -85,7 +88,7 @@ contract Sync is FunctionsClient, ConfirmedOwner {
      * @param args The arguments to pass to the HTTP request
      * @return requestId The ID of the request
      */
-    function sendRequest(uint64 subscriptionId, string[] calldata args)
+    function sendRequest(uint64 subscriptionId, string[] calldata args, string memory _brand)
         external
         onlyOwner
         returns (bytes32 requestId)
@@ -97,35 +100,38 @@ contract Sync is FunctionsClient, ConfirmedOwner {
         // Send the request and store the request ID
         s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
 
+        request[_brand] = s_lastRequestId;
+
         return s_lastRequestId;
     }
 
     /**
      * @notice Callback function for fulfilling a request
      * @param requestId The ID of the request to fulfill
-     * @param response The HTTP response data
+     * @param _response The HTTP response data
      * @param err Any errors from the Functions request
      */
-    function fulfillRequest(bytes32 requestId, bytes memory response, bytes memory err) internal override {
+    function fulfillRequest(bytes32 requestId, bytes memory _response, bytes memory err) internal override {
         if (s_lastRequestId != requestId) {
             revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
         // Update the contract's state variables with the response and any errors
-        s_lastResponse = response;
-        string memory _state = string(response);
+        s_lastResponse = _response;
+        string memory _state = string(_response);
         s_lastError = err;
 
         // check state
         // if state is not same: initate stake *&& lock contract.
         // if (state)
-        bytes32 s1 = keccak256(abi.encodePacked(state));
-        bytes32 s2 = keccak256(abi.encodePacked(_state));
-        if (s1 == s2) {
-          state = string(response);
-        } else {
-          stateContract.lockContract(brand, "State Differs");
-        }
+        // bytes32 s1 = keccak256(abi.encodePacked(state));
+        // bytes32 s2 = keccak256(abi.encodePacked(_state));
+        // if (s1 == s2) {
+        //   state = string(response);
+        // } else {
+        //   stateContract.lockContract(brand, "State Differs");
+        // }
         // Emit an event to log the response
+        response[requestId] = _response;
         emit Response(requestId, state, s_lastResponse, s_lastError);
     }
 }
