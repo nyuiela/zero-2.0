@@ -3,7 +3,7 @@ import AuctionGrid from '@/components/auction-grid'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#202626]">
+    <div className="min-h-screen">
       <Hero />
       <AuctionGrid />
     </div>

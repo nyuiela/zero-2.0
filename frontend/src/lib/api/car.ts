@@ -1,6 +1,7 @@
 import { CarListing, listings as mockListings } from '../data';
 import { API_BASE_URL } from './config';
 
+
 export async function fetchCars(): Promise<CarListing[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/cars`);

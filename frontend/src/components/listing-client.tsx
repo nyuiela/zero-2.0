@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import AuctionCard from '@/components/auction-card'
@@ -17,9 +17,42 @@ interface ListingClientProps {
     relatedAuctions: Auction[]
 }
 
+function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH') {
+  if (typeof amount === 'string') amount = parseFloat(amount.replace(/[^\d.]/g, ''))
+  return currency === 'ETH'
+    ? `${amount} ETH`
+    : `${amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} USDC`
+}
+
 export default function ListingClient({ listing, relatedAuctions }: ListingClientProps) {
     const [selectedImage, setSelectedImage] = useState<number>(0)
-    const [isWatching, setIsWatching] = useState<boolean>(false)
+    const [isBidModalOpen, setIsBidModalOpen] = useState(false)
+    const [bidAmount, setBidAmount] = useState<number | string>(listing.currentBid)
+    const [currency, setCurrency] = useState<'ETH' | 'USDC'>('ETH')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    // Calculate 12% stake
+    const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.12
+
+    // Sync bidAmount with currentBid when modal opens
+    useEffect(() => {
+      if (isBidModalOpen) {
+        setBidAmount(listing.currentBid)
+      }
+    }, [isBidModalOpen, listing.currentBid])
+
+    const handlePlaceBid = async () => {
+      setIsSubmitting(true)
+      setError(null)
+      // TODO: Place bid API call here
+      setTimeout(() => {
+        setIsSubmitting(false)
+        setIsBidModalOpen(false)
+        // Redirect to bidding room
+        window.location.href = `/auctions/${listing.id}/bidding-room`
+      }, 1200)
+    }
 
     return (
         <>
@@ -31,6 +64,50 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <span className="mx-2">/</span>
                 <span className="text-foreground">{listing.year} {listing.make} {listing.model}</span>
             </nav>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col md:flex-row gap-4 mb-8">
+              <Button className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={() => setIsBidModalOpen(true)}>
+                Place Bid
+              </Button>
+              <Button className="bg-gradient-to-r from-blue-600 to-cyan-400 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" asChild>
+                <Link href={`/auctions/${listing.id}/bidding-room`}>
+                  Join Bidding Room
+                </Link>
+              </Button>
+              <div className="ml-auto flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Currency:</span>
+                <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
+                <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
+              </div>
+            </div>
+
+            {/* Bid Modal */}
+            {isBidModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in">
+                  <button className="absolute top-3 right-3 text-gray-400 hover:text-black text-2xl" onClick={() => setIsBidModalOpen(false)}>&times;</button>
+                  <h2 className="text-2xl font-bold mb-4 text-gray-900">Place Your Bid</h2>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 mb-1 font-medium">Bid Amount ({currency})</label>
+                    <input
+                      type="number"
+                      min={typeof listing.currentBid === 'string' ? parseFloat(listing.currentBid.replace(/[^\d.]/g, '')) + 0.01 : (listing.currentBid as number) + 0.01}
+                      value={bidAmount}
+                      onChange={e => setBidAmount(e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    />
+                  </div>
+                  <div className="mb-4 text-sm text-gray-700">
+                    <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (12% of bid)
+                  </div>
+                  {error && <div className="text-red-500 mb-2">{error}</div>}
+                  <Button className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={handlePlaceBid} disabled={isSubmitting}>
+                    {isSubmitting ? 'Placing Bid...' : 'Place Bid & Enter Bidding Room'}
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Header Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
@@ -57,7 +134,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                                 </div>
                             )}
                         </div>
-
                         {/* Thumbnail Gallery */}
                         <div className="grid grid-cols-6 gap-2">
                             {listing.images.map((image, index) => (
@@ -81,7 +157,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
 
                 {/* Bidding Panel */}
                 <div className="space-y-6">
-                    <Card className="border-brand/20">
+                    <Card className="border-brand/20 bg-gradient-to-br from-[#f8fafc] to-[#e0e7ef] shadow-xl">
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-brand">Current Bid</CardTitle>
@@ -91,8 +167,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="text-3xl font-bold text-brand">{listing.currentBid}</div>
-
+                            <div className="text-3xl font-bold text-brand">{formatCurrency(listing.currentBid, currency)}</div>
                             <div className="flex items-center space-x-4 text-sm">
                                 <div className="flex items-center space-x-1">
                                     <Clock className="w-4 h-4 text-brand" />
@@ -103,42 +178,19 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                                     <span className="text-muted-foreground">{listing.views}</span>
                                 </div>
                             </div>
-
                             <Separator />
-
                             <div className="space-y-3">
                                 <div className="text-sm">
                                     <span className="text-muted-foreground">Starting Bid:</span>
-                                    <span className="ml-2 text-foreground">{listing.startingBid}</span>
+                                    <span className="ml-2 text-foreground">{formatCurrency(listing.startingBid, currency)}</span>
                                 </div>
                                 <div className="text-sm">
                                     <span className="text-muted-foreground">Estimated Value:</span>
-                                    <span className="ml-2 text-foreground">{listing.estimatedValue}</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 pt-4">
-                                <Button className="w-full bg-brand hover:bg-brand/80 text-white font-semibold text-lg py-3">
-                                    Place Bid
-                                </Button>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setIsWatching(!isWatching)}
-                                        className={`${isWatching ? 'border-brand text-brand' : ''}`}
-                                    >
-                                        <Heart className={`w-4 h-4 mr-2 ${isWatching ? 'fill-current' : ''}`} />
-                                        {isWatching ? 'Watching' : 'Watch'}
-                                    </Button>
-                                    <Button variant="outline">
-                                        <Share2 className="w-4 h-4 mr-2" />
-                                        Share
-                                    </Button>
+                                    <span className="ml-2 text-foreground">{formatCurrency(listing.estimatedValue, currency)}</span>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
-
                     {/* Seller Info */}
                     <Card>
                         <CardHeader>
@@ -192,7 +244,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                             </div>
                         </div>
                     </div>
-
                     {/* Description */}
                     <Card>
                         <CardHeader>
@@ -204,7 +255,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                             </p>
                         </CardContent>
                     </Card>
-
                     {/* History & Provenance */}
                     <Card>
                         <CardHeader>
@@ -228,7 +278,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                             </div>
                         </CardContent>
                     </Card>
-
                     {/* Features */}
                     <Card>
                         <CardHeader>
@@ -246,7 +295,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                         </CardContent>
                     </Card>
                 </div>
-
                 {/* Specifications */}
                 <div>
                     <Card>
@@ -281,9 +329,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                                         </div>
                                     </div>
                                 </div>
-
                                 <Separator />
-
                                 {/* Drivetrain */}
                                 <div>
                                     <h4 className="font-semibold text-foreground mb-3">Drivetrain</h4>
@@ -298,9 +344,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                                         </div>
                                     </div>
                                 </div>
-
                                 <Separator />
-
                                 {/* Exterior & Interior */}
                                 <div>
                                     <h4 className="font-semibold text-foreground mb-3">Design</h4>
@@ -319,9 +363,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                                         </div>
                                     </div>
                                 </div>
-
                                 <Separator />
-
                                 {/* Technical */}
                                 <div>
                                     <h4 className="font-semibold text-foreground mb-3">Technical</h4>
@@ -345,7 +387,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     </Card>
                 </div>
             </div>
-
             {/* Related Auctions */}
             <div className="mt-16 pt-8 border-t border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>

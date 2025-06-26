@@ -61,7 +61,7 @@ const Header = () => {
     <>
       <header className="w-full">
         {/* Main Navigation */}
-        <nav className="bg-[#202626] border-b border-gray-700">
+        <nav className="glass bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
@@ -72,7 +72,7 @@ const Header = () => {
                     width="120"
                     height="40"
                     viewBox="0 0 120 40"
-                    className="text-[#706646] fill-current"
+                    className="text-amber-500 fill-current"
                   >
                     <text x="0" y="25" className="text-xl font-bold">SBX CARS</text>
                   </svg>

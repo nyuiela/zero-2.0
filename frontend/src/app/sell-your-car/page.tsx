@@ -105,8 +105,9 @@ export default function SellYourCarPage() {
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setForm((prev) => ({ ...prev, images: Array.from(e.target.files) }))
+    const files = e.target.files
+    if (files && files.length > 0) {
+      setForm((prev) => ({ ...prev, images: Array.from(files) }))
     }
   }
 

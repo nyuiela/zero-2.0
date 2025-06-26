@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import AuctionGridClient from '@/components/auction-grid-client'
+import Image from 'next/image'
 
 interface Auction {
   id: number
@@ -256,7 +257,7 @@ export default function AuctionsPage() {
             {upcomingAuctions.map((auction) => (
               <div key={auction.id} className="auction-card group">
                 <div className="relative overflow-hidden aspect-[4/3]">
-                  <img
+                  <Image
                     src={auction.image}
                     alt={`${auction.year} ${auction.make} ${auction.model}`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -296,10 +297,12 @@ export default function AuctionsPage() {
             {availableNowCars.map((car) => (
               <div key={car.id} className="auction-card group">
                 <div className="relative overflow-hidden aspect-[4/3]">
-                  <img
+                  <Image
                     src={car.image}
                     alt={`${car.year} ${car.make} ${car.model}`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="p-5">

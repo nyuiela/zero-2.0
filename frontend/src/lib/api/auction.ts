@@ -2,6 +2,7 @@ import { Auction } from "../utils"
 import { auctions as mockAuctions } from "../auction"
 import { API_BASE_URL } from "./config"
 
+
 export async function fetchAuctions(): Promise<Auction[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auctions`)

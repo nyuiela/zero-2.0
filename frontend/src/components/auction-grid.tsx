@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import AuctionCard from './auction-card'
 import { auctions, upcomingAuctions } from '@/lib/auction'
+import Image from 'next/image'
 
 const AuctionGrid = () => {
   const [selectedCountry, setSelectedCountry] = useState('ALL')
@@ -60,10 +61,12 @@ const AuctionGrid = () => {
             {upcomingAuctions.map((auction) => (
               <div key={auction.id} className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-750 transition-colors cursor-pointer group">
                 <div className="relative aspect-[16/10]">
-                  <img
+                  <Image
                     src={auction.image}
                     alt={`${auction.year} ${auction.make} ${auction.model}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="p-6">

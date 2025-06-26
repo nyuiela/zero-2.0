@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "Your Gateway to Supercar Auctions onchain.",
@@ -28,13 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} font-inter antialiased bg-[#202626] text-white`}
-      >
+      <body className="font-sans bg-background text-foreground min-h-screen">
         <ClientBody>
-          <Header />
-          {children}
-          <Footer />
+          <div className="min-h-screen flex flex-col">
+            <Header className="glass sticky top-0 z-50" />
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+            <Footer className="glass" />
+          </div>
         </ClientBody>
       </body>
     </html>
