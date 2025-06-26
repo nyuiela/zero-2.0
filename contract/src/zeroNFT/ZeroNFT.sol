@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../Interface/oracle/IOracleMaster.sol";
 import "../core/reputation.sol";
+import "../core/registry.sol";
 
 /**
  * @title ZeroNFT
@@ -14,6 +15,7 @@ import "../core/reputation.sol";
  * Only registered and active car brands can mint NFTs representing their real-world assets
  */
 contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
+    CarRegistry  carRegistry;
     // Token ID counter (replaces deprecated Counters library)
     uint256 private _tokenIdCounter;
     
@@ -29,7 +31,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     // Protocol integration addresses
     address public oracleMaster;
     address public reputationContract;
-    address public carRegistry;
+   // address public carRegistry;
     
     // Mapping to track last transfer time for each token
     mapping(uint256 => uint256) private _lastTransferTime;
@@ -83,7 +85,7 @@ address auctionContract;
         auctionContract = _auctionContract;
         oracleMaster = _oracleMaster;
         reputationContract = _reputationContract;
-        carRegistry = _carRegistry;
+        carRegistry = CarRegistry( _carRegistry);
         _baseTokenURI = "";
         _tokenIdCounter = 0; 
     }
@@ -95,11 +97,11 @@ address auctionContract;
         NFTMetadata memory metadata,
         string memory tokenURI
     ) public nonReentrant returns (uint256) {
-        // Check if brand is registered and active
-        require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
+        // // Check if brand is registered and active
+        // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
         
-        // Check if brand has completed staking requirements
-        require(isBrandStaked(brandName), "ZeroNFT: Brand must complete staking requirements");
+        // // Check if brand has completed staking requirements
+        // require(isBrandStaked(brandName), "ZeroNFT: Brand must complete staking requirements");
         
         // Check if caller is brand owner or has permission
         require(
@@ -108,6 +110,7 @@ address auctionContract;
             hasBrandPermission(brandName, msg.sender),
             "ZeroNFT: Caller not authorized for this brand"
         );
+         CanMint(brandName);
         
         require(to != address(0), "ZeroNFT: Cannot mint to zero address");
         require(bytes(brandName).length > 0, "ZeroNFT: Brand name cannot be empty");
@@ -139,10 +142,11 @@ address auctionContract;
         string[] memory tokenURIs
     ) public nonReentrant returns (uint256[] memory) {
         // Check if brand is registered and active
-        require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
+        // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
         
-        // Check if brand has completed staking requirements
-        require(isBrandStaked(brandName), "ZeroNFT: Brand must complete staking requirements");
+        // // Check if brand has completed staking requirements
+        // require(isBrandStaked(brandName), "ZeroNFT: Brand must complete staking requirements");
+       
         
         // Check if caller is brand owner or has permission
         require(
@@ -162,6 +166,7 @@ address auctionContract;
         for (uint256 i = 0; i < metadatas.length; i++) {
             _tokenIdCounter++;
             uint256 newTokenId = _tokenIdCounter;
+             CanMint(brandName);
 
             _safeMint(to, newTokenId);
             _setTokenURI(newTokenId, tokenURIs[i]);
@@ -191,17 +196,19 @@ address auctionContract;
             return false;
         }
     }
-
+    function isBrandActive(string memory brandName) public view returns(bool){
+         carRegistry.isActivated();
+    }
     /**
      * @dev Check if a brand has completed staking requirements
      * @param brandName The name of the brand to check
      */
-    function isBrandStaked(string memory brandName) public view returns (bool) {
+    function CanMint(string memory brandName) public view returns (bool) {
         // This would need to be implemented based on your reputation contract
         // For now, we'll assume all registered brands are staked
         // will replace with the actiavtion logic after kaleel is done
         //@Todo 
-        return isBrandRegisteredAndActive(brandName);
+        return isBrandRegisteredAndActive(brandName) && isBrandActive(brandName);
     }
 
    

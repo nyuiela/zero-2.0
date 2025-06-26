@@ -147,8 +147,10 @@ contract CarRegistry is Ownable {
     function storeOntree() internal {}
 
     // only staked brands can ativate
-    function isActive() public {}
-
+    // function isActive() public {}
+  function isActivated() public view returns(bool){
+      return registry[_brand].status = Status.ACTIVE;
+    }
     function setProfile(address _newp) public onlyOwner {
       profileAddr = _newp;
       profileContract = Profile(_newp);
@@ -180,4 +182,7 @@ contract CarRegistry is Ownable {
       emit ChangedChainFunction(_newp);
     }
     // --- register --- state -- activate
+
+    // geter
+  
 }
