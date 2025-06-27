@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { useAuthStore } from '@/lib/authStore'
+import { getJwtToken } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -165,10 +166,13 @@ export default function ProfilePage() {
   const handleRequestSellerRole = async () => {
     setRoleRequestLoading(true)
     try {
-      // Try backend first
+      // Try backend first with JWT token
       const res = await fetch('/api/role-request', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getJwtToken() || ''}`
+        },
         body: JSON.stringify({ address }),
       })
       const data = await res.json()

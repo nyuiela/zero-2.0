@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAccount } from "wagmi"
 import { useQuery } from '@tanstack/react-query'
 import { fetchCars } from '@/lib/api/car'
+import { getJwtToken } from '@/lib/utils'
 import { CarListing, listings as mockListings } from '@/lib/data'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -177,7 +178,10 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
     try {
       const res = await fetch('/api/bid', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getJwtToken() || ''}`
+        },
         body: JSON.stringify({ auctionId, address, amount })
       })
       const data = await res.json()
@@ -431,43 +435,42 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     />
                   </div>
 
-                  {/* Stake Info */}
-                  {bidAmount && parseFloat(bidAmount) > 0 && (
-                    <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
-                      <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
-                    </div>
-                  )}
-
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting || timer === 0} 
-                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
-                  >
-                    {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
-                  </Button>
-                </form>
-
-                {/* Quick Bid Buttons */}
-                {quickBids.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {quickBids.map((amt) => (
-                        <Button 
-                          key={amt} 
-                          variant="outline" 
-                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white" 
-                          onClick={() => handleBid(amt)}
-                        >
-                          {formatCurrency(amt, currency)}
-                        </Button>
-                      ))}
-                    </div>
+                {/* Stake Info */}
+                {bidAmount && parseFloat(bidAmount) > 0 && (
+                  <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
+                    <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting || timer === 0} 
+                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
+                >
+                  {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
+                </Button>
+              </form>
+
+              {/* Quick Bid Buttons */}
+              {quickBids.length > 0 && (
+                <div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {quickBids.map((amt) => (
+                      <Button 
+                        key={amt} 
+                        variant="outline" 
+                        className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white" 
+                        onClick={() => handleBid(amt)}
+                      >
+                        {formatCurrency(amt, currency)}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

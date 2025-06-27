@@ -1,10 +1,84 @@
-import { clsx, type ClassValue } from "clsx"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// JWT Token Management Utilities
+const JWT_COOKIE_NAME = 'sbx_jwt_token'
+const JWT_EXPIRY_DAYS = 7
+
+export function setJwtToken(token: string): void {
+  const expiryDate = new Date()
+  expiryDate.setDate(expiryDate.getDate() + JWT_EXPIRY_DAYS)
+  
+  document.cookie = `${JWT_COOKIE_NAME}=${token}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Strict; Secure`
+}
+
+export function getJwtToken(): string | null {
+  if (typeof document === 'undefined') return null // SSR check
+  
+  const cookies = document.cookie.split(';')
+  const jwtCookie = cookies.find(cookie => cookie.trim().startsWith(`${JWT_COOKIE_NAME}=`))
+  
+  if (jwtCookie) {
+    return jwtCookie.split('=')[1]
+  }
+  
+  return null
+}
+
+export function clearJwtToken(): void {
+  if (typeof document === 'undefined') return // SSR check
+  
+  document.cookie = `${JWT_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+}
+
+export function isJwtTokenValid(): boolean {
+  const token = getJwtToken()
+  if (!token) return false
+  
+  try {
+    // Basic JWT structure validation (header.payload.signature)
+    const parts = token.split('.')
+    if (parts.length !== 3) return false
+    
+    // Check if token is expired (basic check)
+    const payload = JSON.parse(atob(parts[1]))
+    const currentTime = Math.floor(Date.now() / 1000)
+    
+    if (payload.exp && payload.exp < currentTime) {
+      clearJwtToken() // Clear expired token
+      return false
+    }
+    
+    return true
+  } catch (error) {
+    console.error('Error validating JWT token:', error)
+    clearJwtToken() // Clear invalid token
+    return false
+  }
+}
+
+// API request helper with JWT token
+export async function apiRequest(url: string, options: RequestInit = {}): Promise<Response> {
+  const token = getJwtToken()
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {}),
+  }
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  
+  return fetch(url, {
+    ...options,
+    headers,
+  })
+}
 
 export interface Auction {
   id: number

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { clearJwtToken } from './utils'
 
 interface User {
   address: string
@@ -18,5 +19,8 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
-  logout: () => set({ user: null })
+  logout: () => {
+    clearJwtToken() // Clear JWT token from cookies
+    set({ user: null })
+  }
 })) 
