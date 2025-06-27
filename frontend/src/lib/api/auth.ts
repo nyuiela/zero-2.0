@@ -8,17 +8,17 @@ const mockAuth = {
     if (params.nonce.startsWith('fallback-')) {
       console.log('Processing fallback authentication with message:', params.message)
       // For fallback auth, we can still verify the signature locally
-      return Promise.resolve({ 
-        verified: true, 
-        receipt: { 
-          mock: true, 
+      return Promise.resolve({
+        verified: true,
+        receipt: {
+          mock: true,
           fallback: true,
           message: params.message,
           signature: params.signature_bytes,
           address: params.expected_addr,
           username: params.username
-        }, 
-        stats: { segments: 1, total_cycles: 1000 } 
+        },
+        stats: { segments: 1, total_cycles: 1000 }
       })
     }
     return Promise.resolve({ receipt: { mock: true }, stats: { segments: 1, total_cycles: 1000 } })
@@ -26,22 +26,28 @@ const mockAuth = {
   getJwt: (body: any) => {
     // Handle fallback authentication
     if (body.receipt?.fallback) {
-      return Promise.resolve({ 
-        verified: true, 
-        address: [1, 2, 3], 
-        timestamp: Date.now(), 
+      return Promise.resolve({
+        verified: true,
+        address: [1, 2, 3],
+        timestamp: Date.now(),
         username: body.receipt.username || 'fallback_user',
         token: `fallback-jwt-${Date.now()}`
       })
     }
-    return Promise.resolve({ 
-      verified: true, 
-      address: [1, 2, 3], 
-      timestamp: Date.now(), 
+    return Promise.resolve({
+      verified: true,
+      address: [1, 2, 3],
+      timestamp: Date.now(),
       username: 'mock_user',
       token: 'mock-jwt'
     })
   }
+}
+
+
+export interface AuthResponse {
+  msg: string,
+  nonce: string,
 }
 
 export async function fetchNonce() {
@@ -49,13 +55,12 @@ export async function fetchNonce() {
     const res = await fetch(`${API_BASE_URL}/api/auth`)
     console.log("fetchNone ", res);
     if (!res.ok) {
-      console.warn('Auth API failed, using mock nonce')
-      return mockAuth.fetchNonce()
+      throw console.error('Auth API failed, using mock nonce')
     }
-    return res.json()
+    const response: AuthResponse = await res.json();
+    return response;
   } catch (error) {
-    console.error('Error fetching nonce, using mock:', error)
-    return mockAuth.fetchNonce()
+    return console.error('Error fetching nonce, using mock:', error)
   }
 }
 

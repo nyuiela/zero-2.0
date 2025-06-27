@@ -13,7 +13,7 @@ import { Input } from './ui/input'
 import { useAccount, useSignMessage } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { fetchNonce, verifySignature, getJwt } from '@/lib/api/auth'
+import { fetchNonce, verifySignature, getJwt, AuthResponse } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/authStore'
 import { verificationService } from '@/lib/verificationService'
 import { toast } from 'sonner'
@@ -93,10 +93,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       const timestamp = new Date().toISOString()
       const fallbackNonce = `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const fallbackMessage = `Login at ${timestamp}`
-      
+
       setNonce(fallbackNonce)
       setMessage(fallbackMessage)
-      
+
       console.log('Using fallback authentication message:', fallbackMessage)
     }
   }, [nonceData, nonceError, nonceLoading])
@@ -117,7 +117,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       console.log('Auto-advancing to sign step')
       setStep('sign')
     }
-  }, [isConnected, step])
+  }, [isConnected, step, address])
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -133,21 +133,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   const handleSignAndVerify = async () => {
     console.log('Starting sign and verify process')
-    if (!message || !nonce || !address || !username) {
+    if (!address || !username) {
       setError('Missing required information for signing.')
       return
     }
     try {
       setLoading(true)
       setError(null)
-      
+
+      const res: AuthResponse = await fetchNonce();
+      const message = res.msg;
+      const nonce = res.nonce;
       console.log('Signing message:', message)
       const signature = await signMessageAsync({
-        message,
+        message
       })
-      
+
       console.log('Signature received:', signature)
-      
+
       // Step 1: Start verification (returns immediately with status)
       const verifyRes: any = await verifySignatureMutation.mutateAsync({
         message,
@@ -156,9 +159,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         username,
         nonce
       })
-      
+
       console.log('Verification response:', verifyRes)
-      
+
       // Check if verification is complete or needs polling
       if (verifyRes.verified === true) {
         // Verification completed immediately
@@ -166,18 +169,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           receipt: verifyRes.receipt,
           stats: verifyRes.stats
         })
-        
+
         setUser({
           address,
           username,
           jwt: jwtRes.token || 'mock-jwt',
           verified: true
         })
-        
+
         toast.success('Login successful!', {
           description: 'Your account has been verified.',
         })
-        
+
         onClose()
       } else if (verifyRes.verificationId) {
         // Verification in progress, start polling using service
@@ -190,7 +193,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 receipt: status.receipt,
                 stats: status.stats
               })
-              
+
               // Update user with JWT
               setUser({
                 address,
@@ -207,7 +210,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             }
           }
         )
-        
+
         // Log user in immediately with pending verification
         setUser({
           address,
@@ -215,16 +218,16 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           jwt: 'pending-verification',
           verified: false
         })
-        
+
         toast.info('Login successful!', {
           description: 'Identity verification in progress...',
         })
-        
+
         onClose()
       } else {
         throw new Error('Unexpected verification response')
       }
-      
+
     } catch (err: any) {
       setError(err?.message || 'An unknown error occurred')
     } finally {
@@ -266,7 +269,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             )}
           </div>
         )
-      
+
       case 'connect':
         return (
           <div className="space-y-4">
@@ -293,7 +296,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </Button>
           </div>
         )
-      
+
       case 'sign':
         return (
           <div className="space-y-4">
@@ -302,24 +305,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
               </p>
             </div>
-            
+
             {/* Username input if not already set */}
-            {!username && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <Input
-                  id="username"
-                  placeholder="Enter username (min 4 characters)"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="border-gray-700 text-[#202626]"
-                />
-                {username.length > 0 && username.length < 4 && (
-                  <p className="text-red-500 text-sm mt-1">Username must be at least 4 characters</p>
-                )}
-              </div>
-            )}
-            
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <Input
+                id="username"
+                placeholder="Enter username (min 4 characters)"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="border-gray-700 text-[#202626]"
+              />
+              {username.length > 0 && username.length < 4 && (
+                <p className="text-red-500 text-sm mt-1">Username must be at least 4 characters</p>
+              )}
+            </div>
+
+
             {message && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-blue-800 text-sm">

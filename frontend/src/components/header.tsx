@@ -146,7 +146,7 @@ const Header = () => {
                 </div>
 
                 {/* Auth Section */}
-                {!isWalletConnected ? (
+                {true ? (
                   // Login Button (when not authenticated)
                   <Button
                     onClick={() => setIsLoginModalOpen(true)}
