@@ -58,7 +58,7 @@ const Hero = () => {
       </div>
       {/* hero auction car info at the bottom */}
       <div className="absolute bottom-5 left-0 w-full z-10 flex justify-center">
-        <div className="max-w-xl mx-auto px-2 h-fit w-full border-t border-gray-00 pt-4 bg-[#E4DFDA]/30 p-2 backdrop-blur-md py-5">
+        <div className="max-w-xl mx-auto px-2 h-fit w-full border-t border-white pt-4 bg-[#E4DFDA]/30 p-2 backdrop-blur-md py-5 scale-80">
           <div className="flex flex-col justify-center h-full text-center items-center">
             <div className="text-brand text-white text-sm lg:text-xl font-semibold mb-2 drop-shadow-lg">
               {auction.year}

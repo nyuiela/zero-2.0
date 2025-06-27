@@ -32,7 +32,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
   const currency = auction.currency || 'ETH'
   return (
-    <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-00">
+    <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
       {/* Car Image */}
       <div className="relative overflow-hidden h-[30rem]">
         <Image
@@ -82,7 +82,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
             <span className="truncate">{auction.location}</span>
           </div>
           {/* Bidding Info */}
-          <div className="border-t border-gray-00 pt-4 flex items-center justify-between bg-[#E4DFDA]/30 p-2 backdrop-blur-md">
+          <div className="border-t border-white pt-4 flex items-center justify-between bg-[#E4DFDA]/30 p-2 backdrop-blur-md">
             <div>
               <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium ">
                 Current Bid

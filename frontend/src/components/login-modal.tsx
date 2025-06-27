@@ -271,7 +271,7 @@ export function LoginModal() {
             )}
             <Button
               onClick={handleConnectWallet}
-              className="w-full bg-amber-400 text-white text-xl hover:bg-amber-600"
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               Connect Wallet
             </Button>
@@ -298,7 +298,7 @@ export function LoginModal() {
             )}
             <Button
               onClick={handleConnectWallet}
-              className="w-full bg-amber-400 text-white text-xl hover:bg-amber-600"
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               Connect Wallet
             </Button>
@@ -345,7 +345,7 @@ export function LoginModal() {
             <Button
               onClick={handleSignAndVerify}
               disabled={loading || !username || username.length < 4}
-              className="w-full bg-[#277fdd] text-white text-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               {loading ? 'Signing...' : 'Sign Message & Login'}
             </Button>

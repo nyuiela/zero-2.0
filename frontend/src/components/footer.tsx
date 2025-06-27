@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 const Footer = () => {
   return (
-    <footer className="bg-[#202626] border-t border-gray-700">
+    <footer className="bg-[#00296b] border-t border-gray-700">
       {/* Newsletter Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
@@ -137,7 +137,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Powered by Supercar Blondie */}
+        {/* Powered by Zero  */}
         <div className="border-t border-gray-700 pt-8 mb-8">
           <div className="text-center">
             <p className="text-gray-400 text-sm mb-3">Powered by</p>
@@ -154,9 +154,9 @@ const Footer = () => {
                 className="mr-3 fill-current"
               >
                 <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2" fill="none" />
-                <text x="20" y="25" textAnchor="middle" className="text-sm font-bold">SB</text>
+                <text x="20" y="25" textAnchor="middle" className="text-sm font-bold">Z|R</text>
               </svg>
-              Supercar Blondie
+              ZE RO
             </Link>
           </div>
         </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/header'
 import Footer from '@/components/footer'
 import AuctionGridClient from '@/components/auction-grid-client'
 import Image from 'next/image'

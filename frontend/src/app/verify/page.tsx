@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Search, 
-  Filter, 
-  ExternalLink, 
-  Shield, 
-  Car, 
-  Gavel, 
+import {
+  Search,
+  Filter,
+  ExternalLink,
+  Shield,
+  Car,
+  Gavel,
   UserCheck,
   Clock,
   CheckCircle,
@@ -237,17 +237,17 @@ export default function VerifyPage() {
 
   const filteredTransactions = transactions.filter(tx => {
     const matchesSearch = tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tx.to.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tx.metadata?.username?.toLowerCase().includes(searchTerm.toLowerCase())
+      tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.to.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.metadata?.username?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesFilter = filterType === 'all' || tx.type === filterType
     return matchesSearch && matchesFilter
   })
 
   const filteredProofs = proofs.filter(proof => {
     const matchesSearch = proof.transactionHash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         proof.metadata.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         proof.metadata.username?.toLowerCase().includes(searchTerm.toLowerCase())
+      proof.metadata.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      proof.metadata.username?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesSearch
   })
 
@@ -275,7 +275,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background lg:mx-[20rem]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Block Explorer</h1>
@@ -334,13 +334,13 @@ export default function VerifyPage() {
           <TabsContent value="transactions" className="mt-6">
             <div className="space-y-4">
               {filteredTransactions.map((tx) => (
-                <Card key={tx.id} className="bg-gray-200">
+                <Card key={tx.id} className="rounded-sm bg-white text-black">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getTransactionIcon(tx.type)}
                         <div>
-                          <CardTitle className="text-white capitalize">{tx.type.replace('_', ' ')}</CardTitle>
+                          <CardTitle className="capitalize">{tx.type.replace('_', ' ')}</CardTitle>
                           <CardDescription className="text-gray-400">
                             Block #{tx.blockNumber} • {formatTimestamp(tx.timestamp)}
                           </CardDescription>
@@ -352,12 +352,12 @@ export default function VerifyPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className='bg-white'>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-400 mb-1">Transaction Hash:</p>
+                        <p className=" mb-1">Transaction Hash:</p>
                         <div className="flex items-center gap-2">
-                          <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                          <code className="bg-gray-00 px-2 py-1 rounded">
                             {formatAddress(tx.hash)}
                           </code>
                           <Button
@@ -371,20 +371,20 @@ export default function VerifyPage() {
                         </div>
                       </div>
                       <div>
-                        <p className="text-gray-400 mb-1">From:</p>
+                        <p className="mb-1">From:</p>
                         <code className="text-white bg-gray-700 px-2 py-1 rounded">
                           {formatAddress(tx.from)}
                         </code>
                       </div>
                       <div>
-                        <p className="text-gray-400 mb-1">To:</p>
+                        <p className=" mb-1">To:</p>
                         <code className="text-white bg-gray-700 px-2 py-1 rounded">
                           {formatAddress(tx.to)}
                         </code>
                       </div>
                       {tx.value && (
                         <div>
-                          <p className="text-gray-400 mb-1">Value:</p>
+                          <p className=" mb-1">Value:</p>
                           <code className="text-white bg-gray-700 px-2 py-1 rounded">
                             {tx.value}
                           </code>
@@ -392,7 +392,7 @@ export default function VerifyPage() {
                       )}
                       {tx.metadata?.username && (
                         <div>
-                          <p className="text-gray-400 mb-1">Username:</p>
+                          <p className=" mb-1">Username:</p>
                           <code className="text-white bg-gray-700 px-2 py-1 rounded">
                             {tx.metadata.username}
                           </code>
@@ -400,7 +400,7 @@ export default function VerifyPage() {
                       )}
                       {tx.proof && (
                         <div className="md:col-span-2">
-                          <p className="text-gray-400 mb-1">Zero-Knowledge Proof:</p>
+                          <p className=" mb-1">Zero-Knowledge Proof:</p>
                           <Badge variant="outline" className="text-green-400 border-green-400">
                             <Shield className="h-3 w-3 mr-1" />
                             Verified
@@ -417,7 +417,7 @@ export default function VerifyPage() {
           <TabsContent value="proofs" className="mt-6">
             <div className="space-y-4">
               {filteredProofs.map((proof) => (
-                <Card key={proof.id} className="bg-gray-800 border-gray-700">
+                <Card key={proof.id} className="bg-[#E5E7E6] border-gray-700 ">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -435,15 +435,15 @@ export default function VerifyPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className='bg-[#E5E7E6]/90'>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-gray-400 mb-1">Description:</p>
+                        <p className=" mb-1">Description:</p>
                         <p className="text-white">{proof.metadata.description}</p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-400 mb-1">Transaction Hash:</p>
+                          <p className=" mb-1">Transaction Hash:</p>
                           <div className="flex items-center gap-2">
                             <code className="text-white bg-gray-700 px-2 py-1 rounded">
                               {formatAddress(proof.transactionHash)}
@@ -460,7 +460,7 @@ export default function VerifyPage() {
                         </div>
                         {proof.metadata.username && (
                           <div>
-                            <p className="text-gray-400 mb-1">Username:</p>
+                            <p className=" mb-1">Username:</p>
                             <code className="text-white bg-gray-700 px-2 py-1 rounded">
                               {proof.metadata.username}
                             </code>
@@ -468,7 +468,7 @@ export default function VerifyPage() {
                         )}
                         {proof.metadata.carId && (
                           <div>
-                            <p className="text-gray-400 mb-1">Car ID:</p>
+                            <p className=" mb-1">Car ID:</p>
                             <code className="text-white bg-gray-700 px-2 py-1 rounded">
                               {proof.metadata.carId}
                             </code>
@@ -476,7 +476,7 @@ export default function VerifyPage() {
                         )}
                         {proof.metadata.auctionId && (
                           <div>
-                            <p className="text-gray-400 mb-1">Auction ID:</p>
+                            <p className=" mb-1">Auction ID:</p>
                             <code className="text-white bg-gray-700 px-2 py-1 rounded">
                               {proof.metadata.auctionId}
                             </code>
@@ -485,7 +485,7 @@ export default function VerifyPage() {
                       </div>
                       {proof.stats && (
                         <div>
-                          <p className="text-gray-400 mb-1">Proof Statistics:</p>
+                          <p className=" mb-1">Proof Statistics:</p>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                             <div className="bg-gray-700 p-2 rounded">
                               <p className="text-gray-400">Segments</p>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
+import Header from "@/components/header";
 
 export const metadata: Metadata = {
   title: "Your Gateway to Supercar Auctions onchain.",
@@ -25,6 +25,7 @@ export default function RootLayout({
       <body className="font-sans bg-background text-foreground min-h-screen">
         <ClientBody>
           <div className="min-h-screen flex flex-col">
+            {/* <Header /> */}
             <Header />
             <main className="flex-1 flex flex-col">
               {children}
