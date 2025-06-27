@@ -1,532 +1,6 @@
 [
   {
     "id": 1,
-    "make": "Ferrari",
-    "model": "488 GTB",
-    "year": 2019,
-    "color": "Red",
-    "mileage": 8200,
-    "vin": "ZFF79ALA4J0234001",
-    "transmission": "Automatic",
-    "fuel_type": "Petrol",
-    "engine_size": "3.9L V8",
-    "exterior_color": "Rosso Corsa",
-    "interior_color": "Black",
-    "odometer": 8200,
-    "description": "High-performance twin-turbo V8 Ferrari in pristine condition.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 1,
-    "starting_price": 200000,
-    "current_price": 215000,
-    "auction_status": "active",
-    "summary": "Iconic Ferrari 488 GTB in pristine condition.",
-    "report": {
-      "inspection": "passed",
-      "notes": "minor wear",
-      "condition": "excellent"
-    },
-    "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Turbocharged engine",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "Driven 8,200 miles, well-maintained, and regularly serviced.",
-    "location": "Los Angeles, CA",
-    "seller": "SupercarDealerLA",
-    "seller_type": "Dealer",
-    "lot": "LOT-001",
-    "highlight": ["Low mileage", "Clean title", "Sport exhaust"],
-    "token_id": 1,
-    "owner": "0x123abc456def789ghi",
-    "created_at": "2024-01-01T00:00:00Z",
-    "updated_at": "2024-01-01T00:00:00Z"
-  },
-  {
-    "id": 2,
-    "make": "Lamborghini",
-    "model": "Huracán",
-    "year": 2020,
-    "color": "Yellow",
-    "mileage": 12000,
-    "vin": "ZHWUC1ZF5LLA12345",
-    "transmission": "Automatic",
-    "fuel_type": "Petrol",
-    "engine_size": "5.2L V10",
-    "exterior_color": "Giallo",
-    "interior_color": "Black",
-    "odometer": 12000,
-    "description": "Stunning Lamborghini Huracán with low mileage and perfect service history.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 2,
-    "starting_price": 180000,
-    "current_price": 195000,
-    "auction_status": "active",
-    "summary": "Exquisite Lamborghini Huracán with premium features.",
-    "report": {
-      "inspection": "passed",
-      "notes": "perfect condition",
-      "condition": "mint"
-    },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Extra key",
-      "Service history",
-      "Carbon fiber package"
-    ],
-    "features": {
-      "interior": ["Alcantara seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Naturally aspirated V10",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "Only 12,000 miles, single owner, full service history.",
-    "location": "Miami, FL",
-    "seller": "LuxuryCarMiami",
-    "seller_type": "Dealer",
-    "lot": "LOT-002",
-    "highlight": ["Low mileage", "Clean title", "Carbon package"],
-    "token_id": 2,
-    "owner": "0x456def789ghi123abc",
-    "created_at": "2024-01-02T00:00:00Z",
-    "updated_at": "2024-01-02T00:00:00Z"
-  },
-  {
-    "id": 3,
-    "make": "Porsche",
-    "model": "911 GT3 RS",
-    "year": 2021,
-    "color": "White",
-    "mileage": 5000,
-    "vin": "WP0AB2A91MS123456",
-    "transmission": "Manual",
-    "fuel_type": "Petrol",
-    "engine_size": "4.0L Flat-6",
-    "exterior_color": "White",
-    "interior_color": "Black",
-    "odometer": 5000,
-    "description": "Track-focused Porsche 911 GT3 RS with minimal road use.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 3,
-    "starting_price": 220000,
-    "current_price": 235000,
-    "auction_status": "active",
-    "summary": "Ultimate track weapon with street legality.",
-    "report": {
-      "inspection": "passed",
-      "notes": "track use",
-      "condition": "excellent"
-    },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Extra key",
-      "Service history",
-      "Track day package"
-    ],
-    "features": {
-      "interior": ["Carbon fiber seats", "Alcantara trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Naturally aspirated flat-6",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "Only 5,000 miles, primarily track use, full service history.",
-    "location": "New York, NY",
-    "seller": "PorscheNYC",
-    "seller_type": "Dealer",
-    "lot": "LOT-003",
-    "highlight": ["Track focused", "Low mileage", "Carbon package"],
-    "token_id": 3,
-    "owner": "0x789ghi123abc456def",
-    "created_at": "2024-01-03T00:00:00Z",
-    "updated_at": "2024-01-03T00:00:00Z"
-  },
-  {
-    "id": 4,
-    "make": "BMW",
-    "model": "M4 Competition",
-    "year": 2022,
-    "color": "Black",
-    "mileage": 8000,
-    "vin": "WBS83CD0X1234567",
-    "transmission": "Automatic",
-    "fuel_type": "Petrol",
-    "engine_size": "3.0L I6 Twin-Turbo",
-    "exterior_color": "Black",
-    "interior_color": "Red",
-    "odometer": 8000,
-    "description": "BMW M4 Competition with aggressive styling and powerful performance.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 4,
-    "starting_price": 85000,
-    "current_price": 92000,
-    "auction_status": "active",
-    "summary": "BMW M4 Competition with premium features.",
-    "report": {
-      "inspection": "passed",
-      "notes": "minor wear",
-      "condition": "excellent"
-    },
-    "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Twin-turbo engine",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "Only 8,000 miles, well-maintained, full service history.",
-    "location": "Chicago, IL",
-    "seller": "BMWChicago",
-    "seller_type": "Dealer",
-    "lot": "LOT-004",
-    "highlight": ["Low mileage", "Clean title", "M package"],
-    "token_id": 4,
-    "owner": "0xabc123def456ghi789",
-    "created_at": "2024-01-04T00:00:00Z",
-    "updated_at": "2024-01-04T00:00:00Z"
-  },
-  {
-    "id": 5,
-    "make": "Mercedes-Benz",
-    "model": "AMG GT",
-    "year": 2021,
-    "color": "Silver",
-    "mileage": 15000,
-    "vin": "WDDYJ7JA0KA123456",
-    "transmission": "Automatic",
-    "fuel_type": "Petrol",
-    "engine_size": "4.0L V8 Biturbo",
-    "exterior_color": "Silver",
-    "interior_color": "Black",
-    "odometer": 15000,
-    "description": "Mercedes-AMG GT with handcrafted engine and premium features.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 5,
-    "starting_price": 120000,
-    "current_price": 135000,
-    "auction_status": "active",
-    "summary": "Mercedes-AMG GT with handcrafted performance.",
-    "report": {
-      "inspection": "passed",
-      "notes": "excellent condition",
-      "condition": "excellent"
-    },
-    "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Handcrafted V8",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "15,000 miles, well-maintained, full service history.",
-    "location": "Houston, TX",
-    "seller": "MercedesHouston",
-    "seller_type": "Dealer",
-    "lot": "LOT-005",
-    "highlight": ["Handcrafted engine", "Clean title", "AMG package"],
-    "token_id": 5,
-    "owner": "0xdef456ghi789abc123",
-    "created_at": "2024-01-05T00:00:00Z",
-    "updated_at": "2024-01-05T00:00:00Z"
-  },
-  {
-    "id": 6,
-    "make": "Ford",
-    "model": "Mustang GT",
-    "year": 1969,
-    "color": "Blue",
-    "mileage": 45000,
-    "vin": "9F02R123456",
-    "transmission": "Manual",
-    "fuel_type": "Petrol",
-    "engine_size": "5.0L V8",
-    "exterior_color": "Blue",
-    "interior_color": "Black",
-    "odometer": 45000,
-    "description": "Classic 1969 Ford Mustang GT in excellent condition.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 6,
-    "starting_price": 45000,
-    "current_price": 52000,
-    "auction_status": "active",
-    "summary": "Classic 1969 Ford Mustang GT.",
-    "report": {
-      "inspection": "passed",
-      "notes": "restored",
-      "condition": "excellent"
-    },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Extra key",
-      "Service history",
-      "Restoration documents"
-    ],
-    "features": {
-      "interior": ["Vinyl seats", "Original trim", "AM radio"],
-      "exterior": ["Original paint", "Chrome trim", "Classic wheels"],
-      "mechanical": [
-        "Original engine",
-        "Manual transmission",
-        "Classic suspension"
-      ]
-    },
-    "vehicale_overview": "45,000 miles, fully restored, matching numbers.",
-    "location": "Detroit, MI",
-    "seller": "ClassicCarDetroit",
-    "seller_type": "Dealer",
-    "lot": "LOT-006",
-    "highlight": ["Classic", "Restored", "Matching numbers"],
-    "token_id": 6,
-    "owner": "0xghi789abc123def456",
-    "created_at": "2024-01-06T00:00:00Z",
-    "updated_at": "2024-01-06T00:00:00Z"
-  },
-  {
-    "id": 7,
-    "make": "Chevrolet",
-    "model": "Corvette Stingray",
-    "year": 1967,
-    "color": "Red",
-    "mileage": 38000,
-    "vin": "194677S123456",
-    "transmission": "Manual",
-    "fuel_type": "Petrol",
-    "engine_size": "5.7L V8",
-    "exterior_color": "Red",
-    "interior_color": "Black",
-    "odometer": 38000,
-    "description": "Iconic 1967 Chevrolet Corvette Stingray.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 7,
-    "starting_price": 65000,
-    "current_price": 72000,
-    "auction_status": "active",
-    "summary": "Iconic 1967 Chevrolet Corvette Stingray.",
-    "report": {
-      "inspection": "passed",
-      "notes": "restored",
-      "condition": "excellent"
-    },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Extra key",
-      "Service history",
-      "Restoration documents"
-    ],
-    "features": {
-      "interior": ["Vinyl seats", "Original trim", "AM radio"],
-      "exterior": ["Original paint", "Chrome trim", "Classic wheels"],
-      "mechanical": [
-        "Original engine",
-        "Manual transmission",
-        "Classic suspension"
-      ]
-    },
-    "vehicale_overview": "38,000 miles, fully restored, matching numbers.",
-    "location": "Atlanta, GA",
-    "seller": "ClassicCarAtlanta",
-    "seller_type": "Dealer",
-    "lot": "LOT-007",
-    "highlight": ["Classic", "Restored", "Matching numbers"],
-    "token_id": 7,
-    "owner": "0xabc123def456ghi789",
-    "created_at": "2024-01-07T00:00:00Z",
-    "updated_at": "2024-01-07T00:00:00Z"
-  },
-  {
-    "id": 8,
-    "make": "Tesla",
-    "model": "Model S Plaid",
-    "year": 2023,
-    "color": "White",
-    "mileage": 3000,
-    "vin": "5YJS4E12345678901",
-    "transmission": "Automatic",
-    "fuel_type": "Electric",
-    "engine_size": "Tri-Motor",
-    "exterior_color": "White",
-    "interior_color": "Black",
-    "odometer": 3000,
-    "description": "Tesla Model S Plaid with incredible performance.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1536700503339-1e4b06520771?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 8,
-    "starting_price": 120000,
-    "current_price": 125000,
-    "auction_status": "active",
-    "summary": "Tesla Model S Plaid with incredible performance.",
-    "report": {
-      "inspection": "passed",
-      "notes": "like new",
-      "condition": "mint"
-    },
-    "included": [
-      "Owner's manual",
-      "Charging cable",
-      "Extra key",
-      "Service history"
-    ],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Glass roof", "Carbon fiber body"],
-      "mechanical": ["Tri-motor setup", "Autopilot", "Launch control"]
-    },
-    "vehicale_overview": "Only 3,000 miles, like new condition.",
-    "location": "San Francisco, CA",
-    "seller": "TeslaSF",
-    "seller_type": "Dealer",
-    "lot": "LOT-008",
-    "highlight": ["Electric", "Low mileage", "Plaid performance"],
-    "token_id": 8,
-    "owner": "0xdef456ghi789abc123",
-    "created_at": "2024-01-08T00:00:00Z",
-    "updated_at": "2024-01-08T00:00:00Z"
-  },
-  {
-    "id": 9,
-    "make": "Porsche",
-    "model": "Taycan Turbo S",
-    "year": 2022,
-    "color": "Blue",
-    "mileage": 12000,
-    "vin": "WP0AB2Y1234567890",
-    "transmission": "Automatic",
-    "fuel_type": "Electric",
-    "engine_size": "Dual-Motor",
-    "exterior_color": "Blue",
-    "interior_color": "Black",
-    "odometer": 12000,
-    "description": "Porsche Taycan Turbo S with incredible performance.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 9,
-    "starting_price": 180000,
-    "current_price": 190000,
-    "auction_status": "active",
-    "summary": "Porsche Taycan Turbo S with incredible performance.",
-    "report": {
-      "inspection": "passed",
-      "notes": "excellent condition",
-      "condition": "excellent"
-    },
-    "included": [
-      "Owner's manual",
-      "Charging cable",
-      "Extra key",
-      "Service history"
-    ],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Glass roof", "Carbon fiber body"],
-      "mechanical": ["Dual-motor setup", "Autopilot", "Launch control"]
-    },
-    "vehicale_overview": "12,000 miles, well-maintained, full service history.",
-    "location": "Seattle, WA",
-    "seller": "PorscheSeattle",
-    "seller_type": "Dealer",
-    "lot": "LOT-009",
-    "highlight": ["Electric", "Turbo S", "Premium features"],
-    "token_id": 9,
-    "owner": "0xghi789abc123def456",
-    "created_at": "2024-01-09T00:00:00Z",
-    "updated_at": "2024-01-09T00:00:00Z"
-  },
-  {
-    "id": 10,
-    "make": "Range Rover",
-    "model": "Sport SVR",
-    "year": 2021,
-    "color": "Black",
-    "mileage": 25000,
-    "vin": "SALGS2SVXKA123456",
-    "transmission": "Automatic",
-    "fuel_type": "Petrol",
-    "engine_size": "5.0L V8 Supercharged",
-    "exterior_color": "Black",
-    "interior_color": "Tan",
-    "odometer": 25000,
-    "description": "Range Rover Sport SVR with incredible performance.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 10,
-    "starting_price": 95000,
-    "current_price": 105000,
-    "auction_status": "active",
-    "summary": "Range Rover Sport SVR with incredible performance.",
-    "report": {
-      "inspection": "passed",
-      "notes": "excellent condition",
-      "condition": "excellent"
-    },
-    "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
-    "features": {
-      "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-      "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-      "mechanical": [
-        "Supercharged V8",
-        "Magnetic ride control",
-        "Launch control"
-      ]
-    },
-    "vehicale_overview": "25,000 miles, well-maintained, full service history.",
-    "location": "Denver, CO",
-    "seller": "RangeRoverDenver",
-    "seller_type": "Dealer",
-    "lot": "LOT-010",
-    "highlight": ["SVR performance", "Clean title", "Premium features"],
-    "token_id": 10,
-    "owner": "0xabc123def456ghi789",
-    "created_at": "2024-01-10T00:00:00Z",
-    "updated_at": "2024-01-10T00:00:00Z"
-  },
-  {
-    "id": 330,
     "make": "Ford",
     "model": "GT Holman Moody Heritage Edition",
     "year": 2022,
@@ -539,12 +13,13 @@
     "exterior_color": "Gulf Racing Blue",
     "interior_color": "Carbon Fiber with Alcantara",
     "odometer": 2500,
-    "description": "This exceptional 2022 Ford GT Holman Moody Heritage Edition represents the pinnacle of American automotive engineering and racing heritage. With only 2,500 miles on the odometer, this pristine example showcases the legendary partnership between Ford and Holman Moody Racing.",
+    "description": "This exceptional 2022 Ford GT Holman Moody Heritage Edition represents the pinnacle of American automotive engineering and racing heritage.",
     "image_url": [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3096838199.jpeg",
+      "https://www.dubicars.com/images/a8c183/w_1300x760/sbx-cars/88174657-fa9a-4809-ae96-e23c05d64d98.jpeg",
+      "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRlZU7GFJEZdZjR2BMiwi4Ropa9D2niC_IKGXmj3FlmZIY6l4kp"
     ],
-    "auction_id": 330,
+    "auction_id": 1,
     "starting_price": 500000,
     "current_price": 701500,
     "auction_status": "active",
@@ -558,40 +33,26 @@
       "Owner's manual",
       "Tool kit",
       "Extra key",
-      "Complete service records",
-      "Heritage documentation"
+      "Complete service records"
     ],
     "features": {
-      "interior": [
-        "Carbon Fiber Body Panels",
-        "Track Package",
-        "Racing Harnesses",
-        "Roll Cage"
-      ],
-      "exterior": [
-        "Michelin Pilot Sport Cup 2 Tires",
-        "Carbon Fiber Interior Trim",
-        "Titanium Roll Cage"
-      ],
-      "mechanical": [
-        "Traction Management System",
-        "Launch Control",
-        "Bilstein Adaptive Dampers"
-      ]
+      "interior": ["Racing Harnesses", "Roll Cage", "Carbon Fiber"],
+      "exterior": ["Track Package", "Carbon Fiber Body"],
+      "mechanical": ["Traction Management", "Launch Control"]
     },
-    "vehicale_overview": "Originally delivered to Holman Moody Racing for development testing, meticulously maintained by authorized Ford technicians.",
+    "vehicale_overview": "Only 2,500 miles, Heritage Edition with racing pedigree.",
     "location": "Cologne, Germany",
     "seller": "Premium Automotive Collection",
     "seller_type": "Dealer",
-    "lot": "LOT-330",
-    "highlight": ["Heritage Edition", "Track Package", "Carbon Fiber"],
-    "token_id": 330,
+    "lot": "LOT-001",
+    "highlight": ["Heritage Edition", "Low mileage", "Racing pedigree"],
+    "token_id": 1,
     "owner": "0x330abc456def789ghi",
     "created_at": "2024-01-01T00:00:00Z",
     "updated_at": "2024-01-01T00:00:00Z"
   },
   {
-    "id": 334,
+    "id": 2,
     "make": "Morgan",
     "model": "Aero 8 Supersports",
     "year": 2011,
@@ -604,16 +65,16 @@
     "exterior_color": "Silver",
     "interior_color": "Black Leather",
     "odometer": 15000,
-    "description": "A rare Morgan Aero 8 Supersports, combining British craftsmanship with modern performance. Low mileage, well maintained.",
+    "description": "A rare Morgan Aero 8 Supersports, combining British craftsmanship with modern performance.",
     "image_url": [
-      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3233359261.jpeg",
+      "https://www.dubicars.com/images/591e3d/400x234/sbx-cars/f853ecbd-ebd8-4e55-9cf3-a4daa5bf0b12.jpeg"
     ],
-    "auction_id": 334,
+    "auction_id": 2,
     "starting_price": 80000,
     "current_price": 96000,
     "auction_status": "active",
-    "summary": "Rare Morgan Aero 8 Supersports with British craftsmanship.",
+    "summary": "Rare Morgan with British craftsmanship.",
     "report": {
       "inspection": "passed",
       "notes": "excellent condition",
@@ -621,28 +82,23 @@
     },
     "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
     "features": {
-      "interior": [
-        "Convertible Roof",
-        "Premium Audio",
-        "Navigation",
-        "Leather Seats"
-      ],
-      "exterior": ["Alloy Wheels", "LED lights"],
+      "interior": ["Leather Seats", "Premium Audio"],
+      "exterior": ["Convertible Roof", "Alloy Wheels"],
       "mechanical": ["V8 Engine", "Sport Suspension"]
     },
     "vehicale_overview": "Single owner, always garaged, full service history.",
     "location": "Dubai, United Arab Emirates",
     "seller": "Morgan Dubai",
     "seller_type": "Dealer",
-    "lot": "LOT-334",
+    "lot": "LOT-002",
     "highlight": ["British Heritage", "Low mileage", "Convertible"],
-    "token_id": 334,
+    "token_id": 2,
     "owner": "0x334def789ghi123abc",
     "created_at": "2024-01-02T00:00:00Z",
     "updated_at": "2024-01-02T00:00:00Z"
   },
   {
-    "id": 335,
+    "id": 3,
     "make": "Ferrari",
     "model": "488 Spider",
     "year": 2016,
@@ -657,10 +113,11 @@
     "odometer": 18000,
     "description": "A stunning Ferrari 488 Spider in pristine condition, finished in classic Rosso Corsa.",
     "image_url": [
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/428281940.jpeg",
+      "https://dbz-images.dubizzle.com/images/2025/06/19/fa723e8574fe4eb982490ea4d7e711f3-.jpeg",
+      "https://dbz-images.dubizzle.com/images/2025/06/19/1789df443cf34c6b895b590577619de9-.webp?impolicy=dpv"
     ],
-    "auction_id": 335,
+    "auction_id": 3,
     "starting_price": 600000,
     "current_price": 675000,
     "auction_status": "active",
@@ -673,26 +130,22 @@
     "included": ["Owner's manual", "Tool kit", "Extra key", "Service history"],
     "features": {
       "interior": ["Convertible", "Carbon Fiber Trim", "Premium Audio"],
-      "exterior": ["Forged Alloy Wheels", "LED Headlights"],
-      "mechanical": [
-        "Twin-Turbo V8",
-        "Carbon-Ceramic Brakes",
-        "Magnetic Ride Control"
-      ]
+      "exterior": ["LED Headlights", "Forged Wheels"],
+      "mechanical": ["Twin-Turbo V8", "Carbon-Ceramic Brakes"]
     },
     "vehicale_overview": "Dealer maintained, accident free, full service history.",
     "location": "Dubai, United Arab Emirates",
     "seller": "Ferrari Dubai",
     "seller_type": "Dealer",
-    "lot": "LOT-335",
+    "lot": "LOT-003",
     "highlight": ["Convertible", "Carbon Fiber", "Pristine"],
-    "token_id": 335,
+    "token_id": 3,
     "owner": "0x335ghi123abc456def",
     "created_at": "2024-01-03T00:00:00Z",
     "updated_at": "2024-01-03T00:00:00Z"
   },
   {
-    "id": 339,
+    "id": 4,
     "make": "Ferrari",
     "model": "360 Modena",
     "year": 2004,
@@ -703,14 +156,14 @@
     "fuel_type": "Petrol",
     "engine_size": "3.6L Naturally Aspirated V8",
     "exterior_color": "Rosso Corsa Red",
-    "interior_color": "Tan Leather with Carbon Fiber",
+    "interior_color": "Tan Leather",
     "odometer": 28000,
-    "description": "A stunning example of Ferrari's legendary 360 Modena, this 2004 model represents the perfect balance of classic Ferrari design and modern performance. With its naturally aspirated V8 engine and timeless silhouette, this Modena continues the proud tradition of mid-engine Ferrari excellence.",
+    "description": "A stunning example of Ferrari's legendary 360 Modena with naturally aspirated V8 engine.",
     "image_url": [
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3549048287.jpeg",
+      "https://instagram.facc1-1.fna.fbcdn.net/v/t51.2885-15/505779592_17913139776111587_6809292443986389092_n.jpg?stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InRocmVhZHMuQ0FST1VTRUxfSVRFTS5pbWFnZV91cmxnZW4uMTA4MHgxMzUwLnNkci5mNzU3NjEuZGVmYXVsdF9pbWFnZSJ9&_nc_ht=instagram.facc1-1.fna.fbcdn.net&_nc_cat=111&_nc_oc=Q6cZ2QGOgd1Psq10X72pb79l5k2Zg4Uz--rpBwHNUhPfJcibp7lzX7zjb32p-EGYNhgSuQE&_nc_ohc=BRLHTDSJsDEQ7kNvwGI5Uc4&_nc_gid=-C8uc55TWtRbsdm6RccVNA&edm=APs17CUBAAAA&ccb=7-5&ig_cache_key=MzY1NTcxODI5MjEzNjkzNjAzMQ%3D%3D.3-ccb7-5&oh=00_AfOGJo8xqAWjBc0bpuoH1--WYF8X1wsQE8cBjUYlsHnxng&oe=6864F2FE&_nc_sid=10d13b"
     ],
-    "auction_id": 339,
+    "auction_id": 4,
     "starting_price": 65000,
     "current_price": 81000,
     "auction_status": "active",
@@ -720,46 +173,27 @@
       "notes": "well maintained",
       "condition": "excellent"
     },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Extra key",
-      "Service records",
-      "Tubi exhaust documentation"
-    ],
+    "included": ["Owner's manual", "Tool kit", "Extra key", "Service records"],
     "features": {
-      "interior": [
-        "F1 Paddle Shift Transmission",
-        "Carbon Fiber Interior Accents",
-        "Sport Seats",
-        "Navigation System"
-      ],
-      "exterior": [
-        "18 Challenge Stradale Wheels",
-        "Yellow Brake Calipers",
-        "Scuderia Ferrari Shields"
-      ],
-      "mechanical": [
-        "Tubi Exhaust System",
-        "Premium Audio System",
-        "Climate Control"
-      ]
+      "interior": ["F1 Transmission", "Sport Seats", "Navigation"],
+      "exterior": ["Challenge Wheels", "Yellow Calipers"],
+      "mechanical": ["Tubi Exhaust", "Climate Control"]
     },
-    "vehicale_overview": "California car with clean Carfax, complete maintenance records available.",
+    "vehicale_overview": "California car with clean history, complete maintenance records.",
     "location": "Riverside, CA, USA",
     "seller": "Classic Ferrari Specialists",
     "seller_type": "Dealer",
-    "lot": "LOT-339",
-    "highlight": ["F1 Transmission", "Tubi Exhaust", "Clean Carfax"],
-    "token_id": 339,
+    "lot": "LOT-004",
+    "highlight": ["F1 Transmission", "Clean History", "Classic"],
+    "token_id": 4,
     "owner": "0x339abc123def456ghi",
     "created_at": "2024-01-04T00:00:00Z",
     "updated_at": "2024-01-04T00:00:00Z"
   },
   {
-    "id": 289,
+    "id": 5,
     "make": "Bentley",
-    "model": "GT W12 Speed",
+    "model": "GT W12 Speed - 55km",
     "year": 2024,
     "color": "Blue",
     "mileage": 55,
@@ -772,10 +206,11 @@
     "odometer": 55,
     "description": "Brand new Bentley GT W12 Speed with only 55km on the clock. Ultimate luxury and performance.",
     "image_url": [
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3638646694.jpeg",
+      "https://images.classic.com/vehicles/21ce1a90df98d8f4686ddbffed171f2b.jpeg",
+      "https://images.classic.com/vehicles/9e910747a74161b620fe344511974b61.jpeg"
     ],
-    "auction_id": 289,
+    "auction_id": 5,
     "starting_price": 180000,
     "current_price": 201000,
     "auction_status": "active",
@@ -792,32 +227,23 @@
       "Warranty documentation"
     ],
     "features": {
-      "interior": [
-        "Heated Seats",
-        "Massage Seats",
-        "Premium Audio",
-        "Climate Control"
-      ],
+      "interior": ["Heated Seats", "Massage Seats", "Premium Audio"],
       "exterior": ["21 Alloy Wheels", "LED Headlights"],
-      "mechanical": [
-        "W12 Twin-Turbo",
-        "All-Wheel Drive",
-        "Carbon-Ceramic Brakes"
-      ]
+      "mechanical": ["W12 Twin-Turbo", "All-Wheel Drive"]
     },
     "vehicale_overview": "Brand new, delivery mileage only, full warranty.",
     "location": "Bautzen, Germany",
     "seller": "Bentley Bautzen",
     "seller_type": "Dealer",
-    "lot": "LOT-289",
+    "lot": "LOT-005",
     "highlight": ["Brand New", "W12 Engine", "Ultimate Luxury"],
-    "token_id": 289,
+    "token_id": 5,
     "owner": "0x289def456ghi789abc",
     "created_at": "2024-01-05T00:00:00Z",
     "updated_at": "2024-01-05T00:00:00Z"
   },
   {
-    "id": 327,
+    "id": 6,
     "make": "Nissan",
     "model": "Skyline R34 GT-R",
     "year": 1999,
@@ -828,14 +254,15 @@
     "fuel_type": "Petrol",
     "engine_size": "2.6L Twin-Turbo I6 (RB26DETT)",
     "exterior_color": "Midnight Purple II",
-    "interior_color": "Black Cloth with Alcantara",
+    "interior_color": "Black Cloth",
     "odometer": 45000,
-    "description": "An iconic 1999 Nissan Skyline R34 GT-R, the final and most refined iteration of the legendary GT-R lineage. This example features the legendary RB26DETT twin-turbo inline-6 engine and ATTESA E-TS Pro all-wheel drive system that made the R34 a legend on both street and track.",
+    "description": "An iconic 1999 Nissan Skyline R34 GT-R with legendary RB26DETT twin-turbo engine.",
     "image_url": [
-      "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/701319310.jpeg",
+      "https://www.dubicars.com/images/9c35c3/w_1300x760/sbx-cars/73ca8137-177f-4788-a20d-2e2ac218ce7d.jpeg",
+      "https://www.dubicars.com/images/360c9c/w_1300x760/sbx-cars/612bcfc0-5f9f-41bb-bc9f-f7455380f0bc.jpeg"
     ],
-    "auction_id": 327,
+    "auction_id": 6,
     "starting_price": 120000,
     "current_price": 155000,
     "auction_status": "active",
@@ -849,37 +276,26 @@
       "Owner's manual",
       "Tool kit",
       "Extra key",
-      "Import documentation",
-      "Performance upgrade records"
+      "Import documentation"
     ],
     "features": {
-      "interior": [
-        "ATTESA E-TS Pro AWD System",
-        "Active LSD",
-        "Multi-Function Display",
-        "Recaro Sport Seats"
-      ],
-      "exterior": ["18 BBS LM Wheels", "HICAS 4-Wheel Steering"],
-      "mechanical": [
-        "Nismo Exhaust System",
-        "Boost Controller",
-        "Oil Cooler",
-        "Strut Tower Brace"
-      ]
+      "interior": ["ATTESA AWD", "Active LSD", "Multi-Function Display"],
+      "exterior": ["BBS Wheels", "HICAS Steering"],
+      "mechanical": ["Nismo Exhaust", "Boost Controller", "Oil Cooler"]
     },
-    "vehicale_overview": "JDM import with documented history, performance upgrades while maintaining authentic character.",
+    "vehicale_overview": "JDM import with documented history and performance upgrades.",
     "location": "Dubai, United Arab Emirates",
     "seller": "JDM Legends Dubai",
     "seller_type": "Dealer",
-    "lot": "LOT-327",
+    "lot": "LOT-006",
     "highlight": ["JDM Import", "RB26DETT", "Performance Upgrades"],
-    "token_id": 327,
+    "token_id": 6,
     "owner": "0x327ghi789abc123def",
     "created_at": "2024-01-06T00:00:00Z",
     "updated_at": "2024-01-06T00:00:00Z"
   },
   {
-    "id": 343,
+    "id": 7,
     "make": "Mercedes-Benz",
     "model": "AMG GT 63 S Brabus 800",
     "year": 2020,
@@ -894,10 +310,11 @@
     "odometer": 12000,
     "description": "A rare Brabus 800 edition of the AMG GT 63 S, with full options and low mileage.",
     "image_url": [
-      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3057433556.jpeg",
+      "https://i.sbxcars.com/cdn-cgi/image/width=400,height=400,quality=80,format=webp/auctions/13ede9f4-d316-4c9a-b1c7-ef794bf534d4/SS1_0854.jpg",
+      "https://i.sbxcars.com/cdn-cgi/image/width=3000,height=3000,quality=80,format=webp/auctions/13ede9f4-d316-4c9a-b1c7-ef794bf534d4/SS1_0892.jpg"
     ],
-    "auction_id": 343,
+    "auction_id": 7,
     "starting_price": 250000,
     "current_price": 285000,
     "auction_status": "active",
@@ -915,26 +332,22 @@
     ],
     "features": {
       "interior": ["Brabus Package", "Panoramic Roof", "Burmester Audio"],
-      "exterior": ["Brabus Monoblock Wheels", "Carbon Fiber Elements"],
-      "mechanical": [
-        "800hp Brabus Tune",
-        "Carbon-Ceramic Brakes",
-        "Sport Exhaust"
-      ]
+      "exterior": ["Brabus Wheels", "Carbon Elements"],
+      "mechanical": ["800hp Tune", "Carbon-Ceramic Brakes"]
     },
     "vehicale_overview": "One owner, showroom condition, full Brabus package.",
     "location": "Dubai, United Arab Emirates",
     "seller": "Brabus Dubai",
     "seller_type": "Dealer",
-    "lot": "LOT-343",
+    "lot": "LOT-007",
     "highlight": ["Brabus 800", "One Owner", "800hp"],
-    "token_id": 343,
+    "token_id": 7,
     "owner": "0x343abc123def456ghi",
     "created_at": "2024-01-07T00:00:00Z",
     "updated_at": "2024-01-07T00:00:00Z"
   },
   {
-    "id": 336,
+    "id": 8,
     "make": "Nissan",
     "model": "GT-R 50th Anniversary",
     "year": 2020,
@@ -949,10 +362,11 @@
     "odometer": 8000,
     "description": "Special 50th Anniversary edition GT-R with unique styling and performance enhancements.",
     "image_url": [
-      "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      "https://ext.same-assets.com/360451443/3390778518.jpeg",
+      "https://www.marinoperformancemotors.com/imagetag/14128/4/l/Used-2020-Nissan-GT-R-50th-Anniversary.jpg",
+      "https://www.marinoperformancemotors.com/imagetag/14128/32/l/Used-2020-Nissan-GT-R-50th-Anniversary.jpg"
     ],
-    "auction_id": 336,
+    "auction_id": 8,
     "starting_price": 250000,
     "current_price": 275000,
     "auction_status": "active",
@@ -970,24 +384,24 @@
     ],
     "features": {
       "interior": ["Anniversary Interior", "Premium Audio", "Carbon Trim"],
-      "exterior": ["Special Paint", "Anniversary Wheels", "Unique Badges"],
+      "exterior": ["Special Paint", "Anniversary Wheels"],
       "mechanical": ["Twin-Turbo V6", "AWD System", "Launch Control"]
     },
-    "vehicale_overview": "Low mileage 50th Anniversary edition with all special features.",
+    "vehicale_overview": "Low mileage 50th Anniversary edition with special features.",
     "location": "Dubai, United Arab Emirates",
     "seller": "Nissan Heritage Dubai",
     "seller_type": "Dealer",
-    "lot": "LOT-336",
+    "lot": "LOT-008",
     "highlight": ["50th Anniversary", "Special Edition", "Low Mileage"],
-    "token_id": 336,
+    "token_id": 8,
     "owner": "0x336def456ghi789abc",
     "created_at": "2024-01-08T00:00:00Z",
     "updated_at": "2024-01-08T00:00:00Z"
   },
   {
-    "id": 345,
+    "id": 9,
     "make": "Mercedes-Benz",
-    "model": "Metris Custom",
+    "model": "Metris Custom - 240 mi",
     "year": 2023,
     "color": "White",
     "mileage": 240,
@@ -998,12 +412,9 @@
     "exterior_color": "White",
     "interior_color": "Black",
     "odometer": 240,
-    "description": "Custom Mercedes Metris van with only 240 miles, perfect for luxury transport or conversion.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 345,
+    "description": "Custom Mercedes Metris van with only 240 miles, perfect for luxury transport.",
+    "image_url": ["https://ext.same-assets.com/360451443/1132081871.jpeg"],
+    "auction_id": 9,
     "starting_price": 55000,
     "current_price": 65000,
     "auction_status": "active",
@@ -1017,7 +428,7 @@
       "Owner's manual",
       "Tool kit",
       "All keys",
-      "Custom build documentation"
+      "Custom documentation"
     ],
     "features": {
       "interior": ["Custom Interior", "Premium Audio", "Climate Control"],
@@ -1028,15 +439,15 @@
     "location": "Los Angeles, CA, USA",
     "seller": "Custom Van Specialists",
     "seller_type": "Dealer",
-    "lot": "LOT-345",
+    "lot": "LOT-009",
     "highlight": ["Ultra Low Miles", "Custom Build", "Like New"],
-    "token_id": 345,
+    "token_id": 9,
     "owner": "0x345ghi789abc123def",
     "created_at": "2024-01-09T00:00:00Z",
     "updated_at": "2024-01-09T00:00:00Z"
   },
   {
-    "id": 346,
+    "id": 10,
     "make": "Porsche",
     "model": "356 B",
     "year": 1962,
@@ -1050,11 +461,8 @@
     "interior_color": "Black",
     "odometer": 65000,
     "description": "Classic 1962 Porsche 356 B in excellent condition, a true collector's piece.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 346,
+    "image_url": ["https://ext.same-assets.com/360451443/3393672263.jpeg"],
+    "auction_id": 10,
     "starting_price": 20000,
     "current_price": 25000,
     "auction_status": "active",
@@ -1064,36 +472,27 @@
       "notes": "restored",
       "condition": "excellent"
     },
-    "included": [
-      "Owner's manual",
-      "Tool kit",
-      "Restoration documentation",
-      "Authenticity certificate"
-    ],
+    "included": ["Owner's manual", "Tool kit", "Restoration documentation"],
     "features": {
       "interior": ["Original Interior", "Classic Gauges", "Period Radio"],
-      "exterior": ["Chrome Bumpers", "Classic Wheels", "Original Trim"],
-      "mechanical": [
-        "Flat-4 Engine",
-        "Manual Transmission",
-        "Classic Suspension"
-      ]
+      "exterior": ["Chrome Bumpers", "Classic Wheels"],
+      "mechanical": ["Flat-4 Engine", "Manual Transmission"]
     },
     "vehicale_overview": "Restored classic with matching numbers and excellent provenance.",
     "location": "Bridgeport, CT, USA",
     "seller": "Classic Porsche Specialists",
     "seller_type": "Dealer",
-    "lot": "LOT-346",
+    "lot": "LOT-010",
     "highlight": ["Classic", "Restored", "Matching Numbers"],
-    "token_id": 346,
+    "token_id": 10,
     "owner": "0x346abc123def456ghi",
     "created_at": "2024-01-10T00:00:00Z",
     "updated_at": "2024-01-10T00:00:00Z"
   },
   {
-    "id": 331,
+    "id": 11,
     "make": "Audi",
-    "model": "R8",
+    "model": "R8 - 1,300 hp",
     "year": 2020,
     "color": "Black",
     "mileage": 15000,
@@ -1105,11 +504,8 @@
     "interior_color": "Black",
     "odometer": 15000,
     "description": "Modified Audi R8 with 1,300 hp, extreme performance build.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 331,
+    "image_url": ["https://ext.same-assets.com/360451443/4094987785.jpeg"],
+    "auction_id": 11,
     "starting_price": 20000,
     "current_price": 25000,
     "auction_status": "active",
@@ -1127,22 +523,22 @@
     ],
     "features": {
       "interior": ["Racing Interior", "Carbon Trim", "Roll Cage"],
-      "exterior": ["Wide Body Kit", "Carbon Fiber", "Racing Wheels"],
+      "exterior": ["Wide Body Kit", "Carbon Fiber"],
       "mechanical": ["1300hp Engine", "Turbo Kit", "Racing Suspension"]
     },
     "vehicale_overview": "Heavily modified for extreme performance, 1,300 hp build.",
     "location": "Opa-locka, FL, USA",
     "seller": "Performance Specialists",
     "seller_type": "Dealer",
-    "lot": "LOT-331",
+    "lot": "LOT-011",
     "highlight": ["1300hp", "Heavily Modified", "Extreme Performance"],
-    "token_id": 331,
+    "token_id": 11,
     "owner": "0x331def456ghi789abc",
     "created_at": "2024-01-11T00:00:00Z",
     "updated_at": "2024-01-11T00:00:00Z"
   },
   {
-    "id": 340,
+    "id": 12,
     "make": "Dodge",
     "model": "Viper SRT-10 Roadster",
     "year": 2010,
@@ -1156,11 +552,8 @@
     "interior_color": "Black",
     "odometer": 25000,
     "description": "Classic American supercar with massive V10 engine and convertible top.",
-    "image_url": [
-      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-    ],
-    "auction_id": 340,
+    "image_url": ["https://ext.same-assets.com/360451443/872688151.jpeg"],
+    "auction_id": 12,
     "starting_price": 15000,
     "current_price": 19000,
     "auction_status": "active",
@@ -1180,9 +573,9 @@
     "location": "Houston, TX, USA",
     "seller": "American Muscle Cars",
     "seller_type": "Dealer",
-    "lot": "LOT-340",
+    "lot": "LOT-012",
     "highlight": ["V10 Engine", "Convertible", "American Muscle"],
-    "token_id": 340,
+    "token_id": 12,
     "owner": "0x340ghi789abc123def",
     "created_at": "2024-01-12T00:00:00Z",
     "updated_at": "2024-01-12T00:00:00Z"
