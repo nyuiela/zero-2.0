@@ -55,6 +55,68 @@ export interface RelatedAuction {
   reserve?: string
   country: string
 }
+export interface Auction {
+  id: number,
+  car_id: number,
+  start_time: string,
+  end_time: string,
+  current_bid: number,
+  bid_count: number,
+  seller: string,
+  status: string,
+  created_at: string,
+  updated_at: string
+}
+
+export interface CarAuctioned {
+  auction_id: number;
+  auction_status: string;
+  color: string;
+  created_at: string;
+  current_price: number;
+  description: string;
+  engine_size: string;
+  exterior_color: string;
+  features: {
+    exterior: string[];
+    interior: string[];
+    mechanical: string[];
+  };
+  fuel_type: string;
+  highlight: string[];
+  id: number;
+  image_url: string[];
+  included: string[];
+  interior_color: string;
+  location: string;
+  lot: string;
+  make: string;
+  mileage: number;
+  model: string;
+  odometer: number;
+  owner: string;
+  report: {
+    condition: string;
+    inspection: string;
+    notes: string;
+  };
+  seller: string;
+  seller_type: string;
+  starting_price: number;
+  summary: string;
+  token_id: number;
+  transmission: string;
+  updated_at: string;
+  vehicale_overview: string;
+  vin: string;
+  year: number;
+  car_id: number,
+  start_time: string,
+  end_time: string,
+  current_bid: number,
+  bid_count: number,
+  status: string,
+}
 
 // Mock data for car listings
 export const listings: CarListing[] = [

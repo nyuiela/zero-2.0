@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAccount } from "wagmi"
 import { useQuery } from '@tanstack/react-query'
-import { fetchCars } from '@/lib/api/car'
+import { fetchCarById, fetchCars } from '@/lib/api/car'
 import { getJwtToken } from '@/lib/utils'
-import { CarListing, listings as mockListings } from '@/lib/data'
+import { CarAuctioned, CarListing, listings as mockListings } from '@/lib/data'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle } from "lucide-react"
 import Image from "next/image"
+import { fetchAuctionById } from "@/lib/api/auction"
 
 interface Bid {
   auctionId: string
@@ -61,13 +62,23 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   }, [params])
 
   // Fetch car data using the same source as listing page
+  const { data: auctions, isLoading: aucLoading, isError: aucError } = useQuery({
+    queryKey: ['auction', auctionId],
+    queryFn: () => fetchAuctionById(auctionId),
+  })
   const { data: cars = mockListings, isLoading: carsLoading, isError: carsError } = useQuery({
-    queryKey: ['cars'],
-    queryFn: fetchCars,
+    queryKey: ['cars', auctionId],
+    queryFn: () => fetchCarById(auctionId),
   })
 
+  // 
+
   // Find the car listing for this auction
-  const carListing: CarListing | undefined = cars.find((c: CarListing) => c.id.toString() === auctionId)
+  // const carListing: CarAuctioned | undefined = cars.find((c: CarAuctioned) => c.id.toString() === auctionId)
+  const carListing: Partial<CarAuctioned> | null = {
+    ...auctions,
+    ...cars,
+  }
 
   // Show loading if car data is loading or auctionId not set yet
   if (carsLoading || !auctionId) {
@@ -95,76 +106,76 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   }
 
   // Fetch bids (polling for real-time)
-  useEffect(() => {
-    const fetchBids = async () => {
-      try {
-        const res = await fetch(`/api/bid?auctionId=${auctionId}`)
-        const data = await res.json()
-        if (data.status === 'success') {
-          setBids(data.bids)
-          if (data.bids.length > 0) {
-            setLastBidTimestamp(data.bids[0].timestamp)
-            setTimer(60) // Reset timer on new bid
-            // Prefill bid input with current highest bid
-            setBidAmount(data.bids[0].amount.toString())
-          }
-        }
-      } catch (e) {
-        // fallback: do nothing, just keep last state
-      }
-    }
-    fetchBids()
-    intervalRef.current = setInterval(fetchBids, 2000)
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [auctionId])
+  // useEffect(() => {
+  //   const fetchBids = async () => {
+  //     try {
+  //       const res = await fetch(`/api/bid?auctionId=${auctionId}`)
+  //       const data = await res.json()
+  //       if (data.status === 'success') {
+  //         setBids(data.bids)
+  //         if (data.bids.length > 0) {
+  //           setLastBidTimestamp(data.bids[0].timestamp)
+  //           setTimer(60) // Reset timer on new bid
+  //           // Prefill bid input with current highest bid
+  //           setBidAmount(data.bids[0].amount.toString())
+  //         }
+  //       }
+  //     } catch (e) {
+  //       // fallback: do nothing, just keep last state
+  //     }
+  //   }
+  //   fetchBids()
+  //   intervalRef.current = setInterval(fetchBids, 2000)
+  //   return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  // }, [auctionId])
 
   // Timer logic
-  useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => {
-      setTimer((prev) => {
-        if (prev > 0) return prev - 1
-        return 0
-      })
-    }, 1000)
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [lastBidTimestamp])
+  // useEffect(() => {
+  //   if (timerRef.current) clearInterval(timerRef.current)
+  //   timerRef.current = setInterval(() => {
+  //     setTimer((prev) => {
+  //       if (prev > 0) return prev - 1
+  //       return 0
+  //     })
+  //   }, 1000)
+  //   return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  // }, [lastBidTimestamp])
 
   // Quick bid suggestions (10–80%)
-  useEffect(() => {
-    if (bids.length > 0) {
-      const current = bids[0].amount
-      setQuickBids([
-        Math.ceil(current * 1.1),
-        Math.ceil(current * 1.2),
-        Math.ceil(current * 1.4),
-        Math.ceil(current * 1.5),
-        Math.ceil(current * 1.6),
-        Math.ceil(current * 1.7),
-        Math.ceil(current * 1.8),
-      ])
-    } else {
-      // Use starting bid for quick bids if no bids yet
-      const startingBid = parseFloat(carListing.startingBid.replace(/[^\d.]/g, ''))
-      setQuickBids([
-        Math.ceil(startingBid * 1.1),
-        Math.ceil(startingBid * 1.2),
-        Math.ceil(startingBid * 1.3),
-        Math.ceil(startingBid * 1.4),
-        Math.ceil(startingBid * 1.5),
-        Math.ceil(startingBid * 1.6),
-        Math.ceil(startingBid * 1.7),
-      ])
-    }
-  }, [bids, carListing.startingBid])
+  // useEffect(() => {
+  //   if (bids.length > 0) {
+  //     const current = bids[0].amount
+  //     setQuickBids([
+  //       Math.ceil(current * 1.1),
+  //       Math.ceil(current * 1.2),
+  //       Math.ceil(current * 1.4),
+  //       Math.ceil(current * 1.5),
+  //       Math.ceil(current * 1.6),
+  //       Math.ceil(current * 1.7),
+  //       Math.ceil(current * 1.8),
+  //     ])
+  //   } else {
+  //     // Use starting bid for quick bids if no bids yet
+  //     const startingBid = parseFloat(carListing.startingBid.replace(/[^\d.]/g, ''))
+  //     setQuickBids([
+  //       Math.ceil(startingBid * 1.1),
+  //       Math.ceil(startingBid * 1.2),
+  //       Math.ceil(startingBid * 1.3),
+  //       Math.ceil(startingBid * 1.4),
+  //       Math.ceil(startingBid * 1.5),
+  //       Math.ceil(startingBid * 1.6),
+  //       Math.ceil(startingBid * 1.7),
+  //     ])
+  //   }
+  // }, [bids, carListing.startingBid])
 
   // Confetti on new top bid
-  useEffect(() => {
-    if (bids.length > 0 && address && bids[0].address === address) {
-      setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 2500)
-    }
-  }, [bids, address])
+  // useEffect(() => {
+  //   if (bids.length > 0 && address && bids[0].address === address) {
+  //     setShowConfetti(true)
+  //     setTimeout(() => setShowConfetti(false), 2500)
+  //   }
+  // }, [bids, address])
 
   const handleBid = async (amount: number) => {
     if (!isConnected || !address) {
