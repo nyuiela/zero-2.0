@@ -1,0 +1,324 @@
+{
+    "table": "car",
+    "mockStartIndex": 1,
+    "mockCount": 22,
+    "mockValueReference": "Real car auction data",
+    "mock": {
+        "id": {
+            "type": "integer",
+            "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 330, 334, 335, 339, 289, 327, 343, 336, 345, 346, 331, 340]
+        },
+        "make": {
+            "type": "varchar",
+            "values": ["Ferrari", "Lamborghini", "Porsche", "BMW", "Mercedes-Benz", "Ford", "Chevrolet", "Tesla", "Porsche", "Range Rover", "Ford", "Morgan", "Ferrari", "Ferrari", "Bentley", "Nissan", "Mercedes-Benz", "Nissan", "Mercedes-Benz", "Porsche", "Audi", "Dodge"]
+        },
+        "model": {
+            "type": "varchar",
+            "values": ["488 GTB", "Huracán", "911 GT3 RS", "M4 Competition", "AMG GT", "Mustang GT", "Corvette Stingray", "Model S Plaid", "Taycan Turbo S", "Sport SVR", "GT Holman Moody Heritage Edition", "Aero 8 Supersports", "488 Spider", "360 Modena", "GT W12 Speed", "Skyline R34 GT-R", "AMG GT 63 S Brabus 800", "GT-R 50th Anniversary", "Metris Custom", "356 B", "R8", "Viper SRT-10 Roadster"]
+        },
+        "year": {
+            "type": "integer",
+            "values": [2019, 2020, 2021, 2022, 2021, 1969, 1967, 2023, 2022, 2021, 2022, 2011, 2016, 2004, 2024, 1999, 2020, 2020, 2023, 1962, 2020, 2010]
+        },
+        "color": {
+            "type": "varchar",
+            "values": ["Red", "Yellow", "White", "Black", "Silver", "Blue", "Red", "White", "Blue", "Black", "Gulf Racing Blue", "Silver", "Rosso Corsa", "Rosso Corsa Red", "Blue", "Midnight Purple II", "Black", "Pearl White", "White", "Silver", "Black", "Red"]
+        },
+        "mileage": {
+            "type": "integer",
+            "values": [8200, 12000, 5000, 8000, 15000, 45000, 38000, 3000, 12000, 25000, 2500, 15000, 18000, 28000, 55, 45000, 12000, 8000, 240, 65000, 15000, 25000]
+        },
+        "vin": {
+            "type": "varchar",
+            "values": ["ZFF79ALA4J0234001", "ZHWUC1ZF5LLA12345", "WP0AB2A91MS123456", "WBS83CD0X1234567", "WDDYJ7JA0KA123456", "9F02R123456", "194677S123456", "5YJS4E12345678901", "WP0AB2Y1234567890", "SALGS2SVXKA123456", "WF0AF2A96JGL12345", "SAJAA01A8BLM12345", "ZFF80AMA4G0234567", "ZFFYR51A040123456", "SCBCE8ZA6PC012345", "BNR34-123456", "WDD1782X0LA123456", "JN1AR5EF5LM123456", "WD3PE7CD5NP123456", "220356B123456", "WUAAAAFY0L7123456", "1B3JZ65Z2AV123456"]
+        },
+        "transmission": {
+            "type": "varchar",
+            "values": ["Automatic", "Automatic", "Manual", "Automatic", "Automatic", "Manual", "Manual", "Automatic", "Automatic", "Automatic", "Automatic", "Automatic", "Automatic", "Manual", "Automatic", "Manual", "Automatic", "Automatic", "Automatic", "Manual", "Automatic", "Manual"]
+        },
+        "fuel_type": {
+            "type": "varchar",
+            "values": ["Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Electric", "Electric", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol", "Petrol"]
+        },
+        "engine_size": {
+            "type": "varchar",
+            "values": ["3.9L V8", "5.2L V10", "4.0L Flat-6", "3.0L I6 Twin-Turbo", "4.0L V8 Biturbo", "5.0L V8", "5.7L V8", "Tri-Motor", "Dual-Motor", "5.0L V8 Supercharged", "3.5L Twin-Turbo V6", "4.8L V8", "3.9L Twin-Turbo V8", "3.6L Naturally Aspirated V8", "6.0L W12 Twin-Turbo", "2.6L Twin-Turbo I6 (RB26DETT)", "4.0L V8 Biturbo", "3.8L Twin-Turbo V6", "2.0L Turbo I4", "1.6L Flat-4", "5.2L V10", "8.4L V10"]
+        },
+        "exterior_color": {
+            "type": "varchar",
+            "values": ["Rosso Corsa", "Giallo", "White", "Black", "Silver", "Blue", "Red", "White", "Blue", "Black", "Gulf Racing Blue", "Silver", "Rosso Corsa", "Rosso Corsa Red", "Blue", "Midnight Purple II", "Black", "Pearl White", "White", "Silver", "Black", "Red"]
+        },
+        "interior_color": {
+            "type": "varchar",
+            "values": ["Black", "Black", "Black", "Red", "Black", "Black", "Black", "Black", "Black", "Tan", "Carbon Fiber with Alcantara", "Black Leather", "Black Leather", "Tan Leather with Carbon Fiber", "White Leather", "Black Cloth with Alcantara", "Red Leather", "Black and Red", "Black", "Black", "Black", "Black"]
+        },
+        "odometer": {
+            "type": "integer",
+            "values": [8200, 12000, 5000, 8000, 15000, 45000, 38000, 3000, 12000, 25000, 2500, 15000, 18000, 28000, 55, 45000, 12000, 8000, 240, 65000, 15000, 25000]
+        },
+        "description": {
+            "type": "text",
+            "values": [
+                "High-performance twin-turbo V8 Ferrari in pristine condition.",
+                "Stunning Lamborghini Huracán with low mileage and perfect service history.",
+                "Track-focused Porsche 911 GT3 RS with minimal road use.",
+                "BMW M4 Competition with aggressive styling and powerful performance.",
+                "Mercedes-AMG GT with handcrafted engine and premium features.",
+                "Classic 1969 Ford Mustang GT in excellent condition.",
+                "Iconic 1967 Chevrolet Corvette Stingray.",
+                "Tesla Model S Plaid with incredible performance.",
+                "Porsche Taycan Turbo S with incredible performance.",
+                "Range Rover Sport SVR with incredible performance.",
+                "This exceptional 2022 Ford GT Holman Moody Heritage Edition represents the pinnacle of American automotive engineering and racing heritage.",
+                "A rare Morgan Aero 8 Supersports, combining British craftsmanship with modern performance.",
+                "A stunning Ferrari 488 Spider in pristine condition, finished in classic Rosso Corsa.",
+                "A stunning example of Ferrari's legendary 360 Modena with naturally aspirated V8 engine.",
+                "Brand new Bentley GT W12 Speed with only 55km on the clock. Ultimate luxury and performance.",
+                "An iconic 1999 Nissan Skyline R34 GT-R with legendary RB26DETT twin-turbo engine.",
+                "A rare Brabus 800 edition of the AMG GT 63 S, with full options and low mileage.",
+                "Special 50th Anniversary edition GT-R with unique styling and performance enhancements.",
+                "Custom Mercedes Metris van with only 240 miles, perfect for luxury transport.",
+                "Classic 1962 Porsche 356 B in excellent condition, a true collector's piece.",
+                "Modified Audi R8 with 1,300 hp, extreme performance build.",
+                "Classic American supercar with massive V10 engine and convertible top."
+            ]
+        },
+        "image_url": {
+            "type": "text[]",
+            "values": [
+                ["https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1536700503339-1e4b06520771?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1617814076367-b759c7d7e738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1609521263047-f8f205293f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"]
+            ]
+        },
+        "auction_id": {
+            "type": "integer",
+            "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 330, 334, 335, 339, 289, 327, 343, 336, 345, 346, 331, 340]
+        },
+        "starting_price": {
+            "type": "integer",
+            "values": [200000, 180000, 220000, 85000, 120000, 45000, 65000, 120000, 180000, 95000, 500000, 80000, 600000, 65000, 180000, 120000, 250000, 250000, 55000, 20000, 20000, 15000]
+        },
+        "current_price": {
+            "type": "integer",
+            "values": [215000, 195000, 235000, 92000, 135000, 52000, 72000, 125000, 190000, 105000, 701500, 96000, 675000, 81000, 201000, 155000, 285000, 275000, 65000, 25000, 25000, 19000]
+        },
+        "auction_status": {
+            "type": "status",
+            "values": ["active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active", "active"]
+        },
+        "summary": {
+            "type": "text",
+            "values": [
+                "Iconic Ferrari 488 GTB in pristine condition.",
+                "Exquisite Lamborghini Huracán with premium features.",
+                "Ultimate track weapon with street legality.",
+                "BMW M4 Competition with premium features.",
+                "Mercedes-AMG GT with handcrafted performance.",
+                "Classic 1969 Ford Mustang GT.",
+                "Iconic 1967 Chevrolet Corvette Stingray.",
+                "Tesla Model S Plaid with incredible performance.",
+                "Porsche Taycan Turbo S with incredible performance.",
+                "Range Rover Sport SVR with incredible performance.",
+                "Exceptional Ford GT Heritage Edition with racing pedigree.",
+                "Rare Morgan Aero 8 Supersports with British craftsmanship.",
+                "Stunning Ferrari 488 Spider in classic Rosso Corsa.",
+                "Classic Ferrari 360 Modena with naturally aspirated V8.",
+                "Brand new Bentley GT W12 Speed with delivery mileage.",
+                "Iconic R34 GT-R with legendary RB26DETT engine.",
+                "Rare Brabus 800 edition with incredible performance.",
+                "Special 50th Anniversary GT-R edition.",
+                "Custom Mercedes Metris with ultra-low mileage.",
+                "Classic Porsche 356 B collector's piece.",
+                "Heavily modified Audi R8 with 1,300 hp.",
+                "Classic Dodge Viper SRT-10 Roadster."
+            ]
+        },
+        "report": {
+            "type": "json",
+            "values": [
+                "{\"inspection\": \"passed\", \"notes\": \"minor wear\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"perfect condition\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"track use\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"minor wear\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"excellent condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"restored\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"restored\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"like new\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"excellent condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"excellent condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"pristine condition\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"excellent condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"pristine condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"well maintained\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"brand new\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"well maintained\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"showroom condition\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"excellent condition\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"like new\", \"condition\": \"mint\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"restored\", \"condition\": \"excellent\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"heavily modified\", \"condition\": \"modified\"}",
+                "{\"inspection\": \"passed\", \"notes\": \"good condition\", \"condition\": \"good\"}"
+            ]
+        },
+        "included": {
+            "type": "json",
+            "values": [
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\", \"Carbon fiber package\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\", \"Track day package\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\", \"Restoration documents\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\", \"Restoration documents\"]",
+                "[\"Owner's manual\", \"Charging cable\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Charging cable\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Complete service records\", \"Heritage documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service records\", \"Tubi exhaust documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"All keys\", \"Warranty documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Import documentation\", \"Performance upgrade records\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Brabus documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Anniversary documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"All keys\", \"Custom build documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Restoration documentation\", \"Authenticity certificate\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Modification documentation\"]",
+                "[\"Owner's manual\", \"Tool kit\", \"Extra key\", \"Service history\"]"
+            ]
+        },
+        "features": {
+            "type": "json",
+            "values": [
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Turbocharged engine\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Alcantara seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Naturally aspirated V10\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Carbon fiber seats\", \"Alcantara trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Naturally aspirated flat-6\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Twin-turbo engine\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Handcrafted V8\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Vinyl seats\", \"Original trim\", \"AM radio\"], \"exterior\": [\"Original paint\", \"Chrome trim\", \"Classic wheels\"], \"mechanical\": [\"Original engine\", \"Manual transmission\", \"Classic suspension\"]}",
+                "{\"interior\": [\"Vinyl seats\", \"Original trim\", \"AM radio\"], \"exterior\": [\"Original paint\", \"Chrome trim\", \"Classic wheels\"], \"mechanical\": [\"Original engine\", \"Manual transmission\", \"Classic suspension\"]}",
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Glass roof\", \"Carbon fiber body\"], \"mechanical\": [\"Tri-motor setup\", \"Autopilot\", \"Launch control\"]}",
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Glass roof\", \"Carbon fiber body\"], \"mechanical\": [\"Dual-motor setup\", \"Autopilot\", \"Launch control\"]}",
+                "{\"interior\": [\"Leather seats\", \"Carbon fiber trim\", \"Premium audio\"], \"exterior\": [\"LED headlights\", \"Sport exhaust\", \"Carbon fiber body\"], \"mechanical\": [\"Supercharged V8\", \"Magnetic ride control\", \"Launch control\"]}",
+                "{\"interior\": [\"Carbon Fiber Body Panels\", \"Track Package\", \"Racing Harnesses\", \"Roll Cage\"], \"exterior\": [\"Michelin Pilot Sport Cup 2 Tires\", \"Carbon Fiber Interior Trim\", \"Titanium Roll Cage\"], \"mechanical\": [\"Traction Management System\", \"Launch Control\", \"Bilstein Adaptive Dampers\"]}",
+                "{\"interior\": [\"Convertible Roof\", \"Premium Audio\", \"Navigation\", \"Leather Seats\"], \"exterior\": [\"Alloy Wheels\", \"LED lights\"], \"mechanical\": [\"V8 Engine\", \"Sport Suspension\"]}",
+                "{\"interior\": [\"Convertible\", \"Carbon Fiber Trim\", \"Premium Audio\"], \"exterior\": [\"Forged Alloy Wheels\", \"LED Headlights\"], \"mechanical\": [\"Twin-Turbo V8\", \"Carbon-Ceramic Brakes\", \"Magnetic Ride Control\"]}",
+                "{\"interior\": [\"F1 Paddle Shift Transmission\", \"Carbon Fiber Interior Accents\", \"Sport Seats\", \"Navigation System\"], \"exterior\": [\"18 Challenge Stradale Wheels\", \"Yellow Brake Calipers\", \"Scuderia Ferrari Shields\"], \"mechanical\": [\"Tubi Exhaust System\", \"Premium Audio System\", \"Climate Control\"]}",
+                "{\"interior\": [\"Heated Seats\", \"Massage Seats\", \"Premium Audio\", \"Climate Control\"], \"exterior\": [\"21 Alloy Wheels\", \"LED Headlights\"], \"mechanical\": [\"W12 Twin-Turbo\", \"All-Wheel Drive\", \"Carbon-Ceramic Brakes\"]}",
+                "{\"interior\": [\"ATTESA E-TS Pro AWD System\", \"Active LSD\", \"Multi-Function Display\", \"Recaro Sport Seats\"], \"exterior\": [\"18 BBS LM Wheels\", \"HICAS 4-Wheel Steering\"], \"mechanical\": [\"Nismo Exhaust System\", \"Boost Controller\", \"Oil Cooler\", \"Strut Tower Brace\"]}",
+                "{\"interior\": [\"Brabus Package\", \"Panoramic Roof\", \"Burmester Audio\"], \"exterior\": [\"Brabus Monoblock Wheels\", \"Carbon Fiber Elements\"], \"mechanical\": [\"800hp Brabus Tune\", \"Carbon-Ceramic Brakes\", \"Sport Exhaust\"]}",
+                "{\"interior\": [\"Anniversary Interior\", \"Premium Audio\", \"Carbon Trim\"], \"exterior\": [\"Special Paint\", \"Anniversary Wheels\", \"Unique Badges\"], \"mechanical\": [\"Twin-Turbo V6\", \"AWD System\", \"Launch Control\"]}",
+                "{\"interior\": [\"Custom Interior\", \"Premium Audio\", \"Climate Control\"], \"exterior\": [\"Custom Paint\", \"Alloy Wheels\"], \"mechanical\": [\"Turbo Engine\", \"Automatic Transmission\"]}",
+                "{\"interior\": [\"Original Interior\", \"Classic Gauges\", \"Period Radio\"], \"exterior\": [\"Chrome Bumpers\", \"Classic Wheels\", \"Original Trim\"], \"mechanical\": [\"Flat-4 Engine\", \"Manual Transmission\", \"Classic Suspension\"]}",
+                "{\"interior\": [\"Racing Interior\", \"Carbon Trim\", \"Roll Cage\"], \"exterior\": [\"Wide Body Kit\", \"Carbon Fiber\", \"Racing Wheels\"], \"mechanical\": [\"1300hp Engine\", \"Turbo Kit\", \"Racing Suspension\"]}",
+                "{\"interior\": [\"Sport Seats\", \"Manual Top\", \"Basic Audio\"], \"exterior\": [\"Convertible Top\", \"Alloy Wheels\", \"Side Pipes\"], \"mechanical\": [\"8.4L V10\", \"Manual Transmission\", \"Sport Suspension\"]}"
+            ]
+        },
+        "vehicale_overview": {
+            "type": "text",
+            "values": [
+                "Driven 8,200 miles, well-maintained, and regularly serviced.",
+                "Only 12,000 miles, single owner, full service history.",
+                "Only 5,000 miles, primarily track use, full service history.",
+                "Only 8,000 miles, well-maintained, full service history.",
+                "15,000 miles, well-maintained, full service history.",
+                "45,000 miles, fully restored, matching numbers.",
+                "38,000 miles, fully restored, matching numbers.",
+                "Only 3,000 miles, like new condition.",
+                "12,000 miles, well-maintained, full service history.",
+                "25,000 miles, well-maintained, full service history.",
+                "Originally delivered to Holman Moody Racing for development testing, meticulously maintained by authorized Ford technicians.",
+                "Single owner, always garaged, full service history.",
+                "Dealer maintained, accident free, full service history.",
+                "California car with clean Carfax, complete maintenance records available.",
+                "Brand new, delivery mileage only, full warranty.",
+                "JDM import with documented history, performance upgrades while maintaining authentic character.",
+                "One owner, showroom condition, full Brabus package.",
+                "Low mileage 50th Anniversary edition with all special features.",
+                "Only 240 miles, custom build, like new condition.",
+                "Restored classic with matching numbers and excellent provenance.",
+                "Heavily modified for extreme performance, 1,300 hp build.",
+                "Classic American supercar with massive naturally aspirated V10."
+            ]
+        },
+        "location": {
+            "type": "varchar",
+            "values": ["Los Angeles, CA", "Miami, FL", "New York, NY", "Chicago, IL", "Houston, TX", "Detroit, MI", "Atlanta, GA", "San Francisco, CA", "Seattle, WA", "Denver, CO", "Cologne, Germany", "Dubai, United Arab Emirates", "Dubai, United Arab Emirates", "Riverside, CA, USA", "Bautzen, Germany", "Dubai, United Arab Emirates", "Dubai, United Arab Emirates", "Dubai, United Arab Emirates", "Los Angeles, CA, USA", "Bridgeport, CT, USA", "Opa-locka, FL, USA", "Houston, TX, USA"]
+        },
+        "seller": {
+            "type": "varchar",
+            "values": ["SupercarDealerLA", "LuxuryCarMiami", "PorscheNYC", "BMWChicago", "MercedesHouston", "ClassicCarDetroit", "ClassicCarAtlanta", "TeslaSF", "PorscheSeattle", "RangeRoverDenver", "Premium Automotive Collection", "Morgan Dubai", "Ferrari Dubai", "Classic Ferrari Specialists", "Bentley Bautzen", "JDM Legends Dubai", "Brabus Dubai", "Nissan Heritage Dubai", "Custom Van Specialists", "Classic Porsche Specialists", "Performance Specialists", "American Muscle Cars"]
+        },
+        "seller_type": {
+            "type": "varchar",
+            "values": ["Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer", "Dealer"]
+        },
+        "lot": {
+            "type": "varchar",
+            "values": ["LOT-001", "LOT-002", "LOT-003", "LOT-004", "LOT-005", "LOT-006", "LOT-007", "LOT-008", "LOT-009", "LOT-010", "LOT-330", "LOT-334", "LOT-335", "LOT-339", "LOT-289", "LOT-327", "LOT-343", "LOT-336", "LOT-345", "LOT-346", "LOT-331", "LOT-340"]
+        },
+        "highlight": {
+            "type": "text[]",
+            "values": [
+                ["Low mileage", "Clean title", "Sport exhaust"],
+                ["Low mileage", "Clean title", "Carbon package"],
+                ["Track focused", "Low mileage", "Carbon package"],
+                ["Low mileage", "Clean title", "M package"],
+                ["Handcrafted engine", "Clean title", "AMG package"],
+                ["Classic", "Restored", "Matching numbers"],
+                ["Classic", "Restored", "Matching numbers"],
+                ["Electric", "Low mileage", "Plaid performance"],
+                ["Electric", "Turbo S", "Premium features"],
+                ["SVR performance", "Clean title", "Premium features"],
+                ["Heritage Edition", "Track Package", "Carbon Fiber"],
+                ["British Heritage", "Low mileage", "Convertible"],
+                ["Convertible", "Carbon Fiber", "Pristine"],
+                ["F1 Transmission", "Tubi Exhaust", "Clean Carfax"],
+                ["Brand New", "W12 Engine", "Ultimate Luxury"],
+                ["JDM Import", "RB26DETT", "Performance Upgrades"],
+                ["Brabus 800", "One Owner", "800hp"],
+                ["50th Anniversary", "Special Edition", "Low Mileage"],
+                ["Ultra Low Miles", "Custom Build", "Like New"],
+                ["Classic", "Restored", "Matching Numbers"],
+                ["1300hp", "Heavily Modified", "Extreme Performance"],
+                ["V10 Engine", "Convertible", "American Muscle"]
+            ]
+        },
+        "token_id": {
+            "type": "integer",
+            "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 330, 334, 335, 339, 289, 327, 343, 336, 345, 346, 331, 340]
+        },
+        "owner": {
+            "type": "varchar",
+            "values": ["0x123abc456def789ghi", "0x456def789ghi123abc", "0x789ghi123abc456def", "0xabc123def456ghi789", "0xdef456ghi789abc123", "0xghi789abc123def456", "0xabc123def456ghi789", "0xdef456ghi789abc123", "0xghi789abc123def456", "0xabc123def456ghi789", "0x330abc456def789ghi", "0x334def789ghi123abc", "0x335ghi123abc456def", "0x339abc123def456ghi", "0x289def456ghi789abc", "0x327ghi789abc123def", "0x343abc123def456ghi", "0x336def456ghi789abc", "0x345ghi789abc123def", "0x346abc123def456ghi", "0x331def456ghi789abc", "0x340ghi789abc123def"]
+        },
+        "created_at": {
+            "type": "timestamp without time zone",
+            "values": ["2024-01-01T00:00:00Z", "2024-01-02T00:00:00Z", "2024-01-03T00:00:00Z", "2024-01-04T00:00:00Z", "2024-01-05T00:00:00Z", "2024-01-06T00:00:00Z", "2024-01-07T00:00:00Z", "2024-01-08T00:00:00Z", "2024-01-09T00:00:00Z", "2024-01-10T00:00:00Z", "2024-01-01T00:00:00Z", "2024-01-02T00:00:00Z", "2024-01-03T00:00:00Z", "2024-01-04T00:00:00Z", "2024-01-05T00:00:00Z", "2024-01-06T00:00:00Z", "2024-01-07T00:00:00Z", "2024-01-08T00:00:00Z", "2024-01-09T00:00:00Z", "2024-01-10T00:00:00Z", "2024-01-11T00:00:00Z", "2024-01-12T00:00:00Z"]
+        },
+        "updated_at": {
+            "type": "timestamp without time zone",
+            "values": ["2024-01-01T00:00:00Z", "2024-01-02T00:00:00Z", "2024-01-03T00:00:00Z", "2024-01-04T00:00:00Z", "2024-01-05T00:00:00Z", "2024-01-06T00:00:00Z", "2024-01-07T00:00:00Z", "2024-01-08T00:00:00Z", "2024-01-09T00:00:00Z", "2024-01-10T00:00:00Z", "2024-01-01T00:00:00Z", "2024-01-02T00:00:00Z", "2024-01-03T00:00:00Z", "2024-01-04T00:00:00Z", "2024-01-05T00:00:00Z", "2024-01-06T00:00:00Z", "2024-01-07T00:00:00Z", "2024-01-08T00:00:00Z", "2024-01-09T00:00:00Z", "2024-01-10T00:00:00Z", "2024-01-11T00:00:00Z", "2024-01-12T00:00:00Z"]
+        }
+    }
+}
