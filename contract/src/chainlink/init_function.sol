@@ -5,6 +5,7 @@ import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsCl
 import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import {StateManager} from "../core/State.sol";
+import{CarRegistry} from "../core/registry.sol";
 // cloned
 /**
  * @title Sync - auto sync state every hour.
@@ -15,6 +16,7 @@ import {StateManager} from "../core/State.sol";
 //CheckState
 contract InitFunction is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
+    CarRegistry _registryContract;
 
     // State variables to store the last request ID, response, and error
     bytes32 public s_lastRequestId;
@@ -77,9 +79,11 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
     /**
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    constructor(address _stateAddr) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(address _stateAddr,address _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         stateAddress = _stateAddr;
+
         stateContract = StateManager(_stateAddr);
+        _registryContract = CarRegistry(_registry);
     }
 
     /**
@@ -90,7 +94,8 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
      */
     function sendRequest(uint64 subscriptionId, string[] calldata args, string memory _brand)
         external
-        onlyOwner
+        virtual
+        onlyRegistry
         returns (bytes32 requestId)
     {
         FunctionsRequest.Request memory req;
@@ -138,5 +143,10 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
     function getResponse(string memory _brand) public view returns (string memory) {
         bytes32 id = request[_brand];
         return response[id];
+    }
+
+    modifier onlyRegistry(){
+        require(msg.sender == address(_registryContract), "Init_Function: not authorized");
+        _;
     }
 }
