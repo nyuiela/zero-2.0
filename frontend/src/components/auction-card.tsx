@@ -28,6 +28,16 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
     : `${amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} USDC`
 }
 
+function getAuctionImage(auction: Auction | { image: string }): string {
+  if ('image_url' in auction && Array.isArray(auction.image_url) && auction.image_url.length > 0) {
+    return auction.image_url[0];
+  }
+  if ('image' in auction && typeof auction.image === 'string') {
+    return auction.image;
+  }
+  return "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+}
+
 const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
   const currency = auction.currency || 'ETH'
@@ -36,8 +46,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
       {/* Car Image */}
       <div className="relative overflow-hidden h-[30rem]">
         <Image
-          // src={`${auction.image_url[0]}`}
-          src={``}
+          src={getAuctionImage(auction)}
           alt={`${auction.year} ${auction.make} ${auction.model}`}
           fill
           className=" transition-transform duration-500 group-hover:scale-105 absolute w-full h-[30rem]"
