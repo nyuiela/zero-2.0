@@ -1,7 +1,7 @@
 use jsonwebtoken::{ encode, Header, EncodingKey };
 use serde::{ Serialize, Deserialize };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub addr: String, // Ethereum address
     pub exp: usize, // Expiry time (unix timestamp)

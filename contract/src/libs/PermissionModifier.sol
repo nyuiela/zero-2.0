@@ -23,16 +23,16 @@ library PermissionModifiers {
      * @param functionSelectors Array of function selectors to check permissions for
      */
     modifier onlyWithAnyPermission(address permissionManager, bytes4[] memory functionSelectors) {
-        bool hasAnyPermission = false;
+        bool hasAnyPermissionFlag = false;
         
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             if (IPermissionManager(permissionManager).hasPermission(msg.sender, functionSelectors[i])) {
-                hasAnyPermission = true;
+                hasAnyPermissionFlag = true;
                 break;
             }
         }
         
-        require(hasAnyPermission, "No permission for any function");
+        require(hasAnyPermissionFlag, "No permission for any function");
         _;
     }
 

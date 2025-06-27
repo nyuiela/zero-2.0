@@ -80,7 +80,7 @@ contract BrandPermissionManager is
         _masterOracle = masterOracle;
         _brandOwner = brandOwner;
         
-        __Ownable_init();
+        __Ownable_init(brandOwner);
         __Pausable_init();
         __ReentrancyGuard_init();
     }
@@ -248,10 +248,11 @@ contract BrandPermissionManager is
                 _totalPermissions--;
                 cleanedCount++;
                 
-                emit PermissionExpired(account, functionSelectors[i], block.timestamp);
+             //   emit PermissionExpired(account, functionSelectors[i], block.timestamp);
             }
         }
     }
+   // event PermissionExpired()
 
     function batchCleanExpiredPermissions(address[] memory accounts) external override {
         for (uint256 i = 0; i < accounts.length; i++) {
@@ -295,13 +296,10 @@ contract BrandPermissionManager is
             _totalPermissions++;
         }
         
-        permission.account = account;
-        permission.functionSelector = functionSelector;
         permission.isActive = true;
-        permission.grantedAt = block.timestamp;
         permission.expiresAt = expiresAt;
 
-        emit PermissionGranted(account, functionSelector, expiresAt, block.timestamp);
+      //  emit PermissionGranted(account, functionSelector, expiresAt, block.timestamp);
     }
 
     function _revokePermission(
@@ -315,7 +313,7 @@ contract BrandPermissionManager is
             _accountPermissionCount[account]--;
             _totalPermissions--;
 
-            emit PermissionRevoked(account, functionSelector, block.timestamp);
+         //   emit PermissionRevoked(account, functionSelector, block.timestamp);
         }
     }
 } 

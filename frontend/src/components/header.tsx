@@ -277,7 +277,7 @@ const Header = () => {
                       </div>
 
                       {/* Mobile Auth Section */}
-                      {!isWalletConnected ? (
+                      {isWalletConnected ? (
                         <Button
                           onClick={() => setIsLoginModalOpen(true)}
                           className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-[#202626] font-semibold py-3 px-4 transition-all duration-300 mt-4"

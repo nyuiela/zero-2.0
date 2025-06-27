@@ -44,3 +44,11 @@ interworks with the ccip
 
 
 /// transfer....
+
+## Next steps
+- transfer lib ---- transfer logic for usdc transfer and eth transfer to make it cooler
+- merkle verifier ---> proof lib ----> adds prrof to tree
+- car registry --- two kinds of registry, one for fist time car registar and transfer of ownership registry ..... both cases use the merkel verfier and update across the chains.
+
+  
+

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
+import {ICarOracle} from "./IcarOracle.sol";
+
 interface IOracleMaster {
     struct CarBrand {
         string name;
@@ -9,14 +11,6 @@ interface IOracleMaster {
         uint256 lastUpdateTime;
         bool isActive;
         uint256 totalProducts;
-    }
-
-    struct OracleConfig {
-        uint256 updateInterval;
-        uint256 deviationThreshold;
-        uint256 heartbeat;
-        uint256 minAnswer;
-        uint256 maxAnswer;
     }
 
     event CarBrandRegistered(
@@ -42,12 +36,13 @@ interface IOracleMaster {
     function registerCarBrand(
         string memory brandName,
         string memory priceFeedAddress,
-        OracleConfig memory config
+        ICarOracle.OracleConfig memory config,
+        address brandOwner
     ) external returns (address oracleAddress);
 
     function updateOracle(
         string memory brandName,
-        OracleConfig memory config
+        ICarOracle.OracleConfig memory config
     ) external;
 
     function deactivateOracle(string memory brandName) external;

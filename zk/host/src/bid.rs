@@ -5,11 +5,11 @@ use car_auction_core::BidState;
 use entity::{ bid, BidModel };
 use methods::{ INIT_BID_ELF, INIT_BID_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
-use sea_orm::{ ActiveModelTrait, DatabaseConnection, DbErr, Set, EntityTrait };
+use sea_orm::{ ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, QueryOrder, Set };
 use serde::{ Deserialize, Serialize };
 use serde_json::{ json, Value };
 
-use crate::SessionStats;
+use crate::{ auth::USER, overall::sync_overall_state, SessionStats };
 
 pub fn get_bid_leaves(bids: &Vec<BidModel>) -> Vec<String> {
     let mut leaves = vec![];
@@ -82,10 +82,18 @@ pub async fn create_bid(
     axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>,
     Json(bid_data): Json<BidModel>
 ) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
+    let user = USER.get();
+    eprint!("{:?}", user);
+    let bid_id = bid::Entity
+        ::find()
+        .order_by_desc(bid::Column::Id)
+        .one(&*db).await
+        .unwrap()
+        .unwrap();
     let bid_model = bid::ActiveModel {
-        id: Set(bid_data.id),
+        id: Set(bid_id.id + 1),
         auction_id: Set(bid_data.auction_id),
-        bidder_id: Set(bid_data.bidder_id),
+        bidder_id: Set(user.addr),
         amount: Set(bid_data.amount),
         created_at: Set(bid_data.created_at),
         updated_at: Set(bid_data.updated_at),
@@ -95,10 +103,19 @@ pub async fn create_bid(
     bid_model
         .insert(&*db).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    Ok(Json(json!({
+
+    let (hash, commit) = sync_overall_state(db).await.unwrap();
+    Ok(
+        Json(
+            json!({
     "status": "success",
-    "message": "bid created succesfully"
-  })))
+    "message": "bid created succesfully",
+    "cid": hash,
+    "receipt": commit.receipt,
+    "stats": commit.stats
+  })
+        )
+    )
 }
 pub async fn get_bids(axum::extract::State(
     db,
