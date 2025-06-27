@@ -4,6 +4,47 @@ use serde_json::json;
 use chrono::{ DateTime, Utc };
 // use entity::{ car, auction, bid, comment, saved_auction, sea_orm_active_enums::Status };
 use sea_orm::ActiveValue::Set;
+use serde::Deserialize;
+use serde_json::Value;
+use std::fs;
+use serde_json::from_str;
+
+#[derive(Deserialize)]
+pub struct CarSeed {
+    pub id: i32,
+    pub make: String,
+    pub model: String,
+    pub year: i32,
+    pub color: String,
+    pub mileage: i32,
+    pub vin: String,
+    pub transmission: String,
+    pub fuel_type: String,
+    pub engine_size: String,
+    pub exterior_color: String,
+    pub interior_color: String,
+    pub odometer: i32,
+    pub description: String,
+    pub image_url: Option<Vec<String>>,
+    pub auction_id: i32,
+    pub starting_price: i32,
+    pub current_price: i32,
+    pub auction_status: String,
+    pub summary: String,
+    pub report: Value,
+    pub included: Value,
+    pub features: Value,
+    pub vehicale_overview: String,
+    pub location: String,
+    pub seller: String,
+    pub seller_type: String,
+    pub lot: String,
+    pub highlight: Option<Vec<String>>,
+    pub token_id: i32,
+    pub owner: String,
+    pub created_at: String,
+    pub updated_at: String,
+}
 
 pub async fn seed_database(db: &DatabaseConnection) -> Result<(), DbErr> {
     println!("🌱 Starting database seeding...");
@@ -12,24 +53,24 @@ pub async fn seed_database(db: &DatabaseConnection) -> Result<(), DbErr> {
     clear_database(db).await?;
 
     // Seed cars
-    let cars = seed_cars(db).await?;
-    println!("✅ Seeded {} cars", cars.len());
+    seed_cars_from_json(db, "db/data/cars.json").await?;
+    println!("✅ Seeded cars");
 
     // Seed auctions
-    let auctions = seed_auctions(db).await?;
-    println!("✅ Seeded {} auctions", auctions.len());
+    seed_auctions(db).await?;
+    println!("✅ Seeded auctions");
 
     // Seed bids
-    let bids = seed_bids(db).await?;
-    println!("✅ Seeded {} bids", bids.len());
+    seed_bids(db).await?;
+    println!("✅ Seeded bids");
 
     // Seed comments
-    let comments = seed_comments(db).await?;
-    println!("✅ Seeded {} comments", comments.len());
+    seed_comments(db).await?;
+    println!("✅ Seeded comments");
 
     // Seed saved auctions
-    let saved_auctions = seed_saved_auctions(db).await?;
-    println!("✅ Seeded {} saved auctions", saved_auctions.len());
+    seed_saved_auctions(db).await?;
+    println!("✅ Seeded saved auctions");
 
     // Update auction statistics
     update_auction_stats(db).await?;
@@ -49,392 +90,66 @@ async fn clear_database(db: &DatabaseConnection) -> Result<(), DbErr> {
     Ok(())
 }
 
-async fn seed_cars(db: &DatabaseConnection) -> Result<Vec<car::Model>, DbErr> {
-    let cars_data = vec![
-        // Ferrari 488 GTB
-        car::ActiveModel {
-            id: Set(1),
-            make: Set("Ferrari".to_string()),
-            model: Set("488 GTB".to_string()),
-            year: Set(2019),
-            color: Set("Red".to_string()),
-            mileage: Set(8200),
-            vin: Set("ZFF79ALA4J0234001".to_string()),
-            transmission: Set("Automatic".to_string()),
-            fuel_type: Set("Petrol".to_string()),
-            engine_size: Set("3.9L V8".to_string()),
-            exterior_color: Set("Rosso Corsa".to_string()),
-            interior_color: Set("Black".to_string()),
-            odometer: Set(8200),
-            description: Set(
-                "High-performance twin-turbo V8 Ferrari in pristine condition.".to_string()
-            ),
-            image_url: Set(
-                Some(
-                    vec![
-                        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80".to_string()
-                    ]
-                )
-            ),
-            auction_id: Set(1),
-            starting_price: Set(200000),
-            current_price: Set(215000),
-            auction_status: Set(Some(Status::Active)),
-            summary: Set("Iconic Ferrari 488 GTB in pristine condition.".to_string()),
-            report: Set(
-                json!({"inspection": "passed", "notes": "minor wear", "condition": "excellent"})
-            ),
-            included: Set(json!(["Owner's manual", "Tool kit", "Extra key", "Service history"])),
-            features: Set(
-                json!({
-                "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-                "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-                "mechanical": ["Turbocharged engine", "Magnetic ride control", "Launch control"]
-            })
-            ),
-            vehicale_overview: Set(
-                "Driven 8,200 miles, well-maintained, and regularly serviced.".to_string()
-            ),
-            location: Set("Los Angeles, CA".to_string()),
-            seller: Set("SupercarDealerLA".to_string()),
-            seller_type: Set("Dealer".to_string()),
-            lot: Set("LOT-001".to_string()),
-            highlight: Set(
-                Some(
-                    vec![
-                        "Low mileage".to_string(),
-                        "Clean title".to_string(),
-                        "Sport exhaust".to_string()
-                    ]
-                )
-            ),
-            token_id: Set(1),
-            owner: Set("0x123abc456def789ghi".to_string()),
-            created_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-01T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            updated_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-01T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            ..Default::default()
-        },
-        // Lamborghini Huracán
-        car::ActiveModel {
-            id: Set(2),
-            make: Set("Lamborghini".to_string()),
-            model: Set("Huracán".to_string()),
-            year: Set(2020),
-            color: Set("Yellow".to_string()),
-            mileage: Set(12000),
-            vin: Set("ZHWUC1ZF5LLA12345".to_string()),
-            transmission: Set("Automatic".to_string()),
-            fuel_type: Set("Petrol".to_string()),
-            engine_size: Set("5.2L V10".to_string()),
-            exterior_color: Set("Giallo".to_string()),
-            interior_color: Set("Black".to_string()),
-            odometer: Set(12000),
-            description: Set(
-                "Stunning Lamborghini Huracán with low mileage and perfect service history.".to_string()
-            ),
-            image_url: Set(
-                Some(
-                    vec![
-                        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80".to_string()
-                    ]
-                )
-            ),
-            auction_id: Set(2),
-            starting_price: Set(180000),
-            current_price: Set(195000),
-            auction_status: Set(Some(Status::Active)),
-            summary: Set("Exquisite Lamborghini Huracán with premium features.".to_string()),
-            report: Set(
-                json!({"inspection": "passed", "notes": "perfect condition", "condition": "mint"})
-            ),
-            included: Set(
-                json!([
-                    "Owner's manual",
-                    "Tool kit",
-                    "Extra key",
-                    "Service history",
-                    "Carbon fiber package",
-                ])
-            ),
-            features: Set(
-                json!({
-                "interior": ["Alcantara seats", "Carbon fiber trim", "Premium audio"],
-                "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-                "mechanical": ["Naturally aspirated V10", "Magnetic ride control", "Launch control"]
-            })
-            ),
-            vehicale_overview: Set(
-                "Only 12,000 miles, single owner, full service history.".to_string()
-            ),
-            location: Set("Miami, FL".to_string()),
-            seller: Set("LuxuryCarMiami".to_string()),
-            seller_type: Set("Dealer".to_string()),
-            lot: Set("LOT-002".to_string()),
-            highlight: Set(
-                Some(
-                    vec![
-                        "Low mileage".to_string(),
-                        "Clean title".to_string(),
-                        "Carbon package".to_string()
-                    ]
-                )
-            ),
-            token_id: Set(2),
-            owner: Set("0x456def789ghi123abc".to_string()),
-            created_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-02T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            updated_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-02T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            ..Default::default()
-        },
-        // Porsche 911 GT3 RS
-        car::ActiveModel {
-            id: Set(3),
-            make: Set("Porsche".to_string()),
-            model: Set("911 GT3 RS".to_string()),
-            year: Set(2021),
-            color: Set("White".to_string()),
-            mileage: Set(5000),
-            vin: Set("WP0AB2A91MS123456".to_string()),
-            transmission: Set("Manual".to_string()),
-            fuel_type: Set("Petrol".to_string()),
-            engine_size: Set("4.0L Flat-6".to_string()),
-            exterior_color: Set("White".to_string()),
-            interior_color: Set("Black".to_string()),
-            odometer: Set(5000),
-            description: Set("Track-focused Porsche 911 GT3 RS with minimal road use.".to_string()),
-            image_url: Set(
-                Some(
-                    vec![
-                        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80".to_string()
-                    ]
-                )
-            ),
-            auction_id: Set(3),
-            starting_price: Set(220000),
-            current_price: Set(235000),
-            auction_status: Set(Some(Status::Active)),
-            summary: Set("Ultimate track weapon with street legality.".to_string()),
-            report: Set(
-                json!({"inspection": "passed", "notes": "track use", "condition": "excellent"})
-            ),
-            included: Set(
-                json!([
-                    "Owner's manual",
-                    "Tool kit",
-                    "Extra key",
-                    "Service history",
-                    "Track day package",
-                ])
-            ),
-            features: Set(
-                json!({
-                "interior": ["Carbon fiber seats", "Alcantara trim", "Premium audio"],
-                "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-                "mechanical": ["Naturally aspirated flat-6", "Magnetic ride control", "Launch control"]
-            })
-            ),
-            vehicale_overview: Set(
-                "Only 5,000 miles, primarily track use, full service history.".to_string()
-            ),
-            location: Set("New York, NY".to_string()),
-            seller: Set("PorscheNYC".to_string()),
-            seller_type: Set("Dealer".to_string()),
-            lot: Set("LOT-003".to_string()),
-            highlight: Set(
-                Some(
-                    vec![
-                        "Track focused".to_string(),
-                        "Low mileage".to_string(),
-                        "Carbon package".to_string()
-                    ]
-                )
-            ),
-            token_id: Set(3),
-            owner: Set("0x789ghi123abc456def".to_string()),
-            created_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-03T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            updated_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-03T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            ..Default::default()
-        },
-        // BMW M4 Competition
-        car::ActiveModel {
-            id: Set(4),
-            make: Set("BMW".to_string()),
-            model: Set("M4 Competition".to_string()),
-            year: Set(2022),
-            color: Set("Black".to_string()),
-            mileage: Set(8000),
-            vin: Set("WBS83CD0X1234567".to_string()),
-            transmission: Set("Automatic".to_string()),
-            fuel_type: Set("Petrol".to_string()),
-            engine_size: Set("3.0L I6 Twin-Turbo".to_string()),
-            exterior_color: Set("Black".to_string()),
-            interior_color: Set("Red".to_string()),
-            odometer: Set(8000),
-            description: Set(
-                "BMW M4 Competition with aggressive styling and powerful performance.".to_string()
-            ),
-            image_url: Set(
-                Some(
-                    vec![
-                        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80".to_string()
-                    ]
-                )
-            ),
-            auction_id: Set(4),
-            starting_price: Set(85000),
-            current_price: Set(92000),
-            auction_status: Set(Some(Status::Active)),
-            summary: Set("BMW M4 Competition with premium features.".to_string()),
-            report: Set(
-                json!({"inspection": "passed", "notes": "minor wear", "condition": "excellent"})
-            ),
-            included: Set(json!(["Owner's manual", "Tool kit", "Extra key", "Service history"])),
-            features: Set(
-                json!({
-                "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-                "exterior": ["LED headlights", "Sport exhaust", "Carbon fiber body"],
-                "mechanical": ["Twin-turbo engine", "Magnetic ride control", "Launch control"]
-            })
-            ),
-            vehicale_overview: Set(
-                "Only 8,000 miles, well-maintained, full service history.".to_string()
-            ),
-            location: Set("Chicago, IL".to_string()),
-            seller: Set("BMWChicago".to_string()),
-            seller_type: Set("Dealer".to_string()),
-            lot: Set("LOT-004".to_string()),
-            highlight: Set(
-                Some(
-                    vec![
-                        "Low mileage".to_string(),
-                        "Clean title".to_string(),
-                        "M package".to_string()
-                    ]
-                )
-            ),
-            token_id: Set(4),
-            owner: Set("0xabc123def456ghi789".to_string()),
-            created_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-04T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            updated_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-04T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            ..Default::default()
-        },
-        // Tesla Model S Plaid
-        car::ActiveModel {
-            id: Set(5),
-            make: Set("Tesla".to_string()),
-            model: Set("Model S Plaid".to_string()),
-            year: Set(2023),
-            color: Set("White".to_string()),
-            mileage: Set(3000),
-            vin: Set("5YJS4E12345678901".to_string()),
-            transmission: Set("Automatic".to_string()),
-            fuel_type: Set("Electric".to_string()),
-            engine_size: Set("Tri-Motor".to_string()),
-            exterior_color: Set("White".to_string()),
-            interior_color: Set("Black".to_string()),
-            odometer: Set(3000),
-            description: Set("Tesla Model S Plaid with incredible performance.".to_string()),
-            image_url: Set(
-                Some(
-                    vec![
-                        "https://images.unsplash.com/photo-1536700503339-1e4b06520771?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80".to_string()
-                    ]
-                )
-            ),
-            auction_id: Set(5),
-            starting_price: Set(120000),
-            current_price: Set(125000),
-            auction_status: Set(Some(Status::Active)),
-            summary: Set("Tesla Model S Plaid with incredible performance.".to_string()),
-            report: Set(json!({"inspection": "passed", "notes": "like new", "condition": "mint"})),
-            included: Set(
-                json!(["Owner's manual", "Charging cable", "Extra key", "Service history"])
-            ),
-            features: Set(
-                json!({
-                "interior": ["Leather seats", "Carbon fiber trim", "Premium audio"],
-                "exterior": ["LED headlights", "Glass roof", "Carbon fiber body"],
-                "mechanical": ["Tri-motor setup", "Autopilot", "Launch control"]
-            })
-            ),
-            vehicale_overview: Set("Only 3,000 miles, like new condition.".to_string()),
-            location: Set("San Francisco, CA".to_string()),
-            seller: Set("TeslaSF".to_string()),
-            seller_type: Set("Dealer".to_string()),
-            lot: Set("LOT-005".to_string()),
-            highlight: Set(
-                Some(
-                    vec![
-                        "Electric".to_string(),
-                        "Low mileage".to_string(),
-                        "Plaid performance".to_string()
-                    ]
-                )
-            ),
-            token_id: Set(5),
-            owner: Set("0xdef456ghi789abc123".to_string()),
-            created_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-05T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            updated_at: Set(
-                DateTime::parse_from_rfc3339("2024-01-05T00:00:00Z")
-                    .unwrap()
-                    .with_timezone(&Utc)
-                    .naive_utc()
-            ),
-            ..Default::default()
-        }
-    ];
+pub async fn seed_cars_from_json(db: &DatabaseConnection, path: &str) -> Result<(), DbErr> {
+    let data = fs::read_to_string(path).expect("Unable to read file");
+    let cars: Vec<CarSeed> = from_str(&data).expect("JSON was not well-formatted");
 
-    let mut cars = Vec::new();
-    for car_data in cars_data {
-        let car = car_data.insert(db).await?;
-        cars.push(car);
+    for car in cars {
+        let model = car::ActiveModel {
+            id: Set(car.id),
+            make: Set(car.make),
+            model: Set(car.model),
+            year: Set(car.year),
+            color: Set(car.color),
+            mileage: Set(car.mileage),
+            vin: Set(car.vin),
+            transmission: Set(car.transmission),
+            fuel_type: Set(car.fuel_type),
+            engine_size: Set(car.engine_size),
+            exterior_color: Set(car.exterior_color),
+            interior_color: Set(car.interior_color),
+            odometer: Set(car.odometer),
+            description: Set(car.description),
+            image_url: Set(car.image_url),
+            auction_id: Set(car.auction_id),
+            starting_price: Set(car.starting_price),
+            current_price: Set(car.current_price),
+            auction_status: Set(
+                Some(match car.auction_status.as_str() {
+                    "active" => Status::Active,
+                    "inactive" => Status::Pending,
+                    _ => Status::Active, // default/fallback
+                })
+            ),
+            summary: Set(car.summary),
+            report: Set(car.report),
+            included: Set(car.included),
+            features: Set(car.features),
+            vehicale_overview: Set(car.vehicale_overview),
+            location: Set(car.location),
+            seller: Set(car.seller),
+            seller_type: Set(car.seller_type),
+            lot: Set(car.lot),
+            highlight: Set(car.highlight),
+            token_id: Set(car.token_id),
+            owner: Set(car.owner),
+            created_at: Set(
+                DateTime::parse_from_rfc3339(&car.created_at)
+                    .unwrap()
+                    .with_timezone(&Utc)
+                    .naive_utc()
+            ),
+            updated_at: Set(
+                DateTime::parse_from_rfc3339(&car.updated_at)
+                    .unwrap()
+                    .with_timezone(&Utc)
+                    .naive_utc()
+            ),
+            ..Default::default()
+        };
+        model.insert(db).await?;
     }
-
-    Ok(cars)
+    Ok(())
 }
 
 async fn seed_auctions(db: &DatabaseConnection) -> Result<Vec<auction::Model>, DbErr> {
