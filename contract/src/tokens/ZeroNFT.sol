@@ -496,6 +496,11 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         if (_carRegistry != address(0)) carRegistry = ICarRegistry(_carRegistry);
     }
 
+    function setAuctionContract(address _auctionContract) external onlyOwner {
+        require(_auctionContract != address(0), "ZeroNFT: auction contract cannot be zero address");
+        auctionContract = _auctionContract;
+    }
+
     // Override functions
 
     /**

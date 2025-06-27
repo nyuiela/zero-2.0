@@ -214,7 +214,8 @@ contract Auction {
          
         // Mark that winner has claimed and register them
         received[msg.sender] = true;
-        CarRegistry.registerUndernewOwner(); ///register car under new owner
+        // TODO: Implement proper ownership registration
+        // CarRegistry.registerUndernewOwner(a.brandName, subscriptionId, args); ///register car under new owner
         // Transfer NFT to winner
         zeroNFT.transferFrom(a.creator, msg.sender, a.nftTokenId);
        
@@ -282,7 +283,7 @@ contract Auction {
         require(!a.ended, "Auction already ended");
         a.ended = true;
         // Return all stakes
-        delete a;
+        delete auctionId;
     } //@dev todo restructure should be a simle id deletion
 
     function updateAuctionInfo(
@@ -363,6 +364,8 @@ contract Auction {
         
         emit CollateralReturned(auctionId, msg.sender, stake);
     }
+
+    // a function that store the auction a timelock function , go back to to se ethe next in line highest stake 
 }
 
 //@Todo add the state changes , registration of rewrite, merkle trees update, state update

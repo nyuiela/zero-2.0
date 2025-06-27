@@ -148,13 +148,20 @@ contract CarRegistry is Ownable {
     }
 
     /// new ownership rights transfer
-    function registerUndernewOwner() external {
+    function registerUndernewOwner(  
+        string memory _brand,
+        // address oracleAddre,
+        ICarOracle.OracleConfig memory config,
+        address brandAdminAddr,
+        uint64 subscriptionId,
+        string memory _stateUrl,
+        string[] memory args) external {
         // remove olldownership
         // give to new owner
         // add new older to the tree and register the information person
           //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
         bytes32 s_brand = keccak256(abi.encodePacked(_brand));
-        bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand),msg.sender);
+        bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand, msg.sender));
         require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
         //  oracleMaster.registerCarBrand(_brand,oracleAddre,config, brandAdminAddr);
 
@@ -259,4 +266,7 @@ contract CarRegistry is Ownable {
     // --- register --- state -- activate
 
     // geter
+    function getBrandinfo(string memory brand) public view returns (Registry memory){
+        return registry[brand];
+    }
 }

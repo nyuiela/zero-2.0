@@ -107,7 +107,7 @@ contract RegistryTest is Test {
         initFunction = new MockInitFunction(address(state), address(registry));
         registry.setInitFunction(address(initFunction));
   }
-  function testRegistrationONlyCallableByOwner() public {
+  function testRegistrationONlyCallableByOwner() public view {
     // Test basic registry functionality without external calls
     string memory brand = "TestBrand";
     
