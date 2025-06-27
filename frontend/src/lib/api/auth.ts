@@ -81,13 +81,20 @@ export async function verifySignature(body: AuthParams) {
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      console.warn('Auth verification failed, using mock')
-      return mockAuth.verifySignature(body)
+      throw console.error('Auth verification failed, using mock');
+      // return mockAuth.verifySignature(body)
     }
-    return res.json()
+    const proof = await res.json();
+    console.log("Display prooof ", proof)
+    const newres = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proof),
+    })
+    return newres.json()
   } catch (error) {
-    console.error('Error verifying signature, using mock:', error)
-    return mockAuth.verifySignature(body)
+    return console.error('Error verifying signature, using mock:', error)
+    // return mockAuth.verifySignature(body)
   }
 }
 

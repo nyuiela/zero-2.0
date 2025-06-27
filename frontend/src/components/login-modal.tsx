@@ -141,9 +141,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(true)
       setError(null)
 
-      const res: AuthResponse = await fetchNonce();
-      const message = res.msg;
-      const nonce = res.nonce;
+      // const res: AuthResponse = await fetchNonce();
+      // const message = res.msg;
+      // const nonce = res.nonce;
+      const message = nonceData?.msg as string;
+      const nonce = nonceData?.nonce as string;
       console.log('Signing message:', message)
       const signature = await signMessageAsync({
         message
@@ -161,6 +163,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       })
 
       console.log('Verification response:', verifyRes)
+
 
       // Check if verification is complete or needs polling
       if (verifyRes.verified === true) {
@@ -337,7 +340,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <Button
               onClick={handleSignAndVerify}
               disabled={loading || !username || username.length < 4}
-              className="w-full bg-amber-400 text-white text-xl hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#277fdd] text-white text-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               {loading ? 'Signing...' : 'Sign Message & Login'}
             </Button>
