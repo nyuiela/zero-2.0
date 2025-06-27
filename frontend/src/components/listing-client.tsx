@@ -174,6 +174,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     alt={`View ${index + 1}`}
                     fill
                     className="object-cover"
+                    unoptimized={true}
                   />
                 </button>
               ))}
