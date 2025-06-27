@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 const Footer = () => {
   return (
-    <footer className="bg-[#00296b] border-t border-gray-700">
+    <footer className="bg-[#071731] border-t border-gray-700">
       {/* Newsletter Section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">

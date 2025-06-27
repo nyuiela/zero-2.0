@@ -2,6 +2,7 @@ use std::process;
 use std::env;
 use std::sync::Arc;
 
+use axum::http::header::ACCESS_CONTROL_ALLOW_HEADERS;
 use axum::routing::{ get, post };
 use axum::{ middleware, Router };
 // use db::comment::{ create_comment, get_comments };
@@ -14,6 +15,7 @@ use host::auction::complete_bid_by_id;
 use host::overall::get_overall_state_handler;
 use host::overall::sync_state_handler;
 use host::sync_state;
+use tower_http::cors::ExposeHeaders;
 use tower_http::cors::{ Any, CorsLayer };
 
 use host::saved_auction::create_saved_auction;
@@ -52,7 +54,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cors = CorsLayer::new()
         .allow_origin(Any) // allow frontend origin
         .allow_methods(Any) // or restrict: .allow_methods([Method::GET, Method::POST])
-        .allow_headers(Any); // or restrict
+        .allow_headers(Any) // or restrict
+        .expose_headers(Any); // Expose
 
     // Create the router with our endpoints
     let protected_routes = Router::new()
