@@ -193,6 +193,48 @@ contract DeployScript is Script {
         initFunction.transferOwnership(address(carRegistry));
         console.log("InitFunction ownership transferred to CarRegistry");
 
+        // Grant permissions to the specified address
+        address permissionAddress = 0xf0830060f836B8d54bF02049E5905F619487989e; //@intergrator address
+        console.log("Granting permissions to:", permissionAddress);
+
+        // Grant all permissions from PermissionManager
+        bytes4[] memory permissions = new bytes4[](20);
+        
+        // Oracle permissions
+        permissions[0] = oracleMaster.REGISTER_CAR_BRAND_SELECTOR();
+        permissions[1] = oracleMaster.UPDATE_ORACLE_SELECTOR();
+        permissions[2] = oracleMaster.DEACTIVATE_ORACLE_SELECTOR();
+        permissions[3] = oracleMaster.REACTIVATE_ORACLE_SELECTOR();
+        permissions[4] = oracleMaster.BATCH_UPDATE_PRICES_SELECTOR();
+        permissions[5] = oracleMaster.INCREMENT_PRODUCT_COUNT_SELECTOR();
+        permissions[6] = oracleMaster.DECREMENT_PRODUCT_COUNT_SELECTOR();
+        
+        // Reputation permissions
+        permissions[7] = reputation.SLASH();
+        permissions[8] = reputation.WITHDRAW_SLASHED_ETH();
+        permissions[9] = reputation.WITHDRAW_SLASHED_USDC();
+        permissions[10] = reputation.SET_STAKE_AMOUNT();
+        
+        // Fee permissions
+        permissions[11] = fee.SET_FEE();
+        permissions[12] = fee.SET_FEE_RECEIVER();
+        permissions[13] = fee.WITHDRAW_FEE();
+        
+        // Profile permissions
+        permissions[14] = profile.UPDATESTATE();
+        permissions[15] = profile.LOCKBRAND();
+        permissions[16] = profile.UNLOCKBRAND();
+        
+        // State permissions
+        permissions[17] = stateManager.SET_STATE();
+        permissions[18] = stateManager.LOCK_CONTRACT();
+        permissions[19] = stateManager.UNLOCK_CONTRACT();
+
+        // Grant all permissions with 1 year expiration
+        uint256 expirationTime = block.timestamp + 365 days;
+        permissionManager.grantBatchPermissions(permissionAddress, permissions, expirationTime);
+        console.log("All permissions granted to:", permissionAddress);
+
         vm.stopBroadcast();
 
         // Log deployment summary

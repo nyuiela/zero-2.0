@@ -85,3 +85,6 @@ after the winner has been slected we change the state accross all the chains
 updated the proofs etc
 anything that has to do with giving new owner owner righ
 meaning i need to start the transferrights  in the register contract
+
+make deploy ARGS="--network base"
+to deploy on base
