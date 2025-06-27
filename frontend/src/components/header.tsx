@@ -29,10 +29,11 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
-  const { user, logout } = useAuthStore()
+  const { user, logout, setOpen } = useAuthStore()
   const router = useRouter()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
+  console.log("user ", user)
 
   // Check if user is fully authenticated (wallet connected + auth completed)
   const isAuthenticated = isConnected && user
@@ -146,10 +147,10 @@ const Header = () => {
                 </div>
 
                 {/* Auth Section */}
-                {true ? (
+                {!isAuthenticated ? (
                   // Login Button (when not authenticated)
                   <Button
-                    onClick={() => setIsLoginModalOpen(true)}
+                    onClick={() => setOpen(true)}
                     className="bg-transparent hover:bg-white font-extralight text-black hover:text-blue-700"
                   >
                     {/* <User className="h-5 w-5" /> */}
@@ -157,16 +158,16 @@ const Header = () => {
                   </Button>
                 ) : (
                   // Two Dropdown Buttons (when wallet is connected)
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3 text-black">
                     {/* Network Dropdown */}
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-400 hover:text-amber-400 py-3 px-4">
                           <Network className="h-4 w-4 mr-2" />
                           {currentChain?.name || 'Unknown Network'}
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700">
+                      <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700 ">
                         {availableChains.map((networkChain) => (
                           <DropdownMenuItem
                             key={networkChain.id}
@@ -178,27 +179,31 @@ const Header = () => {
                           </DropdownMenuItem>
                         ))}
                       </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
 
                     {/* Address Dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-400 hover:text-amber-400 py-3 px-4">
-                          <Wallet className="h-4 w-4 mr-2" />
-                          {address?.slice(0, 6)}...{address?.slice(-4)}
+                        <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-00 hover:text-amber-00 py-3 px-4 border-0 shadow-none">
+                          {/* <Wallet className="h-4 w-4 mr-2" /> */}
+                          <User />
+                          {user.username}
+                          {/* {address?.slice(0, 6)}...{address?.slice(-4)} */}
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56 bg-white border-gray-700">
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
+                      <DropdownMenuContent align="end" className="w-56 bg-white border-gray-700 text-black border-none shadow-2xl p-0">
+                        <DropdownMenuItem className="">
                           <Link href="/profile" className="flex items-center w-full">
+                            {/* <div className='w-full h-[5rem] bg-red-300'> */}
                             <User className="h-4 w-4 mr-2" />
                             Profile
+                            {/* </div> */}
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
+                        <DropdownMenuItem className="">
                           My Bids
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
+                        <DropdownMenuItem className="">
                           Saved Auctions
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-gray-600" />
@@ -329,7 +334,7 @@ const Header = () => {
           </div>
         </nav>
       </header>
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <LoginModal />
     </>
   )
 }

@@ -13,7 +13,9 @@ interface User {
 interface AuthState {
   user: User | null
   setUser: (user: User) => void
-  logout: () => void
+  logout: () => void,
+  open: boolean,
+  setOpen: (isClosed: boolean) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -22,5 +24,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     clearJwtToken() // Clear JWT token from cookies
     set({ user: null })
-  }
+  },
+  open: false,
+  setOpen: (isOpen) => set({ open: isOpen })
 })) 

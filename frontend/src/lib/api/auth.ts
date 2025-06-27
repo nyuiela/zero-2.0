@@ -1,8 +1,8 @@
 import { API_BASE_URL } from "./config";
 
 // Mock auth fallback
-const mockAuth = {
-  fetchNonce: () => Promise.resolve({ token: 'mock-nonce-123', msg: 'Sign this message to authenticate: mock-nonce-123' }),
+export const mockAuth = {
+  fetchNonce: () => Promise.resolve({ nonce: 'mock-nonce-123', msg: 'Sign this message to authenticate: mock-nonce-123' }),
   verifySignature: (params: AuthParams) => {
     // Check if this is a fallback nonce
     if (params.nonce.startsWith('fallback-')) {
@@ -22,11 +22,11 @@ const mockAuth = {
         stats: { segments: 1, total_cycles: 1000 }
       })
     }
-    return Promise.resolve({ 
-      verified: true, 
+    return Promise.resolve({
+      verified: true,
       jwt: 'mock-jwt',
-      receipt: { mock: true }, 
-      stats: { segments: 1, total_cycles: 1000 } 
+      receipt: { mock: true },
+      stats: { segments: 1, total_cycles: 1000 }
     })
   },
   getJwt: (body: any) => {
@@ -65,8 +65,8 @@ export async function fetchNonce() {
     const response: AuthResponse = await res.json();
     return response;
   } catch (error) {
-    console.error('Error fetching nonce, using mock:', error)
-    return mockAuth.fetchNonce()
+    return console.error('Error fetching nonce, using mock:', error)
+    // return mockAuth.fetchNonce()
   }
 }
 
@@ -86,25 +86,33 @@ export async function verifySignature(body: AuthParams) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    
+
     if (!res.ok) {
       throw new Error('Auth verification failed, using mock');
     }
-    
-    // Extract JWT token from response headers
-    const jwtToken = res.headers.get('Authorization')?.replace('Bearer ', '') || 
-                    res.headers.get('authorization')?.replace('Bearer ', '')
-    
-    const responseData = await res.json()
-    
+    const proof = await res.json()
+    const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proof),
+    })
+
+    // Extract JWT token from response headers (case-insensitive)
+    console.log(verifyResponse);
+    const jwtToken = verifyResponse.headers.get('authorization')?.replace('Bearer ', '')
+
+    const verify = await verifyResponse.json();
+    console.log("Jwt Token ", jwtToken);
+
+
     // Return the response data along with the JWT token
     return {
-      ...responseData,
-      jwt: jwtToken || responseData.token // fallback to response body if not in headers
+      ...verify,
+      jwt: jwtToken // fallback to response body if not in headers
     }
   } catch (error) {
-    console.error('Error verifying signature, using mock:', error)
-    return mockAuth.verifySignature(body)
+    return console.error('Error verifying signature, using mock:', error)
+    // return mockAuth.verifySignature(body)
   }
 }
 

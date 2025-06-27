@@ -13,18 +13,18 @@ import { Input } from './ui/input'
 import { useAccount, useSignMessage } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { fetchNonce, verifySignature, AuthResponse } from '@/lib/api/auth'
+import { fetchNonce, verifySignature } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/authStore'
 import { verificationService } from '@/lib/verificationService'
 import { setJwtToken } from '@/lib/utils'
 import { toast } from 'sonner'
 
-interface LoginModalProps {
-  isOpen: boolean
-  onClose: () => void
-}
+// interface LoginModalProps {
+//   open: boolean
+//   setOpen: () => void
+// }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal() {
   const [username, setUsername] = useState('')
   const [nonce, setNonce] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
@@ -35,20 +35,20 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const { openConnectModal } = useConnectModal()
-  const { setUser } = useAuthStore()
+  const { setUser, setOpen, open } = useAuthStore()
 
   // React Query hooks
   const { data: nonceData, refetch: refetchNonce, isLoading: nonceLoading, isError: nonceError } = useQuery({
     queryKey: ['auth-nonce'],
     queryFn: fetchNonce,
-    enabled: isOpen,
+    enabled: closed,
   })
   const verifySignatureMutation = useMutation({ mutationFn: verifySignature })
 
   // Reset state when modal opens/closes
   useEffect(() => {
-    console.log('Modal open/close effect:', { isOpen, isConnected, address })
-    if (isOpen) {
+    console.log('Modal open/close effect:', { open, isConnected, address })
+    if (open) {
       setLoading(false)
       setError(null)
       // If user is already connected, start at sign step
@@ -59,6 +59,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         console.log('User not connected, starting at username step')
         setStep('username')
       }
+      // Only refetch nonce when modal is opened, not on wallet connect
       refetchNonce()
     } else {
       // Reset state when modal closes
@@ -69,7 +70,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setError(null)
       setStep('username')
     }
-  }, [isOpen, refetchNonce, isConnected, address])
+  }, [open, refetchNonce])
 
   // Reset state when wallet disconnects
   useEffect(() => {
@@ -79,7 +80,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(false)
       setError(null)
     }
-  }, [isConnected])
+  }, [isConnected, step])
 
   // Handle nonce data or generate fallback message
   useEffect(() => {
@@ -102,13 +103,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   }, [nonceData, nonceError, nonceLoading])
 
   // Auto-advance to connect step when username is valid and message is ready
-  useEffect(() => {
-    console.log('Username validation effect:', { username: username.length, message: !!message, step })
-    if (username.length >= 4 && message && step === 'username') {
-      console.log('Auto-advancing to connect step')
-      setStep('connect')
-    }
-  }, [username, message, step])
+  // useEffect(() => {
+  //   console.log('Username validation effect:', { username: username.length, message: !!message, step })
+  //   if (username.length >= 4 && message && step === 'username') {
+  //     console.log('Auto-advancing to connect step')
+  //     setStep('connect')
+  //   }
+  // }, [username, message, step])
 
   // Auto-advance to sign step when wallet is connected
   useEffect(() => {
@@ -129,6 +130,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleConnectWallet = () => {
     console.log('Opening connect modal')
     openConnectModal?.()
+    return;
   }
 
   const handleSignAndVerify = async () => {
@@ -151,7 +153,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       console.log('Signature received:', signature)
 
       // Step 1: Verify signature and get JWT token in one call
-      const verifyRes: any = await verifySignatureMutation.mutateAsync({
+      const verifyRes = await verifySignatureMutation.mutateAsync({
         message,
         signature_bytes: signature,
         expected_addr: address,
@@ -159,11 +161,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         nonce
       })
 
+
       console.log('Verification response:', verifyRes)
 
       // Extract JWT token from response
       const jwtToken = verifyRes.jwt || verifyRes.token
-      
+
       if (!jwtToken) {
         throw new Error('No JWT token received from verification')
       }
@@ -180,12 +183,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           jwt: jwtToken,
           verified: true
         })
+        console.log("Login successful")
 
         toast.success('Login successful!', {
           description: 'Your account has been verified.',
         })
 
-        onClose()
+        // setOpen(true)
       } else if (verifyRes.verificationId) {
         // Verification in progress, start polling using service
         verificationService.startPolling(
@@ -221,7 +225,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           description: 'Identity verification in progress...',
         })
 
-        onClose()
+        setOpen(false)
       } else {
         throw new Error('Unexpected verification response')
       }
@@ -265,6 +269,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </p>
               </div>
             )}
+            <Button
+              onClick={handleConnectWallet}
+              className="w-full bg-amber-400 text-white text-xl hover:bg-amber-600"
+            >
+              Connect Wallet
+            </Button>
           </div>
         )
 
@@ -367,7 +377,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px] border-gray-800 text-[#202626]">
         <DialogHeader>
           <DialogTitle className='text-xl'>{getStepTitle()}</DialogTitle>
