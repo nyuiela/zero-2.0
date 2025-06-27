@@ -11,11 +11,13 @@ import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 contract Auction {
     CarRegistry public carRegistry;
     uint256 public auctionCount;
-    uint256 public constant COLLATERAL_PERCENT = 10; // 10% of bid as collateral (example)
+    uint256 public constant COLLATERAL_PERCENT = 10; //@TODO brand should pick this during the creat auction
     ZeroNFT public zeroNFT;
     OracleMaster public oracleMaster;
     AggregatorV3Interface public ethUsdPriceFeed;
     AggregatorV3Interface public usdcUsdPriceFeed;
+
+    mapping(address => bool) private received;
 
     struct AuctionItem {
         uint256 id;
@@ -57,6 +59,7 @@ contract Auction {
     event AuctionEnded(uint256 indexed auctionId, address winner, uint256 winningBid);
     event CollateralForfeited(uint256 indexed auctionId, address forfeitedBidder, uint256 amount);
     event CollateralReturned(uint256 indexed auctionId, address bidder, uint256 amount);
+    event StakesReturned(uint256 indexed auctionId);
     event AuctionInfoUpdated(
         uint256 indexed auctionId,
         uint256 newStartTime,
@@ -174,35 +177,55 @@ contract Auction {
         AuctionItem storage a = auctions[auctionId];
         require(block.timestamp >= a.endTime, "Auction not ended yet");
         require(!a.ended, "Auction already ended");
+        
         a.ended = true;
+        
+        // Determine winner (highest bidder)
         uint256 highestBid = 0;
         address highestBidder = address(0);
-        uint256 highestIndex = 0;
+        
         for (uint256 i = 0; i < auctionBids[auctionId].length; i++) {
             if (auctionBids[auctionId][i].amount > highestBid) {
                 highestBid = auctionBids[auctionId][i].amount;
                 highestBidder = auctionBids[auctionId][i].bidder;
-                highestIndex = i;
             }
         }
+        
         a.winner = highestBidder;
         a.winningBid = highestBid;
+        
         emit AuctionEnded(auctionId, highestBidder, highestBid);
     }
+
 
     function claimWin(uint256 auctionId) external payable {
         AuctionItem storage a = auctions[auctionId];
         require(a.ended, "Auction not ended");
         require(msg.sender == a.winner, "Not winner");
+        require(a.winner != address(0), "No winner declared");
+        require(!received[msg.sender], "already received");
+        
         if (a.bidToken == address(0)) {
             require(msg.value >= a.winningBid, "Insufficient ETH payment");
         } else {
             require(msg.value == 0, "Do not send ETH for token auction");
             IERC20(a.bidToken).transferFrom(msg.sender, a.creator, a.winningBid);
         }
+         
+        // Mark that winner has claimed and register them
+        received[msg.sender] = true;
+        CarRegistry.registerUndernewOwner(); ///register car under new owner
         // Transfer NFT to winner
         zeroNFT.transferFrom(a.creator, msg.sender, a.nftTokenId);
-        // Winner paid, return all stakes
+       
+    }
+
+    function returnStakes(uint256 auctionId) external {
+        AuctionItem storage a = auctions[auctionId];
+        require(a.ended, "Auction not ended");
+        require(a.winner == address(0), "Winner must claim first");
+        
+        // Return all stakes to bidders
         for (uint256 i = 0; i < a.bidders.length; i++) {
             address bidder = a.bidders[i];
             uint256 stake = a.stakes[bidder];
@@ -216,40 +239,41 @@ contract Auction {
                     emit CollateralReturned(auctionId, bidder, stake);
                 }
             }
-        } //@todo change logic, dos on block usdc account
-            // let stakers pull
+        }
+        
+        emit StakesReturned(auctionId);
     }
 
-    function forfeitWinner(uint256 auctionId) external {
-        AuctionItem storage a = auctions[auctionId];
-        require(a.ended, "Auction not ended");
-        require(msg.sender == a.creator, "Only creator can forfeit");
-        require(a.winner != address(0), "No winner");
-        // Forfeit winner's stake
-        uint256 forfeited = a.stakes[a.winner];
-        if (forfeited > 0) {
-            a.stakes[a.winner] = 0;
-            if (a.bidToken == address(0)) {
-                (bool sent,) = a.creator.call{value: forfeited}("");
-                if (sent) emit CollateralForfeited(auctionId, a.winner, forfeited);
-            } else {
-                IERC20(a.bidToken).transfer(a.creator, forfeited);
-                emit CollateralForfeited(auctionId, a.winner, forfeited);
-            }
-        }
-        // Find next highest bidder
-        uint256 nextHighest = 0;
-        address nextBidder = address(0);
-        for (uint256 i = 0; i < auctionBids[auctionId].length; i++) {
-            address bidder = auctionBids[auctionId][i].bidder;
-            if (bidder != a.winner && auctionBids[auctionId][i].amount > nextHighest) {
-                nextHighest = auctionBids[auctionId][i].amount;
-                nextBidder = bidder;
-            }
-        }
-        a.winner = nextBidder;
-        a.winningBid = nextHighest;
-    }
+    // function forfeitWinner(uint256 auctionId) external {
+    //     AuctionItem storage a = auctions[auctionId];
+    //     require(a.ended, "Auction not ended");
+    //     require(msg.sender == a.creator, "Only creator can forfeit");
+    //     require(a.winner != address(0), "No winner");
+    //     // Forfeit winner's stake
+    //     uint256 forfeited = a.stakes[a.winner];
+    //     if (forfeited > 0) {
+    //         a.stakes[a.winner] = 0;
+    //         if (a.bidToken == address(0)) {
+    //             (bool sent,) = a.creator.call{value: forfeited}("");
+    //             if (sent) emit CollateralForfeited(auctionId, a.winner, forfeited);
+    //         } else {
+    //             IERC20(a.bidToken).transfer(a.creator, forfeited);
+    //             emit CollateralForfeited(auctionId, a.winner, forfeited);
+    //         }
+    //     }
+    //     // Find next highest bidder
+    //     uint256 nextHighest = 0;
+    //     address nextBidder = address(0);
+    //     for (uint256 i = 0; i < auctionBids[auctionId].length; i++) {
+    //         address bidder = auctionBids[auctionId][i].bidder;
+    //         if (bidder != a.winner && auctionBids[auctionId][i].amount > nextHighest) {
+    //             nextHighest = auctionBids[auctionId][i].amount;
+    //             nextBidder = bidder;
+    //         }
+    //     }
+    //     a.winner = nextBidder;
+    //     a.winningBid = nextHighest;
+    // }
 
     function cancelAuction(uint256 auctionId) external {
         AuctionItem storage a = auctions[auctionId];
@@ -258,20 +282,7 @@ contract Auction {
         require(!a.ended, "Auction already ended");
         a.ended = true;
         // Return all stakes
-        for (uint256 i = 0; i < a.bidders.length; i++) {
-            address bidder = a.bidders[i];
-            uint256 stake = a.stakes[bidder];
-            if (stake > 0) {
-                a.stakes[bidder] = 0;
-                if (a.bidToken == address(0)) {
-                    (bool sent,) = bidder.call{value: stake}("");
-                    if (sent) emit CollateralReturned(auctionId, bidder, stake);
-                } else {
-                    IERC20(a.bidToken).transfer(bidder, stake);
-                    emit CollateralReturned(auctionId, bidder, stake);
-                }
-            }
-        }
+        delete a;
     } //@dev todo restructure should be a simle id deletion
 
     function updateAuctionInfo(
@@ -331,6 +342,26 @@ contract Auction {
         // priceUSD and usdcUsd are both 8 decimals (Chainlink standard)
         // priceUSDC = priceUSD / usdcUsd
         return (priceUSD * 1e6) / uint256(usdcUsd); // USDC is 6 decimals
+    }
+
+    function claimMyStake(uint256 auctionId) external {
+        AuctionItem storage a = auctions[auctionId];
+        require(a.ended, "Auction not ended");
+        require(a.winner == address(0), "Winner must claim first");
+        
+        uint256 stake = a.stakes[msg.sender];
+        require(stake > 0, "No stake to claim");
+        
+        a.stakes[msg.sender] = 0;
+        
+        if (a.bidToken == address(0)) {
+            (bool sent,) = msg.sender.call{value: stake}("");
+            require(sent, "Failed to send ETH");
+        } else {
+            IERC20(a.bidToken).transfer(msg.sender, stake);
+        }
+        
+        emit CollateralReturned(auctionId, msg.sender, stake);
     }
 }
 

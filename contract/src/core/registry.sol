@@ -152,6 +152,31 @@ contract CarRegistry is Ownable {
         // remove olldownership
         // give to new owner
         // add new older to the tree and register the information person
+          //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
+        bytes32 s_brand = keccak256(abi.encodePacked(_brand));
+        bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand),msg.sender);
+        require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
+        //  oracleMaster.registerCarBrand(_brand,oracleAddre,config, brandAdminAddr);
+
+        //   bytes ownershipright = keccak256(msg.send, proofhoash, sign akdd);
+        //  merk.storfroffg(owneshipt);
+        // provide what??
+        // proof of ownership
+        // clone
+
+        //-
+        bytes32 requestId = initFunction.sendRequest(subscriptionId, args, _brand);
+        registry[_brand] = Registry({
+            brand: _brand,
+            status: Status.PENDING,
+            request: requestId,
+            response: "",
+            stateUrl: _stateUrl,
+            config: config,
+            brandAdminAddr: brandAdminAddr,
+            owner: msg.sender
+        });
+        emit BrandRegistryRequested(_brand, requestId);
     }
 
     function activate(string memory _brand) external {
