@@ -15,7 +15,7 @@ contract Reputation {
     address stakeToken; // address of the token used for staking, if is not eth
     address _carRegistry; // address of the car registry contract
     uint256 public stakeSlashed; // total amount slashed from brands
-    address public permissionManagerImplementation;
+   // address public permissionManagerImplementation;
     address public globalPermissionManager;
 
     bytes4 public constant SLASH = bytes4(keccak256("slash(address,uint256)"));
@@ -91,13 +91,12 @@ contract Reputation {
         uint256 _requireStake,
         address _stakeToken,
         address carRegistry,
-        address _permissionManagerImplementation,
         address _globalPermissionManager
     ) {
         stakeToken = _stakeToken;
         requireStake = _requireStake;
         _carRegistry = carRegistry;
-        permissionManagerImplementation = _permissionManagerImplementation;
+      //  permissionManagerImplementation = _permissionManagerImplementation;
         globalPermissionManager = _globalPermissionManager;
     }
 
