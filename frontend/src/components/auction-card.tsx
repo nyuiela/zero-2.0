@@ -8,7 +8,7 @@ interface Auction {
   make: string
   model: string
   location: string
-  image: string
+  image_url: string[]
   currentBid: string | number
   timeLeft: string
   bidCount: number
@@ -36,7 +36,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
       {/* Car Image */}
       <div className="relative overflow-hidden h-[30rem]">
         <Image
-          src={auction.image}
+          src={auction.image_url[0]}
           alt={`${auction.year} ${auction.make} ${auction.model}`}
           fill
           className=" transition-transform duration-500 group-hover:scale-105 absolute w-full h-[30rem]"

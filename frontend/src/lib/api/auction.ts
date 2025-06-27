@@ -10,7 +10,9 @@ export async function fetchAuctions(): Promise<Auction[]> {
       console.warn("API failed, falling back to mock data for auctions.")
       return mockAuctions
     }
+
     const json = await res.json()
+    console.log("Auctions ", json);
     return json.data || []
   } catch (error) {
     console.error("Error fetching auctions, falling back to mock data:", error)
@@ -39,11 +41,11 @@ export async function createAuction(auctionData: Partial<Auction>): Promise<{ st
       method: 'POST',
       body: JSON.stringify(auctionData),
     })
-    
+
     if (!res.ok) {
       throw new Error('Failed to create auction')
     }
-    
+
     return await res.json()
   } catch (error) {
     console.error("Error creating auction:", error)

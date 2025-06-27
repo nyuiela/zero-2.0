@@ -10,6 +10,7 @@ export async function fetchCars(): Promise<CarListing[]> {
       return mockListings;
     }
     const json = await res.json();
+    console.log("Carssss s", json)
     return json.data || [];
   } catch (error) {
     console.error("Error fetching cars, falling back to mock data:", error);
@@ -38,11 +39,11 @@ export async function createCar(carData: Partial<CarListing>): Promise<{ status:
       method: 'POST',
       body: JSON.stringify(carData),
     });
-    
+
     if (!res.ok) {
       throw new Error('Failed to create car');
     }
-    
+
     return await res.json();
   } catch (error) {
     console.error("Error creating car:", error);

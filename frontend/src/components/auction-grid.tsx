@@ -6,9 +6,16 @@ import AuctionCard from './auction-card'
 import { auctions, upcomingAuctions } from '@/lib/auction'
 import Image from 'next/image'
 import { Link, Gavel, MapPin, Clock } from 'lucide-react'
+import { fetchAuctions } from '@/lib/api/auction'
+import { fetchCars } from '@/lib/api/car'
+import { useQuery } from '@tanstack/react-query'
 
 const AuctionGrid = () => {
   const [selectedCountry, setSelectedCountry] = useState('ALL')
+  const { data: cars = [], isLoading, isError } = useQuery({
+    queryKey: ['cars'],
+    queryFn: fetchCars,
+  })
 
   // Filter auctions based on selected country
   const filteredAuctions = selectedCountry === 'ALL'
