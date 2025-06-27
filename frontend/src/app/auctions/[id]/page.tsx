@@ -88,7 +88,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
         <div className="text-center">
           <div className="text-6xl mb-4">🚗</div>
           <h2 className="text-xl font-semibold text-gray-600 mb-2">Auction Not Found</h2>
-          <p className="text-gray-400">The auction you're looking for doesn't exist.</p>
+          <p className="text-gray-400">The auction youre looking for doesnt exist.</p>
         </div>
       </div>
     )
@@ -474,6 +474,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
       </div>
-       
+
     </div>
-)} 
+  )
+} 

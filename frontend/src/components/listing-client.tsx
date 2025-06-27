@@ -6,14 +6,13 @@ import Link from 'next/link'
 import AuctionCard from '@/components/auction-card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin } from 'lucide-react'
 import { CarListing } from '@/lib/data'
 import { Auction } from '@/lib/auction'
 
 interface ListingClientProps {
   listing: CarListing
-  relatedAuctions: Auction[]
+  relatedAuctions: (Auction & { image_url?: string[]; image?: string })[]
 }
 
 function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH') {
@@ -28,7 +27,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [bidAmount, setBidAmount] = useState<number | string>('')
   const [minBid, setMinBid] = useState<number>(listing.current_price)
-  const [currency, setCurrency] = useState<'ETH' | 'USDC'>('ETH')
+  const [currency] = useState<'ETH' | 'USDC'>('ETH')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bidError, setBidError] = useState<string | null>(null)
 
@@ -84,29 +83,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       </nav>
 
       {/* Current Bid Display */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg">
+      <div className="mb-6 p-4 bg-gradient-to-r border border-amber-800 rounded-sm bg-[#00296b]/90 py-8">
         <div className="text-center">
-          <div className="text-sm text-amber-700 mb-1">Current Highest Bid</div>
-          <div className="text-3xl font-bold text-amber-800">{formatCurrency(listing.current_price, currency)}</div>
+          <div className="text-sm text-white mb-1">Current Highest Bid</div>
+          <div className="text-3xl font-bold text-white ">{formatCurrency(listing.current_price, currency)}</div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <Button className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={() => setIsBidModalOpen(true)}>
-          Place Bid
-        </Button>
-        <Button className="bg-gradient-to-r from-blue-600 to-cyan-400 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-all" asChild>
-          <Link href={`/auctions/${listing.id}`}>
-            Join Bidding Room
-          </Link>
-        </Button>
-        <div className="ml-auto flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Currency:</span>
-          <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
-          <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
-        </div>
-      </div>
+
 
       {/* Bid Modal */}
       {isBidModalOpen && (
@@ -146,7 +130,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         <div className="lg:col-span-2">
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-card">
+            <div className="relative aspect-[16/9] rounded-none overflow-hidden bg-card">
               <Image
                 src={listing.image_url[selectedImage]}
                 alt={`${listing.year} ${listing.make} ${listing.model}`}
@@ -161,8 +145,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <button
                   key={image}
                   onClick={() => setSelectedImage(index)}
-                  className={`relative aspect-square rounded overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-brand' : 'border-border hover:border-muted-foreground'
-                    }`}
+                  className={`relative aspect-square rounded overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-brand' : 'border-border hover:border-muted-foreground'}`}
                 >
                   <Image
                     src={image}
@@ -178,13 +161,27 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
 
         {/* Bidding Panel */}
         <div className="space-y-6">
-          <Card className="border-brand/20 bg-gradient-to-br from-[#f8fafc] to-[#e0e7ef] shadow-xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-brand">Current Price</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Action Buttons */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8 items-baseline justify-end">
+            <Button className="bg-gradient-to-r text-white font-bold text-lg py-3 px-8 shadow-lg hover:scale-105 transition-all rounded-none bg-[#00296b]" onClick={() => setIsBidModalOpen(true)}>
+              Place Bid
+            </Button>
+            <Button className="bg-gradient-to-r text-white font-bold text-lg py-3 px-8 rounded-none shadow-lg hover:scale-105 transition-all bg-[#00296b]" asChild>
+              <Link href={`/auctions/${listing.id}`}>
+                Join Bidding Room
+              </Link>
+            </Button>
+            {/* <div className="ml-auto flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Currency:</span>
+          <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
+          <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
+        </div> */}
+          </div>
+          <div className="bg-gradient-to-br border-none p-6 ">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xl font-bold text-brand">Current Price</div>
+            </div>
+            <div className="space-y-4">
               <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
               <Separator />
               <div className="space-y-3">
@@ -193,16 +190,31 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                   <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          <div className="bg-gradient-to-br border-none p-6 ">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xl font-bold text-brand">Summary</div>
+            </div>
+            <div className="space-y-4">
+              <div className="text-md text-brand">
+                {listing.summary}
+              </div>
+              {/* <Separator />
+              <div className="space-y-3">
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Starting Price:</span>
+                  <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+                </div>
+              </div> */}
+            </div>
+          </div>
           {/* Seller Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span>Seller Information</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <div className="bg-white shadow p-6 rounded-lg">
+            <div className="text-lg font-bold mb-2 flex items-center space-x-2">
+              <span>Seller Information</span>
+            </div>
+            <div className="space-y-3">
               <div>
                 <div className="font-semibold text-foreground">{listing.seller}</div>
                 <div className="text-sm text-muted-foreground flex items-center mt-1">
@@ -210,12 +222,12 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                   {listing.location}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Vehicle Details */}
+      {/* Car Details Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Details */}
         <div className="lg:col-span-2 space-y-8">
@@ -231,115 +243,85 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               </div>
             </div>
           </div>
-          {/* Description */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Description</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {listing.description}
-              </p>
-            </CardContent>
-          </Card>
-          {/* Vehicle Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Vehicle Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {listing.vehicale_overview}
-              </p>
-            </CardContent>
-          </Card>
-          {/* Features */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Key Features</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Exterior</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground">
-                    {listing.features.exterior.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Interior</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground">
-                    {listing.features.interior.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Mechanical</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground">
-                    {listing.features.mechanical.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
+          {/* Car Details Sections */}
+          <div className="bg-transparent rounded-none mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              {listing.description}
+            </p>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Vehicle Overview</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              {listing.vehicale_overview}
+            </p>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h2>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Exterior</h4>
+                <ul className="list-disc ml-5 text-muted-foreground">
+                  {listing.features.exterior.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-        {/* Specifications */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Specifications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-foreground mb-3">Specs</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Engine Size:</span>
-                      <span className="text-foreground">{listing.engine_size}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Transmission:</span>
-                      <span className="text-foreground">{listing.transmission}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Fuel Type:</span>
-                      <span className="text-foreground">{listing.fuel_type}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Exterior Color:</span>
-                      <span className="text-foreground">{listing.exterior_color}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Interior Color:</span>
-                      <span className="text-foreground">{listing.interior_color}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mileage:</span>
-                      <span className="text-foreground">{listing.mileage} mi</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">VIN:</span>
-                      <span className="text-foreground">{listing.vin}</span>
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Interior</h4>
+                <ul className="list-disc ml-5 text-muted-foreground">
+                  {listing.features.interior.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Mechanical</h4>
+                <ul className="list-disc ml-5 text-muted-foreground">
+                  {listing.features.mechanical.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Specifications</h2>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Engine Size:</span>
+                <span className="text-foreground">{listing.engine_size}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Transmission:</span>
+                <span className="text-foreground">{listing.transmission}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Fuel Type:</span>
+                <span className="text-foreground">{listing.fuel_type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Exterior Color:</span>
+                <span className="text-foreground">{listing.exterior_color}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Interior Color:</span>
+                <span className="text-foreground">{listing.interior_color}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Mileage:</span>
+                <span className="text-foreground">{listing.mileage} mi</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">VIN:</span>
+                <span className="text-foreground">{listing.vin}</span>
+              </div>
+            </div>
+          </div>
         </div>
+        {/* (Optional) Add more side details here if needed */}
       </div>
       {/* Related Auctions */}
       <div className="mt-16 pt-8 border-t border-border">
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {relatedAuctions.map((auction) => (
-            <AuctionCard key={auction.id} auction={auction} />
+            <AuctionCard key={auction.id} auction={auction as any} />
           ))}
         </div>
       </div>
