@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import {IOracleMaster} from "../interface/oracle/IOracleMaster.sol";
+import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 import {Reputation} from "../core/reputation.sol";
-import {ICarRegistry} from "../interface/ICarRegistry.sol";
+import {ICarRegistry} from "../Interface/ICarRegistry.sol";
 
 /**
  * @title ZeroNFT

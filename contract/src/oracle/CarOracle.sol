@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {AggregatorV3Interface} from "chainlink-brownie-contracts/interfaces/AggregatorV3Interface.sol";
-import {ICarOracle} from "../interface/oracle/ICarOracle.sol";
+import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 
 contract CarOracle is ICarOracle, Initializable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     // State variables

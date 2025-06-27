@@ -2,8 +2,8 @@
 pragma solidity 0.8.28;
 
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
-import {IPermissionManager} from "../interface/permissions/IPermissionManager.sol";
-import {ICarRegistry} from "../interface/ICarRegistry.sol";
+import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
+import {ICarRegistry} from "../Interface/ICarRegistry.sol";
 
 contract Profile {
     ICarRegistry registryContract;
