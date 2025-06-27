@@ -61,7 +61,7 @@ const AuctionGrid = () => {
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
             {upcomingAuctions.map((auction, key) => (
               <div key={key}
-                className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-00">
+                className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 {/* Car Image */}
                 <div className="relative overflow-hidden h-[30rem]">
 
@@ -75,7 +75,7 @@ const AuctionGrid = () => {
                   {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10 opacity-70" />
                   {/* Bidding Info */}
-                  <div className="border-t border-gray-00 pt-4 flex items-center justify-center bg-[#E4DFDA] p-2 backdrop-blur-md">
+                  <div className="border-none pt-4 flex items-center justify-center bg-[#E4DFDA] p-2 backdrop-blur-md">
                     <div className="text-right">
                       <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium flex items-center justify-end">
                         <Clock className="w-3 h-3 mr-1" />
