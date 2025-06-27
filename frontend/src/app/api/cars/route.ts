@@ -11,6 +11,17 @@ export const config = {
 }
 
 export async function POST(req: Request): Promise<Response> {
+  // Check for JWT token in Authorization header
+  const authHeader = req.headers.get('Authorization')
+  const token = authHeader?.replace('Bearer ', '')
+  
+  if (!token) {
+    return new Response(JSON.stringify({ status: 'error', message: 'Authentication required' }), { status: 401 })
+  }
+
+  // In a real implementation, you would validate the JWT token here
+  console.log('Car registration with token:', token ? 'Present' : 'Missing')
+
   // Parse multipart form data using formidable
   const form = new formidable.IncomingForm()
   // formidable expects a Node.js IncomingMessage, so we need to adapt the Request

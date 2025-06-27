@@ -1,4 +1,4 @@
-import { pollVerificationStatus, getJwt } from './api/auth'
+import { pollVerificationStatus } from './api/auth'
 import { toast } from 'sonner'
 
 interface VerificationStatus {

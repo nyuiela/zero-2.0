@@ -188,7 +188,7 @@ const Header = () => {
                           {address?.slice(0, 6)}...{address?.slice(-4)}
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56 bg-gray-800 border-gray-700">
+                      <DropdownMenuContent align="end" className="w-56 bg-white border-gray-700">
                         <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
                           <Link href="/profile" className="flex items-center w-full">
                             <User className="h-4 w-4 mr-2" />

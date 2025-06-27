@@ -13,9 +13,10 @@ import { Input } from './ui/input'
 import { useAccount, useSignMessage } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { fetchNonce, verifySignature, getJwt, AuthResponse } from '@/lib/api/auth'
+import { fetchNonce, verifySignature, AuthResponse } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/authStore'
 import { verificationService } from '@/lib/verificationService'
+import { setJwtToken } from '@/lib/utils'
 import { toast } from 'sonner'
 
 interface LoginModalProps {
@@ -43,7 +44,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     enabled: isOpen,
   })
   const verifySignatureMutation = useMutation({ mutationFn: verifySignature })
-  const getJwtMutation = useMutation({ mutationFn: getJwt })
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -141,9 +141,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(true)
       setError(null)
 
-      // const res: AuthResponse = await fetchNonce();
-      // const message = res.msg;
-      // const nonce = res.nonce;
       const message = nonceData?.msg as string;
       const nonce = nonceData?.nonce as string;
       console.log('Signing message:', message)
@@ -153,7 +150,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       console.log('Signature received:', signature)
 
-      // Step 1: Start verification (returns immediately with status)
+      // Step 1: Verify signature and get JWT token in one call
       const verifyRes: any = await verifySignatureMutation.mutateAsync({
         message,
         signature_bytes: signature,
@@ -164,19 +161,23 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       console.log('Verification response:', verifyRes)
 
+      // Extract JWT token from response
+      const jwtToken = verifyRes.jwt || verifyRes.token
+      
+      if (!jwtToken) {
+        throw new Error('No JWT token received from verification')
+      }
+
+      // Store JWT token in cookies
+      setJwtToken(jwtToken)
 
       // Check if verification is complete or needs polling
       if (verifyRes.verified === true) {
         // Verification completed immediately
-        const jwtRes: any = await getJwtMutation.mutateAsync({
-          receipt: verifyRes.receipt,
-          stats: verifyRes.stats
-        })
-
         setUser({
           address,
           username,
-          jwt: jwtRes.token || 'mock-jwt',
+          jwt: jwtToken,
           verified: true
         })
 
@@ -191,17 +192,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           verifyRes.verificationId,
           {
             onComplete: async (status) => {
-              // Get JWT with the completed verification
-              const jwtRes: any = await getJwtMutation.mutateAsync({
-                receipt: status.receipt,
-                stats: status.stats
-              })
-
-              // Update user with JWT
+              // Update user with JWT token (already stored in cookies)
               setUser({
                 address,
                 username,
-                jwt: jwtRes.token || 'mock-jwt',
+                jwt: jwtToken,
                 verified: true
               })
             },
@@ -218,7 +213,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setUser({
           address,
           username,
-          jwt: 'pending-verification',
+          jwt: jwtToken,
           verified: false
         })
 

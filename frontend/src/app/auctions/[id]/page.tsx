@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAccount } from "wagmi"
 import { useQuery } from '@tanstack/react-query'
 import { fetchCars } from '@/lib/api/car'
+import { getJwtToken } from '@/lib/utils'
 import { CarListing, listings as mockListings } from '@/lib/data'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -177,7 +178,10 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
     try {
       const res = await fetch('/api/bid', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getJwtToken() || ''}`
+        },
         body: JSON.stringify({ auctionId, address, amount })
       })
       const data = await res.json()
@@ -470,6 +474,5 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
       </div>
-    </div>
-  )
+      )
 } 
