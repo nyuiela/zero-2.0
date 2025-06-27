@@ -10,12 +10,12 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  User, 
-  Wallet, 
-  Shield, 
-  Clock, 
-  CheckCircle, 
+import {
+  User,
+  Wallet,
+  Shield,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Building2,
   FileText,
@@ -53,7 +53,7 @@ export default function ProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [roleRequestStatus, setRoleRequestStatus] = useState<'none' | 'pending' | 'approved' | 'rejected'>(user?.roleRequestStatus || 'none')
   const [roleRequestLoading, setRoleRequestLoading] = useState(false)
-  
+
   const [sellerApplication, setSellerApplication] = useState<SellerApplication>({
     businessName: '',
     businessType: 'dealer',
@@ -91,8 +91,8 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Wallet className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-600 mb-2">Wallet Not Connected</h2>
-          <p className="text-gray-400">Please connect your wallet to access your profile.</p>
+          <h2 className="text-xl font-semibold text-gray-600 mb-2">Login to view profile</h2>
+          <p className="text-gray-400">Please login  to access your profile.</p>
         </div>
       </div>
     )
@@ -110,12 +110,12 @@ export default function ProfilePage() {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       toast.success('Application submitted successfully!', {
         description: 'We will review your application and contact you within 3-5 business days.',
         duration: 5000,
       })
-      
+
       // Reset form
       setSellerApplication({
         businessName: '',
@@ -135,7 +135,7 @@ export default function ProfilePage() {
         website: '',
         socialMedia: ''
       })
-      
+
     } catch (error) {
       toast.error('Failed to submit application', {
         description: 'Please try again or contact support.',
@@ -169,7 +169,7 @@ export default function ProfilePage() {
       // Try backend first with JWT token
       const res = await fetch('/api/role-request', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getJwtToken() || ''}`
         },
@@ -243,14 +243,14 @@ export default function ProfilePage() {
                         {displayAddress}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Username</label>
                       <p className="text-foreground bg-muted px-3 py-2 rounded mt-1">
                         {displayUsername}
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Verification Status</label>
                       <div className="flex items-center gap-2 mt-1">
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                         Wallet Signature + Zero-Knowledge Proof
                       </p>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Last Login</label>
                       <p className="text-foreground bg-muted px-3 py-2 rounded mt-1">
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                           <span className="text-sm font-medium text-blue-800">Complete Your Login</span>
                         </div>
                         <p className="text-sm text-blue-700">
-                          You're connected with your wallet but haven't completed the login process. 
+                          You're connected with your wallet but haven't completed the login process.
                           Click the Login button in the header to complete your account setup.
                         </p>
                       </div>
@@ -351,7 +351,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Business Type *</label>
                         <select
@@ -378,7 +378,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Email *</label>
                         <Input
@@ -401,7 +401,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Business License *</label>
                         <Input
@@ -434,7 +434,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">State/Province *</label>
                         <Input
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">ZIP/Postal Code *</label>
                         <Input
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Website</label>
                         <Input

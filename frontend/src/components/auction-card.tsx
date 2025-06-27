@@ -88,7 +88,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 Current Bid
               </div>
               <div className="text-white font-bold text-xl flex items-center gap-2 ">
-                {formatCurrency(auction.currentBid, currency)}
+                {auction.currentBid && formatCurrency(auction.currentBid, currency)}
               </div>
             </div>
             <div className="text-right">

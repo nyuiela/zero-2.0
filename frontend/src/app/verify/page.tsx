@@ -275,11 +275,11 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background lg:mx-[20rem]">
+    <div className="min-h-screen bg-background lg:mx-[10rem] xl:mx-[20rem]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Block Explorer</h1>
-          <p className="text-gray-400">Verify on-chain transactions and zero-knowledge proofs</p>
+          <h1 className="text-4xl font-bold text-black mb-2">Proof Explorer</h1>
+          <p className="text-gray-400">Verify off-chain & on-chain transactions and proofs</p>
         </div>
 
         {/* Search and Filter */}
@@ -326,12 +326,12 @@ export default function VerifyPage() {
         </div>
 
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="transactions" className="text-black">Transactions</TabsTrigger>
+          {/* <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="proofs" className="text-black">Zero-Knowledge Proofs</TabsTrigger>
-          </TabsList>
+            <TabsTrigger value="transactions" className="text-black">Transactions</TabsTrigger>
+          </TabsList> */}
 
-          <TabsContent value="transactions" className="mt-6">
+          {/* <TabsContent value="transactions" className="mt-6">
             <div className="space-y-4">
               {filteredTransactions.map((tx) => (
                 <Card key={tx.id} className="rounded-sm bg-white text-black">
@@ -372,20 +372,20 @@ export default function VerifyPage() {
                       </div>
                       <div>
                         <p className="mb-1">From:</p>
-                        <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                        <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                           {formatAddress(tx.from)}
                         </code>
                       </div>
                       <div>
                         <p className=" mb-1">To:</p>
-                        <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                        <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                           {formatAddress(tx.to)}
                         </code>
                       </div>
                       {tx.value && (
                         <div>
                           <p className=" mb-1">Value:</p>
-                          <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                          <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                             {tx.value}
                           </code>
                         </div>
@@ -393,7 +393,7 @@ export default function VerifyPage() {
                       {tx.metadata?.username && (
                         <div>
                           <p className=" mb-1">Username:</p>
-                          <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                          <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                             {tx.metadata.username}
                           </code>
                         </div>
@@ -412,19 +412,19 @@ export default function VerifyPage() {
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="proofs" className="mt-6">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredProofs.map((proof) => (
-                <Card key={proof.id} className="bg-[#E5E7E6] border-gray-700 ">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
+                <Card key={proof.id} className="bg-white border-gray-300 shadow-none text-black rounded-sm">
+                  <CardHeader className='p-0 m-0 h-[1.5rem] px-3 border-none'>
+                    <div className="flex items-center justify-between bg-red-00">
                       <div className="flex items-center gap-3">
-                        <Shield className="h-5 w-5 text-amber-400" />
+                        <Shield className="h-10 w-10 text-amber-400" />
                         <div>
-                          <CardTitle className="text-white capitalize">{proof.type.replace('_', ' ')}</CardTitle>
-                          <CardDescription className="text-gray-400">
+                          <CardTitle className="text-black capitalize">{proof.type.replace('_', ' ')}</CardTitle>
+                          <CardDescription className="text-gray-400 text-sm">
                             {formatTimestamp(proof.timestamp)}
                           </CardDescription>
                         </div>
@@ -435,17 +435,17 @@ export default function VerifyPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className='bg-[#E5E7E6]/90'>
-                    <div className="space-y-4">
+                  <CardContent className='bg-white text-gray-600 text-sm'>
+                    <div className="space-y-3">
                       <div>
-                        <p className=" mb-1">Description:</p>
-                        <p className="text-white">{proof.metadata.description}</p>
+                        <p className=" mb-0.5">Description:</p>
+                        <p className="text-black">{proof.metadata.description}</p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className=" mb-1">Transaction Hash:</p>
                           <div className="flex items-center gap-2">
-                            <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                            <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                               {formatAddress(proof.transactionHash)}
                             </code>
                             <Button
@@ -461,7 +461,7 @@ export default function VerifyPage() {
                         {proof.metadata.username && (
                           <div>
                             <p className=" mb-1">Username:</p>
-                            <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                            <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                               {proof.metadata.username}
                             </code>
                           </div>
@@ -469,7 +469,7 @@ export default function VerifyPage() {
                         {proof.metadata.carId && (
                           <div>
                             <p className=" mb-1">Car ID:</p>
-                            <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                            <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                               {proof.metadata.carId}
                             </code>
                           </div>
@@ -477,31 +477,31 @@ export default function VerifyPage() {
                         {proof.metadata.auctionId && (
                           <div>
                             <p className=" mb-1">Auction ID:</p>
-                            <code className="text-white bg-gray-700 px-2 py-1 rounded">
+                            <code className="text-white bg-gray-400/50 px-2 py-1 rounded">
                               {proof.metadata.auctionId}
                             </code>
                           </div>
                         )}
                       </div>
                       {proof.stats && (
-                        <div>
+                        <div className='text-sm'>
                           <p className=" mb-1">Proof Statistics:</p>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                            <div className="bg-gray-700 p-2 rounded">
-                              <p className="text-gray-400">Segments</p>
-                              <p className="text-white font-mono">{proof.stats.segments}</p>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xm">
+                            <div className="bg-gray-400/50 p-2 rounded">
+                              <p className="text-black">Segments</p>
+                              <p className="text-black font-mono">{proof.stats.segments}</p>
                             </div>
-                            <div className="bg-gray-700 p-2 rounded">
-                              <p className="text-gray-400">Total Cycles</p>
-                              <p className="text-white font-mono">{proof.stats.total_cycles}</p>
+                            <div className="bg-gray-400/50 p-2 rounded">
+                              <p className="text-black">Total Cycles</p>
+                              <p className="text-black font-mono">{proof.stats.total_cycles}</p>
                             </div>
-                            <div className="bg-gray-700 p-2 rounded">
-                              <p className="text-gray-400">User Cycles</p>
-                              <p className="text-white font-mono">{proof.stats.user_cycles}</p>
+                            <div className="bg-gray-400/50 p-2 rounded">
+                              <p className="text-black">User Cycles</p>
+                              <p className="text-black font-mono">{proof.stats.user_cycles}</p>
                             </div>
-                            <div className="bg-gray-700 p-2 rounded">
-                              <p className="text-gray-400">Paging Cycles</p>
-                              <p className="text-white font-mono">{proof.stats.paging_cycles}</p>
+                            <div className="bg-gray-400/50 p-2 rounded">
+                              <p className="text-black">Paging Cycles</p>
+                              <p className="text-black font-mono">{proof.stats.paging_cycles}</p>
                             </div>
                           </div>
                         </div>

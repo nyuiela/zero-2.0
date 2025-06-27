@@ -41,7 +41,7 @@ export function LoginModal() {
   const { data: nonceData, refetch: refetchNonce, isLoading: nonceLoading, isError: nonceError } = useQuery({
     queryKey: ['auth-nonce'],
     queryFn: fetchNonce,
-    enabled: closed,
+    enabled: open,
   })
   const verifySignatureMutation = useMutation({ mutationFn: verifySignature })
 
@@ -189,7 +189,7 @@ export function LoginModal() {
           description: 'Your account has been verified.',
         })
 
-        // setOpen(true)
+        setOpen(true)
       } else if (verifyRes.verificationId) {
         // Verification in progress, start polling using service
         verificationService.startPolling(
