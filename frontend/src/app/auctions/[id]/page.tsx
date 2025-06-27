@@ -474,5 +474,6 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
       </div>
-      )
-} 
+       
+    </div>
+)} 
