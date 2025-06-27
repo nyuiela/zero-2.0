@@ -9,6 +9,7 @@ import { Link, Gavel, MapPin, Clock } from 'lucide-react'
 import { fetchAuctions } from '@/lib/api/auction'
 import { fetchCars } from '@/lib/api/car'
 import { useQuery } from '@tanstack/react-query'
+import CarCard from './car-card'
 
 const CarGrid = () => {
   const [selectedCountry, setSelectedCountry] = useState('ALL')
@@ -58,7 +59,7 @@ const CarGrid = () => {
         {/* Auction Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-2">
           {filteredCars.map((auction) => (
-            <AuctionCard key={auction.id} auction={auction} />
+            <CarCard key={auction.id} auction={auction} />
           ))}
         </div>
 

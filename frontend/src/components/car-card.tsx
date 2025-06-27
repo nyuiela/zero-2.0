@@ -28,7 +28,7 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
     : `${amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} USDC`
 }
 
-const AuctionCard = ({ auction }: AuctionCardProps) => {
+const CarCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
   const currency = auction.currency || 'ETH'
   return (
@@ -82,26 +82,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
             <MapPin className="w-4 h-4 mr-2 text-green-400 flex-shrink-0" />
             <span className="truncate">{auction.location}</span>
           </div>
-          {/* Bidding Info */}
-          <div className="border-t border-white pt-4 flex items-center justify-between bg-[#E4DFDA]/30 p-2 backdrop-blur-md">
-            <div>
-              <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium ">
-                Current Bid
-              </div>
-              <div className="text-white font-bold text-xl flex items-center gap-2 ">
-                {auction.currentBid && formatCurrency(auction.currentBid, currency)}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium flex items-center justify-end">
-                <Clock className="w-3 h-3 mr-1" />
-                Time Left
-              </div>
-              <div className="text-black font-semibold text-lg">
-                {auction.timeLeft}
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -109,4 +90,4 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
   )
 }
 
-export default AuctionCard
+export default CarCard
