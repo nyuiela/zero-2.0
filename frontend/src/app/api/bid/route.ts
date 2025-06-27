@@ -1,7 +1,7 @@
 // In-memory session fallback (not persistent)
 let sessionBids: { auctionId: string, address: string, amount: number, timestamp: number }[] = []
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
   const body = await req.json()
   const { auctionId, address, amount } = body
   if (!auctionId || !address || typeof amount !== 'number') {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   return new Response(JSON.stringify({ status: 'success', message: 'Bid placed', bid: { auctionId, address, amount } }), { status: 200 })
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<Response> {
   const { searchParams } = new URL(req.url)
   const auctionId = searchParams.get('auctionId')
   if (!auctionId) {

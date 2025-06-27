@@ -10,7 +10,7 @@ export const config = {
   },
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
   // Parse multipart form data using formidable
   const form = new formidable.IncomingForm()
   // formidable expects a Node.js IncomingMessage, so we need to adapt the Request
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   const nodeReq = Readable.from(Buffer.concat(buffers)) as any
   nodeReq.headers = Object.fromEntries(req.headers.entries())
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     form.parse(nodeReq, (err, fields, files) => {
       if (err) {
         resolve(new Response(JSON.stringify({ status: 'error', message: 'Failed to parse form data' }), { status: 500 }))
@@ -41,6 +41,6 @@ export async function POST(req: Request) {
   })
 }
 
-export async function GET() {
+export async function GET(): Promise<Response> {
   return new Response(JSON.stringify({ status: 'success', cars: sessionCars }), { status: 200 })
 } 

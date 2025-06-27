@@ -36,9 +36,9 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
     : `${amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} USDC`
 }
 
-export default function AuctionPage({ params }: { params: { id: string } }) {
+export default function AuctionPage({ params }: { params: Promise<{ id: string }> }) {
   const { address, isConnected } = useAccount()
-  const auctionId = params.id
+  const [auctionId, setAuctionId] = useState<string>('')
   const [bids, setBids] = useState<Bid[]>([])
   const [bidAmount, setBidAmount] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -50,6 +50,15 @@ export default function AuctionPage({ params }: { params: { id: string } }) {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
 
+  // Await params to get the auction ID
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params
+      setAuctionId(resolvedParams.id)
+    }
+    getParams()
+  }, [params])
+
   // Fetch car data using the same source as listing page
   const { data: cars = mockListings, isLoading: carsLoading, isError: carsError } = useQuery({
     queryKey: ['cars'],
@@ -59,8 +68,8 @@ export default function AuctionPage({ params }: { params: { id: string } }) {
   // Find the car listing for this auction
   const carListing: CarListing | undefined = cars.find((c: CarListing) => c.id.toString() === auctionId)
 
-  // Show loading if car data is loading
-  if (carsLoading) {
+  // Show loading if car data is loading or auctionId not set yet
+  if (carsLoading || !auctionId) {
     return (
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
         {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div> */}
@@ -70,7 +79,6 @@ export default function AuctionPage({ params }: { params: { id: string } }) {
       </div>
     )
   }
-
 
   // Show error if car not found
   if (carsError || !carListing) {

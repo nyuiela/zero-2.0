@@ -1,25 +1,23 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-
 // In-memory session fallback (not persistent)
 let sessionRoleRequests: Record<string, 'pending' | 'approved' | 'rejected'> = {}
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { address } = req.body
-    if (!address) {
-      return res.status(400).json({ status: 'error', message: 'Missing address' })
-    }
-    // Simulate backend: always set to pending
-    sessionRoleRequests[address] = 'pending'
-    return res.status(200).json({ status: 'success', message: 'Request submitted', roleRequestStatus: 'pending' })
+export async function POST(req: Request): Promise<Response> {
+  const body = await req.json()
+  const { address } = body
+  if (!address) {
+    return new Response(JSON.stringify({ status: 'error', message: 'Missing address' }), { status: 400 })
   }
-  if (req.method === 'GET') {
-    const { address } = req.query
-    if (!address || typeof address !== 'string') {
-      return res.status(400).json({ status: 'error', message: 'Missing address' })
-    }
-    const status = sessionRoleRequests[address] || 'none'
-    return res.status(200).json({ status: 'success', roleRequestStatus: status })
+  // Simulate backend: always set to pending
+  sessionRoleRequests[address] = 'pending'
+  return new Response(JSON.stringify({ status: 'success', message: 'Request submitted', roleRequestStatus: 'pending' }), { status: 200 })
+}
+
+export async function GET(req: Request): Promise<Response> {
+  const { searchParams } = new URL(req.url)
+  const address = searchParams.get('address')
+  if (!address) {
+    return new Response(JSON.stringify({ status: 'error', message: 'Missing address' }), { status: 400 })
   }
-  res.status(405).json({ status: 'error', message: 'Method not allowed' })
+  const status = sessionRoleRequests[address] || 'none'
+  return new Response(JSON.stringify({ status: 'success', roleRequestStatus: status }), { status: 200 })
 } 
