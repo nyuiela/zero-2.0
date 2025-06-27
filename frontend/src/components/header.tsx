@@ -59,22 +59,22 @@ const Header = () => {
 
   return (
     <>
-      <header className="w-full">
+      <header className="w-full bg-red-00">
         {/* Main Navigation */}
-        <nav className="glass bg-white/80 backdrop-blur-md border-none border-gray-200 shadow-sm">
+        <nav className="glass backdrop-blur-md border-none border-gray-200 shadow-sm bg-red-00 h-[6rem]">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <Link href="/" className="flex items-center">
                 <div className="flex items-center">
-                  {/* SBX Cars Logo - using SVG from original site */}
+                  {/* ZERO Logo - using SVG from original site */}
                   <svg
                     width="120"
                     height="40"
                     viewBox="0 0 120 40"
                     className="text-amber-500 fill-current"
                   >
-                    <text x="0" y="25" className="text-xl font-bold">SBX CARS</text>
+                    <text x="0" y="25" className="text-xl font-bold">ZERO</text>
                   </svg>
                 </div>
               </Link>
@@ -150,9 +150,9 @@ const Header = () => {
                   // Login Button (when not authenticated)
                   <Button
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-amber-500 text-base"
+                    className="bg-transparent hover:bg-white font-extralight text-black hover:text-blue-700"
                   >
-                    <User className="h-5 w-5" />
+                    {/* <User className="h-5 w-5" /> */}
                     Login
                   </Button>
                 ) : (
@@ -222,14 +222,14 @@ const Header = () => {
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="right" className="border-gray-700 w-80">
-                    <div className="flex flex-col space-y-4 mt-8">
+                    <div className="flex flex-col space-y-4 mt-8 p-5">
                       {/* Mobile Search */}
-                      <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2">
+                      <div className="flex items-center space-x-2 bg-gray-400 px-3 py-0">
                         <Search className="h-4 w-4 text-gray-400" />
                         <Input
                           type="text"
                           placeholder="Search auctions..."
-                          className="border-0 bg-transparent text-[#202626] placeholder-gray-400 focus:ring-0"
+                          className="border-0 bg-transparent text-[#202626] placeholder-gray-400 focus:ring-0 shadow-none"
                         />
                       </div>
 
@@ -277,7 +277,7 @@ const Header = () => {
                       </div>
 
                       {/* Mobile Auth Section */}
-                      {isWalletConnected ? (
+                      {/* {isWalletConnected ? (
                         <Button
                           onClick={() => setIsLoginModalOpen(true)}
                           className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-[#202626] font-semibold py-3 px-4 transition-all duration-300 mt-4"
@@ -320,7 +320,7 @@ const Header = () => {
                             Disconnect
                           </Button>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </SheetContent>
                 </Sheet>

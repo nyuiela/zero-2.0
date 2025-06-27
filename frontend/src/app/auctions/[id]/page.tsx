@@ -74,7 +74,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
         {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div> */}
         <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
-          SBXCARS
+          ZERO
         </p>
       </div>
     )
@@ -256,7 +256,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <Badge className={`${carListing.reserve === 'Reserve Almost Met'
                       ? 'bg-orange-500 hover:bg-orange-600'
                       : 'bg-blue-500 hover:bg-blue-600'
-                    } text-white`}>
+                      } text-white`}>
                       {carListing.reserve}
                     </Badge>
                   </div>
@@ -438,9 +438,9 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     </div>
                   )}
 
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting || timer === 0} 
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || timer === 0}
                     className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
                   >
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
@@ -453,10 +453,10 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
                     <div className="grid grid-cols-2 gap-2">
                       {quickBids.map((amt) => (
-                        <Button 
-                          key={amt} 
-                          variant="outline" 
-                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white" 
+                        <Button
+                          key={amt}
+                          variant="outline"
+                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
                           onClick={() => handleBid(amt)}
                         >
                           {formatCurrency(amt, currency)}

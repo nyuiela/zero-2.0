@@ -6,11 +6,11 @@ import { ClientBody } from "./client-body";
 
 export const metadata: Metadata = {
   title: "Your Gateway to Supercar Auctions onchain.",
-  description: "Join SBX Cars, the premier online auction platform for supercars and luxury vehicles. Bid on exclusive supercars, classic cars, and rare collectibles from around the globe.",
-  keywords: "supercar auctions, luxury cars, car auctions, supercars, classic cars, SBX Cars, Supercar Blondie",
+  description: "Join ZERO, the premier online auction platform for supercars and luxury vehicles. Bid on exclusive supercars, classic cars, and rare collectibles from around the globe.",
+  keywords: "supercar auctions, luxury cars, car auctions, supercars, classic cars, ZERO, Supercar Blondie",
   openGraph: {
-    title: "SBX Cars - Premium Supercar Auctions",
-    description: "Discover your dream supercar at SBX Cars auction platform",
+    title: "ZERO - Premium Supercar Auctions",
+    description: "Discover your dream supercar at ZERO auction platform",
     type: "website",
   },
 };
