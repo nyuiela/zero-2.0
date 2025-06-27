@@ -9,6 +9,8 @@ import { Separator } from '@/components/ui/separator'
 import { MapPin } from 'lucide-react'
 import { CarListing } from '@/lib/data'
 import { Auction } from '@/lib/auction'
+import { placeBid } from '@/lib/api/bid'
+import { useAuthStore } from '@/lib/authStore'
 
 interface ListingClientProps {
   listing: CarListing
@@ -30,6 +32,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   const [currency] = useState<'ETH' | 'USDC'>('ETH')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bidError, setBidError] = useState<string | null>(null)
+  const { user } = useAuthStore()
 
   // Calculate 5% stake
   const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.05
@@ -61,14 +64,33 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       setBidError(`Bid must be at least ${formatCurrency(minBid, currency)}`)
       return
     }
-    setIsSubmitting(true)
-    // TODO: Place bid API call here
-    setTimeout(() => {
+    try {
+      setIsSubmitting(true)
+      const bid = {
+        id: 0,
+        auction_id: listing.auction_id,
+        amount: Number(bidAmount),
+        bidder_id: "ox",
+        created_at: "2025-06-15T18:42:57.530698",
+        updated_at: "2025-06-15T18:42:57.530698"
+      }
+      const jwt = user?.jwt;
+      if (jwt == null) throw new Error("User not found");
+      const bidResponse = await placeBid(bid, jwt);
+      console.log("Bid Response", bidResponse)
+      // TODO: Place bid API call here
+      setTimeout(() => {
+        setIsSubmitting(false)
+        setIsBidModalOpen(false)
+        // Redirect to bidding room
+        // window.location.href = `/auctions/${listing.id}`
+      }, 1200)
       setIsSubmitting(false)
-      setIsBidModalOpen(false)
-      // Redirect to bidding room
-      window.location.href = `/auctions/${listing.id}`
-    }, 1200)
+    } catch (error) {
+      setIsSubmitting(false);
+      return console.error(error)
+    }
+
   }
 
   return (
@@ -117,7 +139,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div className="mb-4 text-sm text-gray-700">
               <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
             </div>
-            <Button className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg py-3 rounded-lg shadow-lg hover:scale-105 transition-all" onClick={handlePlaceBid} disabled={isSubmitting}>
+            <Button className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6" onClick={handlePlaceBid} disabled={isSubmitting}>
               {isSubmitting ? 'Placing Bid...' : 'Place Bid & Enter Bidding Room'}
             </Button>
           </div>
@@ -212,7 +234,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
           {/* Seller Info */}
           <div className="bg-white shadow p-6 rounded-lg">
             <div className="text-lg font-bold mb-2 flex items-center space-x-2">
-              <span>Seller Information</span>
+              <span>Brand Information</span>
             </div>
             <div className="space-y-3">
               <div>
