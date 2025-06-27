@@ -2,17 +2,17 @@
 pragma solidity 0.8.28;
 
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
-import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
-import {CarRegistry} from "../core/registry.sol";
+import {IPermissionManager} from "../interface/permissions/IPermissionManager.sol";
+import {ICarRegistry} from "../interface/ICarRegistry.sol";
 
 contract Profile {
-    CarRegistry registryContract;
+    ICarRegistry registryContract;
 
     using PermissionModifiers for address;
 
     address public permissionManagerImplementation;
     address public globalPermissionManager;
-
+    address owner;
     // structs
     struct BrandProfile {
         string brand;
@@ -33,6 +33,7 @@ contract Profile {
     // event
     event ProfileCreated(string _brand, address initiator);
     event UpdatedState(string _brand, string state);
+    event ChangedRegistry(address newRegistry);
     // storage
 
     mapping(string => BrandProfile) public profile;
@@ -46,9 +47,14 @@ contract Profile {
         require(msg.sender == address(registryContract), "Profile: not authorized");
         _;
     }
+    modifier onlyOwner() {
+      require(msg.sender == owner, "Profile: not owner");
+      _;
+    }
     // called when registering brand;
-        constructor(address _registry, address _globalPermissionManager) {
-        registryContract = CarRegistry(_registry);
+        constructor(address _globalPermissionManager) {
+          owner = msg.sender;
+        // registryContract = ICarRegistry(_registry);
         globalPermissionManager = _globalPermissionManager;
     }
 
@@ -100,5 +106,9 @@ contract Profile {
         profile[_brand].locked = false;
     }
 
+    function setRegistry(address _registry) public onlyOwner {
+      registryContract = ICarRegistry(_registry);
+      emit ChangedRegistry(_registry);
+    }
 
 }

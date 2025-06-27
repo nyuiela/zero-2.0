@@ -2,29 +2,35 @@
 pragma solidity 0.8.28;
 
 //import "contract/src/oracle/Oracle.sol";
-import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
-import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {StateManager} from "./State.sol";
 import {Profile} from "./profile.sol";
 import {InitFunction} from "../chainlink/init_function.sol";
-import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Reputation} from "./reputation.sol";
-import {MerkleVerifier} from "../chainlink/merkle_verifier.sol";
+import {IOracleMaster} from "../interface/oracle/IOracleMaster.sol";
+
+import {IReputation} from "../interface/IReputation.sol";
+import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
+import {ICarOracle} from "../interface/oracle/ICarOracle.sol";
 import {CarOracle} from "../oracle/CarOracle.sol";
+import {IProfile} from "../interface/IProfile.sol";
+import {IStateManager} from "../interface/IStateManager.sol";
+import {IInitFunction} from "../interface/IInitFunction.sol";
+
+
+
 //import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
-import "../oracle/Oracle.sol";
 
 contract CarRegistry is Ownable {
     using Clones for address;
 
-    OracleMaster oracle;
+    IOracleMaster oracle;
 
     // contracts
-    Profile public profileContract;
-    StateManager public stateContract;
-    InitFunction public initFunction;
-    Reputation public reputation;
+    IProfile public profileContract;
+    IStateManager public stateContract;
+    IInitFunction public initFunction;
+    IReputation public reputation;
     address public profileAddr;
     address public stateAddr;
     address public chainFunctionAddr;
@@ -87,10 +93,10 @@ contract CarRegistry is Ownable {
     ) {
         profileAddr = _profileAddr;
         stateAddr = _stateAddr;
-        oracle = OracleMaster(_oracle);
-        profileContract = Profile(_profileAddr);
-        stateContract = StateManager(_stateAddr);
-        reputation = Reputation(_reputationAddr);
+        oracle = IOracleMaster(_oracle);
+        profileContract = IProfile(_profileAddr);
+        stateContract = IStateManager(_stateAddr);
+        reputation = IReputation(_reputationAddr);
         chainFunctionAddr = _chainFunctionAddr;
         ccipAddr = _ccipAddr;
         merkleVerifierAddr = _merkleVerifierAddr;
@@ -163,9 +169,10 @@ contract CarRegistry is Ownable {
         //  address _oracle = oracle.clone();
         // CarOracle(_oracle).initialize();
         //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
+        ICarOracle.OracleConfig memory config = registry[_brand].config;
         (address oracleAdress, address permissionAddress) =
-            oracle.registerCarBrand(_brand, "", registry[_brand].config, registry[_brand].brandAdminAddr);
-        MerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
+            oracle.registerCarBrand(_brand, "", config, registry[_brand].brandAdminAddr);
+        IMerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
         profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress, _syncer);
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
@@ -190,13 +197,13 @@ contract CarRegistry is Ownable {
 
     function setProfile(address _newp) public onlyOwner {
         profileAddr = _newp;
-        profileContract = Profile(_newp);
+        profileContract = IProfile(_newp);
         emit ChangedProfile(_newp);
     }
 
     function setState(address _newp) public onlyOwner {
         stateAddr = _newp;
-        stateContract = StateManager(_newp);
+        stateContract = IStateManager(_newp);
         emit ChangedState(_newp);
     }
 
@@ -208,13 +215,13 @@ contract CarRegistry is Ownable {
 
     function setInitFunction(address _newp) public onlyOwner {
         initFunctionAddr = _newp;
-        initFunction = InitFunction(_newp);
+        initFunction = IInitFunction(_newp);
         emit ChangedInitFunction(_newp);
     }
 
     function setReputatioin(address payable _newp) public onlyOwner {
         reputationAddr = _newp;
-        reputation = Reputation(_newp);
+        reputation = IReputation(_newp);
         emit ChangedReputation(_newp);
     }
 

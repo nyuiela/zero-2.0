@@ -26,6 +26,7 @@ contract MockInitFunction is InitFunction {
     }
 }
 
+import {Sync} from "../src/chainlink/sync_function.sol";
 contract RegistryTest is Test {
   CarRegistry registry;
   Profile profile;
@@ -81,16 +82,18 @@ contract RegistryTest is Test {
         // address _permissionManagerImplementation
         // address _globalPermissionManager
         profile = new Profile(
-          address(registry),
           address(permission)
         );
         state = new StateManager(address(profile));
+        carOracle = new CarOracle();
         oracle = new OracleMaster(
           address(carOracle),
           address(brandPermission),
           address(permission)
         );
         syncer = new ProofSync(address(merkleVerifier));
+        merkleVerifier = new MerkleVerifier();
+        merkleVerifier.initialize("brand", "000", address(0), address(0));
 
         //         uint256 _requireStake,
         // address _stakeToken,

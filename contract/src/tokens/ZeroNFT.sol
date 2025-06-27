@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "../Interface/oracle/IOracleMaster.sol";
-import "../core/reputation.sol";
-import "../core/registry.sol";
+import {IOracleMaster} from "../interface/oracle/IOracleMaster.sol";
+import {Reputation} from "../core/reputation.sol";
+import {ICarRegistry} from "../interface/ICarRegistry.sol";
 
 /**
  * @title ZeroNFT
@@ -15,7 +15,7 @@ import "../core/registry.sol";
  * Only registered and active car brands can mint NFTs representing their real-world assets
  */
 contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
-    CarRegistry carRegistry;
+    ICarRegistry carRegistry;
     // Token ID counter (replaces deprecated Counters library)
     uint256 private _tokenIdCounter;
 
@@ -84,7 +84,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         auctionContract = _auctionContract;
         oracleMaster = _oracleMaster;
         reputationContract = _reputationContract;
-        carRegistry = CarRegistry(_carRegistry);
+        carRegistry = ICarRegistry(_carRegistry);
         _baseTokenURI = "";
         _tokenIdCounter = 0;
     }
@@ -493,7 +493,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     {
         if (_oracleMaster != address(0)) oracleMaster = _oracleMaster;
         if (_reputationContract != address(0)) reputationContract = _reputationContract;
-        if (_carRegistry != address(0)) carRegistry = CarRegistry(_carRegistry);
+        if (_carRegistry != address(0)) carRegistry = ICarRegistry(_carRegistry);
     }
 
     // Override functions

@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
-import {IPermissionManager} from "./interfaces/IPermissionManager.sol";
+import {IPermissionManager} from "../interface/permissions/IPermissionManager.sol";
 
 contract PermissionManager is IPermissionManager, Ownable, Pausable {
     // Storage
