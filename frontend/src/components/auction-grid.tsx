@@ -5,9 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AuctionCard from './auction-card'
 import { upcomingAuctions } from '@/lib/auction'
 import Image from 'next/image'
-import { Link, Gavel, MapPin, Clock } from 'lucide-react'
-import { fetchAuctionedCars, fetchAuctions } from '@/lib/api/auction'
-import { fetchCars } from '@/lib/api/car'
+import { MapPin, Clock } from 'lucide-react'
+import { fetchAuctionedCars } from '@/lib/api/auction'
 import { useQuery } from '@tanstack/react-query'
 
 const AuctionGrid = () => {
@@ -23,7 +22,6 @@ const AuctionGrid = () => {
   const filteredAuctions = auctions;
 
   const totalAuctions = auctions.length
-  const displayedAuctions = filteredAuctions.length
 
   return (
     <section className="py-8 lg:py-12">

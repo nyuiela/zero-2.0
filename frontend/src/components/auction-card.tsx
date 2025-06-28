@@ -3,20 +3,20 @@ import Image from 'next/image'
 import { MapPin, Clock, Gavel } from 'lucide-react'
 import { CarAuctioned } from '@/lib/data'
 
-interface Auction {
-  id: number
-  year: string
-  make: string
-  model: string
-  location: string
-  image_url: string[]
-  currentBid: string | number
-  timeLeft: string
-  bidCount: number
-  reserve?: string
-  country: string
-  currency?: 'ETH' | 'USDC'
-}
+// interface Auction {
+//   id: number
+//   year: string
+//   make: string
+//   model: string
+//   location: string
+//   image_url: string[]
+//   currentBid: string | number
+//   timeLeft: string
+//   bidCount: number
+//   reserve?: string
+//   country: string
+//   currency?: 'ETH' | 'USDC'
+// }
 
 interface AuctionCardProps {
   auction: CarAuctioned
@@ -50,7 +50,7 @@ function breakdownCountdown(totalSeconds: number) {
 const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
   // const date = new Date();
-  const time = new Date(auction.auction.end_time); // in milliseconds
+  const time = new Date(auction.auction?.end_time); // in milliseconds
   const targetTime = time.getTime()
   const now = Date.now(); // current time in milliseconds
   const secondsLeft = Math.floor((targetTime - now) / 1000); // convert to seconds
@@ -86,7 +86,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
         <div className="absolute top-3 right-3 z-10">
           <span className="inline-flex items-center bg-black/80 text-white px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
             <Gavel className="w-3 h-3 mr-1" />
-            {auction.auction.bid_count}
+            {auction.auction?.bid_count}
           </span>
         </div>
         {/* Card Content */}
@@ -115,7 +115,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 Current Bid
               </div>
               <div className="text-white font-bold text-xl flex items-center gap-2 ">
-                {auction.auction.current_bid && formatCurrency(auction.auction.current_bid, currency)}
+                {auction.auction?.current_bid && formatCurrency(auction.auction.current_bid, currency)}
               </div>
             </div>
             <div className="text-right">
