@@ -152,7 +152,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
       {/* Tab Content */}
       <div className="min-h-[200px]">
         {activeTab === 'gallery' && (
-          <Card>
+          <Card className="border-none shadow-none">
             <CardContent className="p-6">
               <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
                 <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -161,7 +161,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                 </p>
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="btn-gradient"
+                  className="bg-[#00296b] text-white"
                 >
                   Choose Files
                 </Button>
@@ -179,7 +179,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
         )}
 
         {activeTab === 'url' && (
-          <Card>
+          <Card className="border-none shadow-none">
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex space-x-2">
@@ -192,7 +192,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                   <Button
                     onClick={handleUrlAdd}
                     disabled={isLoading || !urlInput.trim()}
-                    className="btn-gradient"
+                    className="bg-[#00296b] text-white"
                   >
                     Add
                   </Button>
@@ -206,7 +206,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
         )}
 
         {activeTab === 'capture' && (
-          <Card>
+          <Card className="border-none shadow-none">
             <CardContent className="p-6">
               {!showCamera ? (
                 <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
@@ -216,7 +216,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                   </p>
                   <Button
                     onClick={startCamera}
-                    className="btn-gradient"
+                    className="bg-[#00296b] text-white"
                   >
                     Start Camera
                   </Button>

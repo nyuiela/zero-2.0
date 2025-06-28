@@ -226,7 +226,7 @@ export default function SellYourCarPage() {
 
       // Create FormData for multipart submission
       const formDataToSubmit = new FormData()
-      
+
       // Add all text fields
       Object.entries(submitData).forEach(([key, value]) => {
         if (key !== 'images' && typeof value === 'object') {
@@ -268,7 +268,7 @@ export default function SellYourCarPage() {
         toast.success('Car listing submitted successfully!', {
           description: 'Your listing is now live on the platform.',
         })
-        
+
         // Reset form
         setFormData({
           images: [],
@@ -325,27 +325,26 @@ export default function SellYourCarPage() {
         </div>
 
         {/* Progress Bar */}
-        <Card className="mb-8">
+        <Card className="mb-8 border-none shadow-none">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Progress</h2>
               <Badge variant="secondary">{Math.round(progress)}% Complete</Badge>
             </div>
             <Progress value={progress} className="mb-4" />
-            
+
             {/* Step Indicators */}
             <div className="flex justify-between">
               {steps.map((step, index) => {
                 const StepIcon = step.icon
                 return (
                   <div key={step.id} className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                      currentStep > step.id 
-                        ? 'bg-green-500 text-white' 
-                        : currentStep === step.id 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${currentStep > step.id
+                      ? 'bg-green-500 text-white'
+                      : currentStep === step.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground'
+                      }`}>
                       {currentStep > step.id ? (
                         <CheckCircle className="w-5 h-5" />
                       ) : (
@@ -353,9 +352,8 @@ export default function SellYourCarPage() {
                       )}
                     </div>
                     <div className="text-center">
-                      <p className={`text-sm font-medium ${
-                        currentStep >= step.id ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
+                      <p className={`text-sm font-medium ${currentStep >= step.id ? 'text-foreground' : 'text-muted-foreground'
+                        }`}>
                         {step.title}
                       </p>
                       <p className="text-xs text-muted-foreground hidden sm:block">
@@ -370,7 +368,7 @@ export default function SellYourCarPage() {
         </Card>
 
         {/* Current Step */}
-        <Card className="mb-8">
+        <Card className="m-0 border-none shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {(() => {
