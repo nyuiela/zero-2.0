@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Clock, Gavel } from 'lucide-react'
+import { CarAuctioned } from '@/lib/data'
 
 interface Auction {
   id: number
@@ -18,7 +19,7 @@ interface Auction {
 }
 
 interface AuctionCardProps {
-  auction: Auction
+  auction: CarAuctioned
 }
 
 function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH') {
@@ -28,7 +29,7 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
     : `${amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} USDC`
 }
 
-function getAuctionImage(auction: Auction | { image: string }): string {
+function getAuctionImage(auction: CarAuctioned | { image: string }): string {
   if ('image_url' in auction && Array.isArray(auction.image_url) && auction.image_url.length > 0) {
     return auction.image_url[0];
   }
@@ -38,9 +39,25 @@ function getAuctionImage(auction: Auction | { image: string }): string {
   return "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 }
 
+function breakdownCountdown(totalSeconds: number) {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { hours, minutes, seconds };
+}
+
 const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
-  const currency = auction.currency || 'ETH'
+  // const date = new Date();
+  const time = new Date(auction.auction.end_time); // in milliseconds
+  const targetTime = time.getTime()
+  const now = Date.now(); // current time in milliseconds
+  const secondsLeft = Math.floor((targetTime - now) / 1000); // convert to seconds
+  const { hours, minutes, seconds } = breakdownCountdown(secondsLeft)
+  console.log("Seconds left:", secondsLeft);
+
+  const currency = 'ETH'
   return (
     <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
       {/* Car Image */}
@@ -55,7 +72,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10 opacity-70" />
         {/* Reserve Status Badge */}
-        {auction.reserve && (
+        {/* {auction.reserve && (
           <div className="absolute top-3 left-3 z-10">
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${auction.reserve === 'Reserve Almost Met'
               ? 'bg-orange-500/90 text-white'
@@ -64,12 +81,12 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
               {auction.reserve}
             </span>
           </div>
-        )}
+        )} */}
         {/* Bid Count Badge */}
         <div className="absolute top-3 right-3 z-10">
           <span className="inline-flex items-center bg-black/80 text-white px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
             <Gavel className="w-3 h-3 mr-1" />
-            {auction.bidCount}
+            {auction.auction.bid_count}
           </span>
         </div>
         {/* Card Content */}
@@ -98,7 +115,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 Current Bid
               </div>
               <div className="text-white font-bold text-xl flex items-center gap-2 ">
-                {auction.currentBid && formatCurrency(auction.currentBid, currency)}
+                {auction.auction.current_bid && formatCurrency(auction.auction.current_bid, currency)}
               </div>
             </div>
             <div className="text-right">
@@ -107,7 +124,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 Time Left
               </div>
               <div className="text-black font-semibold text-lg">
-                {auction.timeLeft}
+                {hours}:{minutes}:{seconds}
               </div>
             </div>
           </div>

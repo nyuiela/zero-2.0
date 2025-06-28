@@ -110,12 +110,18 @@ export interface CarAuctioned {
   vehicale_overview: string;
   vin: string;
   year: number;
-  car_id: number,
-  start_time: string,
-  end_time: string,
-  current_bid: number,
-  bid_count: number,
-  status: string,
+  auction: {
+    car_id: number,
+    start_time: string,
+    end_time: string,
+    current_bid: number,
+    bid_count: number,
+    status: string,
+    created_at: string,
+    id: number,
+    seller: string,
+    updated_at: string,
+  }
 }
 
 // Mock data for car listings

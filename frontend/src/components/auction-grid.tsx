@@ -3,24 +3,24 @@
 import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import AuctionCard from './auction-card'
-import { auctions, upcomingAuctions } from '@/lib/auction'
+import { upcomingAuctions } from '@/lib/auction'
 import Image from 'next/image'
 import { Link, Gavel, MapPin, Clock } from 'lucide-react'
-import { fetchAuctions } from '@/lib/api/auction'
+import { fetchAuctionedCars, fetchAuctions } from '@/lib/api/auction'
 import { fetchCars } from '@/lib/api/car'
 import { useQuery } from '@tanstack/react-query'
 
 const AuctionGrid = () => {
   const [selectedCountry, setSelectedCountry] = useState('ALL')
-  const { data: cars = [], isLoading, isError } = useQuery({
-    queryKey: ['cars'],
-    queryFn: fetchCars,
+  const { data: auctions = [], isLoading, isError } = useQuery({
+    queryKey: ['auctioned-cars'],
+    queryFn: fetchAuctionedCars,
   })
 
+  console.log("AuctionedCars ", auctions)
+
   // Filter auctions based on selected country
-  const filteredAuctions = selectedCountry === 'ALL'
-    ? auctions
-    : auctions.filter(auction => auction.country === selectedCountry)
+  const filteredAuctions = auctions;
 
   const totalAuctions = auctions.length
   const displayedAuctions = filteredAuctions.length
@@ -49,7 +49,7 @@ const AuctionGrid = () => {
                 </SelectContent>
               </Select>
               <span className="text-[#202626] font-bold text-md bg-blue-400 p-2">
-                {displayedAuctions}
+                {totalAuctions}
               </span>
             </div>
           </div>
