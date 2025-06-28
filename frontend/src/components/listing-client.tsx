@@ -247,6 +247,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               </div>
             </div>
           </div>
+          <div className="bg-gradient-to-br border-none p-6 ">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xl font-bold text-brand">Bids</div>
+            </div>
+            <div className="space-y-4">
+
+            </div>
+          </div>
         </div>
       </div>
 
