@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity ^0.8.24;
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -8,35 +8,29 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/ut
 import {AggregatorV3Interface} from "chainlink-brownie-contracts/interfaces/AggregatorV3Interface.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 
-contract CarOracle is 
-    ICarOracle, 
-    Initializable, 
-    OwnableUpgradeable, 
-    PausableUpgradeable, 
-    ReentrancyGuardUpgradeable 
-{
+contract CarOracle is ICarOracle, Initializable, OwnableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     // State variables
     string private _brandName;
     string private _priceFeedAddress;
     address private _masterOracle;
     OracleConfig private _config;
-    
+
     // Price data storage
     mapping(uint256 => PriceData) private _priceHistory;
     uint256 private _currentRoundId;
     uint256 private _lastUpdateTime;
-    
+
     // Modifiers
     modifier onlyMasterOracle() {
         require(msg.sender == _masterOracle, "Only master oracle can call this");
         _;
     }
-    
+
     modifier onlyValidPrice(uint256 price) {
         require(price >= _config.minAnswer && price <= _config.maxAnswer, "Price out of bounds");
         _;
     }
-    
+
     modifier onlyValidUpdateInterval() {
         require(block.timestamp >= _lastUpdateTime + _config.updateInterval, "Update interval not met");
         _;
@@ -47,8 +41,7 @@ contract CarOracle is
         _disableInitializers();
     }
 
-
-//@dev make it callable by masterOcale only
+    //@dev make it callable by masterOcale only
     function initialize(
         string memory brandName,
         string memory priceFeedAddress,
@@ -58,41 +51,37 @@ contract CarOracle is
         require(bytes(brandName).length > 0, "Brand name cannot be empty");
         require(bytes(priceFeedAddress).length > 0, "Price feed address cannot be empty");
         require(masterOracle != address(0), "Master oracle cannot be zero address");
-        
+
         _brandName = brandName;
         _priceFeedAddress = priceFeedAddress;
         _masterOracle = masterOracle;
         _config = config;
         _currentRoundId = 1;
         _lastUpdateTime = block.timestamp;
-        
+
         __Ownable_init(masterOracle);
         __Pausable_init();
         __ReentrancyGuard_init();
     }
 
-    function updatePrice(uint256 newPrice) 
-        external 
-        override 
-        onlyMasterOracle 
+    function updatePrice(uint256 newPrice)
+        external
+        override
+        onlyMasterOracle
         onlyValidPrice(newPrice)
         onlyValidUpdateInterval
         whenNotPaused
-        nonReentrant 
+        nonReentrant
     {
         // Store the new price data
-        PriceData memory newPriceData = PriceData({
-            price: newPrice,
-            timestamp: block.timestamp,
-            roundId: _currentRoundId,
-            isValid: true
-        });
-        
+        PriceData memory newPriceData =
+            PriceData({price: newPrice, timestamp: block.timestamp, roundId: _currentRoundId, isValid: true});
+
         _priceHistory[_currentRoundId] = newPriceData;
         _lastUpdateTime = block.timestamp;
-        
+
         emit PriceUpdated(_currentRoundId, newPrice, block.timestamp, _brandName);
-        
+
         _currentRoundId++;
     }
 
@@ -111,15 +100,10 @@ contract CarOracle is
         require(config.deviationThreshold > 0, "Deviation threshold must be greater than 0");
         require(config.heartbeat > 0, "Heartbeat must be greater than 0");
         require(config.minAnswer < config.maxAnswer, "Min answer must be less than max answer");
-        
+
         _config = config;
-        
-        emit ConfigUpdated(
-            config.updateInterval,
-            config.deviationThreshold,
-            config.heartbeat,
-            block.timestamp
-        );
+
+        emit ConfigUpdated(config.updateInterval, config.deviationThreshold, config.heartbeat, block.timestamp);
     }
 
     function getConfig() external view override returns (OracleConfig memory) {
@@ -156,20 +140,16 @@ contract CarOracle is
     }
 
     // Get price history range
-    function getPriceHistoryRange(uint256 startRound, uint256 endRound) 
-        external 
-        view 
-        returns (PriceData[] memory) 
-    {
+    function getPriceHistoryRange(uint256 startRound, uint256 endRound) external view returns (PriceData[] memory) {
         require(startRound > 0 && endRound >= startRound && endRound < _currentRoundId, "Invalid range");
-        
+
         uint256 length = endRound - startRound + 1;
         PriceData[] memory history = new PriceData[](length);
-        
+
         for (uint256 i = 0; i < length; i++) {
             history[i] = _priceHistory[startRound + i];
         }
-        
+
         return history;
     }
 
@@ -183,12 +163,12 @@ contract CarOracle is
         bytes memory alphabet = "0123456789abcdef";
 
         bytes memory str = new bytes(2 + 20 * 2);
-        str[0] = '0';
-        str[1] = 'x';
+        str[0] = "0";
+        str[1] = "x";
         for (uint256 i = 0; i < 20; i++) {
             str[2 + i * 2] = alphabet[uint8(value[i + 12] >> 4)];
             str[3 + i * 2] = alphabet[uint8(value[i + 12] & 0x0f)];
         }
         return string(str);
     }
-} 
+}
