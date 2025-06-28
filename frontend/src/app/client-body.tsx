@@ -7,12 +7,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from '@/lib/queryClient'
 import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  sepolia,
+  // localhost,
+  baseSepolia,
 } from 'wagmi/chains';
 
 const projectId = process.env.RAINBOW_KIT_PROJECT_ID
@@ -20,7 +16,7 @@ const RAINVOW_KIT_PROJECT_ID = `${projectId}`
 const config = getDefaultConfig({
   appName: 'Ataeru',
   projectId: `${RAINVOW_KIT_PROJECT_ID}`,
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+  chains: [baseSepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 

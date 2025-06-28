@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle } from "lucide-react"
 import Image from "next/image"
-import { fetchAuctionById } from "@/lib/api/auction"
+import { fetchAuctionById, fetchAuctionedCars } from "@/lib/api/auction"
 
 interface Bid {
   auctionId: string
@@ -64,7 +64,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   // Fetch car data using the same source as listing page
   const { data: auctions, isLoading: aucLoading, isError: aucError } = useQuery({
     queryKey: ['auction', auctionId],
-    queryFn: () => fetchAuctionById(auctionId),
+    queryFn: () => fetchAuctionedCars(auctionId),
   })
   const { data: cars = mockListings, isLoading: carsLoading, isError: carsError } = useQuery({
     queryKey: ['cars', auctionId],

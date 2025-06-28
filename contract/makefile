@@ -3,7 +3,6 @@
 .PHONY: all clean build test deploy help
 
 DEFAULT_ANVIL_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
 help:
 	@echo "Usage:"
 	@echo "  make deploy [ARGS=...]           - Deploy using BASE or local"
@@ -31,3 +30,6 @@ endif
 
 deploy:
 	@forge script script/Deploy.s.sol:DeployScript $(NETWORK_ARGS)
+
+deploy-local:
+	@forge script script/Deploy.s.sol:DeployScript --rpc-url $(LOCALCHAIN_URL) --private-key $(DEFAULT_ANVIL_KEY) --broadcast -vvvv

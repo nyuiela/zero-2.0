@@ -53,7 +53,7 @@ contract ProofSync {
          messenger = Messenger(_messenger);
     }
 
-    function setMessager(address payable _messenger) external onlyOwner {
+    function setMessenger(address payable _messenger) external onlyOwner {
         messenger = Messenger(_messenger);
     }
 

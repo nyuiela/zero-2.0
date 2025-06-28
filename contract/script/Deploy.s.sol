@@ -50,13 +50,17 @@ contract DeployScript is Script {
     Messenger public messenger;
 
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+      //   uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+      //   address deployer = vm.addr(deployerPrivateKey);
+        uint256 deployerPrivateKey = vm.envUint("DEFAULT_ANVIL_KEY");
         address deployer = vm.addr(deployerPrivateKey);
         
         console.log("Deploying contracts to Base network...");
         console.log("Deployer address:", deployer);
 
-          vm.createSelectFork(vm.rpcUrl("basechain"));
+      //     vm.createSelectFork(vm.rpcUrl("basechain"));
+      //   vm.startBroadcast(deployerPrivateKey);
+          vm.createSelectFork(vm.rpcUrl("localchain"));
         vm.startBroadcast(deployerPrivateKey);
 
 
@@ -112,9 +116,10 @@ contract DeployScript is Script {
         console.log("ProofSync deployed at:", address(proofSync));
       // 0. messenger
         console.log("Deploying Messenger...");
-        messenger = new Messenger(address(0), address(0), address(merkleVerifier));
+      //   using ccip as router address 
+        messenger = new Messenger(BASE_ROUTER, BASE_LINK_TOKEN, address(merkleVerifier));
         console.log("PermissionManager deployed at:", address(messenger));
-
+        
         // 10. Deploy CCIP
         console.log("Deploying CrossToken (CCIP)...");
         ccip = new CrossToken(BASE_ROUTER, BASE_LINK_TOKEN);
@@ -202,6 +207,9 @@ contract DeployScript is Script {
         // Transfer ownership of InitFunction to registry
         initFunction.transferOwnership(address(carRegistry));
         console.log("InitFunction ownership transferred to CarRegistry");
+
+        // set Messenger in proofSync
+        proofSync.setMessenger(payable(messenger));
 
         // Grant permissions to the specified address
         address permissionAddress = 0xf0830060f836B8d54bF02049E5905F619487989e; //@intergrator address

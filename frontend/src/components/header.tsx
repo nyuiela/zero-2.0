@@ -6,9 +6,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/authStore';
 // import { useRouter } from 'next/navigation';
-import { useAccount, useDisconnect, useChainId, useSwitchChain } from 'wagmi';
+import { useAccount, useDisconnect, useChainId, useSwitchChain, useWriteContract } from 'wagmi';
 import { LoginModal } from './login-modal';
-import { BrandRegistrationForm } from './brand-registration-form';
+import { BrandRegistrationForm, BrandRegistrationFormData } from './brand-registration-form';
+import { readContract, writeContract } from 'viem/actions';
+import { registry_abi, registry_addr } from '@/lib/abi/abi';
 
 const contactInfo = [
   { label: 'US', value: '+1 323-407-8523' },
@@ -26,7 +28,10 @@ export default function Header() {
   // const router = useRouter()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
-  console.log("user ", user)
+  console.log("user ", user);
+  const { writeContract } = useWriteContract();
+
+
 
   // Check if user is fully authenticated (wallet connected + auth completed)
   const isAuthenticated = isConnected && user
@@ -45,16 +50,42 @@ export default function Header() {
     // router.push('/')
   }
 
-  // const handleNetworkSwitch = (targetChainId: number) => {
-  //   if (switchChain) {
-  //     switchChain({ chainId: targetChainId })
-  //   }
-  // }
+  const handleNetworkSwitch = (targetChainId: number) => {
+    if (switchChain) {
+      switchChain({ chainId: targetChainId })
+    }
+  }
 
-  const handleSubmit = () => {
+  const handleSubmit = (data: BrandRegistrationFormData) => {
     setLoading(true);
+    // function registerBrand(
+    //   string memory _brand,
+    //   // address oracleAddre,
+    //   ICarOracle.OracleConfig memory config,
+    //   address brandAdminAddr,
+    //   uint64 subscriptionId,
+    //   string memory _stateUrl,
+    //   string[] memory args
     try {
-
+      writeContract({
+        abi: registry_abi,
+        address: registry_addr,
+        functionName: 'registerBrand',
+        args: [
+          data.brand,
+          {
+            "updateInterval": data.updateInterval,
+            "deviationThreshold": data.deviationThreshold,
+            "heartbeat": data.heartbeat,
+            "minAnswer": data.minAnswer,
+            "maxAnswer": data.maxAnswer
+          },
+          data.brandAdminAddr,
+          data.subscriptionId,
+          data.stateUrl,
+          data.args
+        ],
+      })
       setLoading(false)
     } catch (error) {
       console.error("Failed to submit brand form ", error);
@@ -115,7 +146,7 @@ export default function Header() {
             <Link href="/auctions" className="text-[#202626] hover:text-amber-500 font-medium">Auctions</Link>
             <Link href="/sell" className="text-[#202626] hover:text-amber-500 font-medium">Sell</Link>
             <Link href="/verify" className="text-[#202626] hover:text-amber-500 font-medium">Verify</Link>
-            <Link href="/stories" className="text-[#202626] hover:text-amber-500 font-medium">Stories</Link>
+            <Link href="/" className="text-[#202626] hover:text-amber-500 font-medium">Brands</Link>
           </div>
           {/* Search and Sign In */}
           <div className="flex-1 flex justify-end items-center space-x-4">
@@ -136,8 +167,10 @@ export default function Header() {
               </div>
             ) : (
               // Two Dropdown Buttons (when wallet is connected)
+
               <div className="flex items-center space-x-3 text-black">
                 {/* Address Dropdown */}
+                <div>{chainId}</div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-00 hover:text-amber-00 py-3 px-4 border-0 shadow-none">
