@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { LogOut, Search, User } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
@@ -8,6 +8,7 @@ import { useAuthStore } from '@/lib/authStore';
 // import { useRouter } from 'next/navigation';
 import { useAccount, useDisconnect, useChainId, useSwitchChain } from 'wagmi';
 import { LoginModal } from './login-modal';
+import { BrandRegistrationForm } from './brand-registration-form';
 
 const contactInfo = [
   { label: 'US', value: '+1 323-407-8523' },
@@ -17,7 +18,8 @@ const contactInfo = [
 
 export default function Header() {
   // const [isSearchOpen, setIsSearchOpen] = useState(false)
-  // const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false)
+  const [isLoading, setLoading] = useState(false)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { user, logout, setOpen } = useAuthStore()
@@ -43,19 +45,49 @@ export default function Header() {
     // router.push('/')
   }
 
-  const handleNetworkSwitch = (targetChainId: number) => {
-    if (switchChain) {
-      switchChain({ chainId: targetChainId })
+  // const handleNetworkSwitch = (targetChainId: number) => {
+  //   if (switchChain) {
+  //     switchChain({ chainId: targetChainId })
+  //   }
+  // }
+
+  const handleSubmit = () => {
+    setLoading(true);
+    try {
+
+      setLoading(false)
+    } catch (error) {
+      console.error("Failed to submit brand form ", error);
+      setLoading(false)
     }
   }
-
   return (
     <header className="w-full">
       {/* Top Bar */}
-      {/* <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-between px-4 py-2">
-        <span>Subscribe to Our Exclusive Email Newsletter &gt;</span>
+      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-between px-4 py-2 cursor-pointer font-bold " onClick={() => setIsBrandModalOpen(true)}>
+        <span>Register as a brand &gt;</span>
         <button className="text-xl font-light">&times;</button>
-      </div> */}
+      </div>
+      {/* register brand form */}
+
+      {isBrandModalOpen && <div
+        className='fixed inset-0 bg-gray-50 z-50 overflow-hidden'>
+        <div className='w-full bg-red-00 p-2 flex justify-end bg-[#d6be8a] '>
+          <button className="text-2xl font-light cursor-pointer" onClick={() => setIsBrandModalOpen(false)}>&times;</button>
+          {/* <button className='flex cursor-pointer' onClick={() => setIsBrandModalOpen(false)}>close</button> */}
+        </div>
+        <div className='h-full overflow-y-auto px-4 py-6'>
+          <BrandRegistrationForm
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>}
+      {/* <BrandRegistrationForm
+        onSubmit={handleSubmit}
+        isLoading={false}
+      /> */}
+
       {/* Contact Info Bar */}
       <div className="w-full bg-gray-50 text-[#202626] text-xs flex items-center justify-center px-4 py-1 border-b border-gray-200">
         {contactInfo.map((item, idx) => (
