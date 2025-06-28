@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { useAuthStore } from '@/lib/authStore'
@@ -26,6 +25,8 @@ import {
   Star
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { AuctionRegistrationForm } from "@/components/auction-registration-form"
+import { useRouter } from 'next/navigation'
 
 interface SellerApplication {
   businessName: string
@@ -53,6 +54,7 @@ export default function ProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [roleRequestStatus, setRoleRequestStatus] = useState<'none' | 'pending' | 'approved' | 'rejected'>(user?.roleRequestStatus || 'none')
   const [roleRequestLoading, setRoleRequestLoading] = useState(false)
+  const router = useRouter()
 
   const [sellerApplication, setSellerApplication] = useState<SellerApplication>({
     businessName: '',
@@ -193,6 +195,19 @@ export default function ProfilePage() {
     }
   }
 
+  const handleSubmit = async (data) => {
+    // Your smart contract integration here
+    const contractData = {
+      brandName: data.brandName,
+      startTime: BigInt(data.startTime),
+      endTime: BigInt(data.endTime),
+      initialBid: BigInt(Math.floor(parseFloat(data.initialBid) * 1e18)),
+      bidThreshold: BigInt(Math.floor(parseFloat(data.bidThreshold) * 1e18)),
+      bidToken: data.bidToken,
+      nftTokenId: BigInt(data.nftTokenId),
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-8">
@@ -210,13 +225,21 @@ export default function ProfilePage() {
               {roleRequestStatus === 'pending' && (
                 <Badge className="bg-yellow-100 text-yellow-800 ml-2">Seller Request Pending</Badge>
               )}
-              {roleRequestStatus === 'approved' && (
-                <Badge className="bg-green-100 text-green-800 ml-2">Seller Role Approved</Badge>
-              )}
+
               {roleRequestStatus === 'rejected' && (
                 <Badge className="bg-red-100 text-red-800 ml-2">Seller Request Rejected</Badge>
               )}
             </div>
+            {roleRequestStatus === 'pending' && (
+              <>
+                {/* <Badge className="bg-green-100 text-green-800 ml-2">Seller Role Approved</Badge> */}
+                <Button
+                  className='m-2 rounded-[5px] border-none shadow-none bg-blue-400 hover:bg-blue-500 text-white font-bold cursor-pointer'
+                  onClick={() => router.push("/create-auction")}>
+                  Create Auction
+                </Button>
+              </>
+            )}
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

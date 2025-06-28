@@ -84,6 +84,7 @@ export function BrandRegistrationForm({ onSubmit, isLoading = false }: BrandRegi
     form.setValue("args", updatedArgs)
     setArgsArray([...argsArray, newArg])
   }
+  console.log(form)
 
   return (
     <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
