@@ -35,7 +35,7 @@ export async function fetchBidById(id: number): Promise<Bid | null> {
     // return mockAuctions.find(auction => auction.id.toString() === id) || null
   }
 }
-export async function fetchBidByAuctionId(id: number): Promise<Bid | null> {
+export async function fetchBidByAuctionId(id: number): Promise<Bid[] | null> {
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/bids/a/${id}`)
     if (!res.ok) {

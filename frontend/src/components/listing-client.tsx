@@ -6,7 +6,7 @@ import Link from 'next/link'
 import AuctionCard from '@/components/auction-card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { MapPin } from 'lucide-react'
+import { MapPin, User } from 'lucide-react'
 import { CarListing } from '@/lib/data'
 import { Auction } from '@/lib/auction'
 import { fetchBidByAuctionId, fetchBidById, placeBid } from '@/lib/api/bid'
@@ -35,12 +35,12 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   const [bidError, setBidError] = useState<string | null>(null)
   const { user } = useAuthStore()
   // React Query hooks
-  const { data: bid, refetch: bidRefresh, isLoading: nonceLoading, isError: nonceError } = useQuery({
+  const { data: bids, refetch: bidRefresh, isLoading: nonceLoading, isError: nonceError } = useQuery({
     queryKey: ['bid', listing.auction_id],
     queryFn: () => fetchBidByAuctionId(listing.auction_id),
     // enabled: open,
   })
-  console.log("Bid ", bid)
+  console.log("Bid ", bids)
 
   // Calculate 5% stake
   const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.05
@@ -255,13 +255,38 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br border-none p-6 ">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-gradient-to-br border-none p-6 px-0 ">
+            <div className="flex items-center justify-between mb-4 px-6">
               <div className="text-xl font-bold text-brand">Bids</div>
             </div>
-            <div className="space-y-4">
+            {bids?.map((bid, key) => (
+              <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
+                <div className="text-lg font-bold flex items-center space-x-2">
+                  <span className='text-xl'>
+                    {formatCurrency(bid.amount, "USDC")}
+                  </span>
+                </div>
+                <div className="space-y-3 mt-2">
+                  <div className='flex justify-between'>
+                    <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
+                    <div className="text-sm text-muted-foreground flex items-center mt-1">
+                      {/* <MapPin className="w-3 h-3 mr-1" /> */}
+                      <User className='w-4 h-3 mr-1' />
+                      {bid.bidder_id}
+                    </div>
+                  </div>
+                  <div className='flex justify-between'>
+                    {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
+                    <div></div>
+                    <div className="text-sm text-muted-foreground flex items-center mt-1">
+                      {bid.updated_at}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
 
-            </div>
+
           </div>
         </div>
       </div>
