@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
 import {PermissionManager } from "../src/Permission/PermissionManager.sol";
@@ -18,6 +18,8 @@ import{ MerkleVerifier} from "../src/chainlink/merkle_verifier.sol";
 import{ CrossToken} from "../src/chainlink/ccip.sol";
 import{ Sync } from "../src/chainlink/sync_function.sol";
 import{ZeroNFT} from "../src/tokens/ZeroNFT.sol";
+import{Messenger} from "../src/chainlink/messenging.sol";
+
 
 contract DeployScript is Script {
     // Base Network Addresses
@@ -45,6 +47,7 @@ contract DeployScript is Script {
     CrossToken public ccip;
     Sync public syncFunction;
     ZeroNFT public zeroNFT;
+    Messenger public messenger;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -55,6 +58,9 @@ contract DeployScript is Script {
 
           vm.createSelectFork(vm.rpcUrl("basechain"));
         vm.startBroadcast(deployerPrivateKey);
+
+
+
 
         // 1. Deploy Permission Manager
         console.log("Deploying PermissionManager...");
@@ -102,8 +108,12 @@ contract DeployScript is Script {
 
         // 9. Deploy Proof Sync
         console.log("Deploying ProofSync...");
-        proofSync = new ProofSync(address(merkleVerifier));
+        proofSync = new ProofSync(address(merkleVerifier), payable(ccip)); // Messenger will be set later
         console.log("ProofSync deployed at:", address(proofSync));
+      // 0. messenger
+        console.log("Deploying Messenger...");
+        messenger = new Messenger(address(0), address(0), address(merkleVerifier));
+        console.log("PermissionManager deployed at:", address(messenger));
 
         // 10. Deploy CCIP
         console.log("Deploying CrossToken (CCIP)...");

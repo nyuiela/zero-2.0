@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 //cloned
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -79,7 +79,7 @@ contract MerkleVerifier is Initializable {
     //     emit SetRoot(brand, msg.sender);
     // }
 
-    function addLeave(string memory _leaf) external onlySyncer /* only permissioned user */ {
+    function addLeave(string memory _leaf) public onlySyncer /* only permissioned user */ {
         // verifier proof using Function
 
         proof.push(_leaf);

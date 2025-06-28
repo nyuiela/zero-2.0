@@ -5,6 +5,7 @@ import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsCl
 import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import {StateManager} from "../core/State.sol";
+import{CarRegistry} from "../core/registry.sol";
 // cloned
 /**
  * @title Sync - auto sync state every hour.
@@ -13,8 +14,9 @@ import {StateManager} from "../core/State.sol";
  */
 
 //CheckState
-contract Sync is FunctionsClient, ConfirmedOwner {
+contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
+    CarRegistry _registryContract;
 
     // State variables to store the last request ID, response, and error
     bytes32 public s_lastRequestId;
@@ -24,6 +26,9 @@ contract Sync is FunctionsClient, ConfirmedOwner {
 
     address public stateAddress;
     StateManager public stateContract;
+
+    mapping(string => bytes32) public request;
+    mapping(bytes32 => string) private response;
 
     // Custom error type
     error UnexpectedRequestID(bytes32 requestId);
@@ -40,11 +45,26 @@ contract Sync is FunctionsClient, ConfirmedOwner {
     address router = 0xb83E47C2bC239B3bf370bc41e1459A34b41238D0;
 
     // JavaScript source code
-    // Fetch state name from the Star Wars API.
-    // Documentation: https://swapi.info/people
-    string source = "const stateId = args[0];" "const apiResponse = await Functions.makeHttpRequest({"
-        "url: `https://swapi.info/api/people/${stateId}/`" "});" "if (apiResponse.error) {"
-        "throw Error('Request failed');" "}" "const { data } = apiResponse;" "return Functions.encodeString(data.name);";
+
+    string source = "const url = args[0];"
+"const apiResponse = await Functions.makeHttpRequest({"
+"  url: `${url}`"
+"})"
+"if (apiResponse.error) {"
+"  console.error(apiResponse.error)"
+"  throw Error('Request failed')"
+"}"
+"const { data } = apiResponse;"
+"console.log('API response data:', JSON.stringify(data, null, 2));"
+"return Functions.encodeString(data.cid);";
+
+      // using the deployed ip address to check state 
+      // This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
+
+// Execute the API request (Promise)
+// http://13.222.216.169:8080/api/sync
+// This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
+
 
     //Callback gas limit
     uint32 gasLimit = 300000;
@@ -74,9 +94,11 @@ contract Sync is FunctionsClient, ConfirmedOwner {
     /**
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    constructor(address _stateAddr) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(address _stateAddr,address _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         stateAddress = _stateAddr;
+
         stateContract = StateManager(_stateAddr);
+        _registryContract = CarRegistry(_registry);
     }
 
     /**
@@ -85,9 +107,10 @@ contract Sync is FunctionsClient, ConfirmedOwner {
      * @param args The arguments to pass to the HTTP request
      * @return requestId The ID of the request
      */
-    function sendRequest(uint64 subscriptionId, string[] calldata args)
+    function sendRequest(uint64 subscriptionId, string[] calldata args, string memory _brand)
         external
-        onlyOwner
+        virtual
+        onlyRegistry
         returns (bytes32 requestId)
     {
         FunctionsRequest.Request memory req;
@@ -97,35 +120,49 @@ contract Sync is FunctionsClient, ConfirmedOwner {
         // Send the request and store the request ID
         s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
 
+        request[_brand] = s_lastRequestId;
+
         return s_lastRequestId;
     }
 
     /**
      * @notice Callback function for fulfilling a request
      * @param requestId The ID of the request to fulfill
-     * @param response The HTTP response data
+     * @param _response The HTTP response data
      * @param err Any errors from the Functions request
      */
-    function fulfillRequest(bytes32 requestId, bytes memory response, bytes memory err) internal override {
+    function fulfillRequest(bytes32 requestId, bytes memory _response, bytes memory err) internal override {
         if (s_lastRequestId != requestId) {
             revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
         // Update the contract's state variables with the response and any errors
-        s_lastResponse = response;
-        string memory _state = string(response);
+        s_lastResponse = _response;
+        string memory _state = string(_response);
         s_lastError = err;
+        string memory s_state = stateContract.getState(brand);
 
         // check state
         // if state is not same: initate stake *&& lock contract.
-        // if (state)
-        bytes32 s1 = keccak256(abi.encodePacked(state));
+      //   if (state)
+        bytes32 s1 = keccak256(abi.encodePacked(s_state));
         bytes32 s2 = keccak256(abi.encodePacked(_state));
-        if (s1 == s2) {
-            state = string(response);
+        if (s1 == s2 && s2 == keccak256(abi.encodePacked(s_state))) {
+          state = string(_response);
         } else {
-            stateContract.lockContract(brand, "State Differs");
+          stateContract.lockContract(brand, "State Differs");
         }
-        // Emit an event to log the response
+      //   Emit an event to log the response
+        response[requestId] = string(_response);
         emit Response(requestId, state, s_lastResponse, s_lastError);
+    }
+
+    function getResponse(string memory _brand) public view returns (string memory) {
+        bytes32 id = request[_brand];
+        return response[id];
+    }
+
+    modifier onlyRegistry(){
+        require(msg.sender == address(_registryContract), "Init_Function: not authorized");
+        _;
     }
 }

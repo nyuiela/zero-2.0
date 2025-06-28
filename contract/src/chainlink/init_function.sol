@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 
 import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
@@ -50,7 +50,7 @@ contract InitFunction is FunctionsClient, ConfirmedOwner {
     string source = "const stateId = args[0];" "const apiResponse = await Functions.makeHttpRequest({"
         "url: `https://swapi.info/api/people/${stateId}/`" "});" "if (apiResponse.error) {"
         "throw Error('Request failed');" "}" "const { data } = apiResponse;" "return Functions.encodeString(data.name);";
-
+      // using the deployed ip address to check state 
     //Callback gas limit
     uint32 gasLimit = 300000;
 

@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
@@ -17,7 +17,7 @@ contract StateManager {
 
     // errors
     error UserNotPermitted();
-    error ContractLockedError();
+    error ContractLockedError(string brand);
     error ContractAlreadyUnlocked();
     error ActivationFailed(string brand, address owner);
 
@@ -66,7 +66,7 @@ contract StateManager {
         require(IPermissionManager(profile).hasPermission(msg.sender, SET_STATE), "state: unauthorized");
         // check the brand permission and check authorized users who needs to do that.
         // require(msg.sender, )
-        require(!locked[_brand], ContractLockedError());
+        require(locked[_brand] == false, "state: brand is locked");
         states[_brand] = _new_state;
         // change state in profile
         profileContract.updateState(_brand, _new_state);
@@ -77,7 +77,7 @@ contract StateManager {
 
     function lockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
         require(IPermissionManager(profile).hasPermission(msg.sender, LOCK_CONTRACT), "State: unauthorized");
-        require(!locked[_brand], ContractLockedError());
+        require(locked[_brand] == false, "state: brand is locked");
         locked[_brand] = true;
         profileContract.lockBrand(_brand);
         emit ContractLocked(_brand, _reason, msg.sender);
@@ -85,7 +85,7 @@ contract StateManager {
 
     function unlockContract(string memory _brand, string memory _reason) public /* permissioned user */ {
         require(IPermissionManager(profile).hasPermission(msg.sender, UNLOCK_CONTRACT), "State: unauthorized");
-        require(locked[_brand], ContractLockedError());
+        require(locked[_brand], "state: brand is locked");
         locked[_brand] = false;
         // unlock from contract;
         profileContract.unlockBrand(_brand);
@@ -97,6 +97,10 @@ contract StateManager {
         profile = _profile;
         emit UpdatedProfileContract(_profile);
     }
+
+      function getState(string memory _brand) public view returns (string memory) {
+         return states[_brand];
+      }
 
     // what is the changes
 }

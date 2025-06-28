@@ -1,5 +1,5 @@
 // SPDX-License-identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {CarRegistry} from "../src/core/registry.sol";
 
@@ -91,7 +91,7 @@ contract RegistryTest is Test {
           address(brandPermission),
           address(permission)
         );
-        syncer = new ProofSync(address(merkleVerifier));
+        syncer = new ProofSync(address(merkleVerifier), payable(ccip));
         merkleVerifier = new MerkleVerifier();
         merkleVerifier.initialize("brand", "000", address(0), address(0));
 

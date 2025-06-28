@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
@@ -25,6 +25,7 @@ contract Profile {
         address brandPermission;
         address oracle;
         address syncer;
+        string url; // this is the url of the state contract check
     }
     // error
 
@@ -66,7 +67,8 @@ contract Profile {
         address _merkleVerifier,
         address _brandP,
         address _oracle,
-        address _syncer
+        address _syncer,
+        string memory _url
     ) public onlyRegistry {
         // require()
 
@@ -80,7 +82,8 @@ contract Profile {
             locked: false,
             brandPermission: _brandP,
             oracle: _oracle,
-            syncer: _syncer
+            syncer: _syncer,
+            url: _url
         });
         emit ProfileCreated(_brand, msg.sender);
     }
