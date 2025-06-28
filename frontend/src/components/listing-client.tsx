@@ -9,8 +9,9 @@ import { Separator } from '@/components/ui/separator'
 import { MapPin } from 'lucide-react'
 import { CarListing } from '@/lib/data'
 import { Auction } from '@/lib/auction'
-import { placeBid } from '@/lib/api/bid'
+import { fetchBidByAuctionId, fetchBidById, placeBid } from '@/lib/api/bid'
 import { useAuthStore } from '@/lib/authStore'
+import { useQuery } from '@tanstack/react-query'
 
 interface ListingClientProps {
   listing: CarListing
@@ -33,6 +34,13 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bidError, setBidError] = useState<string | null>(null)
   const { user } = useAuthStore()
+  // React Query hooks
+  const { data: bid, refetch: bidRefresh, isLoading: nonceLoading, isError: nonceError } = useQuery({
+    queryKey: ['bid', listing.auction_id],
+    queryFn: () => fetchBidByAuctionId(listing.auction_id),
+    // enabled: open,
+  })
+  console.log("Bid ", bid)
 
   // Calculate 5% stake
   const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.05
@@ -186,10 +194,10 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         <div className="space-y-6">
           {/* Action Buttons */}
           <div className="flex flex-col md:flex-row gap-4 mb-8 items-baseline justify-end">
-            <Button className="bg-gradient-to-r text-white font-bold text-lg py-3 px-8 shadow-lg hover:scale-105 transition-all rounded-none bg-[#00296b]" onClick={() => setIsBidModalOpen(true)}>
+            <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer" onClick={() => setIsBidModalOpen(true)}>
               Place Bid
             </Button>
-            <Button className="bg-gradient-to-r text-white font-bold text-lg py-3 px-8 rounded-none shadow-lg hover:scale-105 transition-all bg-[#00296b]" asChild>
+            <Button className="text-black py-5 px-8 rounded-none  transition-all bg-white shadow-none text-md cursor-pointer" asChild>
               <Link href={`/auctions/${listing.id}`}>
                 Join Bidding Room
               </Link>

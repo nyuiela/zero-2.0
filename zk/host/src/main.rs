@@ -12,6 +12,7 @@ use dotenv::dotenv;
 // The ELF is used for proving and the ID is used for verification.
 use db::{ establish_connection };
 use host::auction::complete_bid_by_id;
+use host::bid::get_bid_by_auction_id;
 use host::overall::get_overall_state_handler;
 use host::overall::sync_state_handler;
 use host::sync_state;
@@ -75,6 +76,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/auctions/{id}", get(get_auction_by_id))
         .route("/api/bids", get(get_bids))
         .route("/api/bids/{id}", get(get_bid_by_id))
+        .route("/api/bids/a/{id}", get(get_bid_by_auction_id))
         //comment
         .route("/api/comments/{id}", get(get_comments))
         // save

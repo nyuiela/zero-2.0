@@ -5,7 +5,16 @@ use car_auction_core::BidState;
 use entity::{ bid, BidModel };
 use methods::{ INIT_BID_ELF, INIT_BID_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
-use sea_orm::{ ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, QueryOrder, Set };
+use sea_orm::{
+    ActiveModelTrait,
+    DatabaseConnection,
+    DbErr,
+    EntityTrait,
+    QueryOrder,
+    Set,
+    ColumnTrait,
+    QueryFilter,
+};
 use serde::{ Deserialize, Serialize };
 use serde_json::{ json, Value };
 
@@ -148,6 +157,24 @@ pub async fn get_bid_by_id(
   }))),
         None => Err((axum::http::StatusCode::NOT_FOUND, "Bid not found".to_string())),
     }
+}
+pub async fn get_bid_by_auction_id(
+    axum::extract::Path(id): axum::extract::Path<i32>,
+    axum::extract::State(db): axum::extract::State<Arc<sea_orm::DatabaseConnection>>
+) -> Result<Json<Value>, (axum::http::StatusCode, String)> {
+    let bid: Vec<BidModel> = bid::Entity
+        ::find()
+        .filter(bid::Column::AuctionId.eq(id))
+        .all(&*db).await
+        .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    // match bid {
+    // Some(bid) =>
+    Ok(Json(json!({
+    "status": "success",
+    "data": bid
+  })))
+    //     None => Err((axum::http::StatusCode::NOT_FOUND, "Bid not found".to_string())),
+    // }
 }
 pub async fn get_all_bids(db: &DatabaseConnection) -> Result<Vec<::entity::bid::Model>, DbErr> {
     ::entity::bid::Entity::find().all(db).await

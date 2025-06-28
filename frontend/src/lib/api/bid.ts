@@ -20,9 +20,24 @@ export async function fetchBids(): Promise<Bid[] | null> {
   }
 }
 
-export async function fetchBidById(id: string): Promise<Bid | null> {
+export async function fetchBidById(id: number): Promise<Bid | null> {
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/bids/${id}`)
+    if (!res.ok) {
+      console.warn("API failed, falling back to mock data for auction.")
+      // return mockAuctions.find(auction => auction.id.toString() === id) || null
+    }
+    const json = await res.json()
+    return json.data || null
+  } catch (error) {
+    console.error("Error fetching auction, falling back to mock data:", error)
+    return null;
+    // return mockAuctions.find(auction => auction.id.toString() === id) || null
+  }
+}
+export async function fetchBidByAuctionId(id: number): Promise<Bid | null> {
+  try {
+    const res = await apiRequest(`${API_BASE_URL}/api/bids/a/${id}`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auction.")
       // return mockAuctions.find(auction => auction.id.toString() === id) || null
