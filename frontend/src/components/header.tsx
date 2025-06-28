@@ -83,6 +83,7 @@ export default function Header() {
             <Link href="/auctions" className="text-[#202626] hover:text-amber-500 font-medium">Auctions</Link>
             <Link href="/sell" className="text-[#202626] hover:text-amber-500 font-medium">Sell</Link>
             <Link href="/verify" className="text-[#202626] hover:text-amber-500 font-medium">Verify</Link>
+            <Link href="/brand" className="text-[#202626] hover:text-amber-500 font-medium">Brand</Link>
             <Link href="/stories" className="text-[#202626] hover:text-amber-500 font-medium">Stories</Link>
           </div>
           {/* Search and Sign In */}

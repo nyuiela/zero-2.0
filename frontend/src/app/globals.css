@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -45,8 +45,8 @@
 }
 
 :root {
-  --font-sans: 'Geist', 'Inter', 'Space Grotesk', Arial, sans-serif;
-  --font-heading: 'Space Grotesk', 'Geist', Arial, sans-serif;
+  --font-sans: 'Outfit', 'Inter', Arial, sans-serif;
+  --font-heading: 'Outfit', Arial, sans-serif;
   --font-mono: 'Geist Mono', 'Fira Mono', monospace;
   --radius: 1.2rem;
   --background: #f7f7fa;
