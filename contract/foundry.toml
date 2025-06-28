@@ -21,6 +21,9 @@ remappings = [
 [rpc_endpoints]
 localchain = "${LOCALCHAIN_URL}"
 basechain = "${BASE_URL}"
+etherum = "${ETHERUM_URL}"
+sonicchain = "${SONIC_URL}"
+hedera = "${HEDERA_URL}"
 
 
 [etherscan]

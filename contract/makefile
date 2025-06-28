@@ -30,4 +30,4 @@ ifeq ($(findstring --network base,$(ARGS)),--network base)
 endif
 
 deploy:
-	@forge script script/Deploy.sol:DeployScript $(NETWORK_ARGS)
+	@forge script script/Deploy.s.sol:DeployScript $(NETWORK_ARGS)
