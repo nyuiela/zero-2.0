@@ -35,6 +35,7 @@ contract Auction {
         uint256 nftTokenId;
         mapping(address => uint256) stakes;
         address[] bidders;
+        string proofHash; // Hash of the proof for verification
     }
 
     struct Bid {
@@ -96,7 +97,8 @@ contract Auction {
         uint256 initialBid,
         uint256 bidThreshold,
         address bidToken,
-        uint256 nftTokenId
+        uint256 nftTokenId,
+        string memory proofHash
     ) external onlyActiveBrand(brandName) {
         require(startTime >= block.timestamp, "Start time must be in the future");
         require(endTime > startTime, "End time must be after start time");
@@ -121,6 +123,7 @@ contract Auction {
         a.winner = address(0);
         a.winningBid = 0;
         a.nftTokenId = nftTokenId;
+        a.proofHash = proofHash; // Store the proof hash for verification
 
         emit AuctionCreated(auctionCount, brandName, startTime, endTime, initialBid, bidThreshold);
     }

@@ -10,9 +10,13 @@ import { ChevronLeft, ChevronRight, CheckCircle, Upload, FileText, Gavel } from 
 import Step1BasicInfo from "@/components/sell/step-1-basic-info"
 import Step2DetailedInfo from "@/components/sell/step-2-detailed-info"
 import Step3AuctionLegal from "@/components/sell/step-3-auction-legal"
-import { CarFormData, carFormSchema } from "@/lib/types/car"
+import SampleDataButton from "@/components/sell/sample-data-button"
+import { CarFormData } from "@/lib/types/car"
 import { useAuthStore } from "@/lib/authStore"
 import { getJwtToken } from "@/lib/utils"
+import { createCar } from "@/lib/api/car"
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
+import { zero_abi, zero_addr } from "@/lib/abi/abi"
 
 const steps = [
   {
@@ -38,8 +42,24 @@ const steps = [
   }
 ]
 
+// Type for form errors that supports nested objects
+type FormErrors = Record<string, string[] | Record<string, string[]>>
+
 export default function SellYourCarPage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const {
+    data: hash,
+    isPending,
+    writeContract
+  } = useWriteContract()
+  const { address } = useAccount()
+  // const [isLoading, setIsLoading] = useState(false)
+  // const [showProofModal, setShowProofModal] = useState(false)
+  const [transactionHash, setTransactionHash] = useState<string>("")
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<Partial<CarFormData>>({
     images: [],
@@ -66,7 +86,7 @@ export default function SellYourCarPage() {
       notes: ''
     }
   })
-  const [errors, setErrors] = useState<Record<string, any>>({})
+  const [errors, setErrors] = useState<FormErrors>({})
   const { user } = useAuthStore()
 
   const progress = (currentStep / steps.length) * 100
@@ -77,8 +97,16 @@ export default function SellYourCarPage() {
     setErrors({})
   }
 
+  const handleSampleDataFill = (sampleData: Partial<CarFormData>) => {
+    setFormData(sampleData)
+    setErrors({})
+    toast.success('Form filled with sample data!', {
+      description: 'You can now review and modify the information as needed.',
+    })
+  }
+
   const validateStep = (step: number): boolean => {
-    const stepErrors: Record<string, any> = {}
+    const stepErrors: FormErrors = {}
 
     switch (step) {
       case 1:
@@ -195,6 +223,7 @@ export default function SellYourCarPage() {
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) {
       toast.error('Please fix all errors before submitting')
+      console.log("Please fix all errors ")
       return
     }
 
@@ -210,17 +239,17 @@ export default function SellYourCarPage() {
       const submitData = {
         ...formData,
         // Convert images to FormData for multipart upload
-        images: formData.images?.map(img => {
-          if (img.type === 'gallery' && img.file) {
-            return img.file
-          }
-          if (img.type === 'capture' && img.file) {
-            return img.file
-          }
+        image_url: formData.images?.map(img => {
+          // if (img.type === 'gallery' && img.file) {
+          //   return img.file
+          // }
+          // if (img.type === 'capture' && img.file) {
+          //   return img.file
+          // }
           if (img.type === 'url' && img.url) {
             return img.url
           }
-          return null
+          return []
         }).filter(Boolean)
       }
 
@@ -228,13 +257,13 @@ export default function SellYourCarPage() {
       const formDataToSubmit = new FormData()
 
       // Add all text fields
-      Object.entries(submitData).forEach(([key, value]) => {
-        if (key !== 'images' && typeof value === 'object') {
-          formDataToSubmit.append(key, JSON.stringify(value))
-        } else if (key !== 'images') {
-          formDataToSubmit.append(key, String(value))
-        }
-      })
+      // Object.entries(submitData).forEach(([key, value]) => {
+      //   if (key !== 'images' && typeof value === 'object') {
+      //     formDataToSubmit.append(key, JSON.stringify(value))
+      //   } else if (key !== 'images') {
+      //     formDataToSubmit.append(key, String(value))
+      //   }
+      // })
 
       // Add images
       if (submitData.images) {
@@ -249,24 +278,49 @@ export default function SellYourCarPage() {
         })
       }
 
-      // Submit to API
-      const response = await fetch('/api/cars', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${getJwtToken() || ''}`
-        },
-        body: formDataToSubmit
-      })
+      const result = await createCar(submitData);
 
-      if (!response.ok) {
-        throw new Error('Failed to submit listing')
+      // Submit to API
+      // const response = await fetch('/api/cars', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${getJwtToken() || ''}`
+      //   },
+      //   body: formDataToSubmit
+      // })
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to submit listing')
+      // }
+
+      // const result = await response.json()
+      const brandName = "kal"
+      const date = new Date()
+      const metadata = {
+        brandName: formData.make,
+        carModel: formData.model,
+        vin: "2dasfsdf343",
+        year: formData.year,
+        color: "white",
+        mileage: 200,
+        description: formData.description,
+        imageURI: "http",
+        mintTimestamp: date.getUTCMilliseconds(),
+        isVerified: true
       }
 
-      const result = await response.json()
-
       if (result.status === 'success') {
-        toast.success('Car listing submitted successfully!', {
-          description: 'Your listing is now live on the platform.',
+        writeContract({
+          address: zero_addr,
+          abi: zero_abi,
+          functionName: 'mint',
+          args: [
+            address,
+            brandName,
+            metadata,
+            "http"
+          ],
+          account: address
         })
 
         // Reset form
@@ -318,7 +372,13 @@ export default function SellYourCarPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Sell Your Car</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold text-foreground">Sell Your Car</h1>
+            <SampleDataButton
+              onFillForm={handleSampleDataFill}
+              disabled={isSubmitting}
+            />
+          </div>
           <p className="text-muted-foreground">
             List your vehicle for auction on our decentralized platform
           </p>
@@ -335,7 +395,7 @@ export default function SellYourCarPage() {
 
             {/* Step Indicators */}
             <div className="flex justify-between">
-              {steps.map((step, index) => {
+              {steps.map((step) => {
                 const StepIcon = step.icon
                 return (
                   <div key={step.id} className="flex flex-col items-center">
@@ -385,7 +445,7 @@ export default function SellYourCarPage() {
             <CurrentStepComponent
               data={formData}
               onDataChange={handleDataChange}
-              errors={errors}
+              errors={errors as Record<string, string[]>}
             />
           </CardContent>
         </Card>
@@ -414,8 +474,8 @@ export default function SellYourCarPage() {
             ) : (
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex items-center gap-2"
+                // disabled={isSubmitting}
+                className="flex items-center gap-2 cursor-pointer shadow "
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Listing'}
               </Button>

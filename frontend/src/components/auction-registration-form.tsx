@@ -24,6 +24,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import CustomBtn from "./custom-btn"
+import { auction_abi, auction_addr } from "@/lib/abi/abi"
+import { useAccount } from "wagmi"
 
 // Validation schema for the auction registration form
 const auctionRegistrationSchema = z.object({
@@ -81,7 +84,7 @@ export function AuctionRegistrationForm({
   userNFTs = []
 }: AuctionRegistrationFormProps) {
   const [selectedNFT, setSelectedNFT] = useState<string>("")
-
+  const { address } = useAccount();
   const form = useForm<AuctionRegistrationFormData>({
     resolver: zodResolver(auctionRegistrationSchema),
     defaultValues: {
@@ -96,6 +99,7 @@ export function AuctionRegistrationForm({
   })
 
   const handleSubmit = (data: AuctionRegistrationFormData) => {
+
     // Convert dates to timestamps
     const formData = {
       ...data,
@@ -356,13 +360,14 @@ export function AuctionRegistrationForm({
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
-              <Button
+              <CustomBtn name="Kaleel" functionName="createAuction" args={[]} abi={auction_abi} address={auction_addr} account={address!} />
+              {/* <Button
                 type="submit"
                 disabled={isLoading || availableUserNFTs.length === 0}
                 className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
               >
                 {isLoading ? "Creating Auction..." : "Create Auction"}
-              </Button>
+              </Button> */}
             </div>
           </form>
         </Form>

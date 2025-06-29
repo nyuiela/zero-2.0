@@ -1,90 +1,65 @@
 "use client"
 import React, { useState } from 'react'
 import { Button } from './ui/button'
-import { useWriteContract } from 'wagmi'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { parseEther } from 'viem'
 
 interface CustomBtnProps {
   name: string,
-  handleSubmit: () => void
+  value?: number,
+  args: string[],
+  functionName: string,
+  abi: any,
+  account: `0x${string}`,
+  address: `0x${string}`,
+  data?: any,
+  beforeSubmit?: () => void
+  // handleSubmit: () => void
 }
-const CustomBtn = ({ name, }: CustomBtnProps) => {
-  const [isLoading, setIsLoading] = useState();
-  const { writeContract } = useWriteContract();
+const CustomBtn = ({ name, args, value, address, account, abi, beforeSubmit }: CustomBtnProps) => {
+  const {
+    data: hash,
+    isPending,
+    writeContract
+  } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
 
-  // const handleSubmit = () => {
-  //   setIsLoading(true)
+  const handleSubmit = async () => {
 
-  //   // Convert args string to array
-  //   const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
+    // console.log(data)
+    try {
+      if (beforeSubmit) await beforeSubmit();
+      writeContract({
+        address,
+        account,
+        abi,
+        functionName: 'registerBrand',
+        args,
+        value: parseEther(value) || undefined
+      })
 
-  //   console.log(data)
-  //   try {
-  //     writeContract({
-  //       address: registry_addr,
-  //       abi: registry_abi,
-  //       functionName: 'registerBrand',
-  //       args: [
-  //         data.brand,
-  //         {
-  //           "updateInterval": data.updateInterval,
-  //           "deviationThreshold": data.deviationThreshold,
-  //           "heartbeat": data.heartbeat,
-  //           "minAnswer": data.minAnswer,
-  //           "maxAnswer": data.maxAnswer
-  //         },
-  //         data.brandAdminAddr,
-  //         data.subscriptionId,
-  //         data.stateUrl,
-  //         argsArray
-  //       ],
-  //       account: address
-  //     })
-  //     writeContract({
-  //       address: registry_addr,
-  //       abi: registry_abi,
-  //       functionName: 'stake',
-  //       value: parseEther(data.stake),
-  //       args: [
-  //         data.brand
-  //       ],
-  //       account: address
-  //     })
-  //     writeContract({
-  //       address: registry_addr,
-  //       abi: registry_abi,
-  //       functionName: 'activate',
-  //       args: [
-  //         data.brand
-  //       ],
-  //       account: address
-  //     })
+    } catch (error) {
+      console.error("Failed to submit form ", error)
+    }
 
-  //     // Simulate transaction hash - in real implementation, this would come from the transaction
-  //     // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-  //     // setTransactionHash(mockHash)
-
-  //     // Show proof modal after successful transaction
-  //     // setTimeout(() => {
-  //     //   setShowProofModal(true)
-  //     // }, 2000)
-  //     setIsLoading(false)
-
-  //   } catch (error) {
-  //     console.error("Failed to submit form ", error)
-  //     setIsLoading(false)
-  //   }
-
-  // }
+  }
 
   return (
-    <div className="flex justify-end pt-4">
+    <div className="flex flex-col justify-end w-full">
       <Button
         type="submit"
-        className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-        disabled={isLoading}
+        className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+        disabled={isPending}
+        onClick={handleSubmit}
       >
-        {isLoading ? "Loading..." : name ? name : "Register Brand"}
+        {isPending ? "Loading..." : name ? name : "Register"}
       </Button>
+      {isConfirmed &&
+        <p className='text-center text-sm p-2'>Transaction Succesfully : {hash}</p>
+      }
     </div>
   )
 }

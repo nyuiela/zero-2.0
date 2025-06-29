@@ -5,16 +5,8 @@ import {IRouterClient} from "@chainlink/contracts-ccip/interfaces/IRouterClient.
 import {Client} from "@chainlink/contracts-ccip/libraries/Client.sol";
 import {OwnerIsCreator} from "@chainlink/contracts/shared/access/OwnerIsCreator.sol";
 import {IERC20} from "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from
-    "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeERC20} from "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
-
-/// @title - A simple contract for transferring tokens across chains.
 contract CrossToken is OwnerIsCreator {
     using SafeERC20 for IERC20;
 
@@ -78,7 +70,10 @@ contract CrossToken is OwnerIsCreator {
     /// @notice This function can only be called by the owner.
     /// @param _destinationChainSelector The selector of the destination chain to be updated.
     /// @param allowed The allowlist status to be set for the destination chain.
-    function allowlistDestinationChain(uint64 _destinationChainSelector, bool allowed) external onlyOwner {
+    function allowlistDestinationChain(
+        uint64 _destinationChainSelector,
+        bool allowed
+    ) external onlyOwner {
         allowlistedChains[_destinationChainSelector] = allowed;
     }
 
@@ -92,7 +87,12 @@ contract CrossToken is OwnerIsCreator {
     /// @param _token token address.
     /// @param _amount token amount.
     /// @return messageId The ID of the message that was sent.
-    function transferTokensPayLINK(uint64 _destinationChainSelector, address _receiver, address _token, uint256 _amount)
+    function transferTokensPayLINK(
+        uint64 _destinationChainSelector,
+        address _receiver,
+        address _token,
+        uint256 _amount
+    )
         external
         onlyOwner
         onlyAllowlistedChain(_destinationChainSelector)
@@ -101,11 +101,18 @@ contract CrossToken is OwnerIsCreator {
     {
         // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
         //  address(linkToken) means fees are paid in LINK
-        Client.EVM2AnyMessage memory evm2AnyMessage =
-            _buildCCIPMessage(_receiver, _token, _amount, address(s_linkToken));
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+            _receiver,
+            _token,
+            _amount,
+            address(s_linkToken)
+        );
 
         // Get the fee required to send the message
-        uint256 fees = s_router.getFee(_destinationChainSelector, evm2AnyMessage);
+        uint256 fees = s_router.getFee(
+            _destinationChainSelector,
+            evm2AnyMessage
+        );
 
         if (fees > s_linkToken.balanceOf(address(this))) {
             revert NotEnoughBalance(s_linkToken.balanceOf(address(this)), fees);
@@ -118,11 +125,20 @@ contract CrossToken is OwnerIsCreator {
         IERC20(_token).approve(address(s_router), _amount);
 
         // Send the message through the router and store the returned message ID
-        messageId = s_router.ccipSend(_destinationChainSelector, evm2AnyMessage);
+        messageId = s_router.ccipSend(
+            _destinationChainSelector,
+            evm2AnyMessage
+        );
 
         // Emit an event with message details
         emit TokensTransferred(
-            messageId, _destinationChainSelector, _receiver, _token, _amount, address(s_linkToken), fees
+            messageId,
+            _destinationChainSelector,
+            _receiver,
+            _token,
+            _amount,
+            address(s_linkToken),
+            fees
         );
 
         // Return the message ID
@@ -153,10 +169,18 @@ contract CrossToken is OwnerIsCreator {
     {
         // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
         // address(0) means fees are paid in native gas
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(_receiver, _token, _amount, address(0));
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+            _receiver,
+            _token,
+            _amount,
+            address(0)
+        );
 
         // Get the fee required to send the message
-        uint256 fees = s_router.getFee(_destinationChainSelector, evm2AnyMessage);
+        uint256 fees = s_router.getFee(
+            _destinationChainSelector,
+            evm2AnyMessage
+        );
 
         if (fees > address(this).balance) {
             revert NotEnoughBalance(address(this).balance, fees);
@@ -166,10 +190,21 @@ contract CrossToken is OwnerIsCreator {
         IERC20(_token).approve(address(s_router), _amount);
 
         // Send the message through the router and store the returned message ID
-        messageId = s_router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
+        messageId = s_router.ccipSend{value: fees}(
+            _destinationChainSelector,
+            evm2AnyMessage
+        );
 
         // Emit an event with message details
-        emit TokensTransferred(messageId, _destinationChainSelector, _receiver, _token, _amount, address(0), fees);
+        emit TokensTransferred(
+            messageId,
+            _destinationChainSelector,
+            _receiver,
+            _token,
+            _amount,
+            address(0),
+            fees
+        );
 
         // Return the message ID
         return messageId;
@@ -182,33 +217,39 @@ contract CrossToken is OwnerIsCreator {
     /// @param _amount The amount of the token to be transferred.
     /// @param _feeTokenAddress The address of the token used for fees. Set address(0) for native gas.
     /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
-    function _buildCCIPMessage(address _receiver, address _token, uint256 _amount, address _feeTokenAddress)
-        private
-        pure
-        returns (Client.EVM2AnyMessage memory)
-    {
+    function _buildCCIPMessage(
+        address _receiver,
+        address _token,
+        uint256 _amount,
+        address _feeTokenAddress
+    ) private pure returns (Client.EVM2AnyMessage memory) {
         // Set the token amounts
-        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
-        tokenAmounts[0] = Client.EVMTokenAmount({token: _token, amount: _amount});
+        Client.EVMTokenAmount[]
+            memory tokenAmounts = new Client.EVMTokenAmount[](1);
+        tokenAmounts[0] = Client.EVMTokenAmount({
+            token: _token,
+            amount: _amount
+        });
 
         // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
-        return Client.EVM2AnyMessage({
-            receiver: abi.encode(_receiver), // ABI-encoded receiver address
-            data: "", // No data
-            tokenAmounts: tokenAmounts, // The amount and type of token being transferred
-            extraArgs: Client._argsToBytes(
-                // Additional arguments, setting gas limit and allowing out-of-order execution.
-                // Best Practice: For simplicity, the values are hardcoded. It is advisable to use a more dynamic approach
-                // where you set the extra arguments off-chain. This allows adaptation depending on the lanes, messages,
-                // and ensures compatibility with future CCIP upgrades. Read more about it here: https://docs.chain.link/ccip/concepts/best-practices/evm#using-extraargs
-                Client.GenericExtraArgsV2({
-                    gasLimit: 0, // Gas limit for the callback on the destination chain
-                    allowOutOfOrderExecution: true // Allows the message to be executed out of order relative to other messages from the same sender
-                })
-            ),
-            // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
-            feeToken: _feeTokenAddress
-        });
+        return
+            Client.EVM2AnyMessage({
+                receiver: abi.encode(_receiver), // ABI-encoded receiver address
+                data: "", // No data
+                tokenAmounts: tokenAmounts, // The amount and type of token being transferred
+                extraArgs: Client._argsToBytes(
+                    // Additional arguments, setting gas limit and allowing out-of-order execution.
+                    // Best Practice: For simplicity, the values are hardcoded. It is advisable to use a more dynamic approach
+                    // where you set the extra arguments off-chain. This allows adaptation depending on the lanes, messages,
+                    // and ensures compatibility with future CCIP upgrades. Read more about it here: https://docs.chain.link/ccip/concepts/best-practices/evm#using-extraargs
+                    Client.GenericExtraArgsV2({
+                        gasLimit: 0, // Gas limit for the callback on the destination chain
+                        allowOutOfOrderExecution: true // Allows the message to be executed out of order relative to other messages from the same sender
+                    })
+                ),
+                // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
+                feeToken: _feeTokenAddress
+            });
     }
 
     /// @notice Fallback function to allow the contract to receive Ether.
@@ -228,7 +269,7 @@ contract CrossToken is OwnerIsCreator {
         if (amount == 0) revert NothingToWithdraw();
 
         // Attempt to send the funds, capturing the success status and discarding any return data
-        (bool sent,) = _beneficiary.call{value: amount}("");
+        (bool sent, ) = _beneficiary.call{value: amount}("");
 
         // Revert if the send failed, with information about the attempted transfer
         if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
@@ -238,7 +279,10 @@ contract CrossToken is OwnerIsCreator {
     /// @dev This function reverts with a 'NothingToWithdraw' error if there are no tokens to withdraw.
     /// @param _beneficiary The address to which the tokens will be sent.
     /// @param _token The contract address of the ERC20 token to be withdrawn.
-    function withdrawToken(address _beneficiary, address _token) public onlyOwner {
+    function withdrawToken(
+        address _beneficiary,
+        address _token
+    ) public onlyOwner {
         // Retrieve the balance of this contract
         uint256 amount = IERC20(_token).balanceOf(address(this));
 

@@ -50,8 +50,8 @@ contract StateManager {
     bytes4 public constant INITIATE = bytes4(keccak256("initiate(string)"));
     bytes4 public constant SET_PROFILE = bytes4(keccak256("setProfile(address)"));
 
-    // onlyOnwer or register contract can cal  l this
-    function initiate(string memory _brand) public /* onlyOnwer */ {
+
+    function initiate(string memory _brand) external /* OnlyRegister */ {
         // require()
         require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "State: authorized");
 

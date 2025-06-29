@@ -25,6 +25,7 @@ basechain = "${BASE_URL}"
 etherum = "${ETHERUM_URL}"
 sonicchain = "${SONIC_URL}"
 hedera = "${HEDERA_URL}"
+avalanche = "${AVALANCHE_URL}"
 
 
 [etherscan]

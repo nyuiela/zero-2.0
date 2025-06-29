@@ -17,23 +17,23 @@ import zeroNft from "./ZeroNFT.sol/ZeroNFT.json"
 
 // address 
 // NEXT_PUBLIC_InitFunction
-export const oracleMaster_addr = process.env.NEXT_PUBLIC_OracleMaster
-export const proofSync_addr = process.env.NEXT_PUBLIC_ProofSync
-export const zero_addr = process.env.NEXT_PUBLIC_ZeroNFT
+export const oracleMaster_addr = process.env.NEXT_PUBLIC_OracleMaster as `0x${string}`
+export const proofSync_addr = process.env.NEXT_PUBLIC_ProofSync as `0x${string}`
+export const zero_addr = process.env.NEXT_PUBLIC_ZeroNFT as `0x${string}`
 
 
 // NEXT_PUBLIC_Fee
 
-export const sync_addr = process.env.NEXT_PUBLIC_SyncFunction
-export const state_addr = process.env.NEXT_PUBLIC_StateManager
-export const reputation_addr = process.env.NEXT_PUBLIC_Reputation
+export const sync_addr = process.env.NEXT_PUBLIC_SyncFunction as `0x${string}`
+export const state_addr = process.env.NEXT_PUBLIC_StateManager as `0x${string}`
+export const reputation_addr = process.env.NEXT_PUBLIC_Reputation as `0x${string}`
 export const registry_addr = process.env.NEXT_PUBLIC_CarRegistry as `0x${string}`
-export const messenging_addr = process.env.NEXT_PUBLIC_MESSENGING
-export const merkle_addr = process.env.NEXT_PUBLIC_MerkleVerifier
-export const profile_addr = process.env.NEXT_PUBLIC_Profile
-export const ccip_addr = process.env.NEXT_PUBLIC_CrossToken
-export const car_oracle_addr = process.env.NEXT_PUBLIC_CarOracle
-export const auction_addr = process.env.NEXT_PUBLIC_Auction
+export const messenging_addr = process.env.NEXT_PUBLIC_MESSENGING as `0x${string}`
+export const merkle_addr = process.env.NEXT_PUBLIC_MerkleVerifier as `0x${string}`
+export const profile_addr = process.env.NEXT_PUBLIC_Profile as `0x${string}`
+export const ccip_addr = process.env.NEXT_PUBLIC_CrossToken as `0x${string}`
+export const car_oracle_addr = process.env.NEXT_PUBLIC_CarOracle as `0x${string}`
+export const auction_addr = process.env.NEXT_PUBLIC_Auction as `0x${string}`
 
 
 export const sync_abi = sync.abi;

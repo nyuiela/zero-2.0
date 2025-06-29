@@ -18,24 +18,19 @@ contract DeployCCIP is Script {
     MerkleVerifier public merkleVerifier;
     ZeroNFT public zeroNFT;
 
-    address constant HEDERA_ROUTER = 0x802C5F84eAD128Ff36fD6a3f8a418e339f467Ce4;
-    address constant HEDERA_LINK_TOKEN =
-        0x90a386d59b9A6a4795a011e8f032Fc21ED6FEFb6;
-    address constant HEDERA_ETH_USD_FEED =
-        0xb9d461e0b962aF219866aDfA7DD19C52bB9871b9;
-    address constant HEDERA_USDC_USD_FEED =
-        0xb632a7e7e02d76c0Ce99d9C62c7a2d1B5F92B6B5;
-    uint256 constant HEDERA_CHAIN_SELECTOR_ID = 222782988166878823; // Hedera Chain ID
+    address constant AVALANCHE_ROUTER =
+        0xF694E193200268f9a4868e4Aa017A0118C9a8177;
+    address constant AVALANCHE_LINK_TOKEN =
+        0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846;
+    address constant AVALANCHE_ETH_USD_FEED =
+        0x86d67c3D38D2bCeE722E601025C25a575021c6EA;
+    address constant AVALANCHE_USDC_USD_FEED =
+        0x97FE42a7E96640D932bbc0e1580c73E705A8EB73;
+    uint256 constant AVALANCHE_CHAIN_SELECTOR_ID = 14767482510784806043;
     uint64 constant BASE_CHAIN_SELECTOR = 10344971235874465080;
     uint256 constant AMOUNT = 1000000000000000000;
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerPrivateKey);
-
-        console.log("Deploying contracts to hedera network...");
-        console.log("Deployer address:", deployer);
-
         /// min chain deployed address
         address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
         address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
@@ -45,9 +40,15 @@ contract DeployCCIP is Script {
         );
         address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
         address profile = vm.envAddress("PROFILE_ADDRESS");
-        // uint64 baseSelectorId = vm.envAddress("BASE_SELECTOR_ID ");
+        //uint64 baseSelectorId = vm.envAddress("BASE_SELECTOR_ID ");
 
-        vm.createSelectFork(vm.rpcUrl("hedera"));
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.addr(deployerPrivateKey);
+
+        console.log("Deploying contracts to hedera network...");
+        console.log("Deployer address:", deployer);
+
+        vm.createSelectFork(vm.rpcUrl("avalanche"));
         vm.startBroadcast(deployerPrivateKey);
 
         // deploy cross chain
@@ -57,16 +58,20 @@ contract DeployCCIP is Script {
             profile,
             reputationContract
         );
-        setConfigs(BASE_CHAIN_SELECTOR);
-        IERC20(HEDERA_LINK_TOKEN).transferFrom(deployer, address(ccip), AMOUNT);
-        IERC20(HEDERA_LINK_TOKEN).transferFrom(
+        setConfigs(deployer, BASE_CHAIN_SELECTOR);
+        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(
+            deployer,
+            address(ccip),
+            AMOUNT
+        );
+        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(
             deployer,
             address(messenger),
             AMOUNT
         );
         vm.stopBroadcast();
 
-        //loggs
+        // logs
         logDeploymentSummary(deployer);
     }
 
@@ -78,7 +83,7 @@ contract DeployCCIP is Script {
     ) internal {
         //ccip
         console.log("Deploying CrossToken (CCIP).....");
-        ccip = new CrossToken(HEDERA_ROUTER, HEDERA_LINK_TOKEN);
+        ccip = new CrossToken(AVALANCHE_ROUTER, AVALANCHE_LINK_TOKEN);
         console.log("CrossToken deployed at:", address(ccip));
 
         //  Deploy Merkle Verifier
@@ -116,23 +121,24 @@ contract DeployCCIP is Script {
             address(_carRegistry),
             address(zeroNFT),
             address(_oraclemaster),
-            HEDERA_ETH_USD_FEED,
-            HEDERA_USDC_USD_FEED
+            AVALANCHE_ETH_USD_FEED,
+            AVALANCHE_USDC_USD_FEED
         );
         console.log("Auction deployed at:", address(auction));
     }
 
-    function setConfigs(uint64 _baseSelectorId) internal {
+    function setConfigs(address deployer, uint64 _baseSelectorId) internal {
         // Set auction in ZeroNFT
         zeroNFT.setAuctionContract(address(auction));
         console.log("Auction set in ZeroNFT");
+
         // dest chain
         ccip.allowlistDestinationChain(_baseSelectorId, true);
     }
 
     function logDeploymentSummary(address deployer) internal view {
-        console.log("\n===HEDERA NETWORK DEPLOYMENT SUMMARY ===");
-        console.log("Network: HEDERA  (Cross-Chain)");
+        console.log("\n=== AVALANCHE NETWORK DEPLOYMENT SUMMARY ===");
+        console.log("Network: Avalanche (Cross-Chain)");
         console.log("Deployer:", deployer);
         console.log("CrossToken (CCIP):", address(ccip));
         console.log("Messenger:", address(messenger));
@@ -140,6 +146,6 @@ contract DeployCCIP is Script {
         console.log("ZeroNFT deployed at:", address(zeroNFT));
         console.log("StateManager deployed at:", address(stateManager));
         console.log("MerkleVerifier deployed at:", address(merkleVerifier));
-        console.log("=== HEDERA  NETWORK DEPLOYMENT COMPLETE ===");
+        console.log("=== AVALANCHE NETWORK DEPLOYMENT COMPLETE ===");
     }
 }

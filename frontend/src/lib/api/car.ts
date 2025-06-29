@@ -37,7 +37,23 @@ export async function createCar(carData: Partial<CarListing>): Promise<{ status:
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/cars`, {
       method: 'POST',
-      body: JSON.stringify(carData),
+      body: JSON.stringify({
+        id: 0,
+        mileage: 13242,
+        vin: "fwrqr244",
+        transmission: "automatic",
+        fuel_type: "electric",
+        engine_size: "40L",
+        exterior_color: "white",
+        interior_color: "white",
+        odometer: 4000,
+        auction_id: 0,
+        token_id: 0,
+        created_at: "2024-01-01T00:00:00",
+        updated_at: "2024-01-01T00:00:00",
+        color: 'white',
+        ...carData
+      }),
     });
 
     if (!res.ok) {

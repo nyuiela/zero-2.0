@@ -54,8 +54,9 @@ export default function CreateAuctionPage() {
       // 2. Call the smart contract function
       // 3. Wait for transaction confirmation
 
+
       // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // await new Promise(resolve => setTimeout(resolve, 2000))
 
       setSubmittedData(data)
 

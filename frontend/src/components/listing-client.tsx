@@ -12,6 +12,9 @@ import { Auction } from '@/lib/auction'
 import { fetchBidByAuctionId, fetchBidById, placeBid } from '@/lib/api/bid'
 import { useAuthStore } from '@/lib/authStore'
 import { useQuery } from '@tanstack/react-query'
+import CustomBtn from './custom-btn'
+import { auction_abi, auction_addr } from '@/lib/abi/abi'
+import { useAccount } from 'wagmi'
 
 interface ListingClientProps {
   listing: CarListing
@@ -26,6 +29,7 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
 }
 
 export default function ListingClient({ listing, relatedAuctions }: ListingClientProps) {
+  const { address } = useAccount()
   const [selectedImage, setSelectedImage] = useState<number>(0)
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [bidAmount, setBidAmount] = useState<number | string>('')
@@ -147,9 +151,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div className="mb-4 text-sm text-gray-700">
               <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
             </div>
-            <Button className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6" onClick={handlePlaceBid} disabled={isSubmitting}>
-              {isSubmitting ? 'Placing Bid...' : 'Place Bid & Enter Bidding Room'}
-            </Button>
+            <CustomBtn name="Place Bid & Enter Bidding Room" functionName="placeBid" args={[]} abi={auction_abi} address={auction_addr} account={address!} beforeSubmit={handlePlaceBid} />
           </div>
         </div>
       )}
