@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { fetchNonce, verifySignature } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/authStore'
 import { verificationService } from '@/lib/verificationService'
-import { setJwtToken } from '@/lib/utils'
+import { setJwtToken, getJwtToken } from '@/lib/utils'
 import { toast } from 'sonner'
 
 // interface LoginModalProps {
@@ -25,146 +25,212 @@ import { toast } from 'sonner'
 // }
 
 export function LoginModal() {
-  const [username, setUsername] = useState('')
-  const [nonce, setNonce] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState<'username' | 'connect' | 'sign'>('username')
 
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const { openConnectModal } = useConnectModal()
-  const { setUser, setOpen, open } = useAuthStore()
+  const { 
+    setUser, 
+    setOpen, 
+    open, 
+    authStep, 
+    setAuthStep, 
+    currentNonce, 
+    currentMessage, 
+    setNonceAndMessage, 
+    clearNonceAndMessage,
+    currentUsername,
+    setCurrentUsername,
+    clearCurrentUsername,
+    isConnectingFromModal,
+    setIsConnectingFromModal
+  } = useAuthStore()
+
+  // Use persisted username or empty string
+  const [username, setUsername] = useState(currentUsername)
+
+  // Update local username when persisted username changes
+  useEffect(() => {
+    setUsername(currentUsername)
+  }, [currentUsername])
+
+  // Update persisted username when local username changes
+  const handleUsernameChange = (newUsername: string) => {
+    setUsername(newUsername)
+    setCurrentUsername(newUsername)
+  }
 
   // React Query hooks
   const { data: nonceData, refetch: refetchNonce, isLoading: nonceLoading, isError: nonceError } = useQuery({
     queryKey: ['auth-nonce'],
     queryFn: fetchNonce,
-    enabled: open,
+    enabled: open && !currentNonce, // Only fetch if modal is open and we don't have a nonce
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (replaces cacheTime in newer versions)
   })
+
   const verifySignatureMutation = useMutation({ mutationFn: verifySignature })
 
-  // Reset state when modal opens/closes
+  // Auto-reopen modal after wallet connection
   useEffect(() => {
-    console.log('Modal open/close effect:', { open, isConnected, address })
+    if (isConnected && address && open === false && isConnectingFromModal) {
+      console.log('Wallet connected from our modal, re-opening login modal')
+      setOpen(true)
+      setIsConnectingFromModal(false) // Reset the flag
+    }
+  }, [isConnected, address, open, isConnectingFromModal, setOpen, setIsConnectingFromModal])
+
+  // Handle case where modal was closed during connect step but wallet is now connected
+  useEffect(() => {
+    if (isConnected && address && open === false && authStep === 'connect') {
+      console.log('Modal was closed during connect step, but wallet is now connected. Re-opening.')
+      setOpen(true)
+    }
+  }, [isConnected, address, open, authStep, setOpen])
+
+  // Initialize modal state when opened
+  useEffect(() => {
     if (open) {
       setLoading(false)
       setError(null)
-      // If user is already connected, start at sign step
-      if (isConnected && address) {
-        console.log('User already connected, starting at sign step')
-        setStep('sign')
+      
+      console.log('Modal initialization:', {
+        isConnected,
+        address,
+        currentNonce: !!currentNonce,
+        currentMessage: !!currentMessage,
+        username: username || 'empty',
+        authStep
+      })
+      
+      // If user is already connected and we have stored nonce/message and username, go to sign step
+      if (isConnected && address && currentNonce && currentMessage && username) {
+        console.log('User fully ready, going to sign step')
+        setAuthStep('sign')
+      } else if (isConnected && address && currentNonce && currentMessage) {
+        // User connected and has nonce/message but no username, stay at username step
+        console.log('User connected with nonce/message but no username, staying at username step')
+        setAuthStep('username')
+      } else if (isConnected && address) {
+        // User connected but no stored nonce/message, go to connect step to fetch
+        console.log('User connected but no nonce/message, going to connect step')
+        setAuthStep('connect')
       } else {
+        // User not connected, start at username step
         console.log('User not connected, starting at username step')
-        setStep('username')
+        setAuthStep('username')
       }
-      // Only refetch nonce when modal is opened, not on wallet connect
-      refetchNonce()
     } else {
-      // Reset state when modal closes
-      setUsername('')
-      setNonce(null)
-      setMessage(null)
-      setLoading(false)
-      setError(null)
-      setStep('username')
+      // Clear connecting flag when modal is closed
+      setIsConnectingFromModal(false)
     }
-  }, [open, refetchNonce])
+  }, [open, isConnected, address, currentNonce, currentMessage, username, setAuthStep, setIsConnectingFromModal])
 
-  // Reset state when wallet disconnects
+  // Handle wallet disconnect
   useEffect(() => {
-    console.log('Wallet disconnect effect:', { isConnected, step })
-    if (!isConnected) {
-      setStep('username')
+    if (!isConnected && open) {
+      setAuthStep('username')
       setLoading(false)
       setError(null)
     }
-  }, [isConnected, step])
+  }, [isConnected, open, setAuthStep])
 
-  // Handle nonce data or generate fallback message
+  // Handle nonce data - only set once and persist
   useEffect(() => {
-    console.log('Nonce effect:', { nonceData, nonceError, nonceLoading })
-    if (nonceData) {
-      // Backend responded successfully
-      setNonce(nonceData.nonce)
-      setMessage(nonceData.msg)
-    } else if (nonceError || (!nonceLoading && !nonceData)) {
-      // Backend failed or didn't respond - generate fallback message
+    if (nonceData && !currentNonce && 'nonce' in nonceData && 'msg' in nonceData) {
+      setNonceAndMessage(nonceData.nonce, nonceData.msg)
+      console.log('Nonce and message set:', nonceData.nonce, nonceData.msg)
+    }
+  }, [nonceData, currentNonce, setNonceAndMessage])
+
+  // Generate fallback message only if no stored message and backend failed
+  useEffect(() => {
+    if (!currentMessage && !nonceLoading && nonceError && open) {
       const timestamp = new Date().toISOString()
       const fallbackNonce = `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const fallbackMessage = `Login at ${timestamp}`
-
-      setNonce(fallbackNonce)
-      setMessage(fallbackMessage)
-
+      
+      setNonceAndMessage(fallbackNonce, fallbackMessage)
       console.log('Using fallback authentication message:', fallbackMessage)
     }
-  }, [nonceData, nonceError, nonceLoading])
+  }, [currentMessage, nonceLoading, nonceError, open, setNonceAndMessage])
 
-  // Auto-advance to connect step when username is valid and message is ready
-  // useEffect(() => {
-  //   console.log('Username validation effect:', { username: username.length, message: !!message, step })
-  //   if (username.length >= 4 && message && step === 'username') {
-  //     console.log('Auto-advancing to connect step')
-  //     setStep('connect')
-  //   }
-  // }, [username, message, step])
-
-  // Auto-advance to sign step when wallet is connected
+  // Auto-advance to connect step when username is valid
   useEffect(() => {
-    console.log('Wallet connection effect:', { isConnected, step, address })
-    if (isConnected && step === 'connect') {
-      console.log('Auto-advancing to sign step')
-      setStep('sign')
+    if (username.length >= 4 && authStep === 'username') {
+      setAuthStep('connect')
     }
-  }, [isConnected, step, address])
+  }, [username, authStep, setAuthStep])
 
-  // Cleanup polling on unmount
+  // Auto-advance to sign step when wallet is connected and we have message and username
+  useEffect(() => {
+    if (isConnected && currentMessage && username.length >= 4 && authStep === 'connect') {
+      setAuthStep('sign')
+    }
+  }, [isConnected, currentMessage, username, authStep, setAuthStep])
+
+  // Check for existing authentication on mount
+  useEffect(() => {
+    const checkExistingAuth = () => {
+      const token = getJwtToken()
+      if (token && isConnected && address) {
+        // User has valid token and wallet connected, restore session
+        setUser({
+          address,
+          username: '', // Will be filled from token if needed
+          jwt: token,
+          verified: true
+        })
+        setOpen(false)
+      }
+    }
+
+    checkExistingAuth()
+  }, [isConnected, address, setUser, setOpen])
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       verificationService.stopAllPolling()
     }
   }, [])
 
-  const handleConnectWallet = () => {
-    console.log('Opening connect modal')
+  const handleConnectWallet = useCallback(() => {
+    console.log('Opening connect modal from our login modal')
+    setIsConnectingFromModal(true) // Set flag before opening RainbowKit modal
     openConnectModal?.()
-    return;
-  }
+  }, [openConnectModal, setIsConnectingFromModal])
 
   const handleSignAndVerify = async () => {
-    console.log('Starting sign and verify process')
-    if (!address || !username) {
+    if (!address || !username || !currentMessage || !currentNonce) {
       setError('Missing required information for signing.')
       return
     }
+
     try {
       setLoading(true)
       setError(null)
 
-      const message = nonceData?.msg as string;
-      const nonce = nonceData?.nonce as string;
-      console.log('Signing message:', message)
+      console.log('Signing message:', currentMessage)
       const signature = await signMessageAsync({
-        message
+        message: currentMessage
       })
 
       console.log('Signature received:', signature)
 
-      // Step 1: Verify signature and get JWT token in one call
+      // Verify signature and get JWT token
       const verifyRes = await verifySignatureMutation.mutateAsync({
-        message,
+        message: currentMessage,
         signature_bytes: signature,
         expected_addr: address,
         username,
-        nonce
+        nonce: currentNonce
       })
-
 
       console.log('Verification response:', verifyRes)
 
-      // Extract JWT token from response
       const jwtToken = verifyRes.jwt || verifyRes.token
 
       if (!jwtToken) {
@@ -174,7 +240,6 @@ export function LoginModal() {
       // Store JWT token in cookies
       setJwtToken(jwtToken)
 
-      // Check if verification is complete or needs polling
       if (verifyRes.verified === true) {
         // Verification completed immediately
         setUser({
@@ -183,26 +248,35 @@ export function LoginModal() {
           jwt: jwtToken,
           verified: true
         })
+        
+        // Clear stored nonce/message and username after successful auth
+        clearNonceAndMessage()
+        clearCurrentUsername()
+        setIsConnectingFromModal(false) // Clear connecting flag
+        setAuthStep('complete')
+        
         console.log("Login successful")
-
         toast.success('Login successful!', {
           description: 'Your account has been verified.',
         })
 
-        setOpen(true)
+        setOpen(false)
       } else if (verifyRes.verificationId) {
-        // Verification in progress, start polling using service
+        // Verification in progress, start polling
         verificationService.startPolling(
           verifyRes.verificationId,
           {
             onComplete: async (status) => {
-              // Update user with JWT token (already stored in cookies)
               setUser({
                 address,
                 username,
                 jwt: jwtToken,
                 verified: true
               })
+              clearNonceAndMessage()
+              clearCurrentUsername()
+              setIsConnectingFromModal(false) // Clear connecting flag
+              setAuthStep('complete')
             },
             onError: (error) => {
               console.error('Verification failed:', error)
@@ -237,8 +311,33 @@ export function LoginModal() {
     }
   }
 
+  const handleCancel = () => {
+    // Allow closing if we're at the beginning, end, or during connect step
+    if (authStep === 'username' || authStep === 'complete' || authStep === 'connect') {
+      setOpen(false)
+      // Clear all state when canceling (except during connect step)
+      if (authStep !== 'connect') {
+        clearNonceAndMessage()
+        clearCurrentUsername()
+        setIsConnectingFromModal(false)
+        setAuthStep('username')
+      }
+    } else {
+      // If in the middle of signing, prevent closing
+      console.log('Cannot cancel during signing process')
+      toast.info('Please complete the signing process.')
+    }
+  }
+
+  const handleOpenChange = (newOpen: boolean) => {
+    // Allow closing if we're not in the middle of signing
+    if (!newOpen) {
+      handleCancel()
+    }
+  }
+
   const getStepContent = () => {
-    switch (step) {
+    switch (authStep) {
       case 'username':
         return (
           <div className="space-y-4">
@@ -246,19 +345,44 @@ export function LoginModal() {
               id="username"
               placeholder="Enter username (min 4 characters)"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => handleUsernameChange(e.target.value)}
               className="border-gray-700 text-[#202626]"
             />
             {username.length > 0 && username.length < 4 && (
               <p className="text-red-500 text-sm">Username must be at least 4 characters</p>
             )}
-            {message && (
+            <Button
+              onClick={handleConnectWallet}
+              disabled={username.length < 4}
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+            >
+              Connect Wallet
+            </Button>
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 py-2"
+            >
+              Cancel
+            </Button>
+          </div>
+        )
+
+      case 'connect':
+        return (
+          <div className="space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-green-800 text-sm">
+                <span className="font-semibold">Username:</span> {username}
+              </p>
+            </div>
+            {currentMessage && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-blue-800 text-sm">
                   <span className="font-semibold">Message you will sign:</span>
                 </p>
                 <p className="text-blue-700 text-xs font-mono mt-1 break-all">
-                  {message}
+                  {currentMessage}
                 </p>
               </div>
             )}
@@ -275,32 +399,12 @@ export function LoginModal() {
             >
               Connect Wallet
             </Button>
-          </div>
-        )
-
-      case 'connect':
-        return (
-          <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-800 text-sm">
-                <span className="font-semibold">Username:</span> {username}
-              </p>
-            </div>
-            {message && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-blue-800 text-sm">
-                  <span className="font-semibold">Message you will sign:</span>
-                </p>
-                <p className="text-blue-700 text-xs font-mono mt-1 break-all">
-                  {message}
-                </p>
-              </div>
-            )}
             <Button
-              onClick={handleConnectWallet}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+              onClick={handleCancel}
+              variant="outline"
+              className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 py-2"
             >
-              Connect Wallet
+              Cancel
             </Button>
           </div>
         )
@@ -312,42 +416,45 @@ export function LoginModal() {
               <p className="text-green-800 text-sm">
                 <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
               </p>
+              <p className="text-green-800 text-sm">
+                <span className="font-semibold">Username:</span> {username}
+              </p>
             </div>
 
-            {/* Username input if not already set */}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-              <Input
-                id="username"
-                placeholder="Enter username (min 4 characters)"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="border-gray-700 text-[#202626]"
-              />
-              {username.length > 0 && username.length < 4 && (
-                <p className="text-red-500 text-sm mt-1">Username must be at least 4 characters</p>
-              )}
-            </div>
-
-
-            {message && (
+            {currentMessage && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-blue-800 text-sm">
                   <span className="font-semibold">Message to sign:</span>
                 </p>
                 <p className="text-blue-700 text-xs font-mono mt-1 break-all">
-                  {message}
+                  {currentMessage}
                 </p>
               </div>
             )}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button
               onClick={handleSignAndVerify}
-              disabled={loading || !username || username.length < 4}
+              disabled={loading}
               className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               {loading ? 'Signing...' : 'Sign Message & Login'}
+            </Button>
+          </div>
+        )
+
+      case 'complete':
+        return (
+          <div className="space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-green-800 text-sm">
+                <span className="font-semibold">Authentication Complete!</span>
+              </p>
+            </div>
+            <Button
+              onClick={() => setOpen(false)}
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 py-2"
+            >
+              Close
             </Button>
           </div>
         )
@@ -355,29 +462,33 @@ export function LoginModal() {
   }
 
   const getStepTitle = () => {
-    switch (step) {
+    switch (authStep) {
       case 'username':
         return 'Enter Username'
       case 'connect':
         return 'Connect Wallet'
       case 'sign':
         return 'Sign Message'
+      case 'complete':
+        return 'Authentication Complete'
     }
   }
 
   const getStepDescription = () => {
-    switch (step) {
+    switch (authStep) {
       case 'username':
         return 'Enter a username (min 4 chars) to continue with wallet authentication.'
       case 'connect':
         return 'Connect your wallet to proceed with the login process.'
       case 'sign':
         return 'Sign the message with your wallet to complete authentication.'
+      case 'complete':
+        return 'Your authentication has been completed successfully.'
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] border-gray-800 text-[#202626]">
         <DialogHeader>
           <DialogTitle className='text-xl'>{getStepTitle()}</DialogTitle>

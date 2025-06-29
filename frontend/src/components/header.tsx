@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { LogOut, Search, User } from 'lucide-react';
+import { LogOut, Search, User, Menu, X, Wallet, Network, Gavel, Heart } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/authStore';
@@ -93,7 +93,7 @@ export default function Header() {
     }
   }
   return (
-    <header className="w-full">
+    <header className="w-full relative z-50">
       {/* Top Bar */}
       <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-between px-4 py-2 cursor-pointer font-bold " onClick={() => setIsBrandModalOpen(true)}>
         <span>Register as a brand &gt;</span>
@@ -180,27 +180,37 @@ export default function Header() {
                       {/* {address?.slice(0, 6)}...{address?.slice(-4)} */}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-white border-gray-700 text-black border-none shadow-2xl p-0">
-                    <DropdownMenuItem className="">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-60 bg-white border-gray-700 text-black border-none shadow-2xl p-2 z-[100]"
+                    sideOffset={8}
+                  >
+                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
                       <Link href="/profile" className="flex items-center w-full">
                         {/* <div className='w-full h-[5rem] bg-red-300'> */}
-                        <User className="h-4 w-4 mr-2" />
+                        <User className="h-4 w-4 mr-3" />
                         Profile
                         {/* </div> */}
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="">
-                      My Bids
+                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
+                      <div className="flex items-center w-full">
+                        <Gavel className="h-4 w-4 mr-3" />
+                        My Bids
+                      </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="">
-                      Saved Auctions
+                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
+                      <div className="flex items-center w-full">
+                        <Heart className="h-4 w-4 mr-3" />
+                        Saved Auctions
+                      </div>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-gray-600" />
+                    <DropdownMenuSeparator className="bg-gray-300 my-2" />
                     <DropdownMenuItem
                       onClick={handleDisconnect}
-                      className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
+                      className="py-3 px-3 rounded-md text-red-500 hover:bg-red-200 hover:text-red-600 transition-colors"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <LogOut className="h-4 w-4 mr-3" />
                       Disconnect
                     </DropdownMenuItem>
                   </DropdownMenuContent>
