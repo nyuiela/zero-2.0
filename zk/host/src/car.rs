@@ -1,5 +1,6 @@
 use axum::{ http::StatusCode, Json };
 use car_auction_core::CarState;
+use chrono::Utc;
 // use db::car::get_all_cars;
 use entity::{ car, CarModel };
 use ethers::types::Address;
@@ -36,7 +37,7 @@ pub fn get_car_leaves(cars: &Vec<CarModel>) -> Vec<String> {
             car.auction_id,
             car.starting_price,
             car.current_price,
-            car.auction_status.clone().unwrap(),
+            car.auction_status.clone(),
             car.created_at.and_utc().timestamp(),
             car.updated_at.and_utc().timestamp()
         );
@@ -125,6 +126,7 @@ pub async fn create_car(
         .one(&*db).await
         .unwrap()
         .unwrap();
+    let now_naive: chrono::NaiveDateTime = Utc::now().naive_utc();
     let car_model = car::ActiveModel {
         id: Set(car_id.id + 1),
         make: Set(car_data.make.to_owned()),
@@ -158,8 +160,8 @@ pub async fn create_car(
         token_id: Set(car_data.token_id),
         // Set the owner to the address from the JWT
         owner: Set(current_user.addr),
-        created_at: Set(car_data.created_at),
-        updated_at: Set(car_data.updated_at),
+        created_at: Set(now_naive.clone()),
+        updated_at: Set(now_naive),
         ..Default::default()
     };
 

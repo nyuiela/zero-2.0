@@ -3,6 +3,7 @@ import { Auction } from "../utils"
 import { auctions as mockAuctions } from "../auction"
 import { API_BASE_URL } from "./config"
 import { apiRequest } from "../utils"
+import { ProofData } from '@/components/proof-modal';
 
 export async function fetchAuctions(): Promise<Auction[]> {
   try {
@@ -73,11 +74,20 @@ export async function fetchAuctionById(id: string): Promise<Auction | null> {
   }
 }
 
-export async function createAuction(auctionData: Partial<Auction>): Promise<{ status: string; message: string }> {
+interface ProofAuction extends ProofData {
+  status: string;
+  message: string
+
+}
+export async function createAuction(auctionData: Partial<Auction>, jwt: string): Promise<ProofAuction> {
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/auctions`, {
       method: 'POST',
       body: JSON.stringify(auctionData),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      }
     })
 
     if (!res.ok) {

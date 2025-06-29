@@ -33,10 +33,14 @@ export async function fetchCarById(id: string): Promise<CarListing | null> {
   }
 }
 
-export async function createCar(carData: Partial<CarListing>): Promise<{ status: string; message: string }> {
+export async function createCar(carData: Partial<CarListing>, jwt: string): Promise<{ status: string; message: string }> {
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/cars`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      },
       body: JSON.stringify({
         id: 0,
         mileage: 13242,

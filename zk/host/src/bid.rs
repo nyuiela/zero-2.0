@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::Json;
 use car_auction_core::BidState;
+use chrono::Utc;
 use entity::{ bid, BidModel };
 use methods::{ INIT_BID_ELF, INIT_BID_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
@@ -99,13 +100,14 @@ pub async fn create_bid(
         .one(&*db).await
         .unwrap()
         .unwrap();
+    let now_naive: chrono::NaiveDateTime = Utc::now().naive_utc();
     let bid_model = bid::ActiveModel {
         id: Set(bid_id.id + 1),
         auction_id: Set(bid_data.auction_id),
         bidder_id: Set(user.addr),
         amount: Set(bid_data.amount),
-        created_at: Set(bid_data.created_at),
-        updated_at: Set(bid_data.updated_at),
+        created_at: Set(now_naive.clone()),
+        updated_at: Set(now_naive),
         ..Default::default()
     };
 

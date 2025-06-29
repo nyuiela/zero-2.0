@@ -2,8 +2,9 @@ use std::sync::Arc;
 
 use axum::Json;
 use car_auction_core::AuctionState;
+use chrono::Utc;
 // use db::auction::get_all_auctions;
-use entity::{ auction, bid, AuctionModel };
+use entity::{ auction, bid, car, AuctionModel };
 use methods::{ INIT_AUCTION_ELF, INIT_AUCTION_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
 use sea_orm::{
@@ -97,6 +98,7 @@ pub async fn create_auction(
     let user = USER.get();
     eprintln!("Request from user: {:?}", user.addr);
     eprintln!("Request from username: {}", user.username);
+    let now_naive: chrono::NaiveDateTime = Utc::now().naive_utc();
     let auction_id = auction::Entity
         ::find()
         .order_by_desc(auction::Column::Id)
@@ -105,18 +107,28 @@ pub async fn create_auction(
         .unwrap();
     let auction_model = auction::ActiveModel {
         id: Set(auction_id.id + 1),
-        car_id: Set(auction_data.car_id.to_owned()),
+        car_id: Set(auction_data.car_id.clone()),
         start_time: Set(auction_data.start_time.to_owned()),
         end_time: Set(auction_data.end_time.to_owned()),
         current_bid: Set(auction_data.current_bid.to_owned()),
         bid_count: Set(auction_data.bid_count.to_owned()),
         seller: Set(user.addr),
         status: Set(auction_data.status.to_owned()),
-        created_at: Set(auction_data.created_at.to_owned()),
-        updated_at: Set(auction_data.updated_at.to_owned()),
+        created_at: Set(now_naive.clone()),
+        updated_at: Set(now_naive),
         ..Default::default()
     };
 
+    if let Some(car) = car::Entity::find_by_id(auction_data.car_id).one(&*db).await.unwrap() {
+        // 2. Convert it into an ActiveModel
+        let mut car_model: car::ActiveModel = car.into();
+
+        // 3. Update the field(s)
+        car_model.auction_id = Set(auction_id.id + 1); // example status
+
+        // 4. Save the updated model
+        car_model.update(&*db).await.unwrap();
+    }
     auction_model
         .insert(&*db).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;

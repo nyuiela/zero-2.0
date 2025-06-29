@@ -70,11 +70,24 @@ interface ProofModalProps {
   isOpen: boolean
   onClose: () => void
   proof: ProofData | null
-  transactionHash?: string
+  transactionHash?: string,
+  handleSubmit?: () => void,
+  name?: string
 }
 
-export function ProofModal({ isOpen, onClose, proof, transactionHash }: ProofModalProps) {
+export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash, handleSubmit, name }: ProofModalProps) {
   const [copied, setCopied] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const handleTransaction = () => {
+    setIsLoading(true)
+    try {
+      if (handleSubmit) handleSubmit()
+      setIsLoading(false)
+    } catch (error) {
+      console.log("Failed to load error", error)
+      setIsLoading(false)
+    }
+  }
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -125,6 +138,7 @@ export function ProofModal({ isOpen, onClose, proof, transactionHash }: ProofMod
       return 'Unable to decode'
     }
   }
+
 
   if (!proof) return null
 
@@ -264,6 +278,17 @@ export function ProofModal({ isOpen, onClose, proof, transactionHash }: ProofMod
               Copy JSON
             </Button>
           </div>
+          <div className="flex flex-col justify-end w-full">
+            <Button
+              type="submit"
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+              disabled={isLoading}
+              onClick={handleTransaction}
+            >
+              {isLoading ? "Loading..." : name ? name : "Submit"}
+            </Button>
+          </div>
+
         </div>
       </DialogContent>
     </Dialog>

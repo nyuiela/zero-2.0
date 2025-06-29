@@ -27,6 +27,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import CustomBtn from "./custom-btn"
 import { auction_abi, auction_addr, registry_abi, registry_addr, zero_addr } from "@/lib/abi/abi"
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
+import { createAuction } from "@/lib/api/auction"
+import { useAuthStore } from "@/lib/authStore"
+import { toRustCompatibleTimestamp } from "@/lib/utils"
+import { ProofData, ProofModal } from "./proof-modal"
+import { ProofModalTransaction } from "./proof-transaction"
 
 // Validation schema for the auction registration form
 const auctionRegistrationSchema = z.object({
@@ -108,36 +113,74 @@ export function AuctionRegistrationForm({
     useWaitForTransactionReceipt({
       hash,
     })
+  const { user } = useAuthStore()
+  const [proof, setProof] = useState<ProofData | null>(null);
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+  const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData>()
 
+  const handleCreate = (formData: AuctionRegistrationFormData) => {
+    writeContract({
+      abi: auction_abi,
+      address: auction_addr,
+      functionName: "createAuction",
+      args: [
+        formData.brandName,
+        BigInt(formData.startTime),
+        BigInt(formData.endTime),
+        BigInt(formData.initialBid),
+        BigInt(formData.bidThreshold),
+        zero_addr,
+        BigInt(formData.nftTokenId),
+        "hash"
+      ],
+      account: address
+    });
+  }
   const handleSubmit = async (data: AuctionRegistrationFormData) => {
     if (!address) {
       alert("Please connect your wallet first.");
       return;
+    }
+    const date = toRustCompatibleTimestamp(data.startTime)
+    const body = {
+      id: 1,
+      car_id: Number(data.nftTokenId),
+      start_time: toRustCompatibleTimestamp(date),
+      end_time: toRustCompatibleTimestamp(data.endTime),
+      current_bid: Number(data.initialBid),
+      bid_count: 0,
+      seller: "",
+      status: "Active",
+      created_at: date,
+      updated_at: date,
     }
     const formData = {
       ...data,
       startTime: Math.floor(new Date(data.startTime).getTime() / 1000).toString(),
       endTime: Math.floor(new Date(data.endTime).getTime() / 1000).toString(),
     };
+    setFormArgs(formData)
     try {
+      // {
+      //   "id": 1,
+      //   "car_id": 2,
+      //   "start_time": "2025-06-15T18:42:57.530698",
+      //   "end_time": "2025-07-15T18:42:57.530698",
+      //   "current_bid": 19000,
+      //   "bid_count": 9,
+      //   "seller": "Texan3300",
+      //   "status": "Active",
+      //   "created_at": "2025-06-15T18:42:57.530698",
+      //   "updated_at": "2025-06-15T18:42:57.530698"
+      // }
 
-      const tx = await writeContract({
-        abi: auction_abi,
-        address: auction_addr,
-        functionName: "createAuction",
-        args: [
-          formData.brandName,
-          BigInt(formData.startTime),
-          BigInt(formData.endTime),
-          BigInt(formData.initialBid),
-          BigInt(formData.bidThreshold),
-          zero_addr,
-          BigInt(formData.nftTokenId),
-          "hash"
-        ],
-        account: address
+      const res = await createAuction(body, user?.jwt as string)
+      setIsProofModalOpen(true)
+      setProof({
+        "receipt": res.receipt,
+        "stats": res.stats
       });
-      console.log("Transaction sent", tx);
+
     } catch (err) {
       console.error("Error writing contract:", err);
     }
@@ -409,6 +452,7 @@ export function AuctionRegistrationForm({
           </form>
         </Form>
       </CardContent>
+      <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={() => { handleCreate(formArgs!) }} name="Create Auction onchain & submit proof" />
     </Card>
   )
 } 

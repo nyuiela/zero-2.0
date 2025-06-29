@@ -102,3 +102,21 @@ export interface Bid {
   id: number,
   updated_at: string
 }
+
+export function toRustCompatibleTimestamp(dateInput: any) {
+  const date = new Date(dateInput); // input can be a Date or timestamp
+
+  const pad = (num: number, size = 2) => num.toString().padStart(size, '0');
+  const year = date.getUTCFullYear();
+  const month = pad(date.getUTCMonth() + 1);
+  const day = pad(date.getUTCDate());
+  const hours = pad(date.getUTCHours());
+  const minutes = pad(date.getUTCMinutes());
+  const seconds = pad(date.getUTCSeconds());
+  const milliseconds = date.getUTCMilliseconds(); // 0–999
+
+  // Convert milliseconds to microseconds (i.e., add 000 if no finer granularity)
+  const micros = pad(milliseconds, 3) + "000";
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${micros}`;
+}
