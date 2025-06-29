@@ -151,7 +151,9 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div className="mb-4 text-sm text-gray-700">
               <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
             </div>
-            <CustomBtn name="Place Bid & Enter Bidding Room" functionName="placeBid" args={[]} abi={auction_abi} address={auction_addr} account={address!} beforeSubmit={handlePlaceBid} />
+            <CustomBtn name="Place Bid & Enter Bidding Room" functionName="placeBid" args={[listing.auction_id, bidAmount]} abi={auction_abi} address={auction_addr} account={address!}
+            // beforeSubmit={handlePlaceBid} 
+            />
           </div>
         </div>
       )}

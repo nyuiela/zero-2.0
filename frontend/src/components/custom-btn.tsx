@@ -7,7 +7,7 @@ import { parseEther } from 'viem'
 interface CustomBtnProps {
   name: string,
   value?: number,
-  args: string[],
+  args: any[],
   functionName: string,
   abi: any,
   account: `0x${string}`,
@@ -16,7 +16,7 @@ interface CustomBtnProps {
   beforeSubmit?: () => void
   // handleSubmit: () => void
 }
-const CustomBtn = ({ name, args, value, address, account, abi, beforeSubmit }: CustomBtnProps) => {
+const CustomBtn = ({ name, args, value, address, account, abi, beforeSubmit, functionName }: CustomBtnProps) => {
   const {
     data: hash,
     isPending,
@@ -31,14 +31,16 @@ const CustomBtn = ({ name, args, value, address, account, abi, beforeSubmit }: C
 
     // console.log(data)
     try {
-      if (beforeSubmit) await beforeSubmit();
+      if (beforeSubmit) {
+        beforeSubmit();
+      }
       writeContract({
         address,
         account,
         abi,
-        functionName: 'registerBrand',
+        functionName,
         args,
-        value: parseEther(value) || undefined
+        value: value ? parseEther(value) : undefined
       })
 
     } catch (error) {

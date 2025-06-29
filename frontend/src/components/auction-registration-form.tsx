@@ -360,7 +360,17 @@ export function AuctionRegistrationForm({
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
-              <CustomBtn name="Kaleel" functionName="createAuction" args={[]} abi={auction_abi} address={auction_addr} account={address!} />
+              <CustomBtn name="Create Auction" functionName="createAuction" args={[
+                // string memory brandName,
+                // form.getValues()
+                // uint256 startTime,
+                // uint256 endTime,
+                // uint256 initialBid,
+                // uint256 bidThreshold,
+                // address bidToken,
+                // uint256 nftTokenId,
+                // string memory proofHash
+              ]} abi={auction_abi} address={auction_addr} account={address!} />
               {/* <Button
                 type="submit"
                 disabled={isLoading || availableUserNFTs.length === 0}
