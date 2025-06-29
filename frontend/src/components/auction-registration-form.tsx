@@ -84,6 +84,7 @@ export function AuctionRegistrationForm({
   userNFTs = []
 }: AuctionRegistrationFormProps) {
   const [selectedNFT, setSelectedNFT] = useState<string>("")
+  const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData | null>(null)
   const { address } = useAccount();
   const form = useForm<AuctionRegistrationFormData>({
     resolver: zodResolver(auctionRegistrationSchema),
@@ -106,7 +107,7 @@ export function AuctionRegistrationForm({
       startTime: Math.floor(new Date(data.startTime).getTime() / 1000).toString(),
       endTime: Math.floor(new Date(data.endTime).getTime() / 1000).toString(),
     }
-
+    setFormArgs(formData)
     onSubmit(formData)
   }
 
@@ -361,15 +362,14 @@ export function AuctionRegistrationForm({
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
               <CustomBtn name="Create Auction" functionName="createAuction" args={[
-                // string memory brandName,
-                // form.getValues()
-                // uint256 startTime,
-                // uint256 endTime,
-                // uint256 initialBid,
-                // uint256 bidThreshold,
-                // address bidToken,
-                // uint256 nftTokenId,
-                // string memory proofHash
+                formArgs!.brandName,
+                formArgs!.startTime,
+                formArgs!.endTime,
+                formArgs!.initialBid,
+                formArgs!.bidThreshold,
+                formArgs!.bidToken,
+                formArgs!.nftTokenId,
+                "ipfs hash proof"
               ]} abi={auction_abi} address={auction_addr} account={address!} />
               {/* <Button
                 type="submit"

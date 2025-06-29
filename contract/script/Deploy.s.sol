@@ -24,22 +24,22 @@ import {StateCheckFunction} from "../src/chainlink/state_check_function.sol";
 
 contract DeployScript is Script {
     // Base Network Addresses
-    address constant BASE_ETH_USD_FEED =
+    address constant _BASE_ETH_USD_FEED =
         0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
-    address constant BASE_USDC_USD_FEED =
+    address constant _BASE_USDC_USD_FEED =
         0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
-    address constant BASE_USDC_TOKEN =
+    address constant _BASE_USDC_TOKEN =
         0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
-    address constant BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
-    address constant BASE_LINK_TOKEN =
+    address constant _BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
+    address constant _BASE_LINK_TOKEN =
         0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
 
-    address constant BASE_FUNCTION_ROUTER =
+    address constant _BASE_FUNCTION_ROUTER =
         0xf9B8fc078197181C841c296C876945aaa425B278;
-    bytes32 constant BASE_FUNCTION_DON_ID =
+    bytes32 constant _BASE_FUNCTION_DON_ID =
         0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
     //uint64 const ant BASE_CHAIN_SELECTOR_ID = 10344971235874465080; // Base Sepolia Chain ID
-    uint256 constant AMOUNT = 1000000000000000000; // 1 LINK in wei
+    uint256 constant _AMOUNT = 1000000000000000000; // 1 LINK in wei
     // steps for deployment
     // 1. Deploy PermissionManager
     // 2. Deploy BrandPermissionManager
@@ -76,11 +76,11 @@ contract DeployScript is Script {
         console.log("Deployer address:", deployer);
 
         vm.createSelectFork(vm.rpcUrl("basechain"));
+
         vm.startBroadcast(deployerPrivateKey);
         //   vm.createSelectFork(vm.rpcUrl("localchain"));
         //   vm.startBroadcast(deployerPrivateKey);
 
-        IERC20(BASE_LINK_TOKEN).approve(address(this), type(uint256).max);
         // REPEAT
 
         // IERC20(BASE_LINK_TOKEN).transfer(BASE_ROUTER, type(uint256).max);
@@ -137,15 +137,15 @@ contract DeployScript is Script {
         console.log("Deploying Messenger...");
         //   using ccip as router address
         messenger = new Messenger(
-            BASE_ROUTER,
-            BASE_LINK_TOKEN,
+            _BASE_ROUTER,
+            _BASE_LINK_TOKEN,
             address(merkleVerifier)
         );
         console.log("PermissionManager deployed at:", address(messenger));
 
         // 10. Deploy CCIP
         console.log("Deploying CrossToken (CCIP)...");
-        ccip = new CrossToken(BASE_ROUTER, BASE_LINK_TOKEN);
+        ccip = new CrossToken(_BASE_ROUTER, _BASE_LINK_TOKEN);
         console.log("CrossToken deployed at:", address(ccip));
 
         // 11. Deploy Sync Function
@@ -167,7 +167,7 @@ contract DeployScript is Script {
         console.log("Deploying Reputation...");
         reputation = new Reputation(
             30, // required stake
-            BASE_USDC_TOKEN, // stake token
+            _BASE_USDC_TOKEN, // stake token
             address(0), // car registry - will be set after
             address(permissionManager)
         );
@@ -219,24 +219,13 @@ contract DeployScript is Script {
             address(carRegistry),
             address(zeroNFT),
             address(oracleMaster),
-            BASE_ETH_USD_FEED,
-            BASE_USDC_USD_FEED
+            _BASE_ETH_USD_FEED,
+            _BASE_USDC_USD_FEED
         );
         console.log("Auction deployed at:", address(auction));
 
-        IERC20(BASE_LINK_TOKEN).transferFrom(deployer, address(ccip), AMOUNT);
-        IERC20(BASE_LINK_TOKEN).transferFrom(
-            deployer,
-            address(messenger),
-            AMOUNT
-        );
-
-        vm.stopBroadcast();
-
         // Post-deployment setup
         console.log("Setting up post-deployment configurations...");
-
-        vm.startBroadcast(deployerPrivateKey);
 
         // Set InitFunction in registry
         carRegistry.setInitFunction(address(initFunction));
@@ -315,10 +304,12 @@ contract DeployScript is Script {
         console.log("All permissions granted to:", permissionAddress);
 
         // set donId
-        initFunction.setDon(BASE_FUNCTION_DON_ID);
+        initFunction.setDon(_BASE_FUNCTION_DON_ID);
 
         vm.stopBroadcast();
 
+        // Transfer LINK tokens to CCIP and Messenger
+        console.log("Transferring LINK tokens to CCIP and Messenger...");
         // Log deployment summary
         console.log("\n=== DEPLOYMENT SUMMARY ===");
         console.log("Network: Base");
