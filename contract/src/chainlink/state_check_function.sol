@@ -5,7 +5,7 @@ import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsCl
 import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import {StateManager} from "../core/State.sol";
-import{CarRegistry} from "../core/registry.sol";
+import {CarRegistry} from "../core/registry.sol";
 // cloned
 /**
  * @title Sync - auto sync state every hour.
@@ -16,6 +16,7 @@ import{CarRegistry} from "../core/registry.sol";
 //CheckState
 contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
+
     CarRegistry _registryContract;
 
     // State variables to store the last request ID, response, and error
@@ -46,25 +47,17 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
 
     // JavaScript source code
 
-    string source = "const url = args[0];"
-"const apiResponse = await Functions.makeHttpRequest({"
-"  url: `${url}`"
-"})"
-"if (apiResponse.error) {"
-"  console.error(apiResponse.error)"
-"  throw Error('Request failed')"
-"}"
-"const { data } = apiResponse;"
-"console.log('API response data:', JSON.stringify(data, null, 2));"
-"return Functions.encodeString(data.cid);";
+    string source = "const url = args[0];" "const apiResponse = await Functions.makeHttpRequest({" "  url: `${url}`"
+        "})" "if (apiResponse.error) {" "  console.error(apiResponse.error)" "  throw Error('Request failed')" "}"
+        "const { data } = apiResponse;" "console.log('API response data:', JSON.stringify(data, null, 2));"
+        "return Functions.encodeString(data.cid);";
 
-      // using the deployed ip address to check state 
-      // This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
+    // using the deployed ip address to check state
+    // This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
 
-// Execute the API request (Promise)
-// http://13.222.216.169:8080/api/sync
-// This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
-
+    // Execute the API request (Promise)
+    // http://13.222.216.169:8080/api/sync
+    // This functions get details about Star Wars characters. This example will showcase usage of HTTP requests and console.logs.
 
     //Callback gas limit
     uint32 gasLimit = 300000;
@@ -94,7 +87,7 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     /**
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    constructor(address _stateAddr,address _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(address _stateAddr, address _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         stateAddress = _stateAddr;
 
         stateContract = StateManager(_stateAddr);
@@ -143,15 +136,15 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
 
         // check state
         // if state is not same: initate stake *&& lock contract.
-      //   if (state)
+        //   if (state)
         bytes32 s1 = keccak256(abi.encodePacked(s_state));
         bytes32 s2 = keccak256(abi.encodePacked(_state));
         if (s1 == s2 && s2 == keccak256(abi.encodePacked(s_state))) {
-          state = string(_response);
+            state = string(_response);
         } else {
-          stateContract.lockContract(brand, "State Differs");
+            stateContract.lockContract(brand, "State Differs");
         }
-      //   Emit an event to log the response
+        //   Emit an event to log the response
         response[requestId] = string(_response);
         emit Response(requestId, state, s_lastResponse, s_lastError);
     }
@@ -161,7 +154,7 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
         return response[id];
     }
 
-    modifier onlyRegistry(){
+    modifier onlyRegistry() {
         require(msg.sender == address(_registryContract), "Init_Function: not authorized");
         _;
     }

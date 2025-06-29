@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
+
 import {Messenger} from "./messenging.sol";
 import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
 
@@ -50,7 +51,7 @@ contract ProofSync {
     constructor(address _merkleVerifier, address payable _messenger) {
         owner = msg.sender;
         merkleVerifier = IMerkleVerifier(_merkleVerifier);
-         messenger = Messenger(_messenger);
+        messenger = Messenger(_messenger);
     }
 
     function setMessenger(address payable _messenger) external onlyOwner {
@@ -70,20 +71,20 @@ contract ProofSync {
 
     function allowChain(uint64 _chainSelector, address _receiver) external onlyOwner {
         chainsAllowed[_chainSelector] = true;
-         chainSelectors.push(_chainSelector);
-         receivers[_chainSelector] = _receiver;
+        chainSelectors.push(_chainSelector);
+        receivers[_chainSelector] = _receiver;
     }
 
     function revokeChain(uint64 chainSelector) external onlyOwner {
         chainsAllowed[chainSelector] = false;
-         for (uint256 i = 0; i < chainSelectors.length; i++) {
-               if (chainSelectors[i] == chainSelector) {
-                  chainSelectors[i] = chainSelectors[chainSelectors.length - 1];
-                  chainSelectors.pop();
-                  break;
-               }
-         }
-         receivers[chainSelector] = address(0);
+        for (uint256 i = 0; i < chainSelectors.length; i++) {
+            if (chainSelectors[i] == chainSelector) {
+                chainSelectors[i] = chainSelectors[chainSelectors.length - 1];
+                chainSelectors.pop();
+                break;
+            }
+        }
+        receivers[chainSelector] = address(0);
     }
 
     // Lock/unlock contract
@@ -110,16 +111,17 @@ contract ProofSync {
     function triggerSync() public onlyAllowedSyncers notLocked {
         // For each chain, send the proof (integration with CCIP/messaging contract)
         // If fail, revert or emit error
-      bytes32[] memory msgId = new bytes32[](chainSelectors.length);
+        bytes32[] memory msgId = new bytes32[](chainSelectors.length);
         if (chainSelectors.length == 0) revert ChainNotAllowListed();
         for (uint256 i = 0; i < chainSelectors.length; i++) {
             uint64 chainSelector = chainSelectors[i];
             if (!chainsAllowed[chainSelector]) revert ChainNotAllowListed();
             // Here you can add logic to verify the proof against a Merkle root if required
-            bytes32 messageId = messenger.sendMessagePayLINK(chainSelector,receivers[chainSelector], s_lastSubmittedProof);
+            bytes32 messageId =
+                messenger.sendMessagePayLINK(chainSelector, receivers[chainSelector], s_lastSubmittedProof);
             msgId[i] = messageId;
         }
-         // Add & Verify the proof using the Merkle verifier
+        // Add & Verify the proof using the Merkle verifier
         merkleVerifier.addLeave(s_lastSubmittedProof);
         emit ProofSynced(s_lastSubmittedProof, chainSelectors, msgId);
     }
@@ -128,7 +130,7 @@ contract ProofSync {
         if (!chainsAllowed[chainSelector]) revert ChainNotAllowListed();
         // Re-send the last proof to the specified chain
         // If fail, revert or emit error
-        bytes32 messageId = messenger.sendMessagePayLINK(chainSelector,receivers[chainSelector], s_lastSubmittedProof);
+        bytes32 messageId = messenger.sendMessagePayLINK(chainSelector, receivers[chainSelector], s_lastSubmittedProof);
         bytes32[] memory _messageIds = new bytes32[](1);
         _messageIds[0] = messageId;
         emit ProofSynced(s_lastSubmittedProof, _toArray(chainSelector), _messageIds);

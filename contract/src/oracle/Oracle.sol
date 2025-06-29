@@ -99,10 +99,9 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
 
         // Create new permission manager clone
         //oracle address
-     address clonedPermission =    permissionManagerImplementation.clone();
-        address permissionManagerAddress = OracleCloneLib.createOracleClone(
-          clonedPermission , brandName, priceFeedAddress, config, address(this)
-        );
+        address clonedPermission = permissionManagerImplementation.clone();
+        address permissionManagerAddress =
+            OracleCloneLib.createOracleClone(clonedPermission, brandName, priceFeedAddress, config, address(this));
 
         // Initialize the permission manager
         IBrandPermissionManager(permissionManagerAddress).initialize(brandName, address(this), brandOwner);

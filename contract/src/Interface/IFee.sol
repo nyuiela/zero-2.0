@@ -6,4 +6,4 @@ interface IFee {
     function setFee(uint256 _fee) external;
     function setFeeReceiver(address _receiver) external;
     function withdrawFee() external;
-} 
+}

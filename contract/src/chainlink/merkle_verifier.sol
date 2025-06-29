@@ -13,12 +13,12 @@ contract MerkleVerifier is Initializable {
     error LeafNotFound(string leaf);
     error NotSyncer(address sender);
 
-
     // events
     event SetRoot(string _brand, address owner);
     event AddedLeaf(string lastProof, string newLeaf);
     event ChangedSyncer(address syncer);
     // storage
+
     string public root;
     string public brand;
     string[] proof;
@@ -31,16 +31,16 @@ contract MerkleVerifier is Initializable {
 
     // modifier
     modifier onlyOwner() {
-      require(msg.sender == owner, "merkle_verifier: Not owner");
-      _;
+        require(msg.sender == owner, "merkle_verifier: Not owner");
+        _;
     }
 
     modifier onlySyncer() {
-      require(syncer == msg.sender, NotSyncer(msg.sender));
-      _;
+        require(syncer == msg.sender, NotSyncer(msg.sender));
+        _;
     }
 
-    function initialize(string memory _brand, string memory _root, address _syncer,address _owner) public {
+    function initialize(string memory _brand, string memory _root, address _syncer, address _owner) public {
         brand = _brand;
         root = _root;
         syncer = _syncer;
@@ -52,8 +52,8 @@ contract MerkleVerifier is Initializable {
     }
 
     function setSyncer(address _syncer) public onlyOwner {
-      syncer = _syncer;
-      emit ChangedSyncer(_syncer);
+        syncer = _syncer;
+        emit ChangedSyncer(_syncer);
     }
 
     function verifyProof(string memory leaf) public view returns (bool) {

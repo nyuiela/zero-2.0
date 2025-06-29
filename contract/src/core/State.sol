@@ -50,7 +50,6 @@ contract StateManager {
     bytes4 public constant INITIATE = bytes4(keccak256("initiate(string)"));
     bytes4 public constant SET_PROFILE = bytes4(keccak256("setProfile(address)"));
 
-
     function initiate(string memory _brand) external /* OnlyRegister */ {
         // require()
         require(IPermissionManager(profile).hasPermission(msg.sender, INITIATE), "State: authorized");
@@ -98,9 +97,9 @@ contract StateManager {
         emit UpdatedProfileContract(_profile);
     }
 
-      function getState(string memory _brand) public view returns (string memory) {
-         return states[_brand];
-      }
+    function getState(string memory _brand) public view returns (string memory) {
+        return states[_brand];
+    }
 
     // what is the changes
 }

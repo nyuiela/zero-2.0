@@ -14,8 +14,11 @@ interface IProfile {
         address oracle;
         address syncer;
     }
+
     event ProfileCreated(string _brand, address initiator);
     event UpdatedState(string _brand, string state);
+    event ChangedRegistry(address _registry);
+
     function create(
         string memory _brand,
         string memory _state,
@@ -31,4 +34,4 @@ interface IProfile {
     function lockBrand(string memory _brand) external;
     function unlockBrand(string memory _brand) external;
     function setRegistry(address _registry) external;
-} 
+}

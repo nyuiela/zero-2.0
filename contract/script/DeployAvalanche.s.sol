@@ -18,14 +18,10 @@ contract DeployCCIP is Script {
     MerkleVerifier public merkleVerifier;
     ZeroNFT public zeroNFT;
 
-    address constant AVALANCHE_ROUTER =
-        0xF694E193200268f9a4868e4Aa017A0118C9a8177;
-    address constant AVALANCHE_LINK_TOKEN =
-        0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846;
-    address constant AVALANCHE_ETH_USD_FEED =
-        0x86d67c3D38D2bCeE722E601025C25a575021c6EA;
-    address constant AVALANCHE_USDC_USD_FEED =
-        0x97FE42a7E96640D932bbc0e1580c73E705A8EB73;
+    address constant AVALANCHE_ROUTER = 0xF694E193200268f9a4868e4Aa017A0118C9a8177;
+    address constant AVALANCHE_LINK_TOKEN = 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846;
+    address constant AVALANCHE_ETH_USD_FEED = 0x86d67c3D38D2bCeE722E601025C25a575021c6EA;
+    address constant AVALANCHE_USDC_USD_FEED = 0x97FE42a7E96640D932bbc0e1580c73E705A8EB73;
     uint256 constant AVALANCHE_CHAIN_SELECTOR_ID = 14767482510784806043;
     uint64 constant BASE_CHAIN_SELECTOR = 10344971235874465080;
     uint256 constant AMOUNT = 1000000000000000000;
@@ -35,9 +31,7 @@ contract DeployCCIP is Script {
         address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
         address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
         address permissionManager = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
-        address brandPermissionManager = vm.envAddress(
-            "BRAND_PERMISSION_MANAGER_ADDRESS"
-        );
+        address brandPermissionManager = vm.envAddress("BRAND_PERMISSION_MANAGER_ADDRESS");
         address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
         address profile = vm.envAddress("PROFILE_ADDRESS");
         //uint64 baseSelectorId = vm.envAddress("BASE_SELECTOR_ID ");
@@ -52,35 +46,19 @@ contract DeployCCIP is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // deploy cross chain
-        deployCrossChain(
-            carRegistry,
-            oraclemaster,
-            profile,
-            reputationContract
-        );
+        deployCrossChain(carRegistry, oraclemaster, profile, reputationContract);
         setConfigs(deployer, BASE_CHAIN_SELECTOR);
-        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(
-            deployer,
-            address(ccip),
-            AMOUNT
-        );
-        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(
-            deployer,
-            address(messenger),
-            AMOUNT
-        );
+        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(deployer, address(ccip), AMOUNT);
+        IERC20(AVALANCHE_LINK_TOKEN).transferFrom(deployer, address(messenger), AMOUNT);
         vm.stopBroadcast();
 
         // logs
         logDeploymentSummary(deployer);
     }
 
-    function deployCrossChain(
-        address _carRegistry,
-        address _oraclemaster,
-        address _profile,
-        address _reputation
-    ) internal {
+    function deployCrossChain(address _carRegistry, address _oraclemaster, address _profile, address _reputation)
+        internal
+    {
         //ccip
         console.log("Deploying CrossToken (CCIP).....");
         ccip = new CrossToken(AVALANCHE_ROUTER, AVALANCHE_LINK_TOKEN);
@@ -93,11 +71,7 @@ contract DeployCCIP is Script {
 
         //messanger
         console.log("Deploying Messenger ....");
-        messenger = new Messenger(
-            address(_carRegistry),
-            address(_oraclemaster),
-            address(merkleVerifier)
-        );
+        messenger = new Messenger(address(_carRegistry), address(_oraclemaster), address(merkleVerifier));
         console.log("Messenger deployed at", address(messenger));
 
         //  Deploy State Manager

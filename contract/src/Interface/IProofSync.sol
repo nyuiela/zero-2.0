@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity 0.8.28;
 
 interface IProofSync {
     event ProofSubmitted(address indexed submitter, string ipfsHash, bytes32 method);
@@ -8,14 +8,16 @@ interface IProofSync {
     event ContractUnlocked();
     event SyncPermissionGranted(address indexed syncer);
     event SyncPermissionRevoked(address indexed syncer);
+
+    function setMessenger(address payable _messenger) external;
     function allowSyncPermission(address syncer) external;
     function revokeSyncPermission(address syncer) external;
-    function allowChain(uint64 chainSelector) external;
+    function allowChain(uint64 _chainSelector, address _receiver) external;
     function revokeChain(uint64 chainSelector) external;
     function lockContract(string calldata reason) external;
     function unlockContract() external;
     function sendProof(string calldata ipfsHash, bytes32 _method) external;
-    function triggerSync(uint64[] calldata chainSelectors) external;
+    function triggerSync() external;
     function triggerReSync(uint64 chainSelector) external;
     function setMerkleVerifier(address _verifier) external;
-} 
+}

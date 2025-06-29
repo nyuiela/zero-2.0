@@ -14,8 +14,7 @@ contract ContractConfig is Script {
     // IInitFunction public initFunction;
 
     uint32 constant GAS_LIMIT = 4365000;
-    address constant INITFUNCTION_ADDRESS =
-        0xe701876FcDCe0F620C5EF2553351a5f927e4A793;
+    address constant INITFUNCTION_ADDRESS = 0xe701876FcDCe0F620C5EF2553351a5f927e4A793;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -50,10 +49,7 @@ contract ContractConfig is Script {
         vm.stopBroadcast();
     }
 
-    function setContractConfig(
-        address _init_function,
-        uint32 gas_limit
-    ) internal {
+    function setContractConfig(address _init_function, uint32 gas_limit) internal {
         IInitFunction(_init_function).setGasLimit(gas_limit);
         // 4365000
     }

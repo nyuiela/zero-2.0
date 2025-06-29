@@ -17,8 +17,6 @@ import {IProfile} from "../Interface/IProfile.sol";
 import {IStateManager} from "../Interface/IStateManager.sol";
 import {IInitFunction} from "../Interface/IInitFunction.sol";
 
-
-
 //import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
 
 contract CarRegistry is Ownable {
@@ -148,18 +146,19 @@ contract CarRegistry is Ownable {
     }
 
     /// new ownership rights transfer
-    function registerUndernewOwner(  
+    function registerUndernewOwner(
         string memory _brand,
         // address oracleAddre,
         ICarOracle.OracleConfig memory config,
         address brandAdminAddr,
         uint64 subscriptionId,
         string memory _stateUrl,
-        string[] memory args) external {
+        string[] memory args
+    ) external {
         // remove olldownership
         // give to new owner
         // add new older to the tree and register the information person
-          //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
+        //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
         bytes32 s_brand = keccak256(abi.encodePacked(_brand));
         bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand, msg.sender));
         require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
@@ -202,11 +201,13 @@ contract CarRegistry is Ownable {
         // CarOracle(_oracle).initialize();
         //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
         ICarOracle.OracleConfig memory config = registry[_brand].config;
-        
+
         (address oracleAdress, address permissionAddress) =
             oracle.registerCarBrand(_brand, "", config, registry[_brand].brandAdminAddr);
         IMerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
-        profileContract.create(_brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress, _syncer);
+        profileContract.create(
+            _brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress, _syncer
+        );
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
         emit BrandActivated(_brand, _state);
@@ -266,7 +267,7 @@ contract CarRegistry is Ownable {
     // --- register --- state -- activate
 
     // geter
-    function getBrandinfo(string memory brand) public view returns (Registry memory){
+    function getBrandinfo(string memory brand) public view returns (Registry memory) {
         return registry[brand];
     }
 }

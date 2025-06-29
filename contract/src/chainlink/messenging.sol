@@ -10,6 +10,7 @@ import {SafeERC20} from
     "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
 /// @title - Sending proofs between chains syncing state across multiple chains.
+
 contract Messenger is CCIPReceiver, OwnerIsCreator {
     using SafeERC20 for IERC20;
 
@@ -43,7 +44,7 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
         // The address of the sender from the source chain.
         // The text that was received.
     bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
-   event ChangedMerkleVerifier(address indexed newVerifier);
+    event ChangedMerkleVerifier(address indexed newVerifier);
 
     bytes32 private s_lastReceivedMessageId; // Store the last received messageId.
     string private s_lastReceivedText; // Store the last received text.

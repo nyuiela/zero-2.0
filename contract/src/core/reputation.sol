@@ -5,7 +5,6 @@ import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-
 contract Reputation {
     using PermissionModifiers for address;
 
@@ -16,7 +15,7 @@ contract Reputation {
     address stakeToken; // address of the token used for staking, if is not eth
     address _carRegistry; // address of the car registry contract
     uint256 public stakeSlashed; // total amount slashed from brands
-   // address public permissionManagerImplementation;
+    // address public permissionManagerImplementation;
     address public globalPermissionManager;
 
     bytes4 public constant SLASH = bytes4(keccak256("slash(address,uint256)"));
@@ -33,19 +32,13 @@ contract Reputation {
 
     mapping(string => BrandStakeInfo) public brandStakeInfo; // brand address => stake info
 
-    constructor(
-        uint256 _requireStake,
-        address _stakeToken,
-        address carRegistry,
-        address _globalPermissionManager
-    ) {
+    constructor(uint256 _requireStake, address _stakeToken, address carRegistry, address _globalPermissionManager) {
         stakeToken = _stakeToken;
         requireStake = _requireStake;
         _carRegistry = carRegistry;
-      //  permissionManagerImplementation = _permissionManagerImplementation;
+        //  permissionManagerImplementation = _permissionManagerImplementation;
         globalPermissionManager = _globalPermissionManager;
     }
-
 
     function stake(string memory _brand, bool isEth) external payable onlyCarRegistry {
         if (isEth) {

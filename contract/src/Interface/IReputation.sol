@@ -8,9 +8,10 @@ interface IReputation {
         uint256 stakeepoch;
         address staker;
     }
+
     function stake(string memory _brand, bool isEth) external payable;
     function slash(string memory _brand, uint256 amount) external;
     function withdrawSlashedEth(uint256 amount, address _receive) external;
     function withdrawSlashedusdc(uint256 amoount, address _receiver) external;
     function stakeAmountset(uint256 amount) external;
-} 
+}

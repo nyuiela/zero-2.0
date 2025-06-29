@@ -1,10 +1,9 @@
 -include .env
 
-.PHONY: all clean build test deploy help deploy-local deploy-eth deploy-sonic deploy-hedera deploy-avalanche deploy-base deploy-config anvil
+.PHONY: all clean build test deploy help deploy-local deploy-eth deploy-sonic deploy-hedera deploy-avalanche deploy-base deploy-config anvil register-car
 
 DEFAULT_ANVIL_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-# Basic Safety Check for Private Key
 ifndef PRIVATE_KEY
 $(warning PRIVATE_KEY is undefined. Please check your .env file)
 endif
@@ -18,6 +17,7 @@ help:
 	@echo "  make deploy-hedera               - Deploy to Hedera Previewnet"
 	@echo "  make deploy-avalanche            - Deploy to Avalanche Fuji"
 	@echo "  make deploy-config               - Deploy Contract Config Script"
+	@echo "  make register-car                - Run interaction script to register car"
 	@echo "  make test                        - Run tests"
 	@echo "  make anvil                       - Launch local anvil node"
 
@@ -35,10 +35,8 @@ test:
 anvil:
 	anvil -m 'test test test test test test test test test test test junk' --steps-tracing --block-time 1
 
-# Default to local network
 NETWORK_ARGS := --rpc-url $(LOCALCHAIN_URL) --private-key $(DEFAULT_ANVIL_KEY) --broadcast
 
-# Dynamic selection based on ARGS
 ifeq ($(findstring --network base,$(ARGS)),--network base)
 	NETWORK_ARGS := --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
 endif
@@ -82,3 +80,6 @@ deploy-config:
 
 deploy-avalanche:
 	@forge script script/DeployAvalanche.s.sol:DeployCCIP --rpc-url $(AVALANCHE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
+
+register-car:
+	@forge script script/interaction.s.sol:ContractConfig --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvvv

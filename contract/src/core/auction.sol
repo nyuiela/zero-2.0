@@ -180,26 +180,25 @@ contract Auction {
         AuctionItem storage a = auctions[auctionId];
         require(block.timestamp >= a.endTime, "Auction not ended yet");
         require(!a.ended, "Auction already ended");
-        
+
         a.ended = true;
-        
+
         // Determine winner (highest bidder)
         uint256 highestBid = 0;
         address highestBidder = address(0);
-        
+
         for (uint256 i = 0; i < auctionBids[auctionId].length; i++) {
             if (auctionBids[auctionId][i].amount > highestBid) {
                 highestBid = auctionBids[auctionId][i].amount;
                 highestBidder = auctionBids[auctionId][i].bidder;
             }
         }
-        
+
         a.winner = highestBidder;
         a.winningBid = highestBid;
-        
+
         emit AuctionEnded(auctionId, highestBidder, highestBid);
     }
-
 
     function claimWin(uint256 auctionId) external payable {
         AuctionItem storage a = auctions[auctionId];
@@ -207,28 +206,27 @@ contract Auction {
         require(msg.sender == a.winner, "Not winner");
         require(a.winner != address(0), "No winner declared");
         require(!received[msg.sender], "already received");
-        
+
         if (a.bidToken == address(0)) {
             require(msg.value >= a.winningBid, "Insufficient ETH payment");
         } else {
             require(msg.value == 0, "Do not send ETH for token auction");
             IERC20(a.bidToken).transferFrom(msg.sender, a.creator, a.winningBid);
         }
-         
+
         // Mark that winner has claimed and register them
         received[msg.sender] = true;
         // TODO: Implement proper ownership registration
         // CarRegistry.registerUndernewOwner(a.brandName, subscriptionId, args); ///register car under new owner
         // Transfer NFT to winner
         zeroNFT.transferFrom(a.creator, msg.sender, a.nftTokenId);
-       
     }
 
     function returnStakes(uint256 auctionId) external {
         AuctionItem storage a = auctions[auctionId];
         require(a.ended, "Auction not ended");
         require(a.winner == address(0), "Winner must claim first");
-        
+
         // Return all stakes to bidders
         for (uint256 i = 0; i < a.bidders.length; i++) {
             address bidder = a.bidders[i];
@@ -244,7 +242,7 @@ contract Auction {
                 }
             }
         }
-        
+
         emit StakesReturned(auctionId);
     }
 
@@ -352,23 +350,23 @@ contract Auction {
         AuctionItem storage a = auctions[auctionId];
         require(a.ended, "Auction not ended");
         require(a.winner == address(0), "Winner must claim first");
-        
+
         uint256 stake = a.stakes[msg.sender];
         require(stake > 0, "No stake to claim");
-        
+
         a.stakes[msg.sender] = 0;
-        
+
         if (a.bidToken == address(0)) {
             (bool sent,) = msg.sender.call{value: stake}("");
             require(sent, "Failed to send ETH");
         } else {
             IERC20(a.bidToken).transfer(msg.sender, stake);
         }
-        
+
         emit CollateralReturned(auctionId, msg.sender, stake);
     }
 
-    // a function that store the auction a timelock function , go back to to se ethe next in line highest stake 
+    // a function that store the auction a timelock function , go back to to se ethe next in line highest stake
 }
 
 //@Todo add the state changes , registration of rewrite, merkle trees update, state update

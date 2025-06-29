@@ -7,9 +7,11 @@ interface IStateManager {
     event ContractLocked(string brand, string reason, address owner);
     event ContractUnlocked(string brand, string reason, address owner);
     event UpdatedProfileContract(address profile);
+
     function initiate(string memory _brand) external;
     function setState(string memory _brand, string memory _new_state) external;
     function lockContract(string memory _brand, string memory _reason) external;
     function unlockContract(string memory _brand, string memory _reason) external;
     function setProfile(address _profile) external;
-} 
+    function getState(string memory _brand) external view returns (string memory);
+}

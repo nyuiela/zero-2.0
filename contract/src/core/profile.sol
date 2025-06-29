@@ -14,6 +14,7 @@ contract Profile {
     address public globalPermissionManager;
     address owner;
     // structs
+
     struct BrandProfile {
         string brand;
         uint256 lastUpdated;
@@ -48,13 +49,15 @@ contract Profile {
         require(msg.sender == address(registryContract), "Profile: not authorized");
         _;
     }
+
     modifier onlyOwner() {
-      require(msg.sender == owner, "Profile: not owner");
-      _;
+        require(msg.sender == owner, "Profile: not owner");
+        _;
     }
     // called when registering brand;
-        constructor(address _globalPermissionManager) {
-          owner = msg.sender;
+
+    constructor(address _globalPermissionManager) {
+        owner = msg.sender;
         // registryContract = ICarRegistry(_registry);
         globalPermissionManager = _globalPermissionManager;
     }
@@ -110,8 +113,7 @@ contract Profile {
     }
 
     function setRegistry(address _registry) public onlyOwner {
-      registryContract = ICarRegistry(_registry);
-      emit ChangedRegistry(_registry);
+        registryContract = ICarRegistry(_registry);
+        emit ChangedRegistry(_registry);
     }
-
 }
