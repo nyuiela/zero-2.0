@@ -159,8 +159,8 @@ export default function BrandDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Brand Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
+          <Card className='bg-white border-none'>
+            <CardContent className="p-6 bg-white">
               <div className="flex items-center space-x-3">
                 <Car className="h-8 w-8 text-[#00296b]" />
                 <div>
@@ -171,8 +171,8 @@ export default function BrandDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
+          <Card className='bg-white border-none'>
+            <CardContent className="bg-white p-6">
               <div className="flex items-center space-x-3">
                 <Gavel className="h-8 w-8 text-[#00296b]" />
                 <div>
@@ -183,8 +183,8 @@ export default function BrandDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
+          <Card className='bg-white border-none'>
+            <CardContent className="bg-white p-6">
               <div className="flex items-center space-x-3">
                 <Users className="h-8 w-8 text-[#00296b]" />
                 <div>
@@ -195,8 +195,8 @@ export default function BrandDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
+          <Card className='bg-white border-none'>
+            <CardContent className="bg-white p-6">
               <div className="flex items-center space-x-3">
                 <TrendingUp className="h-8 w-8 text-[#00296b]" />
                 <div>
@@ -213,11 +213,11 @@ export default function BrandDetailPage() {
           {/* Left Column - Brand Info & Stats */}
           <div className="lg:col-span-2 space-y-6">
             {/* Brand Information */}
-            <Card>
+            <Card className='bg-white border-none'>
               <CardHeader>
                 <CardTitle>Brand Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="bg-white space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-3">
                     <MapPin className="h-5 w-5 text-gray-400" />
@@ -257,11 +257,11 @@ export default function BrandDetailPage() {
             </Card>
 
             {/* Tabs for Cars and Auctions */}
-            <Card>
+            <Card className='bg-white border-none'>
               <CardHeader>
                 <CardTitle>Brand Activity</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className='bg-white'>
                 <Tabs defaultValue="cars" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="cars">Recent Cars</TabsTrigger>
@@ -314,11 +314,11 @@ export default function BrandDetailPage() {
           {/* Right Column - Additional Stats */}
           <div className="space-y-6">
             {/* Financial Stats */}
-            <Card>
+            <Card className='bg-white border-none'>
               <CardHeader>
                 <CardTitle>Financial Overview</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="bg-white space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Monthly Revenue</span>
                   <span className="font-medium text-gray-900">${(brand.stats.monthlyRevenue / 1000000).toFixed(1)}M</span>
@@ -335,11 +335,11 @@ export default function BrandDetailPage() {
             </Card>
 
             {/* Contact Information */}
-            <Card>
+            <Card className='bg-white border-none'>
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="bg-white space-y-4">
                 <div>
                   <p className="text-sm font-medium text-gray-900">Website</p>
                   <a href={brand.website} className="text-sm text-[#00296b] hover:underline" target="_blank" rel="noopener noreferrer">
@@ -360,12 +360,12 @@ export default function BrandDetailPage() {
             </Card>
 
             {/* Quick Actions */}
-            <Card>
+            <Card className='bg-white border-none'>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full bg-[#00296b] hover:bg-[#00296b]/90">
+              <CardContent className="space-y-3 bg-white">
+                <Button className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/90">
                   View All Cars
                 </Button>
                 <Button variant="outline" className="w-full">
