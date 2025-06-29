@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
 import { useAuthStore } from '@/lib/authStore'
 import { getJwtToken } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,6 +28,7 @@ import {
 import { toast } from 'sonner'
 import { AuctionRegistrationForm } from "@/components/auction-registration-form"
 import { useRouter } from 'next/navigation'
+import { zero_abi, zero_addr } from '@/lib/abi/abi'
 
 interface SellerApplication {
   businessName: string
@@ -609,7 +610,16 @@ export default function ProfilePage() {
 function CarNFTCollection({ address }: { address: string | undefined }) {
   const [nfts, setNfts] = useState<CarNFT[]>([])
   const [loading, setLoading] = useState(true)
+  const { address: owner } = useAccount()
   const [error, setError] = useState<string | null>(null)
+  const cResponse = useReadContract({
+    abi: zero_abi,
+    address: zero_addr,
+    functionName: "totalSupply",
+    args: [],
+    account: owner
+  })
+  console.log("C response ", cResponse)
 
   useEffect(() => {
     if (!address) {
@@ -701,14 +711,14 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
   }
 
   return (
-    <div className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-none h-[30rem] bg-gray-200/40 rounded-sm">
+    <div className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-none h-fit bg-gray-200/40 rounded-sm">
       {/* NFT Image */}
-      <div className="relative aspect-square bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-blue-50 to-indigo-100">
         {nft.imageUrl && !imageError ? (
           <img
             src={nft.imageUrl}
             alt={`${nft.brandName} ${nft.model}`}
-            className="w-full h-full object-cover"
+            className="w-full h-full"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -737,7 +747,7 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
 
       {/* NFT Details */}
       <div className="p-4">
-        <div className="space-y-3">
+        <div className="space-y-3">2
           {/* Brand and Model */}
           {/* Additional Info */}
           <div className="text-xs text-muted-foreground border-none m-0 border-t flex p-0 justify-between">
@@ -800,7 +810,7 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
               size="sm"
               onClick={handleLockToggle}
               disabled={nft.isInAuction}
-              className="flex-1"
+              className="flex-1 hover:bg-[#00296b]"
             >
               {isLocked ? "Unlock" : "Lock"}
             </Button>
@@ -808,7 +818,7 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
               variant="outline"
               size="sm"
               disabled={isLocked || nft.isInAuction}
-              className="flex-1"
+              className="flex-1 hover:bg-[#00296b]"
             >
               {nft.isInAuction ? "In Auction" : "Create Auction"}
             </Button>
