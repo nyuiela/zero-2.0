@@ -278,7 +278,7 @@ export default function SellYourCarPage() {
         })
       }
 
-      const result = await createCar(submitData);
+      const result = await createCar(submitData, user.jwt);
 
       // Submit to API
       // const response = await fetch('/api/cars', {

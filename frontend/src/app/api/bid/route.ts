@@ -1,7 +1,7 @@
 import { getJwtToken } from '@/lib/utils'
 
 // In-memory session fallback (not persistent)
-let sessionBids: { auctionId: string, address: string, amount: number, timestamp: number }[] = []
+const sessionBids: { auctionId: string, address: string, amount: number, timestamp: number }[] = []
 
 export async function POST(req: Request): Promise<Response> {
   const body = await req.json()

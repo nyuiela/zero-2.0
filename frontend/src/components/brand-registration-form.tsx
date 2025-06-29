@@ -320,63 +320,67 @@ export function BrandRegistrationForm() {
   }
 
   const onSubmit = async (data: BrandRegistrationFormData) => {
-    // Clear previous errors
-    setError(null)
-    setValidationErrors([])
-    
-    // Pre-submit validation
-    const validationErrors = validateFormData(data)
-    if (validationErrors.length > 0) {
-      setValidationErrors(validationErrors)
-      console.log('Validation errors:', validationErrors)
-      return
-    }
-    
     setIsLoading(true)
 
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
 
-    console.log('Submitting brand registration:', data)
-    console.log('Calling writeContract with args:', [
-      data.brand,
-      {
-        "updateInterval": data.updateInterval,
-        "deviationThreshold": data.deviationThreshold,
-        "heartbeat": data.heartbeat,
-        "minAnswer": data.minAnswer,
-        "maxAnswer": data.maxAnswer
-      },
-      data.brandAdminAddr,
-      data.subscriptionId,
-      data.stateUrl,
-      argsArray
-    ])
-    
-    // Call writeContract - this doesn't throw errors, they come through the hook
+    console.log(data)
+    try {
       writeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'registerBrand',
         args: [
-          data.brand,
+          data.brand, // string
           {
-            "updateInterval": data.updateInterval,
-            "deviationThreshold": data.deviationThreshold,
-            "heartbeat": data.heartbeat,
-            "minAnswer": data.minAnswer,
-            "maxAnswer": data.maxAnswer
-          },
-          data.brandAdminAddr,
-          data.subscriptionId,
-          data.stateUrl,
-          argsArray
+            updateInterval: BigInt(data.updateInterval),
+            deviationThreshold: BigInt(data.deviationThreshold),
+            heartbeat: BigInt(data.heartbeat),
+            minAnswer: BigInt(data.minAnswer),
+            maxAnswer: BigInt(data.maxAnswer)
+          }, // OracleConfig struct
+          data.brandAdminAddr, // address
+          BigInt(data.subscriptionId), // uint64
+          data.stateUrl, // string
+          argsArray // string[]
         ],
         account: address
       })
-    
-    // Note: We don't set isLoading to false here because wagmi handles the loading state
-    // The error will be caught by the useEffect below
+      // writeContract({
+      //   address: registry_addr,
+      //   abi: registry_abi,
+      //   functionName: 'stake',
+      //   value: parseEther(data.stake),
+      //   args: [
+      //     data.brand
+      //   ],
+      //   account: address
+      // })
+      // writeContract({
+      //   address: registry_addr,
+      //   abi: registry_abi,
+      //   functionName: 'activate',
+      //   args: [
+      //     data.brand
+      //   ],
+      //   account: address
+      // })
+
+      // Simulate transaction hash - in real implementation, this would come from the transaction
+      const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
+      setTransactionHash(mockHash)
+
+      // Show proof modal after successful transaction
+      // setTimeout(() => {
+      //   setShowProofModal(true)
+      // }, 2000)
+      setIsLoading(false)
+
+    } catch (error) {
+      console.error("Failed to submit form ", error)
+      setIsLoading(false)
+    }
   }
 
   const addArg = () => {
@@ -737,23 +741,10 @@ export function BrandRegistrationForm() {
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-                  disabled={isPending}
+                  disabled={isPending || isLoading}
                 >
                   {isPending ? "Registering Brand..." : "Register Brand"}
-                </Button>
-                
-                {/* Debug Button */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    console.log('Debug: Manually opening modal')
-                    setRegisteredBrandName('TestBrand')
-                    setShowStakeActivateModal(true)
-                  }}
-                  className="text-xs"
-                >
-                  Debug: Test Modal
+
                 </Button>
                 
                 {/* Validation Errors Display */}

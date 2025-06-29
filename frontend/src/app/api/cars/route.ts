@@ -2,7 +2,7 @@ import formidable from 'formidable'
 import { Readable } from 'stream'
 
 // In-memory session fallback (not persistent)
-let sessionCars: any[] = []
+const sessionCars: any[] = []
 
 export const config = {
   api: {

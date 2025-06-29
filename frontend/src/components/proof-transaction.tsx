@@ -80,8 +80,8 @@ export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash,
   const handleTransaction = async () => {
     setIsLoading(true)
     try {
-      if (handleSubmit) return handleSubmit()
-      setIsLoading(false);
+      if (handleSubmit) handleSubmit();
+      setIsLoading(false)
     } catch (error) {
       console.log("Failed to load error", error)
       setIsLoading(false)
