@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import CustomBtn from "./custom-btn"
-import { auction_abi, auction_addr } from "@/lib/abi/abi"
-import { useAccount } from "wagmi"
+import { auction_abi, auction_addr, registry_abi, registry_addr, zero_addr } from "@/lib/abi/abi"
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
 
 // Validation schema for the auction registration form
 const auctionRegistrationSchema = z.object({
@@ -84,7 +84,6 @@ export function AuctionRegistrationForm({
   userNFTs = []
 }: AuctionRegistrationFormProps) {
   const [selectedNFT, setSelectedNFT] = useState<string>("")
-  const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData | null>(null)
   const { address } = useAccount();
   const form = useForm<AuctionRegistrationFormData>({
     resolver: zodResolver(auctionRegistrationSchema),
@@ -98,17 +97,50 @@ export function AuctionRegistrationForm({
       nftTokenId: "",
     },
   })
+  const {
+    data: hash,
+    isPending,
+    writeContract
+  } = useWriteContract()
+  // const [showProofModal, setShowProofModal] = useState(false)
+  const [transactionHash, setTransactionHash] = useState<string>("")
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
 
-  const handleSubmit = (data: AuctionRegistrationFormData) => {
-
-    // Convert dates to timestamps
+  const handleSubmit = async (data: AuctionRegistrationFormData) => {
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
+    }
     const formData = {
       ...data,
       startTime: Math.floor(new Date(data.startTime).getTime() / 1000).toString(),
       endTime: Math.floor(new Date(data.endTime).getTime() / 1000).toString(),
+    };
+    try {
+
+      const tx = await writeContract({
+        abi: auction_abi,
+        address: auction_addr,
+        functionName: "createAuction",
+        args: [
+          formData.brandName,
+          BigInt(formData.startTime),
+          BigInt(formData.endTime),
+          BigInt(formData.initialBid),
+          BigInt(formData.bidThreshold),
+          zero_addr,
+          BigInt(formData.nftTokenId),
+          "hash"
+        ],
+        account: address
+      });
+      console.log("Transaction sent", tx);
+    } catch (err) {
+      console.error("Error writing contract:", err);
     }
-    setFormArgs(formData)
-    onSubmit(formData)
   }
 
   const handleNFTSelect = (tokenId: string) => {
@@ -122,7 +154,6 @@ export function AuctionRegistrationForm({
 
   // Filter available NFTs (not locked)
   const availableUserNFTs = userNFTs.filter(nft => !nft.isLocked)
-
   return (
     <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
       <CardHeader className="pb-4">
@@ -133,7 +164,8 @@ export function AuctionRegistrationForm({
       </CardHeader>
       <CardContent className="pb-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
 
             {/* NFT Selection */}
             <div className="space-y-4">
@@ -361,23 +393,18 @@ export function AuctionRegistrationForm({
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
-              <CustomBtn name="Create Auction" functionName="createAuction" args={[
-                formArgs!.brandName,
-                formArgs!.startTime,
-                formArgs!.endTime,
-                formArgs!.initialBid,
-                formArgs!.bidThreshold,
-                formArgs!.bidToken,
-                formArgs!.nftTokenId,
-                "ipfs hash proof"
-              ]} abi={auction_abi} address={auction_addr} account={address!} />
-              {/* <Button
+
+              <Button
                 type="submit"
-                disabled={isLoading || availableUserNFTs.length === 0}
-                className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+                // onClick={() => handleSubmit}
+                disabled={isPending}
+                className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
               >
-                {isLoading ? "Creating Auction..." : "Create Auction"}
-              </Button> */}
+                {isPending ? "Creating Auction..." : "Create Auction"}
+              </Button>
+              {hash && <div>Transaction Hash: {hash}</div>}
+              {isConfirming && <div>Waiting for confirmation...</div>}
+              {isConfirmed && <div>Transaction confirmed.</div>}
             </div>
           </form>
         </Form>

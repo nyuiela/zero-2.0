@@ -148,7 +148,7 @@ export function BrandRegistrationForm() {
     },
   })
 
-  const onSubmit = (data: BrandRegistrationFormData) => {
+  const onSubmit = async (data: BrandRegistrationFormData) => {
     setIsLoading(true)
 
     // Convert args string to array
@@ -197,8 +197,8 @@ export function BrandRegistrationForm() {
       // })
 
       // Simulate transaction hash - in real implementation, this would come from the transaction
-      // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      // setTransactionHash(mockHash)
+      const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
+      setTransactionHash(mockHash)
 
       // Show proof modal after successful transaction
       // setTimeout(() => {
