@@ -14,7 +14,9 @@ import { useAuthStore } from '@/lib/authStore'
 import { useQuery } from '@tanstack/react-query'
 import CustomBtn from './custom-btn'
 import { auction_abi, auction_addr } from '@/lib/abi/abi'
-import { useAccount } from 'wagmi'
+import { useAccount, useWriteContract } from 'wagmi'
+import { ProofModalTransaction } from './proof-transaction'
+import { ProofResponse } from '@/lib/utils'
 
 interface ListingClientProps {
   listing: CarListing
@@ -38,6 +40,9 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bidError, setBidError] = useState<string | null>(null)
   const { user } = useAuthStore()
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+  const [proof, setProof] = useState<ProofResponse | null>(null);
+  const { writeContract } = useWriteContract();
   // React Query hooks
   const { data: bids, refetch: bidRefresh, isLoading: nonceLoading, isError: nonceError } = useQuery({
     queryKey: ['bid', listing.auction_id],
@@ -69,7 +74,19 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       setBidError(null)
     }
   }
-
+  const handleSubmitBid = async () => {
+    try {
+      writeContract({
+        abi: auction_abi,
+        address: auction_addr,
+        functionName: "placeBid",
+        args: [listing.auction_id, bidAmount],
+        account: address
+      })
+    } catch (error) {
+      console.error("Failed to submit bid ", error);
+    }
+  }
   const handlePlaceBid = async () => {
     const numValue = typeof bidAmount === 'string' ? parseFloat(bidAmount) : bidAmount
     if (isNaN(numValue) || numValue < minBid) {
@@ -89,14 +106,12 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       const jwt = user?.jwt;
       if (jwt == null) throw new Error("User not found");
       const bidResponse = await placeBid(bid, jwt);
+      setProof(bidResponse)
+      setIsProofModalOpen(true)
       console.log("Bid Response", bidResponse)
       // TODO: Place bid API call here
-      setTimeout(() => {
-        setIsSubmitting(false)
-        setIsBidModalOpen(false)
-        // Redirect to bidding room
-        // window.location.href = `/auctions/${listing.id}`
-      }, 1200)
+
+      setIsBidModalOpen(false)
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false);
@@ -107,6 +122,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
 
   return (
     <>
+      <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={handleSubmitBid} name="Create Auction onchain & submit proof" />
       {/* Breadcrumb */}
       <nav className="text-sm text-muted-foreground mb-6">
         <Link href="/" className="hover:text-brand">Home</Link>
@@ -151,9 +167,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div className="mb-4 text-sm text-gray-700">
               <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
             </div>
-            <CustomBtn name="Place Bid & Enter Bidding Room" functionName="placeBid" args={[listing.auction_id, bidAmount]} abi={auction_abi} address={auction_addr} account={address!}
-            // beforeSubmit={handlePlaceBid} 
-            />
+            <Button
+              type="submit"
+              onClick={handlePlaceBid}
+              disabled={isSubmitting}
+              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+            >
+              {isSubmitting ? "Creating Bid..." : "Place Bid offchain"}
+            </Button>
           </div>
         </div>
       )}
@@ -383,6 +404,9 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
         {/* (Optional) Add more side details here if needed */}
       </div>
+
+
+
       {/* Related Auctions */}
       <div className="mt-16 pt-8 border-t border-border">
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>

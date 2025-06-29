@@ -126,7 +126,6 @@ pub async fn create_auction(
         // 3. Update the field(s)
         car_model.auction_id = Set(auction_id.id + 1); // example status
 
-        // 4. Save the updated model
         car_model.update(&*db).await.unwrap();
     }
     auction_model

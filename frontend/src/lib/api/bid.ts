@@ -1,6 +1,7 @@
-import { Bid } from "../utils"
+import { Bid, ProofResponse } from "../utils"
 import { API_BASE_URL } from "./config"
 import { apiRequest } from "../utils"
+import { ProofData } from "@/components/proof-modal"
 
 export async function fetchBids(): Promise<Bid[] | null> {
   try {
@@ -51,7 +52,8 @@ export async function fetchBidByAuctionId(id: number): Promise<Bid[] | null> {
   }
 }
 
-export async function placeBid(bidData: Partial<Bid>, jwt: string): Promise<{ status: string; message: string }> {
+
+export async function placeBid(bidData: Partial<Bid>, jwt: string): Promise<ProofResponse> {
   try {
     const res = await apiRequest(`${API_BASE_URL}/api/bids`, {
       method: 'POST',

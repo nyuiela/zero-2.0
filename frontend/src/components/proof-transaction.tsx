@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { Copy, Download, Check } from "lucide-react"
 import {
@@ -78,11 +77,11 @@ interface ProofModalProps {
 export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash, handleSubmit, name }: ProofModalProps) {
   const [copied, setCopied] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
-  const handleTransaction = () => {
+  const handleTransaction = async () => {
     setIsLoading(true)
     try {
-      if (handleSubmit) handleSubmit()
-      setIsLoading(false)
+      if (handleSubmit) return handleSubmit()
+      setIsLoading(false);
     } catch (error) {
       console.log("Failed to load error", error)
       setIsLoading(false)
@@ -152,7 +151,7 @@ export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash,
               ZK Proof
             </Badge>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-left">
             Cryptographic proof of transaction execution on the blockchain
           </DialogDescription>
         </DialogHeader>
@@ -264,7 +263,7 @@ export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash,
             <Button
               variant="outline"
               onClick={downloadProof}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 p-1"
             >
               <Download className="h-4 w-4" />
               Download Proof
@@ -272,7 +271,7 @@ export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash,
             <Button
               variant="outline"
               onClick={() => copyToClipboard(JSON.stringify(proof, null, 2))}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 p-0"
             >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               Copy JSON
@@ -280,7 +279,7 @@ export function ProofModalTransaction({ isOpen, onClose, proof, transactionHash,
           </div>
           <div className="flex flex-col justify-end w-full">
             <Button
-              type="submit"
+              type="button"
               className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
               disabled={isLoading}
               onClick={handleTransaction}

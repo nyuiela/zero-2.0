@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::Json;
 use car_auction_core::BidState;
 use chrono::Utc;
-use entity::{ bid, BidModel };
+use entity::{ auction, bid, AuctionModel, BidModel };
 use methods::{ INIT_BID_ELF, INIT_BID_ID };
 use risc0_zkvm::{ default_prover, ExecutorEnv, Receipt };
 use sea_orm::{
@@ -114,6 +114,17 @@ pub async fn create_bid(
     bid_model
         .insert(&*db).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    if let Some(auc) = auction::Entity::find_by_id(bid_data.auction_id).one(&*db).await.unwrap() {
+        // 2. Convert it into an ActiveModel
+        let mut auc_model: auction::ActiveModel = auc.clone().into();
+
+        // 3. Update the field(s)
+        auc_model.current_bid = Set(bid_data.amount); // example status
+        auc_model.bid_count = Set(auc.bid_count + 1);
+
+        // 4. Save the updated model
+        auc_model.update(&*db).await.unwrap();
+    }
 
     let (hash, commit) = sync_overall_state(db).await.unwrap();
     Ok(

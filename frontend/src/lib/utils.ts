@@ -1,3 +1,4 @@
+import { ProofData } from "@/components/proof-modal"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -102,7 +103,10 @@ export interface Bid {
   id: number,
   updated_at: string
 }
-
+export interface ProofResponse extends ProofData {
+  status: string,
+  message: string
+}
 export function toRustCompatibleTimestamp(dateInput: any) {
   const date = new Date(dateInput); // input can be a Date or timestamp
 

@@ -84,7 +84,7 @@ interface AuctionRegistrationFormProps {
 
 export function AuctionRegistrationForm({
   onSubmit,
-  isLoading = false,
+  // isLoading = false,
   availableBrands = [],
   userNFTs = []
 }: AuctionRegistrationFormProps) {
@@ -117,7 +117,7 @@ export function AuctionRegistrationForm({
   const [proof, setProof] = useState<ProofData | null>(null);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData>()
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleCreate = (formData: AuctionRegistrationFormData) => {
     writeContract({
       abi: auction_abi,
@@ -141,6 +141,7 @@ export function AuctionRegistrationForm({
       alert("Please connect your wallet first.");
       return;
     }
+    setIsLoading(true)
     const date = toRustCompatibleTimestamp(data.startTime)
     const body = {
       id: 1,
@@ -180,8 +181,9 @@ export function AuctionRegistrationForm({
         "receipt": res.receipt,
         "stats": res.stats
       });
-
+      setIsLoading(false)
     } catch (err) {
+      setIsLoading(false)
       console.error("Error writing contract:", err);
     }
   }
@@ -440,10 +442,10 @@ export function AuctionRegistrationForm({
               <Button
                 type="submit"
                 // onClick={() => handleSubmit}
-                disabled={isPending}
+                disabled={isLoading}
                 className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
               >
-                {isPending ? "Creating Auction..." : "Create Auction"}
+                {isLoading ? "Creating Auction..." : "Create Auction"}
               </Button>
               {hash && <div>Transaction Hash: {hash}</div>}
               {isConfirming && <div>Waiting for confirmation...</div>}
@@ -452,7 +454,7 @@ export function AuctionRegistrationForm({
           </form>
         </Form>
       </CardContent>
-      <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={() => { handleCreate(formArgs!) }} name="Create Auction onchain & submit proof" />
+      <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={() => handleCreate(formArgs!)} name="Create Auction onchain & submit proof" />
     </Card>
   )
 } 
