@@ -1,5 +1,5 @@
 // In-memory session fallback (not persistent)
-let sessionRoleRequests: { address: string, status: 'pending' | 'approved' | 'rejected', timestamp: number }[] = []
+const sessionRoleRequests: { address: string, status: 'pending' | 'approved' | 'rejected', timestamp: number }[] = []
 
 export async function POST(req: Request): Promise<Response> {
   // Check for JWT token in Authorization header

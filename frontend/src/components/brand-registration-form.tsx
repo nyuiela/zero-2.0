@@ -149,65 +149,69 @@ export function BrandRegistrationForm() {
   })
 
   const onSubmit = async (data: BrandRegistrationFormData) => {
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
     setIsLoading(true)
 
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
 
-    console.log(data)
+    console.log("Submitting brand registration:", data)
+    console.log("Wallet address:", address)
+    console.log("Registry address:", registry_addr)
+    console.log("Registry ABI:", registry_abi)
+
     try {
-      writeContract({
+      console.log("Calling writeContract with args:", [
+        data.brand,
+        {
+          updateInterval: BigInt(data.updateInterval),
+          deviationThreshold: BigInt(data.deviationThreshold),
+          heartbeat: BigInt(data.heartbeat),
+          minAnswer: BigInt(data.minAnswer),
+          maxAnswer: BigInt(data.maxAnswer)
+        },
+        data.brandAdminAddr,
+        BigInt(data.subscriptionId),
+        data.stateUrl,
+        argsArray
+      ])
+
+      const result = await writeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'registerBrand',
         args: [
-          data.brand,
+          data.brand, // string
           {
-            "updateInterval": data.updateInterval,
-            "deviationThreshold": data.deviationThreshold,
-            "heartbeat": data.heartbeat,
-            "minAnswer": data.minAnswer,
-            "maxAnswer": data.maxAnswer
-          },
-          data.brandAdminAddr,
-          data.subscriptionId,
-          data.stateUrl,
-          argsArray
+            updateInterval: BigInt(data.updateInterval),
+            deviationThreshold: BigInt(data.deviationThreshold),
+            heartbeat: BigInt(data.heartbeat),
+            minAnswer: BigInt(data.minAnswer),
+            maxAnswer: BigInt(data.maxAnswer)
+          }, // OracleConfig struct
+          data.brandAdminAddr, // address
+          BigInt(data.subscriptionId), // uint64
+          data.stateUrl, // string
+          argsArray // string[]
         ],
         account: address
       })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'stake',
-      //   value: parseEther(data.stake),
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'activate',
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
+
+      console.log("Transaction sent:", result)
 
       // Simulate transaction hash - in real implementation, this would come from the transaction
       const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
       setTransactionHash(mockHash)
 
-      // Show proof modal after successful transaction
-      // setTimeout(() => {
-      //   setShowProofModal(true)
-      // }, 2000)
       setIsLoading(false)
 
     } catch (error) {
-      console.error("Failed to submit form ", error)
+      console.error("Failed to submit form:", error)
+      alert(`Failed to submit form: ${error instanceof Error ? error.message : 'Unknown error'}`)
       setIsLoading(false)
     }
   }
@@ -466,10 +470,9 @@ export function BrandRegistrationForm() {
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-                  disabled={isPending}
+                  disabled={isPending || isLoading}
                 >
-                  {isPending ? "Registering Brand..." : "Register Brand"}
-
+                  {isPending || isLoading ? "Registering Brand..." : "Register Brand"}
                 </Button>
                 {hash && <div>Transaction Hash: {hash}</div>}
                 {isConfirming && <div>Waiting for confirmation...</div>}

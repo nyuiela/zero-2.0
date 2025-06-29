@@ -22,7 +22,8 @@ import {
   Mail,
   MapPin,
   Upload,
-  Star
+  Star,
+  Car
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AuctionRegistrationForm } from "@/components/auction-registration-form"
@@ -195,7 +196,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (data: any) => {
     // Your smart contract integration here
     const contractData = {
       brandName: data.brandName,
@@ -243,10 +244,11 @@ export default function ProfilePage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-100">
               <TabsTrigger value="profile" className="text-black">Profile</TabsTrigger>
               <TabsTrigger value="seller" className="text-black">Become a Seller</TabsTrigger>
               <TabsTrigger value="activity" className="text-black">Activity</TabsTrigger>
+              <TabsTrigger value="nfts" className="text-black">My NFTs</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="mt-6">
@@ -340,7 +342,7 @@ export default function ProfilePage() {
                           <span className="text-sm font-medium text-blue-800">Complete Your Login</span>
                         </div>
                         <p className="text-sm text-blue-700">
-                          You're connected with your wallet but haven't completed the login process.
+                          You&apos;re connected with your wallet but haven&apos;t completed the login process.
                           Click the Login button in the header to complete your account setup.
                         </p>
                       </div>
@@ -577,9 +579,317 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* NFT Collection Tab */}
+            <TabsContent value="nfts" className="mt-6">
+              <Card className='border-none shadow-none bg-transparent'>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    My Car NFTs
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    Your collection of car NFTs from the blockchain
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <CarNFTCollection address={address} />
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
+
       </main>
     </div>
   )
+}
+
+// Car NFT Collection Component
+function CarNFTCollection({ address }: { address: string | undefined }) {
+  const [nfts, setNfts] = useState<CarNFT[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!address) {
+      setLoading(false)
+      return
+    }
+
+    fetchUserNFTs(address)
+  }, [address])
+
+  const fetchUserNFTs = async (userAddress: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Fetch NFTs from smart contract
+      const userNFTs = await getUserNFTs(userAddress)
+      setNfts(userNFTs)
+    } catch (err) {
+      console.error('Error fetching NFTs:', err)
+      setError('Failed to load NFTs')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2 text-muted-foreground">Loading NFTs...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
+        <p className="text-red-600 mb-2">Error loading NFTs</p>
+        <p className="text-sm text-muted-foreground">{error}</p>
+        <Button
+          onClick={() => fetchUserNFTs(address!)}
+          variant="outline"
+          className="mt-4"
+        >
+          Try Again
+        </Button>
+      </div>
+    )
+  }
+
+  if (nfts.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <Star className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+        <p className="text-muted-foreground mb-2">No NFTs found</p>
+        <p className="text-sm text-muted-foreground">
+          You don&apos;t own any car NFTs yet. Start by registering a brand or participating in auctions.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {nfts.map((nft) => (
+        <CarNFTCard key={nft.tokenId} nft={nft} />
+      ))}
+    </div>
+  )
+}
+
+// Individual Car NFT Card Component
+function CarNFTCard({ nft }: { nft: CarNFT }) {
+  const [imageError, setImageError] = useState(false)
+  const [isLocked, setIsLocked] = useState(nft.isLocked)
+
+  const handleLockToggle = async () => {
+    try {
+      // Call smart contract to toggle lock status
+      await toggleNFTLock(nft.tokenId)
+      setIsLocked(!isLocked)
+      toast.success(`NFT ${isLocked ? 'unlocked' : 'locked'} successfully`)
+    } catch (error) {
+      console.error('Error toggling lock:', error)
+      toast.error('Failed to toggle lock status')
+    }
+  }
+
+  return (
+    <div className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-none h-[30rem] bg-gray-200/40 rounded-sm">
+      {/* NFT Image */}
+      <div className="relative aspect-square bg-gradient-to-br from-blue-50 to-indigo-100">
+        {nft.imageUrl && !imageError ? (
+          <img
+            src={nft.imageUrl}
+            alt={`${nft.brandName} ${nft.model}`}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <Car className="h-16 w-16 text-gray-400" />
+          </div>
+        )}
+
+        {/* Lock Status Badge */}
+        <div className="absolute top-2 right-2">
+          <Badge
+            variant={isLocked ? "destructive" : "secondary"}
+            className="text-xs"
+          >
+            {isLocked ? "Locked" : "Available"}
+          </Badge>
+        </div>
+
+        {/* Token ID Badge */}
+        <div className="absolute top-2 left-2">
+          <Badge variant="outline" className="text-xs bg-white/90">
+            #{nft.tokenId}
+          </Badge>
+        </div>
+      </div>
+
+      {/* NFT Details */}
+      <div className="p-4">
+        <div className="space-y-3">
+          {/* Brand and Model */}
+          {/* Additional Info */}
+          <div className="text-xs text-muted-foreground border-none m-0 border-t flex p-0 justify-between">
+            <p>Minted: {new Date(nft.mintTimestamp).toLocaleDateString()}</p>
+            <p>Owner: {nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg text-foreground">
+              {nft.brandName} {nft.model}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {nft.year} • {nft.color}
+            </p>
+          </div>
+
+          {/* Specifications */}
+          {/* <div className="grid grid-cols-2 gap-2 text-sm">
+            <div>
+              <span className="text-muted-foreground">Engine:</span>
+              <p className="font-medium">{nft.engineSize}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Transmission:</span>
+              <p className="font-medium">{nft.transmission}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Mileage:</span>
+              <p className="font-medium">{nft.mileage.toLocaleString()} mi</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">VIN:</span>
+              <p className="font-mono text-xs font-medium truncate" title={nft.vin}>
+                {nft.vin}
+              </p>
+            </div>
+          </div> */}
+
+          {/* Condition and Verification */}
+          {/* <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge
+                variant={nft.condition === 'excellent' ? 'default' : 'secondary'}
+                className="text-xs"
+              >
+                {nft.condition.charAt(0).toUpperCase() + nft.condition.slice(1)}
+              </Badge>
+              {nft.isVerified && (
+                <Badge variant="outline" className="text-xs text-green-600 border-green-600">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Verified
+                </Badge>
+              )}
+            </div>
+          </div> */}
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLockToggle}
+              disabled={nft.isInAuction}
+              className="flex-1"
+            >
+              {isLocked ? "Unlock" : "Lock"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isLocked || nft.isInAuction}
+              className="flex-1"
+            >
+              {nft.isInAuction ? "In Auction" : "Create Auction"}
+            </Button>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div >
+  )
+}
+
+// Types for Car NFT
+interface CarNFT {
+  tokenId: string
+  brandName: string
+  model: string
+  year: number
+  color: string
+  engineSize: string
+  transmission: string
+  mileage: number
+  vin: string
+  condition: string
+  isVerified: boolean
+  isLocked: boolean
+  isInAuction: boolean
+  imageUrl?: string
+  mintTimestamp: number
+  owner: string
+}
+
+// Mock function to fetch NFTs from smart contract
+async function getUserNFTs(address: string): Promise<CarNFT[]> {
+  // This would be replaced with actual smart contract calls
+  // For now, returning mock data
+  return [
+    {
+      tokenId: "1",
+      brandName: "Ferrari",
+      model: "488 GTB",
+      year: 2019,
+      color: "Rosso Corsa",
+      engineSize: "3.9L V8 Twin-Turbo",
+      transmission: "7-Speed Automatic",
+      mileage: 8200,
+      vin: "ZFF79ALA4J0234001",
+      condition: "excellent",
+      isVerified: true,
+      isLocked: false,
+      isInAuction: false,
+      imageUrl: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      mintTimestamp: Date.now() - 86400000, // 1 day ago
+      owner: address
+    },
+    {
+      tokenId: "2",
+      brandName: "Tesla",
+      model: "Model S Plaid",
+      year: 2022,
+      color: "Pearl White",
+      engineSize: "Tri-Motor Electric",
+      transmission: "Single-Speed",
+      mileage: 15000,
+      vin: "5YJS1E47LF1234567",
+      condition: "excellent",
+      isVerified: true,
+      isLocked: true,
+      isInAuction: true,
+      imageUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      mintTimestamp: Date.now() - 172800000, // 2 days ago
+      owner: address
+    }
+  ]
+}
+
+// Mock function to toggle NFT lock status
+async function toggleNFTLock(tokenId: string): Promise<void> {
+  // This would be replaced with actual smart contract call
+  console.log(`Toggling lock for NFT ${tokenId}`)
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000))
 } 
