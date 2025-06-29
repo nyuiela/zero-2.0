@@ -1,10 +1,9 @@
 import { CarListing, listings as mockListings } from '../data';
-import { API_BASE_URL } from './config';
 import { apiRequest } from '../utils';
 
 export async function fetchCars(): Promise<CarListing[]> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/cars`);
+    const res = await apiRequest(`/api/cars-proxy`);
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for cars.");
       return mockListings;
@@ -20,7 +19,7 @@ export async function fetchCars(): Promise<CarListing[]> {
 
 export async function fetchCarById(id: string): Promise<CarListing | null> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/cars/${id}`);
+    const res = await apiRequest(`/api/cars-proxy/${id}`);
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for car.");
       return mockListings.find(car => car.id.toString() === id) || null;
@@ -35,7 +34,7 @@ export async function fetchCarById(id: string): Promise<CarListing | null> {
 
 export async function createCar(carData: Partial<CarListing>, jwt: string): Promise<{ status: string; message: string }> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/cars`, {
+    const res = await apiRequest(`/api/cars-proxy`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
