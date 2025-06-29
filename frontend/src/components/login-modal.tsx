@@ -27,6 +27,7 @@ import { toast } from 'sonner'
 export function LoginModal() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isTypingUsername, setIsTypingUsername] = useState(false)
 
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
@@ -58,8 +59,14 @@ export function LoginModal() {
 
   // Update persisted username when local username changes
   const handleUsernameChange = (newUsername: string) => {
-    setUsername(newUsername)
+    console.log('Username changed:', newUsername)
+    setIsTypingUsername(true) // Set typing flag
     setCurrentUsername(newUsername)
+    
+    // Clear typing flag after a short delay
+    setTimeout(() => {
+      setIsTypingUsername(false)
+    }, 1000)
   }
 
   // React Query hooks
@@ -119,21 +126,27 @@ export function LoginModal() {
         currentNonce: !!currentNonce,
         currentMessage: !!currentMessage,
         username: username || 'empty',
-        authStep
+        authStep,
+        isTypingUsername
       })
       
-      // If user is already connected and we have stored nonce/message and username, go to sign step
-      if (isConnected && address && currentNonce && currentMessage && username && username.length >= 4) {
-        console.log('User fully ready, going to sign step')
+      // Don't auto-advance if user is currently typing their username
+      if (isTypingUsername) {
+        console.log('User is typing username, preventing auto-advance during initialization')
+        return
+      }
+      
+      // ALWAYS start at username step if no username is stored, regardless of wallet connection
+      if (!username || username.trim().length === 0) {
+        console.log('No username stored, starting at username step')
+        setAuthStep('username')
+        return
+      }
+      
+      // If we have a username and wallet is connected, go to sign step (nonce/message will be fetched)
+      if (isConnected && address && username.trim().length > 0) {
+        console.log('User has username and wallet connected, going to sign step')
         setAuthStep('sign')
-      } else if (isConnected && address && currentNonce && currentMessage && username && username.length < 4) {
-        // User connected and has nonce/message but username is too short, stay at username step
-        console.log('User connected with nonce/message but username too short, staying at username step')
-        setAuthStep('username')
-      } else if (isConnected && address && currentNonce && currentMessage && !username) {
-        // User connected and has nonce/message but no username, stay at username step
-        console.log('User connected with nonce/message but no username, staying at username step')
-        setAuthStep('username')
       } else if (isConnected && address) {
         // User connected but no stored nonce/message, go to connect step to fetch
         console.log('User connected but no nonce/message, going to connect step')
@@ -147,7 +160,7 @@ export function LoginModal() {
       // Clear connecting flag when modal is closed
       setIsConnectingFromModal(false)
     }
-  }, [open, isConnected, address, currentNonce, currentMessage, username, setAuthStep, setIsConnectingFromModal])
+  }, [open, isConnected, address, currentNonce, currentMessage, username, setAuthStep, setIsConnectingFromModal, isTypingUsername])
 
   // Handle wallet disconnect
   useEffect(() => {
@@ -180,10 +193,24 @@ export function LoginModal() {
 
   // Auto-advance to sign step when wallet is connected and we have message and username
   useEffect(() => {
-    if (isConnected && currentMessage && username.length >= 4 && authStep === 'connect') {
+    // Don't auto-advance if user is currently typing their username
+    if (isTypingUsername) {
+      console.log('User is typing username, preventing auto-advance')
+      return
+    }
+    
+    if (isConnected && currentMessage && username.trim().length > 0 && authStep === 'connect') {
       setAuthStep('sign')
     }
-  }, [isConnected, currentMessage, username, authStep, setAuthStep])
+  }, [isConnected, currentMessage, username, authStep, setAuthStep, isTypingUsername])
+
+  // Auto-fetch nonce/message when on sign step but don't have them
+  useEffect(() => {
+    if (authStep === 'sign' && isConnected && address && username.trim().length > 0 && (!currentNonce || !currentMessage)) {
+      console.log('On sign step but missing nonce/message, triggering fetch')
+      refetchNonce()
+    }
+  }, [authStep, isConnected, address, username, currentNonce, currentMessage, refetchNonce])
 
   // Check for existing authentication on mount
   useEffect(() => {
@@ -216,8 +243,8 @@ export function LoginModal() {
     console.log('Opening connect modal from our login modal')
     console.log('Current modal state before opening RainbowKit:', { open, authStep })
     
-    // If we're on username step and username is valid, advance to connect step
-    if (authStep === 'username' && username.length >= 4) {
+    // If we're on username step and username is not empty, advance to connect step
+    if (authStep === 'username' && username.trim().length > 0) {
       console.log('Advancing from username to connect step')
       setAuthStep('connect')
     }
@@ -343,9 +370,9 @@ export function LoginModal() {
       setOpen(false)
       // Clear all state when canceling (except during connect step)
       if (authStep !== 'connect') {
-        console.log('Clearing all state')
+        console.log('Clearing all state including username')
         clearNonceAndMessage()
-        clearCurrentUsername()
+        clearCurrentUsername() // Only clear username when user explicitly cancels
         setIsConnectingFromModal(false)
         setAuthStep('username')
       }
@@ -360,24 +387,16 @@ export function LoginModal() {
     console.log('Modal open change:', { newOpen, authStep })
     
     if (!newOpen) {
-      // Only allow closing if we're not in the middle of signing
-      if (authStep === 'username' || authStep === 'complete' || authStep === 'connect') {
-        console.log('Allowing modal to close via outside click')
-        setOpen(false)
-        // Clear all state when canceling (except during connect step)
-        if (authStep !== 'connect') {
-          console.log('Clearing all state')
-          clearNonceAndMessage()
-          clearCurrentUsername()
-          setIsConnectingFromModal(false)
-          setAuthStep('username')
-        }
-      } else {
-        // If in the middle of signing, prevent closing
-        console.log('Cannot close during signing process')
-        toast.info('Please complete the signing process.')
-        // Keep modal open
-        setOpen(true)
+      // Allow closing at any step - users should be able to close the modal
+      console.log('Allowing modal to close')
+      setOpen(false)
+      
+      // Only clear nonce/message when closing, keep username stored
+      if (authStep !== 'connect') {
+        console.log('Clearing nonce/message but keeping username')
+        clearNonceAndMessage()
+        setIsConnectingFromModal(false)
+        setAuthStep('username')
       }
     } else {
       setOpen(true)
@@ -391,20 +410,14 @@ export function LoginModal() {
           <div className="space-y-4">
             <Input
               id="username"
-              placeholder="Enter username (min 4 characters)"
+              placeholder="Enter username"
               value={username}
               onChange={(e) => handleUsernameChange(e.target.value)}
               className="border-gray-700 text-[#202626]"
             />
-            {username.length > 0 && username.length < 4 && (
-              <p className="text-red-500 text-sm">Username must be at least 4 characters</p>
-            )}
-            {username.length >= 4 && (
-              <p className="text-green-600 text-sm">✓ Username is valid</p>
-            )}
             <Button
               onClick={handleConnectWallet}
-              disabled={username.length < 4}
+              disabled={username.trim().length === 0}
               className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
             >
               Connect Wallet
@@ -427,7 +440,7 @@ export function LoginModal() {
                 <span className="font-semibold">Username:</span> {username}
               </p>
             </div>
-            {currentMessage && (
+            {currentMessage && ( 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-blue-800 text-sm">
                   <span className="font-semibold">Message you will sign:</span>
@@ -528,7 +541,7 @@ export function LoginModal() {
   const getStepDescription = () => {
     switch (authStep) {
       case 'username':
-        return 'Enter a username (min 4 chars) to continue with wallet authentication.'
+        return 'Enter a username to continue with wallet authentication.'
       case 'connect':
         return 'Connect your wallet to proceed with the login process.'
       case 'sign':
