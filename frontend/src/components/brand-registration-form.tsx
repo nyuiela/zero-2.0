@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -28,6 +28,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
 import { ProofModal } from "./proof-modal"
 import { parseEther } from "viem"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 // Validation schema for the form
 const brandRegistrationSchema = z.object({
@@ -56,25 +64,64 @@ export function BrandRegistrationForm() {
   const {
     data: hash,
     isPending,
-    writeContract
+    writeContract,
+    error: contractError,
+    isError
   } = useWriteContract()
+  
+  // Separate writeContract for modal transactions
+  const {
+    data: modalHash,
+    isPending: isModalPending,
+    writeContract: writeModalContract,
+    error: modalContractError,
+    isError: isModalError
+  } = useWriteContract()
+  
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
   const [showProofModal, setShowProofModal] = useState(false)
   const [transactionHash, setTransactionHash] = useState<string>("")
+  const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [showStakeActivateModal, setShowStakeActivateModal] = useState(false)
+  const [stakeActivateStep, setStakeActivateStep] = useState<'stake' | 'activate'>('stake')
+  const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
+  const [modalTransactionHash, setModalTransactionHash] = useState<string>('')
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
     })
+
+  const form = useForm<BrandRegistrationFormData>({
+    resolver: zodResolver(brandRegistrationSchema),
+    defaultValues: {
+      brand: "",
+      updateInterval: "",
+      deviationThreshold: "",
+      heartbeat: "",
+      minAnswer: "",
+      maxAnswer: "",
+      brandAdminAddr: "",
+      subscriptionId: "",
+      stateUrl: "",
+      args: "",
+      stake: ""
+    },
+  })
+
+  // Get current brand name from form
+  const currentBrandName = form.watch("brand")
 
   const isRegistered = useReadContract({
     abi: registry_abi,
     address: registry_addr,
     account: address,
     functionName: 'getBrandinfo',
-    args: ["kal"]
+    args: [form.watch("brand") || "kal"],
+    enabled: !!form.watch("brand") && form.watch("brand").length > 0
   })
-  console.log("isRegistered ", isRegistered.data)
+  console.log("isRegistered for brand:", form.watch("brand"), isRegistered.data)
 
   // Sample proof data - in real implementation, this would come from the transaction
   const sampleProof: ProofData = {
@@ -131,31 +178,182 @@ export function BrandRegistrationForm() {
     }
   }
 
-  const form = useForm<BrandRegistrationFormData>({
-    resolver: zodResolver(brandRegistrationSchema),
-    defaultValues: {
-      brand: "",
-      updateInterval: "",
-      deviationThreshold: "",
-      heartbeat: "",
-      minAnswer: "",
-      maxAnswer: "",
-      brandAdminAddr: "",
-      subscriptionId: "",
-      stateUrl: "",
-      args: "",
-      stake: ""
-    },
-  })
+  // Enhanced error parsing function
+  const parseError = (error: any): string => {
+    console.log('=== PARSING ERROR ===')
+    console.log('Error object:', error)
+    console.log('Error type:', typeof error)
+    console.log('Error constructor:', error?.constructor?.name)
+    console.log('Error message:', error?.message)
+    console.log('Error name:', error?.name)
+    console.log('Error cause:', error?.cause)
+    console.log('Error details:', error?.details)
+    console.log('Error reason:', error?.reason)
+    console.log('Error code:', error?.code)
+    console.log('Error data:', error?.data)
+    console.log('====================')
+    
+    if (error?.message?.includes("execution reverted")) {
+      // Try to extract revert reason
+      const revertReason = error.message.match(/reason: (.+)/)?.[1] || 
+                          error.message.match(/reverted: (.+)/)?.[1] ||
+                          error.message.match(/reverted with reason: (.+)/)?.[1] ||
+                          error.message.match(/execution reverted: (.+)/)?.[1]
+      
+      if (revertReason) {
+        return `Transaction failed: ${revertReason}`
+      }
+      
+      // Check for common revert patterns
+      if (error.message.includes("Brand already exists")) {
+        return "Brand name already exists. Please choose a different name."
+      }
+      if (error.message.includes("Invalid admin address")) {
+        return "Invalid brand admin address. Please check the address format."
+      }
+      if (error.message.includes("Insufficient stake")) {
+        return "Insufficient stake amount. Please increase the stake value."
+      }
+      if (error.message.includes("Invalid subscription")) {
+        return "Invalid subscription ID. Please verify the Chainlink VRF subscription."
+      }
+      
+      return "Transaction failed: Contract execution reverted"
+    }
+    
+    if (error?.message?.includes("insufficient funds")) {
+      return "Insufficient ETH for gas fees. Please add more ETH to your wallet."
+    }
+    
+    if (error?.message?.includes("user rejected")) {
+      return "Transaction was cancelled by user"
+    }
+    
+    if (error?.message?.includes("nonce too low")) {
+      return "Transaction nonce error. Please try again."
+    }
+    
+    if (error?.message?.includes("gas required exceeds allowance")) {
+      return "Gas limit too low. Please try with higher gas limit."
+    }
+    
+    // Handle wagmi specific errors
+    if (error?.name === "ContractFunctionExecutionError") {
+      return `Contract error: ${error.message}`
+    }
+    
+    if (error?.name === "UserRejectedRequestError") {
+      return "Transaction was rejected by user"
+    }
+    
+    if (error?.name === "SwitchChainError") {
+      return "Network switch error. Please switch to Base Sepolia network."
+    }
+    
+    if (error?.name === "ConnectorNotFoundError") {
+      return "Wallet not connected. Please connect your wallet first."
+    }
+    
+    return `Transaction failed: ${error?.message || 'Unknown error'}`
+  }
+
+  // Pre-submit validation function
+  const validateFormData = (data: BrandRegistrationFormData): string[] => {
+    const errors: string[] = []
+    
+    // Brand name validation
+    if (!data.brand || data.brand.trim().length < 2) {
+      errors.push("Brand name must be at least 2 characters long")
+    }
+    if (data.brand && data.brand.length > 50) {
+      errors.push("Brand name must be less than 50 characters")
+    }
+    
+    // Admin address validation
+    if (!data.brandAdminAddr || !data.brandAdminAddr.startsWith("0x") || data.brandAdminAddr.length !== 42) {
+      errors.push("Invalid brand admin address format")
+    }
+    if (data.brandAdminAddr === "0x0000000000000000000000000000000000000000") {
+      errors.push("Brand admin address cannot be zero address")
+    }
+    
+    // Oracle configuration validation
+    const updateInterval = parseInt(data.updateInterval)
+    if (isNaN(updateInterval) || updateInterval < 1 || updateInterval > 86400) {
+      errors.push("Update interval must be between 1 and 86400 seconds")
+    }
+    
+    const deviationThreshold = parseInt(data.deviationThreshold)
+    if (isNaN(deviationThreshold) || deviationThreshold < 0 || deviationThreshold > 100) {
+      errors.push("Deviation threshold must be between 0 and 100 percent")
+    }
+    
+    const heartbeat = parseInt(data.heartbeat)
+    if (isNaN(heartbeat) || heartbeat < 1 || heartbeat > 604800) {
+      errors.push("Heartbeat must be between 1 and 604800 seconds (1 week)")
+    }
+    
+    const minAnswer = parseInt(data.minAnswer)
+    const maxAnswer = parseInt(data.maxAnswer)
+    if (isNaN(minAnswer) || isNaN(maxAnswer) || minAnswer >= maxAnswer) {
+      errors.push("Minimum answer must be less than maximum answer")
+    }
+    
+    // Subscription ID validation
+    const subscriptionId = parseInt(data.subscriptionId)
+    if (isNaN(subscriptionId) || subscriptionId < 1) {
+      errors.push("Subscription ID must be a positive number")
+    }
+    
+    // State URL validation
+    if (!data.stateUrl || !data.stateUrl.startsWith("http")) {
+      errors.push("State URL must be a valid HTTP/HTTPS URL")
+    }
+    
+    // Stake validation
+    const stake = parseFloat(data.stake)
+    if (isNaN(stake) || stake <= 0) {
+      errors.push("Stake amount must be a positive number")
+    }
+    
+    return errors
+  }
 
   const onSubmit = async (data: BrandRegistrationFormData) => {
+    // Clear previous errors
+    setError(null)
+    setValidationErrors([])
+    
+    // Pre-submit validation
+    const validationErrors = validateFormData(data)
+    if (validationErrors.length > 0) {
+      setValidationErrors(validationErrors)
+      console.log('Validation errors:', validationErrors)
+      return
+    }
+    
     setIsLoading(true)
 
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
 
-    console.log(data)
-    try {
+    console.log('Submitting brand registration:', data)
+    console.log('Calling writeContract with args:', [
+      data.brand,
+      {
+        "updateInterval": data.updateInterval,
+        "deviationThreshold": data.deviationThreshold,
+        "heartbeat": data.heartbeat,
+        "minAnswer": data.minAnswer,
+        "maxAnswer": data.maxAnswer
+      },
+      data.brandAdminAddr,
+      data.subscriptionId,
+      data.stateUrl,
+      argsArray
+    ])
+    
+    // Call writeContract - this doesn't throw errors, they come through the hook
       writeContract({
         address: registry_addr,
         abi: registry_abi,
@@ -176,40 +374,9 @@ export function BrandRegistrationForm() {
         ],
         account: address
       })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'stake',
-      //   value: parseEther(data.stake),
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'activate',
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
-
-      // Simulate transaction hash - in real implementation, this would come from the transaction
-      const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      setTransactionHash(mockHash)
-
-      // Show proof modal after successful transaction
-      // setTimeout(() => {
-      //   setShowProofModal(true)
-      // }, 2000)
-      setIsLoading(false)
-
-    } catch (error) {
-      console.error("Failed to submit form ", error)
-      setIsLoading(false)
-    }
+    
+    // Note: We don't set isLoading to false here because wagmi handles the loading state
+    // The error will be caught by the useEffect below
   }
 
   const addArg = () => {
@@ -219,6 +386,110 @@ export function BrandRegistrationForm() {
     form.setValue("args", updatedArgs)
     setArgsArray([...argsArray, newArg])
   }
+
+  // Handle contract errors from wagmi
+  useEffect(() => {
+    console.log('=== WAGMI STATE DEBUG ===')
+    console.log('isError:', isError)
+    console.log('contractError:', contractError)
+    console.log('isPending:', isPending)
+    console.log('hash:', hash)
+    console.log('isConfirmed:', isConfirmed)
+    console.log('showStakeActivateModal:', showStakeActivateModal)
+    console.log('========================')
+    
+    if (isError && contractError) {
+      console.log('Contract error detected:', contractError)
+      console.log('Error details:', {
+        name: contractError.name,
+        message: contractError.message,
+        cause: contractError.cause,
+        stack: contractError.stack
+      })
+      
+      const errorMessage = parseError(contractError)
+      setError(errorMessage)
+      setIsLoading(false) // Reset loading state on error
+    }
+    
+    // If we get a hash, transaction was submitted successfully
+    if (hash) {
+      console.log('Transaction submitted successfully with hash:', hash)
+      setIsLoading(false)
+      
+      // Show stake/activate modal immediately after transaction submission
+      if (!showStakeActivateModal) {
+        console.log('Registration submitted, showing stake/activate modal')
+        const formData = form.getValues()
+        setRegisteredBrandName(formData.brand)
+        setShowStakeActivateModal(true)
+        console.log('Modal state set to true, brand name:', formData.brand)
+      } else {
+        console.log('Modal already showing, not opening again')
+      }
+    }
+  }, [isError, contractError, isPending, hash, form, showStakeActivateModal])
+
+  // Stake function
+  const handleStake = async () => {
+    if (!registeredBrandName) return
+    
+    console.log('Staking for brand:', registeredBrandName)
+    setError(null) // Clear previous errors
+    
+    writeModalContract({
+      address: registry_addr,
+      abi: registry_abi,
+      functionName: 'stake',
+      args: [registeredBrandName],
+      value: parseEther(form.getValues("stake") || "0.000000000001"), // Use form stake amount or default
+      account: address
+    })
+  }
+
+  // Activate function
+  const handleActivate = async () => {
+    if (!registeredBrandName) return
+    
+    console.log('Activating brand:', registeredBrandName)
+    setError(null) // Clear previous errors
+    
+    writeModalContract({
+      address: registry_addr,
+      abi: registry_abi,
+      functionName: 'activate',
+      args: [registeredBrandName],
+      account: address
+    })
+  }
+
+  // Handle stake/activate success
+  useEffect(() => {
+    if (modalHash && showStakeActivateModal) {
+      console.log('Modal transaction completed, step:', stakeActivateStep)
+      if (stakeActivateStep === 'stake') {
+        // Stake completed, move to activate step
+        console.log('Stake completed, moving to activate step')
+        setStakeActivateStep('activate')
+      } else if (stakeActivateStep === 'activate') {
+        // Activate completed, close modal
+        console.log('Activate completed, closing modal')
+        setShowStakeActivateModal(false)
+        setStakeActivateStep('stake')
+        setRegisteredBrandName('')
+        setModalTransactionHash('')
+      }
+    }
+  }, [modalHash, showStakeActivateModal, stakeActivateStep])
+
+  // Handle modal transaction errors
+  useEffect(() => {
+    if (isModalError && modalContractError) {
+      console.log('Modal contract error detected:', modalContractError)
+      const errorMessage = parseError(modalContractError)
+      setError(errorMessage)
+    }
+  }, [isModalError, modalContractError])
 
   return (
     <>
@@ -462,18 +733,70 @@ export function BrandRegistrationForm() {
 
 
               {/* Submit Button */}
-              <div className="flex justify-end pt-4">
+              <div className="flex flex-col space-y-4 pt-4">
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
                   disabled={isPending}
                 >
                   {isPending ? "Registering Brand..." : "Register Brand"}
-
                 </Button>
-                {hash && <div>Transaction Hash: {hash}</div>}
-                {isConfirming && <div>Waiting for confirmation...</div>}
-                {isConfirmed && <div>Transaction confirmed.</div>}
+                
+                {/* Debug Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    console.log('Debug: Manually opening modal')
+                    setRegisteredBrandName('TestBrand')
+                    setShowStakeActivateModal(true)
+                  }}
+                  className="text-xs"
+                >
+                  Debug: Test Modal
+                </Button>
+                
+                {/* Validation Errors Display */}
+                {validationErrors.length > 0 && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h4 className="text-red-800 font-semibold text-sm mb-2">Please fix the following errors:</h4>
+                    <ul className="text-red-700 text-sm space-y-1">
+                      {validationErrors.map((error, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-red-500 mr-2">•</span>
+                          {error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* Transaction Error Display */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h4 className="text-red-800 font-semibold text-sm mb-2">Transaction Error:</h4>
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                )}
+                
+                {hash && (
+                  <div className="text-center">
+                    <a 
+                      href={`https://sepolia.basescan.org/tx/${hash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline text-sm"
+                    >
+                      Transaction Hash: {hash}
+                    </a>
+                  </div>
+                )}
+                
+                {isConfirming && (
+                  <div className="text-center text-sm text-gray-600">
+                    Waiting for confirmation...
+                  </div>
+                )}
               </div>
             </form>
           </Form>
@@ -487,6 +810,136 @@ export function BrandRegistrationForm() {
         proof={sampleProof}
         transactionHash={transactionHash}
       />
+
+      {/* Stake/Activate Modal */}
+      <Dialog open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-[#00296b]">
+              Complete Brand Registration
+            </DialogTitle>
+            <DialogDescription>
+              Complete the registration process by staking and activating your brand
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Progress Tracker */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                stakeActivateStep === 'stake' 
+                  ? 'bg-[#00296b] text-white' 
+                  : 'bg-green-500 text-white'
+              }`}>
+                1
+              </div>
+              <span className={`text-sm font-medium ${
+                stakeActivateStep === 'stake' ? 'text-[#00296b]' : 'text-green-600'
+              }`}>
+                Stake
+              </span>
+            </div>
+            
+            <div className="flex-1 h-0.5 bg-gray-200 mx-4">
+              <div className={`h-full transition-all duration-300 ${
+                stakeActivateStep === 'activate' ? 'bg-green-500' : 'bg-gray-200'
+              }`} style={{ width: stakeActivateStep === 'activate' ? '100%' : '0%' }}></div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                stakeActivateStep === 'activate' 
+                  ? 'bg-[#00296b] text-white' 
+                  : stakeActivateStep === 'stake' 
+                    ? 'bg-gray-200 text-gray-500' 
+                    : 'bg-green-500 text-white'
+              }`}>
+                2
+              </div>
+              <span className={`text-sm font-medium ${
+                stakeActivateStep === 'activate' ? 'text-[#00296b]' : 'text-gray-500'
+              }`}>
+                Activate
+              </span>
+            </div>
+          </div>
+          
+          {/* Step Content */}
+          <div className="space-y-4">
+            {stakeActivateStep === 'stake' ? (
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-blue-800 font-semibold text-sm mb-2">Step 1: Stake</h4>
+                  <p className="text-blue-700 text-sm">
+                    Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration.
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={handleStake}
+                  disabled={isModalPending}
+                  className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
+                >
+                  {isModalPending ? "Staking..." : "Stake Brand"}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h4 className="text-green-800 font-semibold text-sm mb-2">Step 2: Activate</h4>
+                  <p className="text-green-700 text-sm">
+                    Activate brand "{registeredBrandName}" to make it live on the platform.
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={handleActivate}
+                  disabled={isModalPending}
+                  className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
+                >
+                  {isModalPending ? "Activating..." : "Activate Brand"}
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+              <h4 className="text-red-800 font-semibold text-sm mb-2">Error:</h4>
+              <p className="text-red-700 text-sm">An erorr occured try again</p>
+            </div>
+          )}
+          
+          {/* Transaction Hash */}
+          {modalHash && (
+            <div className="text-center mt-4">
+              <a 
+                href={`https://sepolia.basescan.org/tx/${modalHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline text-sm"
+              >
+                View Transaction: {modalHash.slice(0, 10)}...{modalHash.slice(-8)}
+              </a>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowStakeActivateModal(false)
+                setStakeActivateStep('stake')
+                setRegisteredBrandName('')
+                setError(null)
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
