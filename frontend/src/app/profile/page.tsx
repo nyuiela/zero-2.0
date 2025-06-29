@@ -747,7 +747,7 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
 
       {/* NFT Details */}
       <div className="p-4">
-        <div className="space-y-3">2
+        <div className="space-y-3">
           {/* Brand and Model */}
           {/* Additional Info */}
           <div className="text-xs text-muted-foreground border-none m-0 border-t flex p-0 justify-between">

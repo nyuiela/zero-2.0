@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import dynamic from "next/dynamic"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -31,7 +32,11 @@ import { createAuction } from "@/lib/api/auction"
 import { useAuthStore } from "@/lib/authStore"
 import { toRustCompatibleTimestamp } from "@/lib/utils"
 import { ProofData, ProofModal } from "./proof-modal"
-import { ProofModalTransaction } from "./proof-transaction"
+
+// Dynamically import ProofModalTransaction to avoid SSR issues
+const ProofModalTransaction = dynamic(() => import("./proof-transaction").then(mod => ({ default: mod.ProofModalTransaction })), {
+  ssr: false
+})
 
 // Validation schema for the auction registration form
 const auctionRegistrationSchema = z.object({
@@ -441,20 +446,27 @@ export function AuctionRegistrationForm({
 
               <Button
                 type="submit"
-                // onClick={() => handleSubmit}
                 disabled={isLoading}
                 className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
               >
                 {isLoading ? "Creating Auction..." : "Create Auction"}
               </Button>
-              {hash && <div>Transaction Hash: {hash}</div>}
-              {isConfirming && <div>Waiting for confirmation...</div>}
-              {isConfirmed && <div>Transaction confirmed.</div>}
             </div>
+            {hash && <div>Transaction Hash: {hash}</div>}
+            {isConfirming && <div>Waiting for confirmation...</div>}
+            {isConfirmed && <div>Transaction confirmed.</div>}
           </form>
         </Form>
       </CardContent>
-      <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={() => handleCreate(formArgs!)} name="Create Auction onchain & submit proof" />
+      {isProofModalOpen && (
+        <ProofModalTransaction
+          isOpen={isProofModalOpen}
+          onClose={() => setIsProofModalOpen(false)}
+          proof={proof}
+          handleSubmit={formArgs ? () => handleCreate(formArgs) : undefined}
+          name="Create Auction onchain & submit proof"
+        />
+      )}
     </Card>
   )
 } 
