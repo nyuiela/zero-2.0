@@ -106,12 +106,12 @@ export function LoginModal() {
       })
       
       // If user is already connected and we have stored nonce/message and username, go to sign step
-      if (isConnected && address && currentNonce && currentMessage && username) {
+      if (isConnected && address && currentNonce && currentMessage && username && username.length >= 4) {
         console.log('User fully ready, going to sign step')
         setAuthStep('sign')
       } else if (isConnected && address && currentNonce && currentMessage) {
-        // User connected and has nonce/message but no username, stay at username step
-        console.log('User connected with nonce/message but no username, staying at username step')
+        // User connected and has nonce/message but no username or invalid username, stay at username step
+        console.log('User connected with nonce/message but no valid username, staying at username step')
         setAuthStep('username')
       } else if (isConnected && address) {
         // User connected but no stored nonce/message, go to connect step to fetch
@@ -156,13 +156,6 @@ export function LoginModal() {
       console.log('Using fallback authentication message:', fallbackMessage)
     }
   }, [currentMessage, nonceLoading, nonceError, open, setNonceAndMessage])
-
-  // Auto-advance to connect step when username is valid
-  useEffect(() => {
-    if (username.length >= 4 && authStep === 'username') {
-      setAuthStep('connect')
-    }
-  }, [username, authStep, setAuthStep])
 
   // Auto-advance to sign step when wallet is connected and we have message and username
   useEffect(() => {
@@ -350,6 +343,9 @@ export function LoginModal() {
             />
             {username.length > 0 && username.length < 4 && (
               <p className="text-red-500 text-sm">Username must be at least 4 characters</p>
+            )}
+            {username.length >= 4 && (
+              <p className="text-green-600 text-sm">✓ Username is valid</p>
             )}
             <Button
               onClick={handleConnectWallet}
