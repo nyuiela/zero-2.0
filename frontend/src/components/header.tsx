@@ -146,7 +146,7 @@ export default function Header() {
             <Link href="/auctions" className="text-[#202626] hover:text-amber-500 font-medium">Auctions</Link>
             <Link href="/sell" className="text-[#202626] hover:text-amber-500 font-medium">Sell</Link>
             <Link href="/verify" className="text-[#202626] hover:text-amber-500 font-medium">Verify</Link>
-            <Link href="/" className="text-[#202626] hover:text-amber-500 font-medium">Brands</Link>
+            <Link href="/brands" className="text-[#202626] hover:text-amber-500 font-medium">Brands</Link>
           </div>
           {/* Search and Sign In */}
           <div className="flex-1 flex justify-end items-center space-x-4">
