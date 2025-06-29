@@ -366,6 +366,7 @@ contract Auction {
     }
 
     // a function that store the auction a timelock function , go back to to se ethe next in line highest stake 
+
 }
 
 //@Todo add the state changes , registration of rewrite, merkle trees update, state update
