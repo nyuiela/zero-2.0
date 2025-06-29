@@ -75,20 +75,37 @@ export function LoginModal() {
 
   // Auto-reopen modal after wallet connection
   useEffect(() => {
+    console.log('Auto-reopen check:', {
+      isConnected,
+      address: address?.slice(0, 6) + '...',
+      open,
+      isConnectingFromModal,
+      authStep,
+      username: username?.slice(0, 10) + '...'
+    })
+    
     if (isConnected && address && open === false && isConnectingFromModal) {
-      console.log('Wallet connected from our modal, re-opening login modal')
+      console.log('🎯 Wallet connected from our modal, re-opening login modal')
       setOpen(true)
       setIsConnectingFromModal(false) // Reset the flag
     }
-  }, [isConnected, address, open, isConnectingFromModal, setOpen, setIsConnectingFromModal])
+  }, [isConnected, address, open, isConnectingFromModal, setOpen, setIsConnectingFromModal, username])
 
   // Handle case where modal was closed during connect step but wallet is now connected
   useEffect(() => {
+    console.log('Connect step re-open check:', {
+      isConnected,
+      address: address?.slice(0, 6) + '...',
+      open,
+      authStep,
+      username: username?.slice(0, 10) + '...'
+    })
+    
     if (isConnected && address && open === false && authStep === 'connect') {
-      console.log('Modal was closed during connect step, but wallet is now connected. Re-opening.')
+      console.log('🎯 Modal was closed during connect step, but wallet is now connected. Re-opening.')
       setOpen(true)
     }
-  }, [isConnected, address, open, authStep, setOpen])
+  }, [isConnected, address, open, authStep, setOpen, username])
 
   // Initialize modal state when opened
   useEffect(() => {
@@ -109,9 +126,13 @@ export function LoginModal() {
       if (isConnected && address && currentNonce && currentMessage && username && username.length >= 4) {
         console.log('User fully ready, going to sign step')
         setAuthStep('sign')
-      } else if (isConnected && address && currentNonce && currentMessage) {
-        // User connected and has nonce/message but no username or invalid username, stay at username step
-        console.log('User connected with nonce/message but no valid username, staying at username step')
+      } else if (isConnected && address && currentNonce && currentMessage && username && username.length < 4) {
+        // User connected and has nonce/message but username is too short, stay at username step
+        console.log('User connected with nonce/message but username too short, staying at username step')
+        setAuthStep('username')
+      } else if (isConnected && address && currentNonce && currentMessage && !username) {
+        // User connected and has nonce/message but no username, stay at username step
+        console.log('User connected with nonce/message but no username, staying at username step')
         setAuthStep('username')
       } else if (isConnected && address) {
         // User connected but no stored nonce/message, go to connect step to fetch
@@ -190,11 +211,20 @@ export function LoginModal() {
     }
   }, [])
 
+  // Manual advance from username to connect step when user clicks Connect Wallet
   const handleConnectWallet = useCallback(() => {
     console.log('Opening connect modal from our login modal')
+    console.log('Current modal state before opening RainbowKit:', { open, authStep })
+    
+    // If we're on username step and username is valid, advance to connect step
+    if (authStep === 'username' && username.length >= 4) {
+      console.log('Advancing from username to connect step')
+      setAuthStep('connect')
+    }
+    
     setIsConnectingFromModal(true) // Set flag before opening RainbowKit modal
     openConnectModal?.()
-  }, [openConnectModal, setIsConnectingFromModal])
+  }, [openConnectModal, setIsConnectingFromModal, open, authStep, username, setAuthStep])
 
   const handleSignAndVerify = async () => {
     if (!address || !username || !currentMessage || !currentNonce) {
@@ -305,11 +335,15 @@ export function LoginModal() {
   }
 
   const handleCancel = () => {
+    console.log('Cancel button clicked, current authStep:', authStep)
+    
     // Allow closing if we're at the beginning, end, or during connect step
     if (authStep === 'username' || authStep === 'complete' || authStep === 'connect') {
+      console.log('Allowing modal to close')
       setOpen(false)
       // Clear all state when canceling (except during connect step)
       if (authStep !== 'connect') {
+        console.log('Clearing all state')
         clearNonceAndMessage()
         clearCurrentUsername()
         setIsConnectingFromModal(false)
@@ -323,9 +357,30 @@ export function LoginModal() {
   }
 
   const handleOpenChange = (newOpen: boolean) => {
-    // Allow closing if we're not in the middle of signing
+    console.log('Modal open change:', { newOpen, authStep })
+    
     if (!newOpen) {
-      handleCancel()
+      // Only allow closing if we're not in the middle of signing
+      if (authStep === 'username' || authStep === 'complete' || authStep === 'connect') {
+        console.log('Allowing modal to close via outside click')
+        setOpen(false)
+        // Clear all state when canceling (except during connect step)
+        if (authStep !== 'connect') {
+          console.log('Clearing all state')
+          clearNonceAndMessage()
+          clearCurrentUsername()
+          setIsConnectingFromModal(false)
+          setAuthStep('username')
+        }
+      } else {
+        // If in the middle of signing, prevent closing
+        console.log('Cannot close during signing process')
+        toast.info('Please complete the signing process.')
+        // Keep modal open
+        setOpen(true)
+      }
+    } else {
+      setOpen(true)
     }
   }
 
