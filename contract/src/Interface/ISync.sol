@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 
 interface ISync {
     event Response(bytes32 indexed requestId, string state, bytes response, bytes err);

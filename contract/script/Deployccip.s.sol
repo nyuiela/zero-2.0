@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
 import{ CrossToken} from "../src/chainlink/ccip.sol";

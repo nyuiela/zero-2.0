@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.24;
 
 import {PermissionModifiers} from "../libs/PermissionModifier.sol";
 import {IPermissionManager} from "../Interface/Permissions/IPermissionManager.sol";

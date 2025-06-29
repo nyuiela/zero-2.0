@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
 import {IRouterClient} from "@chainlink/contracts-ccip/interfaces/IRouterClient.sol";
 import {OwnerIsCreator} from "@chainlink/contracts/shared/access/OwnerIsCreator.sol";
@@ -8,7 +8,7 @@ import {CCIPReceiver} from "@chainlink/contracts-ccip/applications/CCIPReceiver.
 import {IERC20} from "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from
     "@chainlink/contracts/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
-
+import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
 /// @title - Sending proofs between chains syncing state across multiple chains.
 contract Messenger is CCIPReceiver, OwnerIsCreator {
     using SafeERC20 for IERC20;
@@ -43,6 +43,7 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
         // The address of the sender from the source chain.
         // The text that was received.
     bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
+   event ChangedMerkleVerifier(address indexed newVerifier);
 
     bytes32 private s_lastReceivedMessageId; // Store the last received messageId.
     string private s_lastReceivedText; // Store the last received text.
@@ -57,12 +58,14 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
     mapping(address => bool) public allowlistedSenders;
 
     IERC20 private s_linkToken;
+    IMerkleVerifier public merkleVerifier; // The address of the Merkle verifier contract.
 
     /// @notice Constructor initializes the contract with the router address.
     /// @param _router The address of the router contract.
     /// @param _link The address of the link contract.
-    constructor(address _router, address _link) CCIPReceiver(_router) {
+    constructor(address _router, address _link, address _merkleVerifier) CCIPReceiver(_router) {
         s_linkToken = IERC20(_link);
+        merkleVerifier = IMerkleVerifier(_merkleVerifier);
     }
 
     /// @dev Modifier that checks if the chain with the given destinationChainSelector is allowlisted.
@@ -174,13 +177,10 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
             revert NotEnoughBalance(address(this).balance, fees);
         }
 
-        // Send the CCIP message through the router and store the returned CCIP message ID
         messageId = router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
 
-        // Emit an event with message details
         emit MessageSent(messageId, _destinationChainSelector, _receiver, _text, address(0), fees);
 
-        // Return the CCIP message ID
         return messageId;
     }
 
@@ -192,7 +192,7 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
     {
         s_lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
         s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-
+        merkleVerifier.addLeave(s_lastReceivedText); // Add the received text to the Merkle tree
         emit MessageReceived(
             any2EvmMessage.messageId,
             any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
@@ -237,6 +237,11 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
     /// @return text The last received text.
     function getLastReceivedMessageDetails() external view returns (bytes32 messageId, string memory text) {
         return (s_lastReceivedMessageId, s_lastReceivedText);
+    }
+
+    function setMerkleVerifier(address _verifier) external onlyOwner {
+        // Set the address of the Merkle verifier contract
+        merkleVerifier = IMerkleVerifier(_verifier);
     }
 
     /// @notice Fallback function to allow the contract to receive Ether.
