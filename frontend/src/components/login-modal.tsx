@@ -18,6 +18,8 @@ import { useAuthStore } from '@/lib/authStore'
 import { verificationService } from '@/lib/verificationService'
 import { setJwtToken, getJwtToken } from '@/lib/utils'
 import { toast } from 'sonner'
+import Link from 'next/link'
+import AuthStepContent from './connect-modal'
 
 // interface LoginModalProps {
 //   open: boolean
@@ -407,121 +409,133 @@ export function LoginModal() {
     switch (authStep) {
       case 'username':
         return (
-          <div className="space-y-4">
-            <Input
-              id="username"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => handleUsernameChange(e.target.value)}
-              className="border-gray-700 text-[#202626]"
-            />
-            <Button
-              onClick={handleConnectWallet}
-              disabled={username.trim().length === 0}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-            >
-              Connect Wallet
-            </Button>
-            <Button
-              onClick={handleCancel}
-              variant="outline"
-              className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 py-2"
-            >
-              Cancel
-            </Button>
-          </div>
-        )
+          <AuthStepContent
+          inputPlaceholder="Enter username"
+          inputValue={username}
+          onInputChange={handleUsernameChange}
+          inputId="username"
+          primaryButton={{
+            text: "Connect Wallet",
+            onClick: handleConnectWallet,
+            disabled: username.trim().length === 0,
+            className: "bg-[#7400b8] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+          }}
+          secondaryButton={{
+            text: "cancel",
+            onClick: handleCancel,
+            isLink: true
+          }}
+        />
+      );
 
       case 'connect':
         return (
-          <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-800 text-sm">
-                <span className="font-semibold">Username:</span> {username}
-              </p>
-            </div>
-            {currentMessage && ( 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-blue-800 text-sm">
-                  <span className="font-semibold">Message you will sign:</span>
+          <AuthStepContent
+          infoBoxes={[
+            {
+              type: "green",
+              content: (
+                <p className="text-sm">
+                  <span className="font-semibold">Username:</span> {username}
                 </p>
-                <p className="text-blue-700 text-xs font-mono mt-1 break-all">
-                  {currentMessage}
-                </p>
-              </div>
-            )}
-            {nonceError && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-yellow-800 text-sm">
+              )
+            },
+            ...(currentMessage ? [{
+              type: "blue" as const,
+              content: (
+                <>
+                  <p className="text-sm">
+                    <span className="font-semibold">Message you will sign:</span>
+                  </p>
+                  <p className="text-xs font-mono mt-1 break-all text-blue-700">
+                    {currentMessage}
+                  </p>
+                </>
+              )
+            }] : []),
+            ...(nonceError ? [{
+              type: "yellow" as const,
+              content: (
+                <p className="text-sm">
                   <span className="font-semibold">Note:</span> Using fallback authentication. Backend connection unavailable.
                 </p>
-              </div>
-            )}
-            <Button
-              onClick={handleConnectWallet}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-            >
-              Connect Wallet
-            </Button>
-            <Button
-              onClick={handleCancel}
-              variant="outline"
-              className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 py-2"
-            >
-              Cancel
-            </Button>
-          </div>
-        )
+              )
+            }] : [])
+          ]}
+          primaryButton={{
+            text: "Connect Wallet",
+            onClick: handleConnectWallet,
+            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+          }}
+          secondaryButton={{
+            text: "Cancel",
+            onClick: handleCancel,
+            variant: "outline"
+          }}
+        />
+      );
 
       case 'sign':
         return (
-          <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-800 text-sm">
-                <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
-              </p>
-              <p className="text-green-800 text-sm">
-                <span className="font-semibold">Username:</span> {username}
-              </p>
-            </div>
-
-            {currentMessage && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-blue-800 text-sm">
-                  <span className="font-semibold">Message to sign:</span>
-                </p>
-                <p className="text-blue-700 text-xs font-mono mt-1 break-all">
-                  {currentMessage}
-                </p>
-              </div>
-            )}
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button
-              onClick={handleSignAndVerify}
-              disabled={loading}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-            >
-              {loading ? 'Signing...' : 'Sign Message & Login'}
-            </Button>
-          </div>
-        )
+          <AuthStepContent
+          infoBoxes={[
+            {
+              type: "green",
+              content: (
+                <>
+                  <p className="text-sm">
+                    <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold">Username:</span> {username}
+                  </p>
+                </>
+              )
+            },
+            ...(currentMessage ? [{
+              type: "blue" as const,
+              content: (
+                <>
+                  <p className="text-sm">
+                    <span className="font-semibold">Message to sign:</span>
+                  </p>
+                  <p className="text-xs font-mono mt-1 break-all text-blue-700">
+                    {currentMessage}
+                  </p>
+                </>
+              )
+            }] : [])
+          ]}
+          error={error ?? undefined}
+          primaryButton={{
+            text: loading ? 'Signing...' : 'Sign Message & Login',
+            onClick: handleSignAndVerify,
+            disabled: loading,
+            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+          }}
+        />
+      );
 
       case 'complete':
         return (
-          <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-800 text-sm">
-                <span className="font-semibold">Authentication Complete!</span>
-              </p>
-            </div>
-            <Button
-              onClick={() => setOpen(false)}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 py-2"
-            >
-              Close
-            </Button>
-          </div>
-        )
+          <AuthStepContent
+          infoBoxes={[
+            {
+              type: "green",
+              content: (
+                <p className="text-sm">
+                  <span className="font-semibold">Authentication Complete!</span>
+                </p>
+              )
+            }
+          ]}
+          primaryButton={{
+            text: "Close",
+            onClick: () => setOpen(false),
+            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95"
+          }}
+        />
+      );
     }
   }
 
