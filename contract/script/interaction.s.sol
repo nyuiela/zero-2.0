@@ -12,9 +12,11 @@ import "../src/interface/IProofSync.sol";
 import {IInitFunction} from "../src/interface/IInitFunction.sol";
 import {ICarRegistry} from "../src/interface/ICarRegistry.sol";
 import {ICarOracle} from "../src/interface/oracle/IcarOracle.sol";
+import {ISync} from "../src/interface/ISync.sol";
 
 contract ContractConfig is Script {
-    address constant CAR_REGISTRY = 0x48e56B204B9D8dE76FA8D9930422a77E095322C0;
+    address constant CAR_REGISTRY = 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E;
+    address constant SYNC_ADDRESS = 0xa9b7d51eA8FF6eD5D30fAf351516cb3AcF45507e;
     string constant BRANDNAME = "lesscars";
     address constant PERMISSIONADDRESS =
         0xf0830060f836B8d54bF02049E5905F619487989e;
@@ -30,9 +32,12 @@ contract ContractConfig is Script {
         console.log("Deployer address:", deployer);
 
         vm.createSelectFork(vm.rpcUrl("basechain"));
+        vm.makePersistent(CAR_REGISTRY);
+
         vm.startBroadcast(deployerPrivateKey);
 
-        registerMyCar();
+        // registerMyCar();
+        callSendRequest();
 
         vm.stopBroadcast();
     }
@@ -57,5 +62,12 @@ contract ContractConfig is Script {
             URL,
             args
         );
+    }
+
+    //update to aa public function and add command to makefile
+    function callSendRequest() internal {
+        string[] memory args = new string[](1);
+        args[0] = "1";
+        ISync(SYNC_ADDRESS).sendRequest(SUBSCRIPTIONID, args);
     }
 }

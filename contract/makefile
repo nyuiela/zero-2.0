@@ -83,3 +83,6 @@ deploy-avalanche:
 
 register-car:
 	@forge script script/interaction.s.sol:ContractConfig --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvvv
+
+deploy-sync:
+	@forge script script/DeploySync.s.sol:DeployScript --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv

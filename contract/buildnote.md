@@ -100,25 +100,72 @@ to deploy on base
 
 ### deploment address base
 
+Deploying PermissionManager...
+PermissionManager deployed at: 0xE2d0fC5bc27496109cC2AB7887e5966dC1d5F610
+Deploying BrandPermissionManager...
+BrandPermissionManager deployed at: 0x2fcE9Ee2B4A6196b544fA467cA59102b208F2748
+Deploying CarOracle...
+CarOracle deployed at: 0x40c917240fF0F4F228f4922e0869F54560D1e095
+Deploying OracleMaster...
+OracleMaster deployed at: 0xE853149E0f4De9Ce641FC0611b8dbf1e3c3750f4
+Deploying Profile...
+Profile deployed at: 0x0A0e884c546e4CBB72eafb4C2C822CD4ac93B57C
+Deploying StateManager...
+StateManager deployed at: 0xAF30ca094fA5A4DbE4f505e3dC73f1122d8B419C
+Deploying MerkleVerifier...
+MerkleVerifier deployed at: 0x4e277dD4Ca1Fff4E414dB447dF66d0ED4DBA907f
+Deploying ProofSync...
+ProofSync deployed at: 0xE50091c67c0D08D63d149dafa8194c446751e1E2
+Deploying Messenger...
+Messanger deployed at: 0x8a0963D028e06076f1dAF1b53153bB4906ed6c21
+Deploying CrossToken (CCIP)...
+CrossToken deployed at: 0x0eAE2d99C7410DAB92499B0BEe415a7bce05E234
+Deploying SyncFunction...
+SyncFunction deployed at: 0x1def6A63BCa5904244F0e5b841E3fE40206b3273
+Deploying Fee...
+Fee deployed at: 0x774a742411AEE3F8D780876fB07cB7f5d95A7704
+Deploying Reputation...
+Reputation deployed at: 0x5963f8017392ee998173bFC32cCd5C0F3b53Da3d
+Deploying CarRegistry...
+CarRegistry deployed at: 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E
+Deploying statecheckfunction....
+0x62f8F7cCbe5a6BBB6ea159e0C6242e8df9b8Ce8b
+Deploying InitFunction...
+InitFunction deployed at: 0x8Fbbe003Eb050c430d3EE849e2F9716d6E6B9f81
+Deploying ZeroNFT...
+ZeroNFT deployed at: 0x48C306cf6719fE51166690567FfFFCBb948fA33B
+Deploying Auction...
+Auction deployed at: 0x9f68Ad47FC90b69c3f4418DfC5C7ACddbFf7D5Ab
+Setting up post-deployment configurations...
+InitFunction set in CarRegistry
+Registry set in Profile
+Auction set in ZeroNFT
+InitFunction ownership transferred to CarRegistry
+Granting permissions to: 0xf0830060f836B8d54bF02049E5905F619487989e
+All permissions granted to: 0xf0830060f836B8d54bF02049E5905F619487989e
+Transferring LINK tokens to CCIP and Messenger...
+
+=== DEPLOYMENT SUMMARY ===
 Network: Base
 Deployer: 0x4C08D39F511B9d20B3cA9F62959E6c1a3DD50910
-PermissionManager: 0xEc3E4084C1B6998eDf0f10a1F8400B385B466645
-BrandPermissionManager: 0x4e4d6c6DF2AB3FEa8b5721A9ca4Ba87C09D976C1
-CarOracle: 0xF997bfF470067f37004E0d6499AA7E3b0be48164
-OracleMaster: 0x2727994B0Da19893a80B702defBFb03948779a01
-Profile: 0xC2F8dDD9900DfE0AAc075960148C43C5Eb96f8DC
-StateManager: 0xDD0A57433412F5aC6b73bB768965e4f4F9b82fa4
-InitFunction: 0xe701876FcDCe0F620C5EF2553351a5f927e4A793
-MerkleVerifier: 0xb1A748F08DA25678a923733373e0bbd4F692B7cE
-ProofSync: 0xE96f9faE5389Ed2f3437dEa499A621AfBC8CA3d4
-CrossToken (CCIP): 0x3e59A0088725F2187E1255e87C7B3A34B9436e5e
-SyncFunction: 0xfacccB3306e421079b5Ba8f0F803B26032792CCC
-Fee: 0xBAC01A35f3310c5797Ae9F0F44d9C6c8F96B77E5
-Reputation: 0xF28DD1abdea4339A17E965A3062B8774CFC1A234
-CarRegistry: 0x48e56B204B9D8dE76FA8D9930422a77E095322C0
-ZeroNFT: 0x77ADb4c548f215CACBddB60E1D2BA345bdE763CF
-Auction: 0x4A4ABCE29bA4173f571933Fd27C06cead87A4e4A
-StateCheckFunction 0x3795676fa4d28d350296FffF28a4A0955D855d82
+PermissionManager: 0xE2d0fC5bc27496109cC2AB7887e5966dC1d5F610
+BrandPermissionManager: 0x2fcE9Ee2B4A6196b544fA467cA59102b208F2748
+CarOracle: 0x40c917240fF0F4F228f4922e0869F54560D1e095
+OracleMaster: 0xE853149E0f4De9Ce641FC0611b8dbf1e3c3750f4
+Profile: 0x0A0e884c546e4CBB72eafb4C2C822CD4ac93B57C
+StateManager: 0xAF30ca094fA5A4DbE4f505e3dC73f1122d8B419C
+InitFunction: 0x8Fbbe003Eb050c430d3EE849e2F9716d6E6B9f81
+MerkleVerifier: 0x4e277dD4Ca1Fff4E414dB447dF66d0ED4DBA907f
+ProofSync: 0xE50091c67c0D08D63d149dafa8194c446751e1E2
+CrossToken (CCIP): 0x0eAE2d99C7410DAB92499B0BEe415a7bce05E234
+SyncFunction: 0x1def6A63BCa5904244F0e5b841E3fE40206b3273
+Fee: 0x774a742411AEE3F8D780876fB07cB7f5d95A7704
+Reputation: 0x5963f8017392ee998173bFC32cCd5C0F3b53Da3d
+CarRegistry: 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E
+ZeroNFT: 0x48C306cf6719fE51166690567FfFFCBb948fA33B
+Auction: 0x9f68Ad47FC90b69c3f4418DfC5C7ACddbFf7D5Ab
+StateCheckFunction 0x62f8F7cCbe5a6BBB6ea159e0C6242e8df9b8Ce8b
+=== DEPLOYMENT COMPLETE ===
 
 ## deployment address cross chain eth
 

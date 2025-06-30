@@ -24,14 +24,20 @@ import {StateCheckFunction} from "../src/chainlink/state_check_function.sol";
 
 contract DeployScript is Script {
     // Base Network Addresses
-    address constant _BASE_ETH_USD_FEED = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
-    address constant _BASE_USDC_USD_FEED = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
-    address constant _BASE_USDC_TOKEN = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
+    address constant _BASE_ETH_USD_FEED =
+        0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
+    address constant _BASE_USDC_USD_FEED =
+        0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
+    address constant _BASE_USDC_TOKEN =
+        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
     address constant _BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
-    address constant _BASE_LINK_TOKEN = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
+    address constant _BASE_LINK_TOKEN =
+        0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
 
-    address constant _BASE_FUNCTION_ROUTER = 0xf9B8fc078197181C841c296C876945aaa425B278;
-    bytes32 constant _BASE_FUNCTION_DON_ID = 0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
+    address constant _BASE_FUNCTION_ROUTER =
+        0xf9B8fc078197181C841c296C876945aaa425B278;
+    bytes32 constant _BASE_FUNCTION_DON_ID =
+        0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
     //uint64 const ant BASE_CHAIN_SELECTOR_ID = 10344971235874465080; // Base Sepolia Chain ID
     uint256 constant _AMOUNT = 1000000000000000000; // 1 LINK in wei
     // steps for deployment
@@ -81,56 +87,81 @@ contract DeployScript is Script {
         // 1. Deploy Permission Manager
         console.log("Deploying PermissionManager...");
         permissionManager = new PermissionManager();
-        console.log("PermissionManager deployed at:", address(permissionManager));
+        vm.makePersistent(address(permissionManager));
+        console.log(
+            "PermissionManager deployed at:",
+            address(permissionManager)
+        );
 
         // 2. Deploy Brand Permission Manager
         console.log("Deploying BrandPermissionManager...");
         brandPermissionManager = new BrandPermissionManager();
-        console.log("BrandPermissionManager deployed at:", address(brandPermissionManager));
+        vm.makePersistent(address(brandPermissionManager));
+        console.log(
+            "BrandPermissionManager deployed at:",
+            address(brandPermissionManager)
+        );
 
         // 3. Deploy Car Oracle
         console.log("Deploying CarOracle...");
         carOracle = new CarOracle();
+        vm.makePersistent(address(carOracle));
         console.log("CarOracle deployed at:", address(carOracle));
 
         // 4. Deploy Oracle Master
         console.log("Deploying OracleMaster...");
-        oracleMaster = new OracleMaster(address(carOracle), address(brandPermissionManager), address(permissionManager));
+        oracleMaster = new OracleMaster(
+            address(carOracle),
+            address(brandPermissionManager),
+            address(permissionManager)
+        );
+        vm.makePersistent(address(oracleMaster));
         console.log("OracleMaster deployed at:", address(oracleMaster));
 
         // 5. Deploy Profile (needs permission manager)
         console.log("Deploying Profile...");
         profile = new Profile(address(permissionManager));
+        vm.makePersistent(address(profile));
         console.log("Profile deployed at:", address(profile));
 
         // 6. Deploy State Manager
         console.log("Deploying StateManager...");
         stateManager = new StateManager(address(profile));
+        vm.makePersistent(address(stateManager));
         console.log("StateManager deployed at:", address(stateManager));
 
         // 8. Deploy Merkle Verifier
         console.log("Deploying MerkleVerifier...");
         merkleVerifier = new MerkleVerifier();
+        vm.makePersistent(address(merkleVerifier));
         console.log("MerkleVerifier deployed at:", address(merkleVerifier));
 
         // 9. Deploy Proof Sync
         console.log("Deploying ProofSync...");
         proofSync = new ProofSync(address(merkleVerifier), payable(ccip)); // Messenger will be set later
+        vm.makePersistent(address(proofSync));
         console.log("ProofSync deployed at:", address(proofSync));
         // 0. messenger
         console.log("Deploying Messenger...");
         //   using ccip as router address
-        messenger = new Messenger(_BASE_ROUTER, _BASE_LINK_TOKEN, address(merkleVerifier));
-        console.log("PermissionManager deployed at:", address(messenger));
+        messenger = new Messenger(
+            _BASE_ROUTER,
+            _BASE_LINK_TOKEN,
+            address(merkleVerifier)
+        );
+        vm.makePersistent(address(messenger));
+        console.log("messanger deployed at:", address(messenger));
 
         // 10. Deploy CCIP
         console.log("Deploying CrossToken (CCIP)...");
         ccip = new CrossToken(_BASE_ROUTER, _BASE_LINK_TOKEN);
+        vm.makePersistent(address(ccip));
         console.log("CrossToken deployed at:", address(ccip));
 
         // 11. Deploy Sync Function
         console.log("Deploying SyncFunction...");
         syncFunction = new Sync(address(stateManager));
+        vm.makePersistent(address(syncFunction));
         console.log("SyncFunction deployed at:", address(syncFunction));
 
         // 12. Deploy Fee
@@ -141,6 +172,7 @@ contract DeployScript is Script {
             address(permissionManager), // global permission manager
             30 // stake amount required
         );
+        vm.makePersistent(address(fee));
         console.log("Fee deployed at:", address(fee));
 
         // 13. Deploy Reputation
@@ -151,6 +183,7 @@ contract DeployScript is Script {
             address(0), // car registry - will be set after
             address(permissionManager)
         );
+        vm.makePersistent(address(reputation));
         console.log("Reputation deployed at:", address(reputation));
 
         // 14. Deploy Car Registry
@@ -165,16 +198,25 @@ contract DeployScript is Script {
             address(oracleMaster),
             address(proofSync)
         );
+        vm.makePersistent(address(carRegistry));
         console.log("CarRegistry deployed at:", address(carRegistry));
 
         // deploying state check automation function
         console.log("Deploying statecheckfunction....");
-        stateCheckFunction = new StateCheckFunction(address(stateManager), address(carRegistry));
+        stateCheckFunction = new StateCheckFunction(
+            address(stateManager),
+            address(carRegistry)
+        );
+        vm.makePersistent(address(stateCheckFunction));
         console.log("", address(stateCheckFunction));
 
         // 7. Deploy Init Function
         console.log("Deploying InitFunction...");
-        initFunction = new InitFunction(address(stateManager), address(carRegistry)); // Will be set after registry
+        initFunction = new InitFunction(
+            address(stateManager),
+            address(carRegistry)
+        ); // Will be set after registry
+        vm.makePersistent(address(initFunction));
         console.log("InitFunction deployed at:", address(initFunction));
 
         // 15. Deploy Zero NFT
@@ -185,13 +227,19 @@ contract DeployScript is Script {
             address(carRegistry),
             address(0) // auction contract - will be set after
         );
+        vm.makePersistent(address(zeroNFT));
         console.log("ZeroNFT deployed at:", address(zeroNFT));
 
         // 16. Deploy Auction
         console.log("Deploying Auction...");
         auction = new Auction(
-            address(carRegistry), address(zeroNFT), address(oracleMaster), _BASE_ETH_USD_FEED, _BASE_USDC_USD_FEED
+            address(carRegistry),
+            address(zeroNFT),
+            address(oracleMaster),
+            _BASE_ETH_USD_FEED,
+            _BASE_USDC_USD_FEED
         );
+        vm.makePersistent(address(auction));
         console.log("Auction deployed at:", address(auction));
 
         // Post-deployment setup
@@ -266,7 +314,11 @@ contract DeployScript is Script {
 
         // Grant all permissions with 1 year expiration
         uint256 expirationTime = block.timestamp + 365 days;
-        permissionManager.grantBatchPermissions(permissionAddress, permissions, expirationTime);
+        permissionManager.grantBatchPermissions(
+            permissionAddress,
+            permissions,
+            expirationTime
+        );
         console.log("All permissions granted to:", permissionAddress);
 
         // set donId
