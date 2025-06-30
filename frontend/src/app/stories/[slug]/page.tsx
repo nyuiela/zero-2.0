@@ -7,13 +7,13 @@ const stories = [
     title: 'From Formula One to F1, P1™ and W1 – the Evolution of McLaren',
     description: 'Born in Auckland, New Zealand, in 1937, Bruce McLaren won four Grand Prix during his track career and, for 44 years, held the record as the youngest ever Grand Prix winner.',
     date: '02 JUNE, 2025',
-    image: '/public/story1.jpg',
+    image: 'https://sbxcars.com/wp-content/uploads/2025/04/Falcon-F7-credit-Falcon.jpg',
     hero: true,
     content: 'Full story content for McLaren evolution...'
   },
   {
     slug: 'adamastor-furia',
-    title: 'The Adamastor Furia — Portugal's First Supercar',
+    title: `The Adamastor Furia — Portugal's First Supercar`,
     description: 'Most people think of wine, beaches and Cristiano Ronaldo when it comes to Portugal, but the sunny country in the westernmost part of Europe is now home to a new supercar.',
     date: '02 MAY, 2025',
     image: '/public/story2.jpg',
@@ -25,7 +25,7 @@ const stories = [
     title: 'Rarely heard of American supercar was so exclusive...',
     description: 'The Falcon F7 is a rare and almost forgotten supercar built in the United States in the early 2010s. The idea was to combine...',
     date: '24 APRIL, 2025',
-    image: '/public/story3.jpg',
+    image: 'https://sbxcars.com/wp-content/uploads/2025/04/Falcon-F7-credit-Falcon.jpg',
     hero: false,
     content: 'Full story content for Falcon F7...'
   },

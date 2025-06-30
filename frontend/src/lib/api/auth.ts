@@ -57,7 +57,7 @@ export interface AuthResponse {
 
 export async function fetchNonce() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/auth`)
+    const res = await fetch(`/api/auth-proxy`)
     console.log("fetchNone ", res);
     if (!res.ok) {
       throw new Error('Auth API failed, using mock nonce')
@@ -81,7 +81,7 @@ interface AuthParams {
 // Updated verification function that extracts JWT from response headers
 export async function verifySignature(body: AuthParams) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/auth`, {
+    const res = await fetch(`/api/auth-proxy`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -91,7 +91,7 @@ export async function verifySignature(body: AuthParams) {
       throw new Error('Auth verification failed, using mock');
     }
     const proof = await res.json()
-    const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`/api/auth-proxy/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(proof),
@@ -103,7 +103,6 @@ export async function verifySignature(body: AuthParams) {
 
     const verify = await verifyResponse.json();
     console.log("Jwt Token ", jwtToken);
-
 
     // Return the response data along with the JWT token
     return {
@@ -119,7 +118,7 @@ export async function verifySignature(body: AuthParams) {
 // New polling function to check verification status
 export async function pollVerificationStatus(verificationId: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/auth/status/${verificationId}`)
+    const res = await fetch(`/api/auth-proxy/status/${verificationId}`)
     if (!res.ok) {
       throw new Error('Failed to check verification status')
     }

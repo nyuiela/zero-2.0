@@ -5,7 +5,7 @@ import { ProofData } from "@/components/proof-modal"
 
 export async function fetchBids(): Promise<Bid[] | null> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/bids`)
+    const res = await apiRequest(`/api/bids-proxy`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auctions.")
       // return mockAuctions
@@ -23,7 +23,7 @@ export async function fetchBids(): Promise<Bid[] | null> {
 
 export async function fetchBidById(id: number): Promise<Bid | null> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/bids/${id}`)
+    const res = await apiRequest(`/api/bids-proxy/${id}`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auction.")
       // return mockAuctions.find(auction => auction.id.toString() === id) || null
@@ -38,7 +38,7 @@ export async function fetchBidById(id: number): Promise<Bid | null> {
 }
 export async function fetchBidByAuctionId(id: number): Promise<Bid[] | null> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/bids/a/${id}`)
+    const res = await apiRequest(`/api/bids-proxy/a/${id}`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auction.")
       // return mockAuctions.find(auction => auction.id.toString() === id) || null

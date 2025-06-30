@@ -7,7 +7,7 @@ import { ProofData } from '@/components/proof-modal';
 
 export async function fetchAuctions(): Promise<Auction[]> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/auctions`)
+    const res = await apiRequest(`/api/auctions-proxy`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auctions.")
       return mockAuctions
@@ -23,14 +23,14 @@ export async function fetchAuctions(): Promise<Auction[]> {
 }
 export async function fetchAuctionedCars(): Promise<CarAuctioned[] | undefined> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/auctions`)
+    const res = await apiRequest(`/api/auctions-proxy`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auctions.")
       // return mockAuctions
     }
     const json = await res.json()
     const auctions = json.data;
-    const carsRes = await apiRequest(`${API_BASE_URL}/api/cars`)
+    const carsRes = await apiRequest(`/api/cars-proxy`)
     const cars = await carsRes.json()
 
     // Step 1: Build a Map of auction.id => auction
@@ -61,7 +61,7 @@ export async function fetchAuctionedCars(): Promise<CarAuctioned[] | undefined> 
 
 export async function fetchAuctionById(id: string): Promise<Auction | null> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/auctions/${id}`)
+    const res = await apiRequest(`/api/auctions-proxy/${id}`)
     if (!res.ok) {
       console.warn("API failed, falling back to mock data for auction.")
       return mockAuctions.find(auction => auction.id.toString() === id) || null
@@ -81,7 +81,7 @@ interface ProofAuction extends ProofData {
 }
 export async function createAuction(auctionData: Partial<Auction>, jwt: string): Promise<ProofAuction> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/auctions`, {
+    const res = await apiRequest(`/api/auctions-proxy`, {
       method: 'POST',
       body: JSON.stringify(auctionData),
       headers: {

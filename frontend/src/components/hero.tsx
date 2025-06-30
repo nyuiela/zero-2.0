@@ -12,7 +12,7 @@ const Hero = () => {
       make: 'Dodge',
       model: 'Viper SRT-10 Roadster',
       image: 'https://ext.same-assets.com/360451443/3746763894.jpeg',
-      link: '/listing/340'
+      link: '/listing/1'
     },
     {
       id: 330,
@@ -20,7 +20,7 @@ const Hero = () => {
       make: 'Ford',
       model: 'GT Holman Moody Heritage Edition',
       image: 'https://ext.same-assets.com/360451443/1059592237.jpeg',
-      link: '/listing/330'
+      link: '/listing/2'
     }
   ]
 
