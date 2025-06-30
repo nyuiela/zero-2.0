@@ -55,7 +55,7 @@ export async function fetchBidByAuctionId(id: number): Promise<Bid[] | null> {
 
 export async function placeBid(bidData: Partial<Bid>, jwt: string): Promise<ProofResponse> {
   try {
-    const res = await apiRequest(`${API_BASE_URL}/api/bids`, {
+    const res = await apiRequest(`/api/bids-proxy`, {
       method: 'POST',
       body: JSON.stringify(bidData),
       headers: {
