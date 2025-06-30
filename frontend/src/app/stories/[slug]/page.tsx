@@ -13,7 +13,11 @@ const stories = [
   },
   {
     slug: 'adamastor-furia',
+<<<<<<< HEAD
     title: `The Adamastor Furia — Portugal's First Supercar`,
+=======
+    title: 'The Adamastor Furia — Portugals First Supercar',
+>>>>>>> 082db9adb652f31585cbfd83751eb7d876d78db8
     description: 'Most people think of wine, beaches and Cristiano Ronaldo when it comes to Portugal, but the sunny country in the westernmost part of Europe is now home to a new supercar.',
     date: '02 MAY, 2025',
     image: '/public/story2.jpg',
