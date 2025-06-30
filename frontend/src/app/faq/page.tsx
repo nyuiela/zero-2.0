@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 'use client'
-=======
-"use client"
->>>>>>> 082db9adb652f31585cbfd83751eb7d876d78db8
 import { useState } from 'react'
 
 const faqs = [
