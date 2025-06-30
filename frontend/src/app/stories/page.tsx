@@ -3,7 +3,7 @@ import Link from 'next/link'
 const stories = [
   {
     slug: 'formula-one-evolution',
-    title: 'From Formula One to F1, P1™ and W1 – the Evolution of McLaren',
+    title: 'From Formula One to F1, P1™ and W1  the Evolution of McLaren',
     description: 'Born in Auckland, New Zealand, in 1937, Bruce McLaren won four Grand Prix during his track career and, for 44 years, held the record as the youngest ever Grand Prix winner.',
     date: '02 JUNE, 2025',
     image: '/public/story1.jpg',
@@ -12,7 +12,7 @@ const stories = [
   },
   {
     slug: 'adamastor-furia',
-    title: 'The Adamastor Furia — Portugal’s First Supercar',
+    title: 'The Adamastor Furia — Portugals First Supercar',
     description: 'Most people think of wine, beaches and Cristiano Ronaldo when it comes to Portugal, but the sunny country in the westernmost part of Europe is now home to a new supercar.',
     date: '02 MAY, 2025',
     image: '/public/story2.jpg',
