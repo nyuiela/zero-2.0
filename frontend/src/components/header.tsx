@@ -95,9 +95,9 @@ export default function Header() {
   return (
     <header className="w-full relative z-50">
       {/* Top Bar */}
-      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-between px-4 py-2 cursor-pointer font-bold " onClick={() => setIsBrandModalOpen(true)}>
-        <span>Register as a brand &gt;</span>
-        <button className="text-xl font-light">&times;</button>
+      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-center px-4 py-2 cursor-pointer relative" onClick={() => setIsBrandModalOpen(true)}>
+        <span className='font-normal text-xs'>Register as a brand</span>
+        <button className="text-xl font-light absolute right-5">&times;</button>
       </div>
       {/* register brand form */}
 
@@ -120,7 +120,7 @@ export default function Header() {
       /> */}
 
       {/* Contact Info Bar */}
-      <div className="w-full bg-gray-50 text-[#202626] text-xs flex items-center justify-center px-4 py-1 border-b border-gray-200">
+      <div className="w-full bg-gray-50 text-[#202626] text-xs flex items-center justify-center px-4 py-1 border-b border-gray-200 max-md:text-[10px]">
         {contactInfo.map((item, idx) => (
           <span key={item.label} className="mx-1">
             {item.label} {item.value}
@@ -142,7 +142,8 @@ export default function Header() {
         <div className="max-w-7xl mx-auto flex items-center justify-between py-6 px-4">
 
           {/* Navigation Links */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex space-x-8">
+
+          <div className="absolute left-1/2 -translate-x-1/2 flex space-x-8 max-sm:text-sm">
             <Link href="/auctions" className="text-[#202626] hover:text-amber-500 font-medium">Auctions</Link>
             <Link href="/sell" className="text-[#202626] hover:text-amber-500 font-medium">Sell</Link>
             <Link href="/verify" className="text-[#202626] hover:text-amber-500 font-medium">Verify</Link>
@@ -150,7 +151,7 @@ export default function Header() {
           </div>
           {/* Search and Sign In */}
           <div className="flex-1 flex justify-end items-center space-x-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full">
+            <button className="p-2 hover:bg-gray-100 rounded-full max-sm:hidden">
               <Search className="h-5 w-5 text-[#202626]" />
             </button>
             {/* <Link href="/login" className="text-[#202626] hover:text-amber-500 font-medium">Sign in</Link> */}
@@ -170,18 +171,15 @@ export default function Header() {
 
               <div className="flex items-center space-x-3 text-black">
                 {/* Address Dropdown */}
-                <div>{chainId}</div>
+                <div className='max-sm:hidden'>{chainId}</div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-00 hover:text-amber-00 py-3 px-4 border-0 shadow-none">
-                      {/* <Wallet className="h-4 w-4 mr-2" /> */}
                       <User />
-                      {/* {user.username} */}
-                      {/* {address?.slice(0, 6)}...{address?.slice(-4)} */}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
+                  <DropdownMenuContent
+                    align="end"
                     className="w-60 bg-white border-gray-700 text-black border-none shadow-2xl p-2 z-[100]"
                     sideOffset={8}
                   >
