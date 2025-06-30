@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'sbxcars.com'
       }
     ],
     unoptimized: true
