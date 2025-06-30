@@ -86,3 +86,11 @@ register-car:
 
 deploy-sync:
 	@forge script script/DeploySync.s.sol:DeployScript --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
+
+deploy-setStake:
+	@forge script script/contractsconfig.s.sol:ConfigStake --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
+
+register-brand:
+	@forge script script/interaction.s.sol:BrandInteraction  --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvvv
+
+

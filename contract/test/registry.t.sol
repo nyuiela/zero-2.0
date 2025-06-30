@@ -21,9 +21,16 @@ import {InitFunction} from "../src/chainlink/init_function.sol";
 
 // Mock for InitFunction to bypass Chainlink call will run node lattr
 contract MockInitFunction is InitFunction {
-    constructor(address _stateAddr, address _registry) InitFunction(_stateAddr, _registry) {}
+    constructor(
+        address _stateAddr,
+        address _registry
+    ) InitFunction(_stateAddr, _registry) {}
 
-    function sendRequest(uint64, string[] calldata, string memory) external override onlyRegistry returns (bytes32) {
+    function sendRequest(
+        uint64,
+        string[] calldata,
+        string memory
+    ) external override onlyRegistry returns (bytes32) {
         return bytes32(uint256(123));
     }
 }
@@ -86,7 +93,11 @@ contract RegistryTest is Test {
         profile = new Profile(address(permission));
         state = new StateManager(address(profile));
         carOracle = new CarOracle();
-        oracle = new OracleMaster(address(carOracle), address(brandPermission), address(permission));
+        oracle = new OracleMaster(
+            address(carOracle),
+            address(brandPermission),
+            address(permission)
+        );
         syncer = new ProofSync(address(merkleVerifier), payable(ccip));
         merkleVerifier = new MerkleVerifier();
         merkleVerifier.initialize("brand", "000", address(0), address(0));
@@ -96,7 +107,12 @@ contract RegistryTest is Test {
         // address carRegistry,
         // address _permissionManagerImplementation,
         // address _globalPermissionManage r
-        reputation = new Reputation(REQUIRED_STAKE, address(usdc), address(registry), address(permission));
+        reputation = new Reputation(
+            REQUIRED_STAKE,
+            address(usdc),
+            address(registry),
+            address(permission)
+        );
         registry = new CarRegistry(
             address(profile),
             address(state),
@@ -118,16 +134,37 @@ contract RegistryTest is Test {
         string memory brand = "TestBrand";
 
         // Test that the registry is properly initialized
-        assertEq(address(registry.profileContract()), address(profile), "Profile contract should be set");
-        assertEq(address(registry.stateContract()), address(state), "State contract should be set");
-        assertEq(address(registry.reputation()), address(reputation), "Reputation contract should be set");
+        assertEq(
+            address(registry.profileContract()),
+            address(profile),
+            "Profile contract should be set"
+        );
+        assertEq(
+            address(registry.stateContract()),
+            address(state),
+            "State contract should be set"
+        );
+        assertEq(
+            address(registry.reputation()),
+            address(reputation),
+            "Reputation contract should be set"
+        );
 
         // Test that initFunction is properly set
-        assertEq(registry.initFunctionAddr(), address(initFunction), "InitFunction should be set");
+        assertEq(
+            registry.initFunctionAddr(),
+            address(initFunction),
+            "InitFunction should be set"
+        );
 
         // Test that the registry owner is the test contract
-        assertEq(registry.owner(), address(this), "Registry owner should be test contract");
+        assertEq(
+            registry.owner(),
+            address(this),
+            "Registry owner should be test contract"
+        );
     }
+
     // function testActivation() {}
 
     function testRegisterBrand() public {
@@ -145,19 +182,42 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Assert the brand is in the registry and status is PENDING (1)
-        (string memory storedBrand, CarRegistry.Status status,,,,,,) = registry.registry(brand);
+        (
+            string memory storedBrand,
+            CarRegistry.Status status,
+            ,
+            ,
+            ,
+            ,
+            ,
+
+        ) = registry.registry(brand);
         assertEq(storedBrand, brand, "Brand should be registered");
-        assertEq(uint256(status), 1, "Brand status should be PENDING after registration");
+        assertEq(
+            uint256(status),
+            1,
+            "Brand status should be PENDING after registration"
+        );
     }
 
     function testIsActivate() public {
         string memory brand = "TestBrand";
 
         // Initially, brand should not be active
-        assertFalse(registry.isActivate(brand), "Brand should not be active initially");
+        assertFalse(
+            registry.isActivate(brand),
+            "Brand should not be active initially"
+        );
 
         // Register the brand
         ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
@@ -173,10 +233,20 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // After registration, brand should still not be active (status is PENDING, not ACTIVE)
-        assertFalse(registry.isActivate(brand), "Brand should not be active after registration");
+        assertFalse(
+            registry.isActivate(brand),
+            "Brand should not be active after registration"
+        );
     }
 
     function testStake_only_Callable_By_Registry() public {
@@ -196,17 +266,20 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Stake the brand
         vm.expectRevert();
-        registry.stake{value: 1 ether}(brand); // should fail for the min stake amount if changed and user sends less
+        registry.stake{value: 1 ether}(brand, address(this)); // should fail for the min stake amount if changed and user sends less
         // so the test passes since the status isnt change
         // // Check that status changed to STAKED (2)
-        (, CarRegistry.Status status,,,,,,) = registry.registry(brand);
-        vm.expectRevert();
-        assertEq(uint256(status), 2, "Brand status should be STAKED after staking"); // should pass now
-            //so this proof skae can only be called from registry(car registry) ... wait TODo
     }
 
     function testActivate() public {
@@ -226,20 +299,36 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Stake the brand first (required for activation)
-        registry.stake{value: 1 ether}(brand);
+
+        registry.stake{value: 1 ether}(brand, address(this)); // i made a mistake here <----- the registry is the one sending the money lol not users
+        // gotta fix
 
         // Activate the brand
         registry.activate(brand);
 
         // Check that status changed to ACTIVE (3)
-        (, CarRegistry.Status status,,,,,,) = registry.registry(brand);
-        assertEq(uint256(status), 3, "Brand status should be ACTIVE after activation");
+        (, CarRegistry.Status status, , , , , , ) = registry.registry(brand);
+        assertEq(
+            uint256(status),
+            3,
+            "Brand status should be ACTIVE after activation"
+        );
 
         // Check isActivate function
-        assertTrue(registry.isActivate(brand), "isActivate should return true for active brand");
+        assertTrue(
+            registry.isActivate(brand),
+            "isActivate should return true for active brand"
+        );
     }
 
     function testActivateWithoutStaking() public {
@@ -259,7 +348,14 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Try to activate without staking - should revert
         vm.expectRevert();
@@ -283,11 +379,25 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Try to register the same brand again - should revert
         vm.expectRevert();
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
     }
 
     function testRegistryData() public {
@@ -305,7 +415,14 @@ contract RegistryTest is Test {
         string[] memory args = new string[](1);
         args[0] = "arg1";
 
-        registry.registerBrand(brand, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Check all registry data
         (
@@ -321,15 +438,43 @@ contract RegistryTest is Test {
 
         assertEq(storedBrand, brand, "Brand name should match");
         assertEq(uint256(status), 1, "Status should be PENDING");
-        assertEq(request, bytes32(uint256(123)), "Request ID should match mock response");
+        assertEq(
+            request,
+            bytes32(uint256(123)),
+            "Request ID should match mock response"
+        );
         assertEq(response, "", "Response should be empty initially");
         assertEq(storedStateUrl, stateUrl, "State URL should match");
-        assertEq(storedConfig.updateInterval, config.updateInterval, "Config updateInterval should match");
-        assertEq(storedConfig.deviationThreshold, config.deviationThreshold, "Config deviationThreshold should match");
-        assertEq(storedConfig.heartbeat, config.heartbeat, "Config heartbeat should match");
-        assertEq(storedConfig.minAnswer, config.minAnswer, "Config minAnswer should match");
-        assertEq(storedConfig.maxAnswer, config.maxAnswer, "Config maxAnswer should match");
-        assertEq(storedBrandAdminAddr, brandAdminAddr, "Brand admin address should match");
+        assertEq(
+            storedConfig.updateInterval,
+            config.updateInterval,
+            "Config updateInterval should match"
+        );
+        assertEq(
+            storedConfig.deviationThreshold,
+            config.deviationThreshold,
+            "Config deviationThreshold should match"
+        );
+        assertEq(
+            storedConfig.heartbeat,
+            config.heartbeat,
+            "Config heartbeat should match"
+        );
+        assertEq(
+            storedConfig.minAnswer,
+            config.minAnswer,
+            "Config minAnswer should match"
+        );
+        assertEq(
+            storedConfig.maxAnswer,
+            config.maxAnswer,
+            "Config maxAnswer should match"
+        );
+        assertEq(
+            storedBrandAdminAddr,
+            brandAdminAddr,
+            "Brand admin address should match"
+        );
         assertEq(owner, address(this), "Owner should be the test contract");
     }
 
@@ -352,20 +497,40 @@ contract RegistryTest is Test {
         args[0] = "arg1";
 
         // Register first brand
-        registry.registerBrand(brand1, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand1,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Register second brand
-        registry.registerBrand(brand2, config, brandAdminAddr, subscriptionId, stateUrl, args);
+        registry.registerBrand(
+            brand2,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
 
         // Check both brands are registered
-        (string memory storedBrand1,,,,,,,) = registry.registry(brand1);
-        (string memory storedBrand2,,,,,,,) = registry.registry(brand2);
+        (string memory storedBrand1, , , , , , , ) = registry.registry(brand1);
+        (string memory storedBrand2, , , , , , , ) = registry.registry(brand2);
 
         assertEq(storedBrand1, brand1, "First brand should be registered");
         assertEq(storedBrand2, brand2, "Second brand should be registered");
 
         // Check isActivate for both
-        assertFalse(registry.isActivate(brand1), "First brand should not be active");
-        assertFalse(registry.isActivate(brand2), "Second brand should not be active");
+        assertFalse(
+            registry.isActivate(brand1),
+            "First brand should not be active"
+        );
+        assertFalse(
+            registry.isActivate(brand2),
+            "Second brand should not be active"
+        );
     }
 }

@@ -42,13 +42,15 @@ interface ICarRegistry {
 
     function registerUndernewOwner() external;
 
-    function activate(string memory _brand) external;
+    function activate(string memory _brand) external payable;
 
     function isActivate(string memory brandName) external view returns (bool);
 
-    function stake(string memory _brand) external payable;
+    function stake(string memory _brand, address staker) external payable;
 
     function setProfile(address _newp) external;
 
     function setState(address _newp) external;
+
+    function setInitFunction(address _newp) external;
 }

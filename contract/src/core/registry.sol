@@ -101,6 +101,7 @@ contract CarRegistry is Ownable {
         reputationAddr = _reputationAddr;
         syncerAddr = _syncerAddr;
     }
+
     // first timer
     //register or ownership !! protol can regisrer or general??
     // car brand --- number avaliable ?? instock
@@ -131,7 +132,11 @@ contract CarRegistry is Ownable {
         // clone
 
         //-
-        bytes32 requestId = initFunction.sendRequest(subscriptionId, args, _brand);
+        bytes32 requestId = initFunction.sendRequest(
+            subscriptionId,
+            args,
+            _brand
+        );
         registry[_brand] = Registry({
             brand: _brand,
             status: Status.PENDING,
@@ -160,7 +165,9 @@ contract CarRegistry is Ownable {
         // add new older to the tree and register the information person
         //IOracleMaster oracleMaster = IOracleMaster(oracleAddre);
         bytes32 s_brand = keccak256(abi.encodePacked(_brand));
-        bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand, msg.sender));
+        bytes32 i_brand = keccak256(
+            abi.encodePacked(registry[_brand].brand, msg.sender)
+        );
         require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
         //  oracleMaster.registerCarBrand(_brand,oracleAddre,config, brandAdminAddr);
 
@@ -171,7 +178,11 @@ contract CarRegistry is Ownable {
         // clone
 
         //-
-        bytes32 requestId = initFunction.sendRequest(subscriptionId, args, _brand);
+        bytes32 requestId = initFunction.sendRequest(
+            subscriptionId,
+            args,
+            _brand
+        );
         registry[_brand] = Registry({
             brand: _brand,
             status: Status.PENDING,
@@ -186,7 +197,10 @@ contract CarRegistry is Ownable {
     }
 
     function activate(string memory _brand) external {
-        require(registry[_brand].status == Status.STAKED, StatusNotStaked(_brand));
+        require(
+            registry[_brand].status == Status.STAKED,
+            StatusNotStaked(_brand)
+        );
         stateContract.initiate(_brand);
         //init Function will initiate db and return state;
         // ccip clone
@@ -202,11 +216,28 @@ contract CarRegistry is Ownable {
         //  BrandPermissionManager(_brandPermission).initialize(_brand, oracle, msg.sender);
         ICarOracle.OracleConfig memory config = registry[_brand].config;
 
-        (address oracleAdress, address permissionAddress) =
-            oracle.registerCarBrand(_brand, "", config, registry[_brand].brandAdminAddr);
-        IMerkleVerifier(_merkleVerifier).initialize(_brand, _state, _syncer, registry[_brand].owner); // replace with Interface;
+        (address oracleAdress, address permissionAddress) = oracle
+            .registerCarBrand(
+                _brand,
+                "",
+                config,
+                registry[_brand].brandAdminAddr
+            );
+        IMerkleVerifier(_merkleVerifier).initialize(
+            _brand,
+            _state,
+            _syncer,
+            registry[_brand].owner
+        ); // replace with Interface;
         profileContract.create(
-            _brand, _state, _chainFunction, _ccip, _merkleVerifier, permissionAddress, oracleAdress, _syncer
+            _brand,
+            _state,
+            _chainFunction,
+            _ccip,
+            _merkleVerifier,
+            permissionAddress,
+            oracleAdress,
+            _syncer
         );
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
@@ -222,9 +253,9 @@ contract CarRegistry is Ownable {
     }
 
     // move this to reputation - for better payment ways.
-    function stake(string memory _brand) external payable {
+    function stake(string memory _brand, address staker) external payable {
         // CHANGE STATUS TO STAKED
-        reputation.stake(_brand, true);
+        reputation.stake(_brand, staker, true); // ---> why isnt it reflecting the change?? @Todo @dev
         registry[_brand].status == Status.STAKED;
         emit BrandStaked(_brand, msg.sender);
     }
@@ -264,10 +295,13 @@ contract CarRegistry is Ownable {
 
         emit ChangedChainFunction(_newp);
     }
+
     // --- register --- state -- activate
 
     // geter
-    function getBrandinfo(string memory brand) public view returns (Registry memory) {
+    function getBrandinfo(
+        string memory brand
+    ) public view returns (Registry memory) {
         return registry[brand];
     }
 }

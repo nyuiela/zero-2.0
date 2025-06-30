@@ -33,20 +33,12 @@ contract DeployScript is Script {
     address constant _BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
     address constant _BASE_LINK_TOKEN =
         0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
-
     address constant _BASE_FUNCTION_ROUTER =
         0xf9B8fc078197181C841c296C876945aaa425B278;
     bytes32 constant _BASE_FUNCTION_DON_ID =
-        0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
-    //uint64 const ant BASE_CHAIN_SELECTOR_ID = 10344971235874465080; // Base Sepolia Chain ID
-    uint256 constant _AMOUNT = 1000000000000000000; // 1 LINK in wei
-    // steps for deployment
-    // 1. Deploy PermissionManager
-    // 2. Deploy BrandPermissionManager
-    // 3. Deploy Init_Function
-    // 4. setDonId in Init_Function || router is hardcoded but we can set that.
+        0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000;
 
-    // Deployment addresses
+    // Contracts
     PermissionManager public permissionManager;
     BrandPermissionManager public brandPermissionManager;
     CarRegistry public carRegistry;
@@ -66,128 +58,68 @@ contract DeployScript is Script {
     Messenger public messenger;
     StateCheckFunction public stateCheckFunction;
 
+    address deployer;
+
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerPrivateKey);
-        //   uint256 deployerPrivateKey = vm.envUint("DEFAULT_ANVIL_KEY");
-        //   address deployer = vm.addr(deployerPrivateKey);
-        //   vm.makePersistent(deployer);
+        deployer = vm.addr(deployerPrivateKey);
+
+        vm.createSelectFork(vm.rpcUrl("basechain"));
+        vm.startBroadcast(deployerPrivateKey);
+
         console.log("Deploying contracts to Base network...");
         console.log("Deployer address:", deployer);
 
-        vm.createSelectFork(vm.rpcUrl("basechain"));
+        deployCoreContracts();
+        deployOracleAndChainlinkContracts();
+        deployCarSystem();
+        deployAuxiliaryContracts();
+        configurePostDeployment(deployer);
 
-        vm.startBroadcast(deployerPrivateKey);
-        //   vm.createSelectFork(vm.rpcUrl("localchain"));
-        //   vm.startBroadcast(deployerPrivateKey);
+        logDeploymentSummary();
 
-        // REPEAT
+        vm.stopBroadcast();
+    }
 
-        // IERC20(BASE_LINK_TOKEN).transfer(BASE_ROUTER, type(uint256).max);
-        // 1. Deploy Permission Manager
-        console.log("Deploying PermissionManager...");
+    function deployCoreContracts() internal {
         permissionManager = new PermissionManager();
-        vm.makePersistent(address(permissionManager));
-        console.log(
-            "PermissionManager deployed at:",
-            address(permissionManager)
-        );
-
-        // 2. Deploy Brand Permission Manager
-        console.log("Deploying BrandPermissionManager...");
         brandPermissionManager = new BrandPermissionManager();
-        vm.makePersistent(address(brandPermissionManager));
-        console.log(
-            "BrandPermissionManager deployed at:",
-            address(brandPermissionManager)
-        );
+        profile = new Profile(address(permissionManager));
+        stateManager = new StateManager(address(profile));
+        merkleVerifier = new MerkleVerifier();
+        syncFunction = new Sync();
+        console.log("Core contracts deployed.");
+    }
 
-        // 3. Deploy Car Oracle
-        console.log("Deploying CarOracle...");
+    function deployOracleAndChainlinkContracts() internal {
         carOracle = new CarOracle();
-        vm.makePersistent(address(carOracle));
-        console.log("CarOracle deployed at:", address(carOracle));
-
-        // 4. Deploy Oracle Master
-        console.log("Deploying OracleMaster...");
         oracleMaster = new OracleMaster(
             address(carOracle),
             address(brandPermissionManager),
             address(permissionManager)
         );
-        vm.makePersistent(address(oracleMaster));
-        console.log("OracleMaster deployed at:", address(oracleMaster));
-
-        // 5. Deploy Profile (needs permission manager)
-        console.log("Deploying Profile...");
-        profile = new Profile(address(permissionManager));
-        vm.makePersistent(address(profile));
-        console.log("Profile deployed at:", address(profile));
-
-        // 6. Deploy State Manager
-        console.log("Deploying StateManager...");
-        stateManager = new StateManager(address(profile));
-        vm.makePersistent(address(stateManager));
-        console.log("StateManager deployed at:", address(stateManager));
-
-        // 8. Deploy Merkle Verifier
-        console.log("Deploying MerkleVerifier...");
-        merkleVerifier = new MerkleVerifier();
-        vm.makePersistent(address(merkleVerifier));
-        console.log("MerkleVerifier deployed at:", address(merkleVerifier));
-
-        // 9. Deploy Proof Sync
-        console.log("Deploying ProofSync...");
-        proofSync = new ProofSync(address(merkleVerifier), payable(ccip)); // Messenger will be set later
-        vm.makePersistent(address(proofSync));
-        console.log("ProofSync deployed at:", address(proofSync));
-        // 0. messenger
-        console.log("Deploying Messenger...");
-        //   using ccip as router address
+        ccip = new CrossToken(_BASE_ROUTER, _BASE_LINK_TOKEN);
         messenger = new Messenger(
             _BASE_ROUTER,
             _BASE_LINK_TOKEN,
             address(merkleVerifier)
         );
-        vm.makePersistent(address(messenger));
-        console.log("messanger deployed at:", address(messenger));
-
-        // 10. Deploy CCIP
-        console.log("Deploying CrossToken (CCIP)...");
-        ccip = new CrossToken(_BASE_ROUTER, _BASE_LINK_TOKEN);
-        vm.makePersistent(address(ccip));
-        console.log("CrossToken deployed at:", address(ccip));
-
-        // 11. Deploy Sync Function
-        console.log("Deploying SyncFunction...");
-        syncFunction = new Sync(address(stateManager));
-        vm.makePersistent(address(syncFunction));
-        console.log("SyncFunction deployed at:", address(syncFunction));
-
-        // 12. Deploy Fee
-        console.log("Deploying Fee...");
-        fee = new Fee(
-            address(0), // protocol fee receiver - will be set later
-            address(0), // auction contract - will be set after auction deployment
-            address(permissionManager), // global permission manager
-            30 // stake amount required
+        proofSync = new ProofSync(
+            address(merkleVerifier),
+            payable(address(messenger))
         );
-        vm.makePersistent(address(fee));
-        console.log("Fee deployed at:", address(fee));
+        console.log("Oracle and Chainlink contracts deployed.");
+    }
 
-        // 13. Deploy Reputation
-        console.log("Deploying Reputation...");
+    function deployCarSystem() internal {
+        fee = new Fee(address(0), address(0), address(permissionManager), 10);
         reputation = new Reputation(
-            30, // required stake
-            _BASE_USDC_TOKEN, // stake token
-            address(0), // car registry - will be set after
+            1,
+            _BASE_USDC_TOKEN,
+            address(0), //----set later
             address(permissionManager)
         );
-        vm.makePersistent(address(reputation));
-        console.log("Reputation deployed at:", address(reputation));
 
-        // 14. Deploy Car Registry
-        console.log("Deploying CarRegistry...");
         carRegistry = new CarRegistry(
             address(profile),
             address(stateManager),
@@ -198,40 +130,22 @@ contract DeployScript is Script {
             address(oracleMaster),
             address(proofSync)
         );
-        vm.makePersistent(address(carRegistry));
-        console.log("CarRegistry deployed at:", address(carRegistry));
 
-        // deploying state check automation function
-        console.log("Deploying statecheckfunction....");
         stateCheckFunction = new StateCheckFunction(
             address(stateManager),
             address(carRegistry)
         );
-        vm.makePersistent(address(stateCheckFunction));
-        console.log("", address(stateCheckFunction));
-
-        // 7. Deploy Init Function
-        console.log("Deploying InitFunction...");
         initFunction = new InitFunction(
             address(stateManager),
             address(carRegistry)
-        ); // Will be set after registry
-        vm.makePersistent(address(initFunction));
-        console.log("InitFunction deployed at:", address(initFunction));
-
-        // 15. Deploy Zero NFT
-        console.log("Deploying ZeroNFT...");
+        );
         zeroNFT = new ZeroNFT(
             address(oracleMaster),
             address(reputation),
             address(carRegistry),
-            address(0) // auction contract - will be set after
+            address(0)
         );
-        vm.makePersistent(address(zeroNFT));
-        console.log("ZeroNFT deployed at:", address(zeroNFT));
 
-        // 16. Deploy Auction
-        console.log("Deploying Auction...");
         auction = new Auction(
             address(carRegistry),
             address(zeroNFT),
@@ -239,50 +153,58 @@ contract DeployScript is Script {
             _BASE_ETH_USD_FEED,
             _BASE_USDC_USD_FEED
         );
+
+        console.log("Car system contracts deployed.");
+    }
+
+    function deployAuxiliaryContracts() internal {
+        vm.makePersistent(address(permissionManager));
+        vm.makePersistent(address(brandPermissionManager));
+        vm.makePersistent(address(carOracle));
+        vm.makePersistent(address(oracleMaster));
+        vm.makePersistent(address(profile));
+        vm.makePersistent(address(stateManager));
+        vm.makePersistent(address(merkleVerifier));
+        vm.makePersistent(address(proofSync));
+        vm.makePersistent(address(ccip));
+        vm.makePersistent(address(messenger));
+        vm.makePersistent(address(syncFunction));
+        vm.makePersistent(address(fee));
+        vm.makePersistent(address(reputation));
+        vm.makePersistent(address(carRegistry));
+        vm.makePersistent(address(stateCheckFunction));
+        vm.makePersistent(address(initFunction));
+        vm.makePersistent(address(zeroNFT));
         vm.makePersistent(address(auction));
-        console.log("Auction deployed at:", address(auction));
+    }
 
-        // Post-deployment setup
-        console.log("Setting up post-deployment configurations...");
-
-        // Set InitFunction in registry
+    function configurePostDeployment(address _deployer) internal {
         carRegistry.setInitFunction(address(initFunction));
-        console.log("InitFunction set in CarRegistry");
-
-        // Set registry in profile
         profile.setRegistry(address(carRegistry));
-        console.log("Registry set in Profile");
-
-        // Set auction in ZeroNFT
         zeroNFT.setAuctionContract(address(auction));
-        console.log("Auction set in ZeroNFT");
-
-        // Transfer ownership of InitFunction to registry
         initFunction.transferOwnership(address(carRegistry));
-        console.log("InitFunction ownership transferred to CarRegistry");
-
-        // set Messenger in proofSync
         proofSync.setMessenger(payable(messenger));
 
-        //allow des chains
-        //uint64[]  destinationChains = new uint64[](4);
-        uint64 destinationChains1 = 3676871237479449268; // sonic
-        uint64 destinationChains2 = 222782988166878823; // hedera
-        uint64 destinationChains3 = 16015286601757825753; // eth
-        uint64 destinationChains4 = 14767482510784806043; // avalanche
+        allowDestinationChains();
+        grantPermissions(_deployer);
+        initFunction.setDon(_BASE_FUNCTION_DON_ID);
 
-        ccip.allowlistDestinationChain(destinationChains1, true);
-        ccip.allowlistDestinationChain(destinationChains2, true);
-        ccip.allowlistDestinationChain(destinationChains3, true);
-        ccip.allowlistDestinationChain(destinationChains4, true);
-        // Grant permissions to the specified address
-        address permissionAddress = 0xf0830060f836B8d54bF02049E5905F619487989e; //@intergrator address
-        console.log("Granting permissions to:", permissionAddress);
+        console.log("Post-deployment configuration complete.");
+    }
+
+    function allowDestinationChains() internal {
+        ccip.allowlistDestinationChain(3676871237479449268, true); // sonic
+        ccip.allowlistDestinationChain(222782988166878823, true); // hedera
+        ccip.allowlistDestinationChain(16015286601757825753, true); // eth
+        ccip.allowlistDestinationChain(14767482510784806043, true); // avalanche
+    }
+
+    function grantPermissions(address deployer) internal {
+        address permissionAddress = 0xf0830060f836B8d54bF02049E5905F619487989e;
 
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions = new bytes4[](20);
 
-        // Oracle permissions
         permissions[0] = oracleMaster.REGISTER_CAR_BRAND_SELECTOR();
         permissions[1] = oracleMaster.UPDATE_ORACLE_SELECTOR();
         permissions[2] = oracleMaster.DEACTIVATE_ORACLE_SELECTOR();
@@ -291,44 +213,39 @@ contract DeployScript is Script {
         permissions[5] = oracleMaster.INCREMENT_PRODUCT_COUNT_SELECTOR();
         permissions[6] = oracleMaster.DECREMENT_PRODUCT_COUNT_SELECTOR();
 
-        // Reputation permissions
         permissions[7] = reputation.SLASH();
         permissions[8] = reputation.WITHDRAW_SLASHED_ETH();
         permissions[9] = reputation.WITHDRAW_SLASHED_USDC();
         permissions[10] = reputation.SET_STAKE_AMOUNT();
 
-        // Fee permissions
         permissions[11] = fee.SET_FEE();
         permissions[12] = fee.SET_FEE_RECEIVER();
         permissions[13] = fee.WITHDRAW_FEE();
 
-        // Profile permissions
         permissions[14] = profile.UPDATESTATE();
         permissions[15] = profile.LOCKBRAND();
         permissions[16] = profile.UNLOCKBRAND();
 
-        // State permissions
         permissions[17] = stateManager.SET_STATE();
         permissions[18] = stateManager.LOCK_CONTRACT();
         permissions[19] = stateManager.UNLOCK_CONTRACT();
 
-        // Grant all permissions with 1 year expiration
-        uint256 expirationTime = block.timestamp + 365 days;
         permissionManager.grantBatchPermissions(
             permissionAddress,
             permissions,
-            expirationTime
+            block.timestamp + 365 days
         );
-        console.log("All permissions granted to:", permissionAddress);
 
-        // set donId
-        initFunction.setDon(_BASE_FUNCTION_DON_ID);
+        permissionManager.grantBatchPermissions(
+            deployer,
+            permissions,
+            block.timestamp + 365 days
+        );
 
-        vm.stopBroadcast();
+        console.log("Permissions granted to:", permissionAddress);
+    }
 
-        // Transfer LINK tokens to CCIP and Messenger
-        console.log("Transferring LINK tokens to CCIP and Messenger...");
-        // Log deployment summary
+    function logDeploymentSummary() internal {
         console.log("\n=== DEPLOYMENT SUMMARY ===");
         console.log("Network: Base");
         console.log("Deployer:", deployer);
@@ -342,13 +259,16 @@ contract DeployScript is Script {
         console.log("MerkleVerifier:", address(merkleVerifier));
         console.log("ProofSync:", address(proofSync));
         console.log("CrossToken (CCIP):", address(ccip));
+        console.log("Messenger:", address(messenger));
         console.log("SyncFunction:", address(syncFunction));
         console.log("Fee:", address(fee));
         console.log("Reputation:", address(reputation));
         console.log("CarRegistry:", address(carRegistry));
         console.log("ZeroNFT:", address(zeroNFT));
         console.log("Auction:", address(auction));
-        console.log("StateCheckFunction", address(stateCheckFunction));
-        console.log("=== DEPLOYMENT COMPLETE ===");
+        console.log("StateCheckFunction:", address(stateCheckFunction));
+);
+         console.log("messenger:", address(messenger));
+        sole.log("=== DEPLOYMENT COMPLETE ===\n");
     }
 }
