@@ -37,19 +37,19 @@ const CarGrid = () => {
             <div className="flex items-center gap-4 text-gray-300">
               <span className="text-sm lg:text-base text-[#202626]">Country</span>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-32 bg-transparent text-[#202626] font-semibold">
+                <SelectTrigger className="w-32 bg-white text-[#202626] font-semibold">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className=" border-gray-00">
-                  <SelectItem value="ALL" className="text-[#202626] hover:text-white">ALL</SelectItem>
-                  <SelectItem value="USA" className="text-[#202626] hover:text-white">USA</SelectItem>
-                  <SelectItem value="UAE" className="text-[#202626] hover:text-white">UAE</SelectItem>
-                  <SelectItem value="Germany" className="text-[#202626] hover:text-white">Germany</SelectItem>
-                  <SelectItem value="Netherlands" className="text-[#202626] hover:text-white">Netherlands</SelectItem>
-                  <SelectItem value="Canada" className="text-[#202626] hover:text-white">Canada</SelectItem>
+                <SelectContent className="bg-white border-none">
+                  <SelectItem value="ALL" className="text-[#202626] hover:bg-[#7400b8]">ALL</SelectItem>
+                  <SelectItem value="USA" className="text-[#202626] hover:bg-[#7400b8]">USA</SelectItem>
+                  <SelectItem value="UAE" className="text-[#202626] hover:bg-[#7400b8]">UAE</SelectItem>
+                  <SelectItem value="Germany" className="text-[#202626] hover:bg-[#7400b8]">Germany</SelectItem>
+                  <SelectItem value="Netherlands" className="text-[#202626] hover:bg-[#7400b8]">Netherlands</SelectItem>
+                  <SelectItem value="Canada" className="text-[#202626] hover:bg-[#7400b8]">Canada</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-[#202626] font-bold text-md bg-blue-400 p-2">
+              <span className="text-white font-bold text-md bg-[#7400b8] p-2">
                 {displayedAuctions}
               </span>
             </div>

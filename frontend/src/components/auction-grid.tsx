@@ -31,22 +31,22 @@ const AuctionGrid = () => {
           <h1 className="text-3xl lg:text-2xl font-bold text-[#202626]">Auctions</h1>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-gray-300">
+            <div className="flex items-center gap-4 bg-white text-gray-300">
               <span className="text-sm lg:text-base text-[#202626]">Country</span>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-32 bg-transparent text-[#202626] font-semibold">
+                <SelectTrigger className="w-32 bg-white text-[#202626] font-semibold">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className=" border-gray-00">
-                  <SelectItem value="ALL" className="text-[#202626] hover:text-white">ALL</SelectItem>
-                  <SelectItem value="USA" className="text-[#202626] hover:text-white">USA</SelectItem>
+                <SelectContent className=" border-none bg-white">
+                  <SelectItem value="ALL" className="text-[#202626] bg-white hover:text-white">ALL</SelectItem>
+                  <SelectItem value="USA" className="text-[#202626] hover:text-white">US of A</SelectItem>
                   <SelectItem value="UAE" className="text-[#202626] hover:text-white">UAE</SelectItem>
                   <SelectItem value="Germany" className="text-[#202626] hover:text-white">Germany</SelectItem>
                   <SelectItem value="Netherlands" className="text-[#202626] hover:text-white">Netherlands</SelectItem>
                   <SelectItem value="Canada" className="text-[#202626] hover:text-white">Canada</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-[#202626] font-bold text-md bg-blue-400 p-2">
+              <span className="text-white font-bold text-md bg-[#7400b8] p-2">
                 {totalAuctions}
               </span>
             </div>
@@ -66,7 +66,7 @@ const AuctionGrid = () => {
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
             {upcomingAuctions.map((auction, key) => (
               <div key={key}
-                className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                className="block group bg-white overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 {/* Car Image */}
                 <div className="relative overflow-hidden h-[30rem]">
 
@@ -93,7 +93,7 @@ const AuctionGrid = () => {
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-5 bg-transparent z-10 absolute bottom-0 w-full">
+                  <div className="p-5 bg-white z-10 absolute bottom-0 w-full">
                     {/* Vehicle Title */}
                     <div className="mb-3">
                       <div className="text-amber-400 text-sm font-semibold mb-1 tracking-wide">

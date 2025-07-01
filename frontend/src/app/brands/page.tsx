@@ -155,7 +155,7 @@ export default function BrandsPage() {
                 Discover and explore car brands on the platform
               </p>
             </div>
-            <Button className="bg-[#00296b] text-white hover:bg-[#00296b]/90">
+            <Button className="bg-[#7400b8] text-white hover:bg-[#7400b8]/80">
               Register Brand
             </Button>
           </div>
@@ -186,7 +186,7 @@ export default function BrandsPage() {
                           <p>Total Bids: {brand.totalBids}</p>
                         </div>
                         <Link href={`/brands/${brand.name.toLowerCase()}`}>
-                          <Button variant="outline" size="sm" className="mt-4 w-full">
+                          <Button variant="outline" size="sm" className="mt-4 w-full hover:bg-[#7500b898]">
                             View Details <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                         </Link>
@@ -216,7 +216,7 @@ export default function BrandsPage() {
                         <p>Total Bids: {brand.totalBids}</p>
                       </div>
                       <Link href={`/brands/${brand.name.toLowerCase()}`}>
-                        <Button variant="outline" size="sm" className="mt-4 w-full bg-[#00296b] text-white">
+                        <Button variant="outline" size="sm" className="mt-4 w-full bg-[#7400b8] hover:bg-blue-900 text-white">
                           View Details <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>
@@ -301,7 +301,7 @@ export default function BrandsPage() {
                       <div className="flex items-center space-x-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-[#00296b] h-2 rounded-full" 
+                            className="bg-[#7400b8] h-2 rounded-full" 
                             style={{ width: `${(brand.value / 45) * 100}%` }}
                           />
                         </div>
