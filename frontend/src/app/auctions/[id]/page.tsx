@@ -196,20 +196,20 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
           {/* Main Content - Left Side */}
           <div className="lg:col-span-2 space-y-6">
             {/* Auction Image */}
-            <Card className="overflow-hidden">
-              <div className="aspect-video relative">
-                <Image
-                  src={images[0]}
-                  alt={`${year} ${make} ${model}`}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </Card>
+            {/* <Card className="overflow-hidden"> */}
+            <div className="aspect-video relative">
+              <Image
+                src={images[0]}
+                alt={`${year} ${make} ${model}`}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            {/* </Card> */}
 
             {/* Auction Description */}
-            <Card>
+            <Card className="border-none shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Award className="h-5 w-5" />
@@ -249,7 +249,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
             </Card>
 
             {/* All Bidders Section */}
-            <Card>
+            <Card className="border-gray-200 shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -295,8 +295,8 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
           {/* Bidding Panel - Right Side */}
           <div className="space-y-6">
             {/* Current Bid Status */}
-            <Card className="border-amber-400 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-amber-400 to-yellow-300">
+            <Card className="border-amber-400 p-0 border-none shadow-none">
+              <CardHeader className="">
                 <CardTitle className="text-black text-xl flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
                   Current Bid
@@ -344,7 +344,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
             </Card>
 
             {/* Bidding Form */}
-            <Card>
+            <Card className="border-none shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />
@@ -370,50 +370,50 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                       value={bidAmount}
                       onChange={e => setBidAmount(e.target.value)}
                       placeholder={bids[0]?.amount ? `Bid more than ${formatCurrency(bids[0].amount, currency)}` : 'Enter your bid'}
-                      className="w-full"
+                      className="w-full rounded-xs"
                       required
                     />
                   </div>
 
-                {/* Stake Info */}
-                {bidAmount && parseFloat(bidAmount) > 0 && (
-                  <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
-                    <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
+                  {/* Stake Info */}
+                  {bidAmount && parseFloat(bidAmount) > 0 && (
+                    <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
+                      <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || timer === 0}
+                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
+                  >
+                    {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
+                  </Button>
+                </form>
+
+                {/* Quick Bid Buttons */}
+                {quickBids.length > 0 && (
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {quickBids.map((amt) => (
+                        <Button
+                          key={amt}
+                          variant="outline"
+                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
+                          onClick={() => handleBid(amt)}
+                        >
+                          {formatCurrency(amt, currency)}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 )}
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || timer === 0}
-                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
-                >
-                  {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
-                </Button>
-              </form>
-
-              {/* Quick Bid Buttons */}
-              {quickBids.length > 0 && (
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {quickBids.map((amt) => (
-                      <Button
-                        key={amt}
-                        variant="outline"
-                        className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
-                        onClick={() => handleBid(amt)}
-                      >
-                        {formatCurrency(amt, currency)}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   )
 } 
