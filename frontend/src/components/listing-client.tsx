@@ -136,7 +136,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 mx-4">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
-          <div className="text-3xl font-bold text-white ">{formatCurrency(listing.current_price, currency)}</div>
+          <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, 'USDC')}</div>
         </div>
       </div>
 
@@ -218,7 +218,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         {/* Bidding Panel */}
         <div className="space-y-6 bg-red-00 overflow-hidden">
           {/* Action Buttons */}
-          <div className='flex items-baseline flex-row bg-green-00 md:justify-between lg:flex-col lg:space-y-4'>
+          <div className='flex items-baseline flex-row bg-green-00 md:justify-between lg:flex-col lg:space-y-6 max-sm:flex-col max-sm:space-y-6'>
             {/* <div> */}
 
             <div className="bg-gradient-to-br border-none w-full bg-red-00">
@@ -278,7 +278,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
             <div className="space-y-3">
               <div>
-                <div className="font-semibold text-foreground">{listing.seller}</div>
+                <div className="font-normal text-foreground">{listing.seller}</div>
                 <div className="text-sm text-muted-foreground flex items-center mt-1">
                   <MapPin className="w-3 h-3 mr-1" />
                   {listing.location}
@@ -286,44 +286,12 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br border-none p-6 px-0 ">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xl font-bold text-brand">Bids</div>
-            </div>
-            {bids?.map((bid, key) => (
-              <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
-                <div className="text-lg font-bold flex items-center space-x-2">
-                  <span className='text-xl'>
-                    {formatCurrency(bid.amount, "USDC")}
-                  </span>
-                </div>
-                <div className="space-y-3 mt-2">
-                  <div className='flex justify-between'>
-                    <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
-                    <div className="text-sm text-muted-foreground flex items-center mt-1">
-                      {/* <MapPin className="w-3 h-3 mr-1" /> */}
-                      <User className='w-4 h-3 mr-1' />
-                      {bid.bidder_id}
-                    </div>
-                  </div>
-                  <div className='flex justify-between'>
-                    {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
-                    <div></div>
-                    <div className="text-sm text-muted-foreground flex items-center mt-1">
-                      {bid.updated_at}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
 
-
-          </div>
         </div>
       </div >
 
       {/* Car Details Section */}
-      < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4">
+      < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
         {/* Main Details */}
         < div className="lg:col-span-2 space-y-8" >
           {/* Title and Location */}
@@ -408,7 +376,41 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
           </div >
         </div >
+
         {/* (Optional) Add more side details here if needed */}
+        <div className="bg-gradient-to-br border-none p-6 px-0 ">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xl font-bold text-brand">Bids</div>
+          </div>
+          {bids?.map((bid, key) => (
+            <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
+              <div className="text-lg font-bold flex items-center space-x-2">
+                <span className='text-xl'>
+                  {formatCurrency(bid.amount, "USDC")}
+                </span>
+              </div>
+              <div className="space-y-3 mt-2">
+                <div className='flex justify-between'>
+                  <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
+                  <div className="text-sm text-muted-foreground flex items-center mt-1">
+                    {/* <MapPin className="w-3 h-3 mr-1" /> */}
+                    <User className='w-4 h-3 mr-1' />
+                    {bid.bidder_id}
+                  </div>
+                </div>
+                <div className='flex justify-between'>
+                  {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
+                  <div></div>
+                  <div className="text-sm text-muted-foreground flex items-center mt-1">
+                    {bid.updated_at}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+
+        </div>
       </div >
 
 
