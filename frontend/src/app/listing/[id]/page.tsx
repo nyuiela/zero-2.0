@@ -1,4 +1,7 @@
 import ListingClientRtk from '@/components/listing-client-rtk'
+import { Button } from '@/components/ui/button'
+import { CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 interface ListingPageProps {
     params: Promise<{

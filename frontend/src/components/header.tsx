@@ -180,10 +180,10 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
-                      <div className="flex items-center w-full">
+                      <Link href="/profile/my-bids" className="flex items-center w-full">
                         <Gavel className="h-4 w-4 mr-3" />
                         My Bids
-                      </div>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
                       <div className="flex items-center w-full">
