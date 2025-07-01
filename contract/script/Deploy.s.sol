@@ -234,7 +234,7 @@ contract DeployScript is Script {
         permissions[18] = stateManager.LOCK_CONTRACT();
         permissions[19] = stateManager.UNLOCK_CONTRACT();
 
-        registryPermissions[0] = StateManager.INITIATE();
+        registryPermissions[0] = stateManager.INITIATE();
         registryPermissions[1] = profile.UPDATESTATE();
         registryPermissions[2] = profile.LOCKBRAND();
         registryPermissions[3] = profile.UNLOCKBRAND();

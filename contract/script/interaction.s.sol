@@ -66,6 +66,7 @@ contract BrandInteraction is Script {
     address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
     address PERMISSION_ADDRESS = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
     IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
+    IProfile profile = IProfile(vm.envAddress("PROFILE_ADDRESS"));
     string constant BRANDNAME1 = "lesscars1";
 
     address constant PERMISSIONADDRESS =
@@ -119,11 +120,13 @@ contract BrandInteraction is Script {
         );
         ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
             updateInterval: 1 days,
-            deviationThreshold: 1 days,
+            deviationThreshold: 500,
             heartbeat: 1 days,
             minAnswer: 0,
             maxAnswer: 6000
         });
+
+        profile.setRegistry(CAR_REGISTRY);
         //   we regisster the brand
         ICarRegistry(CAR_REGISTRY).registerBrand(
             BRANDNAME1,

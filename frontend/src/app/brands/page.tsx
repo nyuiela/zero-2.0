@@ -5,17 +5,23 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
 import { Car, TrendingUp, Users, Award, ArrowRight } from 'lucide-react'
+import { profile } from 'console'
+import { profile_abi, profile_addr } from '@/lib/abi/abi'
 
 interface Brand {
-  name: string
-  admin: string
-  isActive: boolean
-  totalCars: number
-  totalAuctions: number
-  totalBids: number
-  createdAt: string
+  brand: string
+  brandPermission: string
+  ccip: string
+  chainFunction: string
+  lastUpdated: bigint | number | string
+  locked: boolean
+  merkleVerifier: string
+  oracle: string
+  state: string
+  syncer: string
+  url: string
 }
 
 export default function BrandsPage() {
@@ -23,7 +29,14 @@ export default function BrandsPage() {
   const [userBrands, setUserBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
   const { address } = useAccount()
-
+  const profile = useReadContract({
+    functionName: "getProfile",
+    abi: profile_abi,
+    address: profile_addr,
+    account: address,
+    args: ["lesscars1"],
+  })
+  console.log("Profile ", profile.data)
   // Mock data for charts - in real implementation, this would come from API
   const popularBrandsData = [
     { name: 'Toyota', value: 45, color: '#8884d8' },
@@ -56,75 +69,99 @@ export default function BrandsPage() {
   const fetchBrands = async () => {
     try {
       setLoading(true)
-      
+
       // Mock brands data - in real implementation, this would come from contract/API
       const mockBrands: Brand[] = [
         {
-          name: 'Toyota',
-          admin: '0x1234...5678',
-          isActive: true,
-          totalCars: 45,
-          totalAuctions: 23,
-          totalBids: 156,
-          createdAt: '2024-01-15'
+          brand: "lesscars1",
+          brandPermission: "0x108f8Df99A5edE55ddA08b545db5F6886dc61d74",
+          ccip: "0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925",
+          chainFunction: "0x1b88549cd82C06875766DF1F6c696c089afad628",
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: "0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E",
+          oracle: "0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C",
+          state: "",
+          syncer: "0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c",
+          url: "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1"
         },
         {
-          name: 'BMW',
-          admin: '0x8765...4321',
-          isActive: true,
-          totalCars: 32,
-          totalAuctions: 18,
-          totalBids: 98,
-          createdAt: '2024-02-20'
+          brand: 'BMW',
+          brandPermission: '0x8765...4321',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
         },
         {
-          name: 'Mercedes',
-          admin: '0x1111...2222',
-          isActive: true,
-          totalCars: 28,
-          totalAuctions: 15,
-          totalBids: 87,
-          createdAt: '2024-01-30'
+          brand: 'Mercedes',
+          brandPermission: '0x1111...2222',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
         },
         {
-          name: 'Audi',
-          admin: '0x3333...4444',
-          isActive: false,
-          totalCars: 22,
-          totalAuctions: 12,
-          totalBids: 65,
-          createdAt: '2024-03-10'
+          brand: 'Audi',
+          brandPermission: '0x3333...4444',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
         },
         {
-          name: 'Honda',
-          admin: '0x5555...6666',
-          isActive: true,
-          totalCars: 18,
-          totalAuctions: 9,
-          totalBids: 43,
-          createdAt: '2024-02-05'
+          brand: 'Honda',
+          brandPermission: '0x5555...6666',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
         },
         {
-          name: 'Tesla',
-          admin: '0x7777...8888',
-          isActive: true,
-          totalCars: 15,
-          totalAuctions: 8,
-          totalBids: 38,
-          createdAt: '2024-03-15'
+          brand: 'Tesla',
+          brandPermission: '0x7777...8888',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196n,
+          locked: false,
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
         }
       ]
 
       setBrands(mockBrands)
-      
+
       // Filter user's brands (mock - in real implementation, check against user's address)
       if (address) {
-        const userBrands = mockBrands.filter(brand => 
-          brand.admin.toLowerCase() === address.toLowerCase()
+        const userBrands = mockBrands.filter(brand =>
+          brand.brandPermission.toLowerCase() === address.toLowerCase()
         )
         setUserBrands(userBrands)
       }
-      
+
     } catch (error) {
       console.error('Error fetching brands:', error)
     } finally {
@@ -155,7 +192,9 @@ export default function BrandsPage() {
                 Discover and explore car brands on the platform
               </p>
             </div>
-            <Button className="bg-[#00296b] text-white hover:bg-[#00296b]/90">
+            <Button className="bg-[#00296b] text-white hover:bg-[#00296b]/90"
+            // onClick={() => router.push("/")}
+            >
               Register Brand
             </Button>
           </div>
@@ -172,22 +211,28 @@ export default function BrandsPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">My Brands</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {userBrands.map((brand) => (
-                    <Card key={brand.name} className="hover:shadow-lg transition-shadow">
+                    <Card key={brand.brand} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-gray-900">{brand.name}</h3>
-                          <Badge variant={brand.isActive ? "default" : "secondary"}>
-                            {brand.isActive ? "Active" : "Inactive"}
+                          <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
+                          <Badge variant={brand.locked ? "secondary" : "default"}>
+                            {brand.locked ? "Locked" : "Active"}
                           </Badge>
                         </div>
                         <div className="space-y-2 text-sm text-gray-600">
-                          <p>Cars: {brand.totalCars}</p>
-                          <p>Auctions: {brand.totalAuctions}</p>
-                          <p>Total Bids: {brand.totalBids}</p>
+                          <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
+                          <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
+                          <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
+                          <p>
+                            Website:{" "}
+                            <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                              Visit
+                            </a>
+                          </p>
                         </div>
-                        <Link href={`/brands/${brand.name.toLowerCase()}`}>
+                        <Link href={`/brands/${brand.brand.toLowerCase()}`}>
                           <Button variant="outline" size="sm" className="mt-4 w-full">
-                            View Details <ArrowRight className="ml-2 h-4 w-4" />
+                            View Details<ArrowRight className="ml-0 h-4 w-4" />
                           </Button>
                         </Link>
                       </CardContent>
@@ -202,25 +247,31 @@ export default function BrandsPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">All Brands</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {brands.map((brand) => (
-                  <Card key={brand.name} className="hover:shadow-lg border-none bg-white transition-shadow">
-                    <CardContent className="p-6 bg-white">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">{brand.name}</h3>
-                        <Badge variant={brand.isActive ? "default" : "secondary"}>
-                          {brand.isActive ? "Active" : "Inactive"}
+                  <Card key={brand.brand} className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
+                    <CardContent className="bg-white p-5 py-0">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
+                        <Badge variant={brand.locked ? "secondary" : "default"}>
+                          {brand.locked ? "Locked" : "Active"}
                         </Badge>
                       </div>
                       <div className="space-y-2 text-sm text-gray-600">
-                        <p>Cars: {brand.totalCars}</p>
-                        <p>Auctions: {brand.totalAuctions}</p>
-                        <p>Total Bids: {brand.totalBids}</p>
+                        <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
+                        <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
+                        <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
+                        <p>
+                          Website:{" "}
+                          <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                            Visit
+                          </a>
+                        </p>
                       </div>
-                      <Link href={`/brands/${brand.name.toLowerCase()}`}>
-                        <Button variant="outline" size="sm" className="mt-4 w-full bg-[#00296b] text-white">
-                          View Details <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
                     </CardContent>
+                    <Link href={`/brands/${brand.brand.toLowerCase()}`}>
+                      <Button variant="outline" size="sm" className="w-full text-black border-none shadow-none text-md hover:bg-[#00296b]/80 disabled:opacity-50 disabled:cursor-not-allowed py-2 cursor-pointer bg-gray-300 rounded-none text-xs hover:underline">
+                        View Details <ArrowRight className="ml-0 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </Card>
                 ))}
               </div>
@@ -255,8 +306,8 @@ export default function BrandsPage() {
                   {popularBrandsData.map((brand, index) => (
                     <div key={brand.name} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-4 h-4 rounded-full" 
+                        <div
+                          className="w-4 h-4 rounded-full"
                           style={{ backgroundColor: brand.color }}
                         />
                         <span className="text-sm font-medium">{brand.name}</span>
@@ -300,8 +351,8 @@ export default function BrandsPage() {
                       <span className="text-sm font-medium">{brand.name}</span>
                       <div className="flex items-center space-x-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-[#00296b] h-2 rounded-full" 
+                          <div
+                            className="bg-[#00296b] h-2 rounded-full"
                             style={{ width: `${(brand.value / 45) * 100}%` }}
                           />
                         </div>
