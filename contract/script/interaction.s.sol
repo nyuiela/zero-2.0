@@ -13,14 +13,16 @@ import {IInitFunction} from "../src/interface/IInitFunction.sol";
 import {ICarRegistry} from "../src/interface/ICarRegistry.sol";
 import {ICarOracle} from "../src/interface/oracle/IcarOracle.sol";
 import {ISync} from "../src/interface/ISync.sol";
+import {IPermissionManager} from "../src/interface/permissions/IPermissionManager.sol";
 
 contract ContractConfig is Script {
-    address constant CAR_REGISTRY = 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E;
+    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
 
-    address constant SYNC_ADDRESS = 0xa9b7d51eA8FF6eD5D30fAf351516cb3AcF45507e;
+    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
     string constant BRANDNAME = "lesscars";
     address constant PERMISSIONADDRESS =
         0xf0830060f836B8d54bF02049E5905F619487989e;
+
     uint64 constant SUBSCRIPTIONID = 387;
     string constant URL =
         "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1";
@@ -36,54 +38,19 @@ contract ContractConfig is Script {
         vm.makePersistent(CAR_REGISTRY);
 
         vm.startBroadcast(deployerPrivateKey);
-
-        //  registerMyCar();
+        // registerMyCar();
         //   callSendRequest();
 
         vm.stopBroadcast();
     }
 
-    // function registerMyCar() internal {
-    //     address zeronft = vm.envAddress("ZERO_NFT_ADDRESS ");
-
-    //     string[] memory args = new string[](1);
-    //     args[0] = "http://13.222.216.169:8080/api/sync";
-    //     ICarRegistry(CAR_REGISTRY).setInitFunction(
-    //         0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
-    //     );
-
-    //     ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
-    //         updateInterval: 1 days,
-    //         deviationThreshold: 1 days,
-    //         heartbeat: 1 days,
-    //         minAnswer: 0,
-    //         maxAnswer: 6000
-    //     });
-    //     // we regisster the brand
-    //     ICarRegistry(CAR_REGISTRY).registerBrand(
-    //         BRANDNAME,
-    //         config,
-    //         PERMISSIONADDRESS,
-    //         SUBSCRIPTIONID,
-    //         URL,
-    //         args
-    //     );
-
-    //     // stake an amount as collateral for any dispute/damages etc
-
-    //     ICarRegistry(CAR_REGISTRY).stake(BRANDNAME);
-
-    //     // We then activate the brand account
-
-    //     ICarRegistry(CAR_REGISTRY).activate(BRANDNAME);
-
-    //     // check if it actually work
-
-    //     assert(ICarRegistry(CAR_REGISTRY).isActivate(BRANDNAME));
-
-    //     //mint an nft
-    //     //  zeroNFT.
-    // }
+    function setInit() internal {
+        string[] memory args = new string[](1);
+        args[0] = "http://13.222.216.169:8080/api/sync";
+        ICarRegistry(CAR_REGISTRY).setInitFunction(
+            0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+        );
+    }
 
     //update to aa public function and add command to makefile
     function callSendRequest() internal {
@@ -94,12 +61,15 @@ contract ContractConfig is Script {
 }
 
 contract BrandInteraction is Script {
-    address constant CAR_REGISTRY = 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E;
+    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
 
-    address constant SYNC_ADDRESS = 0xa9b7d51eA8FF6eD5D30fAf351516cb3AcF45507e;
+    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
+    address PERMISSION_ADDRESS = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
+    IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
     string constant BRANDNAME1 = "lesscars1";
+
     address constant PERMISSIONADDRESS =
-        0xf0830060f836B8d54bF02049E5905F619487989e;
+        0xccfC47DaC852fa570f2D92D198fD45177B12280b;
     uint64 constant SUBSCRIPTIONID = 387;
     string constant URL =
         "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1";
@@ -113,15 +83,23 @@ contract BrandInteraction is Script {
 
         vm.createSelectFork(vm.rpcUrl("basechain"));
         vm.makePersistent(CAR_REGISTRY);
+        vm.makePersistent(SYNC_ADDRESS);
+        vm.makePersistent(PERMISSION_ADDRESS);
 
         vm.startBroadcast(deployerPrivateKey);
-
-        registerMyCar(deployer);
+        //   setInit();
+        registerMyCar();
 
         vm.stopBroadcast();
     }
 
-    function registerMyCar(address _deployer) internal {
+    function setInit() internal {
+        ICarRegistry(CAR_REGISTRY).setInitFunction(
+            0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+        );
+    }
+
+    function registerMyCar() internal {
         //  address zeronft = vm.envAddress("ZERO_NFT_ADDRESS ");
 
         string[] memory args = new string[](1);
@@ -129,7 +107,16 @@ contract BrandInteraction is Script {
         ICarRegistry(CAR_REGISTRY).setInitFunction(
             0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
         );
-
+        permission.grantPermission(
+            address(CAR_REGISTRY),
+            IStateManager.initiate.selector,
+            block.timestamp + 365 days
+        );
+        permission.grantPermission(
+            address(CAR_REGISTRY),
+            IOracleMaster.registerCarBrand.selector,
+            block.timestamp + 365 days
+        );
         ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
             updateInterval: 1 days,
             deviationThreshold: 1 days,
@@ -137,7 +124,7 @@ contract BrandInteraction is Script {
             minAnswer: 0,
             maxAnswer: 6000
         });
-        // we regisster the brand
+        //   we regisster the brand
         ICarRegistry(CAR_REGISTRY).registerBrand(
             BRANDNAME1,
             config,
@@ -149,7 +136,7 @@ contract BrandInteraction is Script {
 
         // stake an amount as collateral for any dispute/damages etc
 
-        ICarRegistry(CAR_REGISTRY).stake{value: 1}(BRANDNAME1, _deployer);
+        ICarRegistry(CAR_REGISTRY).stake{value: 0.0000002 ether}(BRANDNAME1);
 
         // We then activate the brand account
 
@@ -158,10 +145,5 @@ contract BrandInteraction is Script {
         // check if it actually work
 
         assert(ICarRegistry(CAR_REGISTRY).isActivate(BRANDNAME1));
-
-        //mint an nft
-        //  zeroNFT.
-
-        // create an actuction
     }
 }

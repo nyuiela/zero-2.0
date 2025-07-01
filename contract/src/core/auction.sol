@@ -77,7 +77,7 @@ contract Auction {
     }
 
     constructor(
-        address _carRegistry,
+        address payable _carRegistry,
         address _zeroNFT,
         address _oracleMaster,
         address _ethUsdFeed,

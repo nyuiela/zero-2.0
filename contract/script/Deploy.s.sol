@@ -85,7 +85,10 @@ contract DeployScript is Script {
         permissionManager = new PermissionManager();
         brandPermissionManager = new BrandPermissionManager();
         profile = new Profile(address(permissionManager));
-        stateManager = new StateManager(address(profile));
+        stateManager = new StateManager(
+            address(profile),
+            address(permissionManager)
+        );
         merkleVerifier = new MerkleVerifier();
         syncFunction = new Sync();
         console.log("Core contracts deployed.");
@@ -133,7 +136,7 @@ contract DeployScript is Script {
 
         stateCheckFunction = new StateCheckFunction(
             address(stateManager),
-            address(carRegistry)
+            payable(carRegistry)
         );
         initFunction = new InitFunction(
             address(stateManager),
@@ -147,7 +150,7 @@ contract DeployScript is Script {
         );
 
         auction = new Auction(
-            address(carRegistry),
+            payable(carRegistry),
             address(zeroNFT),
             address(oracleMaster),
             _BASE_ETH_USD_FEED,
@@ -199,19 +202,20 @@ contract DeployScript is Script {
         ccip.allowlistDestinationChain(14767482510784806043, true); // avalanche
     }
 
-    function grantPermissions(address deployer) internal {
+    function grantPermissions(address dep_loyer) internal {
         address permissionAddress = 0xf0830060f836B8d54bF02049E5905F619487989e;
 
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions = new bytes4[](20);
+        bytes4[] memory registryPermissions = new bytes4[](20);
 
-        permissions[0] = oracleMaster.REGISTER_CAR_BRAND_SELECTOR();
-        permissions[1] = oracleMaster.UPDATE_ORACLE_SELECTOR();
-        permissions[2] = oracleMaster.DEACTIVATE_ORACLE_SELECTOR();
-        permissions[3] = oracleMaster.REACTIVATE_ORACLE_SELECTOR();
-        permissions[4] = oracleMaster.BATCH_UPDATE_PRICES_SELECTOR();
-        permissions[5] = oracleMaster.INCREMENT_PRODUCT_COUNT_SELECTOR();
-        permissions[6] = oracleMaster.DECREMENT_PRODUCT_COUNT_SELECTOR();
+        permissions[0] = oracleMaster.registerCarBrand.selector;
+        permissions[1] = oracleMaster.updateOracle.selector;
+        permissions[2] = oracleMaster.deactivateOracle.selector;
+        permissions[3] = oracleMaster.reactivateOracle.selector;
+        permissions[4] = oracleMaster.batchUpdatePrices.selector;
+        permissions[5] = oracleMaster.incrementProductCount.selector;
+        permissions[6] = oracleMaster.decrementProductCount.selector;
 
         permissions[7] = reputation.SLASH();
         permissions[8] = reputation.WITHDRAW_SLASHED_ETH();
@@ -230,45 +234,71 @@ contract DeployScript is Script {
         permissions[18] = stateManager.LOCK_CONTRACT();
         permissions[19] = stateManager.UNLOCK_CONTRACT();
 
+        registryPermissions[0] = StateManager.INITIATE();
+        registryPermissions[1] = profile.UPDATESTATE();
+        registryPermissions[2] = profile.LOCKBRAND();
+        registryPermissions[3] = profile.UNLOCKBRAND();
+        registryPermissions[4] = stateManager.SET_STATE();
+        registryPermissions[5] = stateManager.LOCK_CONTRACT();
+        registryPermissions[6] = stateManager.UNLOCK_CONTRACT();
+        registryPermissions[7] = stateManager.INITIATE();
+
         permissionManager.grantBatchPermissions(
             permissionAddress,
             permissions,
             block.timestamp + 365 days
         );
-
         permissionManager.grantBatchPermissions(
-            deployer,
+            dep_loyer,
             permissions,
+            block.timestamp + 365 days
+        );
+        permissionManager.grantBatchPermissions(
+            address(carRegistry),
+            registryPermissions,
             block.timestamp + 365 days
         );
 
         console.log("Permissions granted to:", permissionAddress);
     }
 
-    function logDeploymentSummary() internal {
+    function logDeploymentSummary() internal view {
         console.log("\n=== DEPLOYMENT SUMMARY ===");
-        console.log("Network: Base");
-        console.log("Deployer:", deployer);
-        console.log("PermissionManager:", address(permissionManager));
-        console.log("BrandPermissionManager:", address(brandPermissionManager));
-        console.log("CarOracle:", address(carOracle));
-        console.log("OracleMaster:", address(oracleMaster));
-        console.log("Profile:", address(profile));
-        console.log("StateManager:", address(stateManager));
-        console.log("InitFunction:", address(initFunction));
-        console.log("MerkleVerifier:", address(merkleVerifier));
-        console.log("ProofSync:", address(proofSync));
-        console.log("CrossToken (CCIP):", address(ccip));
-        console.log("Messenger:", address(messenger));
-        console.log("SyncFunction:", address(syncFunction));
-        console.log("Fee:", address(fee));
-        console.log("Reputation:", address(reputation));
-        console.log("CarRegistry:", address(carRegistry));
-        console.log("ZeroNFT:", address(zeroNFT));
-        console.log("Auction:", address(auction));
-        console.log("StateCheckFunction:", address(stateCheckFunction));
-);
-         console.log("messenger:", address(messenger));
-        sole.log("=== DEPLOYMENT COMPLETE ===\n");
+        console.log("Network= Base");
+        console.log("Deployer=", deployer);
+        console.log(
+            "NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS=",
+            address(permissionManager)
+        );
+        console.log(
+            "NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS=",
+            address(brandPermissionManager)
+        );
+        console.log("NEXT_PUBLIC_CAR_ORACLE_ADDRESS=", address(carOracle));
+        console.log(
+            "NEXT_PUBLIC_ORACLE_MASTER_ADDRESS=",
+            address(oracleMaster)
+        );
+        console.log("NEXT_PUBLIC_PROFILE_ADDRESS=", address(profile));
+        console.log("NEXT_PUBLIC_STATEMANAGER_ADDRESS=", address(stateManager));
+        console.log("NEXT_PUBLIC_INITFUNCTION_ADDRESS=", address(initFunction));
+        console.log(
+            "NEXT_PUBLIC_MERKLEVERIFIER_ADDRESS=",
+            address(merkleVerifier)
+        );
+        console.log("NEXT_PUBLIC_PROOFSYNC_ADDRESS=", address(proofSync));
+        console.log("NEXT_PUBLIC_CROSS_TOKEN_ADDRESS=", address(ccip));
+        console.log("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS=", address(syncFunction));
+        console.log("NEXT_PUBLIC_FEE=", address(fee));
+        console.log("NEXT_PUBLIC_REPUTATION_ADDRESS=", address(reputation));
+        console.log("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS=", address(carRegistry));
+        console.log("NEXT_PUBLIC_ZERO_NFT_ADDRESS=", address(zeroNFT));
+        console.log("NEXT_PUBLIC_AUCTION_ADDRESS=", address(auction));
+        console.log(
+            "NEXT_PUBLIC_STATECHECKFUNCTION_ADDRESS=",
+            address(stateCheckFunction)
+        );
+        console.log("NEXT_PUBLIC_MESSENGER_ADDRESS=", address(messenger));
+        console.log("=== DEPLOYMENT COMPLETE ===\n");
     }
 }

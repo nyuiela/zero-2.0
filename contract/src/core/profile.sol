@@ -41,12 +41,17 @@ contract Profile {
     mapping(string => BrandProfile) public profile;
     // BrandProfile[] public profile;
     //
-    bytes4 public constant UNLOCKBRAND = bytes4(keccak256("unlockBrand(string)"));
+    bytes4 public constant UNLOCKBRAND =
+        bytes4(keccak256("unlockBrand(string)"));
     bytes4 public constant LOCKBRAND = bytes4(keccak256("lockBrand(string)"));
-    bytes4 public constant UPDATESTATE = bytes4(keccak256("updateState(string, string)"));
+    bytes4 public constant UPDATESTATE =
+        bytes4(keccak256("updateState(string, string)"));
 
     modifier onlyRegistry() {
-        require(msg.sender == address(registryContract), "Profile: not authorized");
+        require(
+            msg.sender == address(registryContract),
+            "Profile: not authorized"
+        );
         _;
     }
 
@@ -54,9 +59,11 @@ contract Profile {
         require(msg.sender == owner, "Profile: not owner");
         _;
     }
+
     // called when registering brand;
 
     constructor(address _globalPermissionManager) {
+        //   registryContract = ICarRegistry(_registry);
         owner = msg.sender;
         // registryContract = ICarRegistry(_registry);
         globalPermissionManager = _globalPermissionManager;
@@ -91,24 +98,38 @@ contract Profile {
         emit ProfileCreated(_brand, msg.sender);
     }
 
-    function getProfile(string memory _brand) public view returns (BrandProfile memory) {
+    function getProfile(
+        string memory _brand
+    ) public view returns (BrandProfile memory) {
         return profile[_brand];
     }
 
-    function updateState(string memory _brand, string memory _state) public /* only Permissioned users */ {
-        require(globalPermissionManager.hasPermission(msg.sender, UPDATESTATE), "profile: Unauthorized");
+    function updateState(
+        string memory _brand,
+        string memory _state
+    ) public /* only Permissioned users */ {
+        require(
+            globalPermissionManager.hasPermission(msg.sender, UPDATESTATE),
+            "profile: Unauthorized"
+        );
         // check permission or simply allow only state contract to update the state.
         profile[_brand].state = _state;
         emit UpdatedState(_brand, _state);
     }
 
     function lockBrand(string memory _brand) public {
-        require(globalPermissionManager.hasPermission(msg.sender, LOCKBRAND), "profile: Unauthorized");
+        require(
+            globalPermissionManager.hasPermission(msg.sender, LOCKBRAND),
+            "profile: Unauthorized"
+        );
         profile[_brand].locked = true;
     }
 
     function unlockBrand(string memory _brand) public {
-        require(globalPermissionManager.hasPermission(msg.sender, UNLOCKBRAND), "profile: Unauthorized");
+        require(
+            globalPermissionManager.hasPermission(msg.sender, UNLOCKBRAND),
+            "profile: Unauthorized"
+        );
         profile[_brand].locked = false;
     }
 

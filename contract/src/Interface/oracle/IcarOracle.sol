@@ -17,13 +17,23 @@ interface ICarOracle {
         uint256 maxAnswer;
     }
 
-    event PriceUpdated(uint256 indexed roundId, uint256 price, uint256 timestamp, string brandName);
+    event PriceUpdated(
+        uint256 indexed roundId,
+        uint256 price,
+        uint256 timestamp,
+        string brandName
+    );
 
-    event ConfigUpdated(uint256 updateInterval, uint256 deviationThreshold, uint256 heartbeat, uint256 timestamp);
+    event ConfigUpdated(
+        uint256 updateInterval,
+        uint256 deviationThreshold,
+        uint256 heartbeat,
+        uint256 timestamp
+    );
 
     function initialize(
         string memory brandName,
-        string memory priceFeedAddress,
+        address priceFeedAddress,
         OracleConfig memory config,
         address masterOracle
     ) external;
@@ -32,7 +42,9 @@ interface ICarOracle {
 
     function getLatestPrice() external view returns (PriceData memory);
 
-    function getPriceAtRound(uint256 roundId) external view returns (PriceData memory);
+    function getPriceAtRound(
+        uint256 roundId
+    ) external view returns (PriceData memory);
 
     function updateConfig(OracleConfig memory config) external;
 
@@ -40,7 +52,7 @@ interface ICarOracle {
 
     function getBrandName() external view returns (string memory);
 
-    function getPriceFeedAddress() external view returns (string memory);
+    function getPriceFeedAddress() external view returns (address);
 
     function getMasterOracle() external view returns (address);
 
