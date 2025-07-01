@@ -368,7 +368,8 @@ export function BrandRegistrationForm() {
         args: [registeredBrandName],
         account: address
       })
-      setStakeActivateStep(2)
+      // setShowStakeActivateModal(false)
+      setStakeActivateStep(3)
       setRegisteredBrandName('')
     } catch (error) {
       setError(parseError(error))

@@ -35,17 +35,17 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
     >
       <DialogContent className="sm:max-w-md ">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[#00296b]">
+          <DialogTitle className="text-xl font-bold text-[#00296b] text-center">
             {title}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='text-center px-5'>
             {description}
             Complete the registration process by staking and activating your brand
           </DialogDescription>
         </DialogHeader>
 
         {/* Progress Tracker */}
-        <div className="flex items-center justify-between mb-10 flex-auto px-5 relative">
+        <div className="flex items-center justify-between mb-10 flex-auto px-5 relative mt-10">
 
           {
             steps.map((step, key: number) =>
@@ -76,7 +76,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
 
         {/* Step Content */}
         <div className="space-y-4">
-          {message && (
+          {message?.[activeStep] && (
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="text-blue-800 font-semibold text-sm mb-2">{message[activeStep].header}</h4>
@@ -85,14 +85,16 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
 
                 </p>
               </div>
-
-              <Button
-                onClick={handleSubmit[activeStep]}
-                disabled={isLoading}
-                className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
-              >
-                {isLoading ? "Loading..." : button[activeStep]}
-              </Button>
+              {
+                activeStep < steps.length &&
+                <Button
+                  onClick={handleSubmit[activeStep]}
+                  disabled={isLoading}
+                  className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+                >
+                  {isLoading ? "Loading..." : button[activeStep]}
+                </Button>
+              }
             </div>)
           }
 
@@ -122,6 +124,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
 
         <DialogFooter >
           <div className='w-full flex justify-center'>
+
 
             <Button
               variant="outline"
