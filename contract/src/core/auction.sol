@@ -174,6 +174,8 @@ contract Auction {
         zeroNFT.isOwner(tokenId, user);
     }
 
+    mapping(uint256 => bool) private requiresStake;
+
     function placeBid(uint256 auctionId, uint256 amount) external payable {
         AuctionItem storage a = auctions[auctionId];
         require(block.timestamp >= a.startTime, "Auction not started");
@@ -199,6 +201,7 @@ contract Auction {
                     msg.value >= requiredStake,
                     "Insufficient ETH collateral"
                 );
+                requiresStake[auctionId] = true;
                 a.stakes[msg.sender] += msg.value;
             } else {
                 require(msg.value == 0, "Send collateral in token, not ETH");

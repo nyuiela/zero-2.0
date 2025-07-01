@@ -218,7 +218,7 @@ contract ZeroNFTTest is Test {
         );
     }
 
-    function mintnft(string memory brand) internal {
+    function mintnft(string memory brand, address owner) internal {
         string memory stateUrl = "https://state.url";
         IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
             brandName: brand,
@@ -232,10 +232,8 @@ contract ZeroNFTTest is Test {
             mintTimestamp: block.timestamp,
             isVerified: true
         });
-        uint256 current = zero.getCurrentTokenId();
-        console2.log("lessToken:", current);
-        address lee = address(0x56);
-        zero.mint(lee, brand, meta, stateUrl);
+
+        zero.mint(owner, brand, meta, stateUrl);
 
         uint256 brandToken = zero.getCurrentTokenId();
     }
@@ -244,15 +242,15 @@ contract ZeroNFTTest is Test {
         uint256 brandToken = zero.getCurrentTokenId();
         uint256 startTime = block.timestamp + 1 days;
         uint256 endTime = startTime + 4 days;
-
-        assertTrue(zero.isOwner(zero.getCurrentTokenId(), owner));
+        uint256 curentIDForowner = zero.getCurrentTokenId();
+        assertTrue(zero.isOwner(curentIDForowner, owner));
         zero.approve(address(auction), brandToken); // approve the auction contract to transfer the token on behalf of the owner
         auction.createAuction(
             brand,
             startTime,
             endTime,
-            10 ether,
-            40 ether,
+            4 ether,
+            30 ether,
             address(usdc),
             brandToken,
             "5t8gfydy" // - proof hash
@@ -313,7 +311,7 @@ contract ZeroNFTTest is Test {
         startActivation("TestBrand");
 
         // Mint an NFT for the brand
-        mintnft("TestBrand");
+        mintnft("TestBrand", kaleel);
 
         // Create an auction for the NFT
         createAuction("TestBrand", kaleel);
@@ -321,6 +319,8 @@ contract ZeroNFTTest is Test {
         // Bid on the auction
         uint256 auctionId = 1; // Assuming this is the first auction created
         vm.stopPrank();
+
+        vm.warp(block.timestamp + 2 days);
 
         vm.prank(lee);
         bid(auctionId, 5 ether);
@@ -341,7 +341,7 @@ contract ZeroNFTTest is Test {
         (uint256 highestBid, address highestBidder) = auction
             .getCurrentHighestBid(auctionId);
         console2.log("Highest Bid: ", highestBid);
-
+        vm.warp(block.timestamp + 3 days);
         vm.prank(kal);
         auction.endAuction(auctionId);
 

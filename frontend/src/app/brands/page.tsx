@@ -9,6 +9,7 @@ import { useAccount, useReadContract } from 'wagmi'
 import { Car, TrendingUp, Users, Award, ArrowRight } from 'lucide-react'
 import { profile } from 'console'
 import { profile_abi, profile_addr, registry_abi, registry_addr } from '@/lib/abi/abi'
+import { useRouter } from 'next/navigation'
 
 interface Brand {
   brand: string
@@ -43,6 +44,7 @@ export default function BrandsPage() {
     args: ["KALEEL"],
     account: address
   })
+  const router = useRouter()
   console.log("Brand Status ", brandStatus.data)
   console.log("Profile ", profile.data)
   // Mock data for charts - in real implementation, this would come from API

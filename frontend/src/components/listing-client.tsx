@@ -133,7 +133,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       </nav>
 
       {/* Current Bid Display */}
-      <div className="mb-6 p-4 bg-gradient-to-r border border-amber-800 rounded-sm bg-[#00296b]/90 py-8">
+      <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 mx-4">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
           <div className="text-3xl font-bold text-white ">{formatCurrency(listing.current_price, currency)}</div>
@@ -180,12 +180,12 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       )}
 
       {/* Header Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
         {/* Image Gallery */}
         <div className="lg:col-span-2">
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-[16/9] rounded-none overflow-hidden bg-card">
+            <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card">
               <Image
                 src={listing.image_url[selectedImage]}
                 alt={`${listing.year} ${listing.make} ${listing.model}`}
@@ -216,40 +216,46 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
 
         {/* Bidding Panel */}
-        <div className="space-y-6">
+        <div className="space-y-6 bg-red-00 overflow-hidden">
           {/* Action Buttons */}
-          <div className="flex flex-col md:flex-row gap-4 mb-8 items-baseline justify-end">
-            <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer" onClick={() => setIsBidModalOpen(true)}>
-              Place Bid
-            </Button>
-            <Button className="text-black py-5 px-8 rounded-none  transition-all bg-white shadow-none text-md cursor-pointer" asChild>
-              <Link href={`/auctions/${listing.id}`}>
-                Join Bidding Room
-              </Link>
-            </Button>
-            {/* <div className="ml-auto flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Currency:</span>
-          <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
-          <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
-        </div> */}
-          </div>
-          <div className="bg-gradient-to-br border-none p-6 ">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xl font-bold text-brand">Current Price</div>
-            </div>
-            <div className="space-y-4">
+          <div className='flex items-baseline flex-row bg-green-00 md:justify-between lg:flex-col lg:space-y-4'>
+            {/* <div> */}
+
+            <div className="bg-gradient-to-br border-none w-full bg-red-00">
               <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
-              <Separator />
-              <div className="space-y-3">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Starting Price:</span>
-                  <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-md font-normal text-gray-700">Current Price</div>
+                </div>
+                <Separator />
+                <div className="space-y-3">
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Starting Price:</span>
+                    <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+                  </div>
                 </div>
               </div>
             </div>
+            <div className='flex flex-col justify-end gap-2 w-full'>
+              <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm mr-2 hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
+                Place Bid
+              </Button>
+              <Button className="text-black py-5 px-8 rounded-none  transition-all shadow-none text-md cursor-pointer text-sm underline bg-red-00" asChild>
+                <Link href={`/auctions/${listing.id}`}>
+                  Join Bidding Room
+                </Link>
+              </Button>
+              {/* <div className="ml-auto flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Currency:</span>
+              <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
+              <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
+              </div> */}
+            </div>
           </div>
-          <div className="bg-gradient-to-br border-none p-6 ">
-            <div className="flex items-center justify-between mb-4">
+
+
+          <div className="bg-gradient-to-br border-none">
+            <div className="flex items-center justify-between mb-2">
               <div className="text-xl font-bold text-brand">Summary</div>
             </div>
             <div className="space-y-4">
@@ -266,7 +272,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
           </div>
           {/* Seller Info */}
-          <div className="bg-white shadow p-6 rounded-lg">
+          <div className="bg-transparent shadow-none rounded-sm ">
             <div className="text-lg font-bold mb-2 flex items-center space-x-2">
               <span>Brand Information</span>
             </div>
@@ -281,7 +287,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
           </div>
           <div className="bg-gradient-to-br border-none p-6 px-0 ">
-            <div className="flex items-center justify-between mb-4 px-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="text-xl font-bold text-brand">Bids</div>
             </div>
             {bids?.map((bid, key) => (
@@ -314,14 +320,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
 
           </div>
         </div>
-      </div>
+      </div >
 
       {/* Car Details Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4">
         {/* Main Details */}
-        <div className="lg:col-span-2 space-y-8">
+        < div className="lg:col-span-2 space-y-8" >
           {/* Title and Location */}
-          <div>
+          < div >
             <h1 className="text-4xl font-bold text-foreground mb-2">
               {listing.year} {listing.make} {listing.model}
             </h1>
@@ -331,9 +337,9 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <span>{listing.location}</span>
               </div>
             </div>
-          </div>
+          </div >
           {/* Car Details Sections */}
-          <div className="bg-transparent rounded-none mb-6">
+          < div className="bg-transparent rounded-none mb-6" >
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               {listing.description}
@@ -400,15 +406,15 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <span className="text-foreground">{listing.vin}</span>
               </div>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
         {/* (Optional) Add more side details here if needed */}
-      </div>
+      </div >
 
 
 
       {/* Related Auctions */}
-      <div className="mt-16 pt-8 border-t border-border">
+      < div className="mt-16 pt-8 border-t border-border" >
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           { }
@@ -416,7 +422,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <AuctionCard key={auction.id} auction={auction} />
           ))} */}
         </div>
-      </div>
+      </div >
     </>
   )
 }
