@@ -27,11 +27,19 @@ interface IProfile {
         address _merkleVerifier,
         address _brandP,
         address _oracle,
-        address _syncer
+        address _syncer,
+        string memory _url
     ) external;
-    function getProfile(string memory _brand) external view returns (BrandProfile memory);
+
+    function getProfile(
+        string memory _brand
+    ) external view returns (BrandProfile memory);
+
     function updateState(string memory _brand, string memory _state) external;
+
     function lockBrand(string memory _brand) external;
+
     function unlockBrand(string memory _brand) external;
+
     function setRegistry(address _registry) external;
 }

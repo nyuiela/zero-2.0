@@ -5,7 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {IBrandPermissionManager} from "../Interface/Permissions/IBrandPermissionManager.sol";
+import {IBrandPermissionManager} from "../interface/Permissions/IBrandPermissionManager.sol";
 
 contract BrandPermissionManager is
     IBrandPermissionManager,
@@ -37,18 +37,32 @@ contract BrandPermissionManager is
     }
 
     modifier onlyMasterOracle() {
-        require(msg.sender == _masterOracle, "Only master oracle can call this");
+        require(
+            msg.sender == _masterOracle,
+            "Only master oracle can call this"
+        );
         _;
     }
 
     modifier onlyAuthorized() {
-        require(msg.sender == _brandOwner || msg.sender == _masterOracle || msg.sender == owner(), "Not authorized");
+        require(
+            msg.sender == _brandOwner ||
+                msg.sender == _masterOracle ||
+                msg.sender == owner(),
+            "Not authorized"
+        );
         _;
     }
 
     modifier validExpirationTime(uint256 expiresAt) {
-        require(expiresAt > block.timestamp, "Expiration time must be in the future");
-        require(expiresAt <= block.timestamp + MAX_EXPIRATION_TIME, "Expiration time too far in future");
+        require(
+            expiresAt > block.timestamp,
+            "Expiration time must be in the future"
+        );
+        require(
+            expiresAt <= block.timestamp + MAX_EXPIRATION_TIME,
+            "Expiration time too far in future"
+        );
         _;
     }
 
@@ -62,13 +76,16 @@ contract BrandPermissionManager is
         _disableInitializers();
     }
 
-    function initialize(string memory brandName, address masterOracle, address brandOwner)
-        external
-        override
-        initializer
-    {
+    function initialize(
+        string memory brandName,
+        address masterOracle,
+        address brandOwner
+    ) external override initializer {
         require(bytes(brandName).length > 0, "Brand name cannot be empty");
-        require(masterOracle != address(0), "Master oracle cannot be zero address");
+        require(
+            masterOracle != address(0),
+            "Master oracle cannot be zero address"
+        );
         require(brandOwner != address(0), "Brand owner cannot be zero address");
 
         _brandName = brandName;
@@ -80,7 +97,11 @@ contract BrandPermissionManager is
         __ReentrancyGuard_init();
     }
 
-    function grantPermission(address account, bytes4 functionSelector, uint256 expiresAt)
+    function grantPermission(
+        address account,
+        bytes4 functionSelector,
+        uint256 expiresAt
+    )
         external
         override
         onlyAuthorized
@@ -92,7 +113,11 @@ contract BrandPermissionManager is
         _grantPermission(account, functionSelector, expiresAt);
     }
 
-    function grantBatchPermissions(address account, bytes4[] memory functionSelectors, uint256 expiresAt)
+    function grantBatchPermissions(
+        address account,
+        bytes4[] memory functionSelectors,
+        uint256 expiresAt
+    )
         external
         override
         onlyAuthorized
@@ -107,24 +132,25 @@ contract BrandPermissionManager is
             _grantPermission(account, functionSelectors[i], expiresAt);
         }
 
-        emit BatchPermissionsGranted(account, functionSelectors, expiresAt, block.timestamp);
+        emit BatchPermissionsGranted(
+            account,
+            functionSelectors,
+            expiresAt,
+            block.timestamp
+        );
     }
 
-    function revokePermission(address account, bytes4 functionSelector)
-        external
-        override
-        onlyAuthorized
-        validAccount(account)
-    {
+    function revokePermission(
+        address account,
+        bytes4 functionSelector
+    ) external override onlyAuthorized validAccount(account) {
         _revokePermission(account, functionSelector);
     }
 
-    function revokeBatchPermissions(address account, bytes4[] memory functionSelectors)
-        external
-        override
-        onlyAuthorized
-        validAccount(account)
-    {
+    function revokeBatchPermissions(
+        address account,
+        bytes4[] memory functionSelectors
+    ) external override onlyAuthorized validAccount(account) {
         require(functionSelectors.length > 0, "Empty function selectors array");
         require(functionSelectors.length <= 50, "Too many function selectors");
 
@@ -132,10 +158,16 @@ contract BrandPermissionManager is
             _revokePermission(account, functionSelectors[i]);
         }
 
-        emit BatchPermissionsRevoked(account, functionSelectors, block.timestamp);
+        emit BatchPermissionsRevoked(
+            account,
+            functionSelectors,
+            block.timestamp
+        );
     }
 
-    function revokeAllPermissions(address account) external override onlyAuthorized validAccount(account) {
+    function revokeAllPermissions(
+        address account
+    ) external override onlyAuthorized validAccount(account) {
         bytes4[] memory functionSelectors = _accountFunctionSelectors[account];
 
         for (uint256 i = 0; i < functionSelectors.length; i++) {
@@ -145,7 +177,10 @@ contract BrandPermissionManager is
         }
     }
 
-    function hasPermission(address account, bytes4 functionSelector) external view override returns (bool) {
+    function hasPermission(
+        address account,
+        bytes4 functionSelector
+    ) external view override returns (bool) {
         Permission memory permission = _permissions[account][functionSelector];
 
         if (!permission.isActive) {
@@ -159,18 +194,20 @@ contract BrandPermissionManager is
         return true;
     }
 
-    function getPermission(address account, bytes4 functionSelector)
-        external
-        view
-        override
-        returns (Permission memory)
-    {
+    function getPermission(
+        address account,
+        bytes4 functionSelector
+    ) external view override returns (Permission memory) {
         return _permissions[account][functionSelector];
     }
 
-    function getAccountPermissions(address account) external view override returns (Permission[] memory) {
+    function getAccountPermissions(
+        address account
+    ) external view override returns (Permission[] memory) {
         bytes4[] memory functionSelectors = _accountFunctionSelectors[account];
-        Permission[] memory permissions = new Permission[](functionSelectors.length);
+        Permission[] memory permissions = new Permission[](
+            functionSelectors.length
+        );
 
         for (uint256 i = 0; i < functionSelectors.length; i++) {
             permissions[i] = _permissions[account][functionSelectors[i]];
@@ -179,7 +216,9 @@ contract BrandPermissionManager is
         return permissions;
     }
 
-    function getFunctionPermissions(bytes4 functionSelector) external view override returns (Permission[] memory) {
+    function getFunctionPermissions(
+        bytes4 functionSelector
+    ) external view override returns (Permission[] memory) {
         address[] memory accounts = _functionAccounts[functionSelector];
         Permission[] memory permissions = new Permission[](accounts.length);
 
@@ -190,16 +229,26 @@ contract BrandPermissionManager is
         return permissions;
     }
 
-    function isPermissionExpired(address account, bytes4 functionSelector) external view override returns (bool) {
+    function isPermissionExpired(
+        address account,
+        bytes4 functionSelector
+    ) external view override returns (bool) {
         Permission memory permission = _permissions[account][functionSelector];
         return permission.isActive && permission.expiresAt <= block.timestamp;
     }
 
-    function getActivePermissionsCount(address account) external view override returns (uint256) {
+    function getActivePermissionsCount(
+        address account
+    ) external view override returns (uint256) {
         return _accountPermissionCount[account];
     }
 
-    function getTotalPermissionsCount() external view override returns (uint256) {
+    function getTotalPermissionsCount()
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _totalPermissions;
     }
 
@@ -225,11 +274,15 @@ contract BrandPermissionManager is
     }
 
     // Utility functions
-    function getAccountFunctionSelectors(address account) external view returns (bytes4[] memory) {
+    function getAccountFunctionSelectors(
+        address account
+    ) external view returns (bytes4[] memory) {
         return _accountFunctionSelectors[account];
     }
 
-    function getFunctionAccounts(bytes4 functionSelector) external view returns (address[] memory) {
+    function getFunctionAccounts(
+        bytes4 functionSelector
+    ) external view returns (address[] memory) {
         return _functionAccounts[functionSelector];
     }
 
@@ -238,9 +291,13 @@ contract BrandPermissionManager is
         uint256 cleanedCount = 0;
 
         for (uint256 i = 0; i < functionSelectors.length; i++) {
-            Permission storage permission = _permissions[account][functionSelectors[i]];
+            Permission storage permission = _permissions[account][
+                functionSelectors[i]
+            ];
 
-            if (permission.isActive && permission.expiresAt <= block.timestamp) {
+            if (
+                permission.isActive && permission.expiresAt <= block.timestamp
+            ) {
                 permission.isActive = false;
                 _accountPermissionCount[account]--;
                 _totalPermissions--;
@@ -250,9 +307,12 @@ contract BrandPermissionManager is
             }
         }
     }
+
     // event PermissionExpired()
 
-    function batchCleanExpiredPermissions(address[] memory accounts) external override {
+    function batchCleanExpiredPermissions(
+        address[] memory accounts
+    ) external override {
         for (uint256 i = 0; i < accounts.length; i++) {
             this.cleanExpiredPermissions(accounts[i]);
         }
@@ -267,7 +327,11 @@ contract BrandPermissionManager is
     function getPermissionStats()
         external
         view
-        returns (uint256 totalPermissions, uint256 activePermissions, uint256 expiredPermissions)
+        returns (
+            uint256 totalPermissions,
+            uint256 activePermissions,
+            uint256 expiredPermissions
+        )
     {
         totalPermissions = _totalPermissions;
         activePermissions = 0;
@@ -279,7 +343,11 @@ contract BrandPermissionManager is
     }
 
     // Internal functions
-    function _grantPermission(address account, bytes4 functionSelector, uint256 expiresAt) internal {
+    function _grantPermission(
+        address account,
+        bytes4 functionSelector,
+        uint256 expiresAt
+    ) internal {
         Permission storage permission = _permissions[account][functionSelector];
 
         // If permission doesn't exist, add to tracking arrays
@@ -296,7 +364,10 @@ contract BrandPermissionManager is
         //  emit PermissionGranted(account, functionSelector, expiresAt, block.timestamp);
     }
 
-    function _revokePermission(address account, bytes4 functionSelector) internal {
+    function _revokePermission(
+        address account,
+        bytes4 functionSelector
+    ) internal {
         Permission storage permission = _permissions[account][functionSelector];
 
         if (permission.isActive) {

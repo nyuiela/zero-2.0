@@ -9,11 +9,7 @@ interface IReputation {
         address staker;
     }
 
-    function stake(
-        string memory _brand,
-        address staker,
-        bool isEth
-    ) external payable;
+    function stake(string memory _brand, address staker, uint256 stake) external;
 
     function slash(string memory _brand, uint256 amount) external;
 
@@ -22,4 +18,6 @@ interface IReputation {
     function withdrawSlashedusdc(uint256 amoount, address _receiver) external;
 
     function stakeAmountset(uint256 amount) external;
+
+    function requiredStake() external;
 }

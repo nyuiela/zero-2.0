@@ -2,10 +2,9 @@
 pragma solidity ^0.8.24;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
-import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
+import {ICarOracle} from "../interface/oracle/IcarOracle.sol";
 
 /*
-   
  * @dev Library for creating and managing clones of car oracle contracts
  * This library provides functions to create clones, validate configurations,
  * and check price updates for car brands.
@@ -27,7 +26,7 @@ library OracleCloneLib {
     function createOracleClone(
         address implementation,
         string memory brandName,
-        string memory priceFeedAddress,
+        address priceFeedAddress,
         ICarOracle.OracleConfig memory config,
         address masterOracle
     ) internal returns (address cloneAddress) {
@@ -35,9 +34,12 @@ library OracleCloneLib {
         cloneAddress = implementation.clone();
 
         // Initialize the clone
-        ICarOracle(cloneAddress).initialize(brandName, priceFeedAddress, config, masterOracle);
-
-        return cloneAddress;
+        ICarOracle(cloneAddress).initialize(
+            brandName,
+            priceFeedAddress,
+            config,
+            masterOracle
+        );
     }
 
     /**
@@ -46,11 +48,10 @@ library OracleCloneLib {
      * @param salt The salt for deterministic address generation
      * @return predictedAddress The predicted address of the clone
      */
-    function predictCloneAddress(address implementation, bytes32 salt)
-        internal
-        view
-        returns (address predictedAddress)
-    {
+    function predictCloneAddress(
+        address implementation,
+        bytes32 salt
+    ) internal view returns (address predictedAddress) {
         return implementation.predictDeterministicAddress(salt);
     }
 
@@ -68,7 +69,7 @@ library OracleCloneLib {
         address implementation,
         bytes32 salt,
         string memory brandName,
-        string memory priceFeedAddress,
+        address priceFeedAddress,
         ICarOracle.OracleConfig memory config,
         address masterOracle
     ) internal returns (address cloneAddress) {
@@ -76,7 +77,12 @@ library OracleCloneLib {
         cloneAddress = implementation.cloneDeterministic(salt);
 
         // Initialize the clone
-        ICarOracle(cloneAddress).initialize(brandName, priceFeedAddress, config, masterOracle);
+        ICarOracle(cloneAddress).initialize(
+            brandName,
+            priceFeedAddress,
+            config,
+            masterOracle
+        );
 
         return cloneAddress;
     }
@@ -85,11 +91,22 @@ library OracleCloneLib {
      * @dev Validates oracle configuration parameters
      * @param config The oracle configuration to validate
      */
-    function validateOracleConfig(ICarOracle.OracleConfig memory config) internal pure {
-        require(config.updateInterval > 0, "Update interval must be greater than 0");
-        require(config.deviationThreshold > 0, "Deviation threshold must be greater than 0");
+    function validateOracleConfig(
+        ICarOracle.OracleConfig memory config
+    ) internal pure {
+        require(
+            config.updateInterval > 0,
+            "Update interval must be greater than 0"
+        );
+        require(
+            config.deviationThreshold > 0,
+            "Deviation threshold must be greater than 0"
+        );
         require(config.heartbeat > 0, "Heartbeat must be greater than 0");
-        require(config.minAnswer < config.maxAnswer, "Min answer must be less than max answer");
+        require(
+            config.minAnswer < config.maxAnswer,
+            "Min answer must be less than max answer"
+        );
     }
 
     /**
@@ -100,11 +117,11 @@ library OracleCloneLib {
      * @return isValid Whether the price update is valid
      * @notice 10000 is used for precision
      */
-    function isValidPriceUpdate(uint256 currentPrice, uint256 newPrice, ICarOracle.OracleConfig memory config)
-        internal
-        pure
-        returns (bool isValid)
-    {
+    function isValidPriceUpdate(
+        uint256 currentPrice,
+        uint256 newPrice,
+        ICarOracle.OracleConfig memory config
+    ) internal pure returns (bool isValid) {
         // Check if price is within bounds
         if (newPrice < config.minAnswer || newPrice > config.maxAnswer) {
             return false;

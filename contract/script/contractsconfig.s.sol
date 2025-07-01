@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
+
 import {IERC20} from "../lib/foundry-chainlink-toolkit/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "forge-std/Script.sol";
 // import {CarRegistry} from "../core/registry.sol";
@@ -18,8 +19,7 @@ contract ContractConfig is Script {
     // IInitFunction public initFunction;
 
     uint32 constant GAS_LIMIT = 4365000;
-    address constant INITFUNCTION_ADDRESS =
-        0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5;
+    address constant INITFUNCTION_ADDRESS = 0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -55,10 +55,7 @@ contract ContractConfig is Script {
         vm.stopBroadcast();
     }
 
-    function setContractConfig(
-        address _init_function,
-        uint32 gas_limit
-    ) internal {
+    function setContractConfig(address _init_function, uint32 gas_limit) internal {
         IInitFunction(_init_function).setGasLimit(gas_limit);
         //IInitFunction(_init_function).set
         // 4365000
@@ -68,10 +65,7 @@ contract ContractConfig is Script {
         ICarRegistry(_carRegistry).setInitFunction(INITFUNCTION_ADDRESS);
     }
 
-    function setCarRegistryAddress(
-        address _profile,
-        address _carRegistry
-    ) internal {
+    function setCarRegistryAddress(address _profile, address _carRegistry) internal {
         IProfile(_profile).setRegistry(_carRegistry);
     }
 
@@ -100,19 +94,13 @@ contract ConfigStake is Script {
 
         bytes4[] memory permissions = new bytes4[](1);
 
-        permissions[0] = IReputation(reputationContract)
-            .stakeAmountset
-            .selector;
+        permissions[0] = IReputation(reputationContract).stakeAmountset.selector;
         uint256 expirationTime = block.timestamp + 365 days;
 
         //seting a min of 1 wei for testing
         uint256 amount = 1;
         vm.startBroadcast(deployer);
-        IPermissionManager(permissionManager).grantBatchPermissions(
-            deployer,
-            permissions,
-            expirationTime
-        );
+        IPermissionManager(permissionManager).grantBatchPermissions(deployer, permissions, expirationTime);
         IReputation(reputationContract).stakeAmountset(amount);
         vm.stopBroadcast();
     }

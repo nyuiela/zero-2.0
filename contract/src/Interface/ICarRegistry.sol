@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+
 import {ICarOracle} from "./oracle/IcarOracle.sol";
 
 interface ICarRegistry {
@@ -46,7 +47,7 @@ interface ICarRegistry {
 
     function isActivate(string memory brandName) external view returns (bool);
 
-    function stake(string memory _brand, address staker) external payable;
+    function stake(string memory _brand) external payable;
 
     function setProfile(address _newp) external;
 

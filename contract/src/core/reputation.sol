@@ -11,7 +11,7 @@ contract Reputation {
     // the whole idea is to have brands stake an amount to eth or usdc to used as maintamce fee and check fee
     // brands will be slashed penetalized if they go against rules
 
-    uint256 requireStake;
+    uint256 public requiredStake;
     address stakeToken; // address of the token used for staking, if is not eth
     address _carRegistry; // address of the car registry contract
     uint256 public stakeSlashed; // total amount slashed from brands
@@ -19,12 +19,9 @@ contract Reputation {
     address public globalPermissionManager;
 
     bytes4 public constant SLASH = bytes4(keccak256("slash(address,uint256)"));
-    bytes4 public constant WITHDRAW_SLASHED_ETH =
-        bytes4(keccak256(" withdrawSlashedEth(uint256)"));
-    bytes4 public constant WITHDRAW_SLASHED_USDC =
-        bytes4(keccak256("withslashedeth(uint256)"));
-    bytes4 public constant SET_STAKE_AMOUNT =
-        bytes4(keccak256("stakeAmountset(uint256)"));
+    bytes4 public constant WITHDRAW_SLASHED_ETH = bytes4(keccak256(" withdrawSlashedEth(uint256)"));
+    bytes4 public constant WITHDRAW_SLASHED_USDC = bytes4(keccak256("withslashedeth(uint256)"));
+    bytes4 public constant SET_STAKE_AMOUNT = bytes4(keccak256("stakeAmountset(uint256)"));
 
     struct BrandStakeInfo {
         bool isActive;
@@ -35,39 +32,18 @@ contract Reputation {
 
     mapping(string => BrandStakeInfo) public brandStakeInfo; // brand address => stake info
 
-    constructor(
-        uint256 _requireStake,
-        address _stakeToken,
-        address carRegistry,
-        address _globalPermissionManager
-    ) {
+    constructor(uint256 _requireStake, address _stakeToken, address carRegistry, address _globalPermissionManager) {
         stakeToken = _stakeToken;
-        requireStake = _requireStake;
+        requiredStake = _requireStake;
         _carRegistry = carRegistry;
         //  permissionManagerImplementation = _permissionManagerImplementation;
         globalPermissionManager = _globalPermissionManager;
     }
 
-    function stake(
-        string memory _brand,
-        address staker,
-        bool isEth
-    ) external payable /*onlyCarRegistry*/ {
-        // removed for testing purpose
-        if (isEth) {
-            // @fix error should be user
-            require(
-                msg.value == requireStake,
-                "Reputation: Insufficient stake amount"
-            );
-            payable(address(staker)).transfer(msg.value);
-        } else {
-            // IERC20(stakeToken).transferFrom(_brand, address(this), requireStake);
-        }
-
+    function stake(string memory _brand, address staker, uint256 _stake) external /*onlyCarRegistry*/ {
         brandStakeInfo[_brand] = BrandStakeInfo({
             isActive: true,
-            stakeAmount: requireStake,
+            stakeAmount: _stake,
             stakeepoch: block.timestamp, // + max wait period
             staker: staker // error change to brand address for sending -- ignore for mvp sake @TODO
         });
@@ -76,21 +52,12 @@ contract Reputation {
     // if state of off chain and onchain are different we slash
     // admin and chainffunction
     function slash(string memory _brand, uint256 amount) external {
-        require(
-            globalPermissionManager.hasPermission(msg.sender, SLASH),
-            "Reputation: Unauthorized"
-        );
+        require(globalPermissionManager.hasPermission(msg.sender, SLASH), "Reputation: Unauthorized");
 
         // Check if the brand is active and has sufficient stake
         // which contract can call this ??
-        require(
-            brandStakeInfo[_brand].isActive,
-            "Reputation: Brand is not active"
-        );
-        require(
-            brandStakeInfo[_brand].stakeAmount >= amount,
-            "Reputation: Insufficient stake amount to slash"
-        );
+        require(brandStakeInfo[_brand].isActive, "Reputation: Brand is not active");
+        require(brandStakeInfo[_brand].stakeAmount >= amount, "Reputation: Insufficient stake amount to slash");
 
         stakeSlashed += amount;
         brandStakeInfo[_brand].stakeAmount -= amount;
@@ -101,52 +68,28 @@ contract Reputation {
     }
 
     function withdrawSlashedEth(uint256 amount, address _receive) public {
-        require(
-            globalPermissionManager.hasPermission(
-                msg.sender,
-                WITHDRAW_SLASHED_ETH
-            ),
-            "Reputation: Unauthorized"
-        );
+        require(globalPermissionManager.hasPermission(msg.sender, WITHDRAW_SLASHED_ETH), "Reputation: Unauthorized");
         uint256 balance = address(this).balance;
-        require(
-            balance >= amount,
-            "Reputation: Insufficient balance to withdraw"
-        );
+        require(balance >= amount, "Reputation: Insufficient balance to withdraw");
         stakeSlashed -= amount;
         payable(_receive).transfer(amount);
     }
 
     function withdrawSlashedusdc(uint256 amoount, address _receiver) public {
-        require(
-            globalPermissionManager.hasPermission(
-                msg.sender,
-                WITHDRAW_SLASHED_USDC
-            ),
-            "Reputation: Unauthorized"
-        );
+        require(globalPermissionManager.hasPermission(msg.sender, WITHDRAW_SLASHED_USDC), "Reputation: Unauthorized");
         uint256 balance = IERC20(stakeToken).balanceOf(address(this));
-        require(
-            balance >= amoount,
-            "Reputation: Insufficient balance to withdraw"
-        );
+        require(balance >= amoount, "Reputation: Insufficient balance to withdraw");
         stakeSlashed -= amoount;
         IERC20(stakeToken).transfer(_receiver, amoount);
     }
 
     function stakeAmountset(uint256 amount) public {
-        require(
-            globalPermissionManager.hasPermission(msg.sender, SET_STAKE_AMOUNT),
-            "Reputation: Unauthorized"
-        );
-        requireStake = amount;
+        require(globalPermissionManager.hasPermission(msg.sender, SET_STAKE_AMOUNT), "Reputation: Unauthorized");
+        requiredStake = amount;
     }
 
     modifier onlyCarRegistry() {
-        require(
-            msg.sender == address(_carRegistry),
-            "Reputation: Caller is not the car registry"
-        );
+        require(msg.sender == address(_carRegistry), "Reputation: Caller is not the car registry");
         _;
     }
 

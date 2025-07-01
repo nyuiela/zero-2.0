@@ -100,72 +100,32 @@ to deploy on base
 
 ### deploment address base
 
-Deploying PermissionManager...
-PermissionManager deployed at: 0xE2d0fC5bc27496109cC2AB7887e5966dC1d5F610
-Deploying BrandPermissionManager...
-BrandPermissionManager deployed at: 0x2fcE9Ee2B4A6196b544fA467cA59102b208F2748
-Deploying CarOracle...
-CarOracle deployed at: 0x40c917240fF0F4F228f4922e0869F54560D1e095
-Deploying OracleMaster...
-OracleMaster deployed at: 0xE853149E0f4De9Ce641FC0611b8dbf1e3c3750f4
-Deploying Profile...
-Profile deployed at: 0x0A0e884c546e4CBB72eafb4C2C822CD4ac93B57C
-Deploying StateManager...
-StateManager deployed at: 0xAF30ca094fA5A4DbE4f505e3dC73f1122d8B419C
-Deploying MerkleVerifier...
-MerkleVerifier deployed at: 0x4e277dD4Ca1Fff4E414dB447dF66d0ED4DBA907f
-Deploying ProofSync...
-ProofSync deployed at: 0xE50091c67c0D08D63d149dafa8194c446751e1E2
-Deploying Messenger...
-Messanger deployed at: 0x8a0963D028e06076f1dAF1b53153bB4906ed6c21
-Deploying CrossToken (CCIP)...
-CrossToken deployed at: 0x0eAE2d99C7410DAB92499B0BEe415a7bce05E234
-Deploying SyncFunction...
-SyncFunction deployed at: 0x1def6A63BCa5904244F0e5b841E3fE40206b3273
-Deploying Fee...
-Fee deployed at: 0x774a742411AEE3F8D780876fB07cB7f5d95A7704
-Deploying Reputation...
-Reputation deployed at: 0x5963f8017392ee998173bFC32cCd5C0F3b53Da3d
-Deploying CarRegistry...
-CarRegistry deployed at: 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E
-Deploying statecheckfunction....
-0x62f8F7cCbe5a6BBB6ea159e0C6242e8df9b8Ce8b
-Deploying InitFunction...
-InitFunction deployed at: 0x8Fbbe003Eb050c430d3EE849e2F9716d6E6B9f81
-Deploying ZeroNFT...
-ZeroNFT deployed at: 0x48C306cf6719fE51166690567FfFFCBb948fA33B
-Deploying Auction...
-Auction deployed at: 0x9f68Ad47FC90b69c3f4418DfC5C7ACddbFf7D5Ab
-Setting up post-deployment configurations...
-InitFunction set in CarRegistry
-Registry set in Profile
-Auction set in ZeroNFT
-InitFunction ownership transferred to CarRegistry
-Granting permissions to: 0xf0830060f836B8d54bF02049E5905F619487989e
-All permissions granted to: 0xf0830060f836B8d54bF02049E5905F619487989e
-Transferring LINK tokens to CCIP and Messenger...
-
 === DEPLOYMENT SUMMARY ===
 Network: Base
 Deployer: 0x4C08D39F511B9d20B3cA9F62959E6c1a3DD50910
-PermissionManager: 0xE2d0fC5bc27496109cC2AB7887e5966dC1d5F610
-BrandPermissionManager: 0x2fcE9Ee2B4A6196b544fA467cA59102b208F2748
-CarOracle: 0x40c917240fF0F4F228f4922e0869F54560D1e095
-OracleMaster: 0xE853149E0f4De9Ce641FC0611b8dbf1e3c3750f4
-Profile: 0x0A0e884c546e4CBB72eafb4C2C822CD4ac93B57C
-StateManager: 0xAF30ca094fA5A4DbE4f505e3dC73f1122d8B419C
-InitFunction: 0x8Fbbe003Eb050c430d3EE849e2F9716d6E6B9f81
-MerkleVerifier: 0x4e277dD4Ca1Fff4E414dB447dF66d0ED4DBA907f
-ProofSync: 0xE50091c67c0D08D63d149dafa8194c446751e1E2
-CrossToken (CCIP): 0x0eAE2d99C7410DAB92499B0BEe415a7bce05E234
-SyncFunction: 0x1def6A63BCa5904244F0e5b841E3fE40206b3273
-Fee: 0x774a742411AEE3F8D780876fB07cB7f5d95A7704
-Reputation: 0x5963f8017392ee998173bFC32cCd5C0F3b53Da3d
-CarRegistry: 0x14934Ed5cF8C816721fFB0CEEDE8c409bB9d010E
-ZeroNFT: 0x48C306cf6719fE51166690567FfFFCBb948fA33B
-Auction: 0x9f68Ad47FC90b69c3f4418DfC5C7ACddbFf7D5Ab
-StateCheckFunction 0x62f8F7cCbe5a6BBB6ea159e0C6242e8df9b8Ce8b
-=== DEPLOYMENT COMPLETE ===
+PermissionManager: 0xccfC47DaC852fa570f2D92D198fD45177B12280b
+BrandPermissionManager: 0x5e714A4D08644D508b7615eFc2801d10912Ad2d2
+CarOracle: 0xef903621A2B9b6201703bf45062f0eF561C89CE4
+OracleMaster: 0x6fFbBbe8f41fCCC5702f0a857177eb8d516a7703
+Profile: 0xFC6BA1cFc95C65c443E231C027f9f363d7334d7b
+StateManager: 0x75947Ab2972d74c11e168395a8b2136c49d54c79
+InitFunction: 0xaCF30850FbF7411160e671391cd9Af1194275C3E
+MerkleVerifier: 0x35fb0621d31168A2b7F95AB38666C2C16e00796d
+ProofSync: 0xFAd8F4772f9434AdCFb5514b1bF86ae76f1e0640
+CrossToken (CCIP): 0x8b8b0Ba6740ae3b1bbd061905f09ae9940B3B72D
+Messenger: 0x690ca1dddfE7cA96e824e7E376F1Bc3D33FFA773
+SyncFunction: 0x7FA8B0fA41cBab0d85A6FB4827BBeD5A1FD2FD16
+Fee: 0x8679e95de1cd6d62f9172A7391dd7cfCbe2691FC
+Reputation: 0x2e9C81434CeeCe688E2f62a527D5AAD1e41ED82C
+CarRegistry: 0x3691D3a793B851f953C7c410E6d45d718F7394b6
+ZeroNFT: 0x63EeFA5e2Cb952D700C96B9A3406A871A87E3037
+Auction: 0xb2AdB85A7b4A16C8a933013980D7d570BaeAd6c1
+StateCheckFunction: 0x3F92729E23eDe296BeFd31C2548C962965Ebc3B3
+messenger: 0x690ca1dddfE7cA96e824e7E376F1Bc3D33FFA773
+
+transfer funds links to
+-- cross token
+-- messanger
 
 ## deployment address cross chain eth
 

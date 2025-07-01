@@ -6,6 +6,7 @@ import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.
 import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import {StateManager} from "../core/State.sol";
 import {CarRegistry} from "../core/registry.sol";
+
 // cloned
 /**
  * @title Sync - auto sync state every hour.
@@ -87,7 +88,7 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     /**
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    constructor(address _stateAddr, address _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(address _stateAddr, address payable _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         stateAddress = _stateAddr;
 
         stateContract = StateManager(_stateAddr);

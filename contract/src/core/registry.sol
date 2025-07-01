@@ -9,13 +9,13 @@ import {InitFunction} from "../chainlink/init_function.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 
-import {IReputation} from "../Interface/IReputation.sol";
-import {IMerkleVerifier} from "../Interface/IMerkleVerifier.sol";
+import {IReputation} from "../interface/IReputation.sol";
+import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {CarOracle} from "../oracle/CarOracle.sol";
-import {IProfile} from "../Interface/IProfile.sol";
-import {IStateManager} from "../Interface/IStateManager.sol";
-import {IInitFunction} from "../Interface/IInitFunction.sol";
+import {IProfile} from "../interface/IProfile.sol";
+import {IStateManager} from "../interface/IStateManager.sol";
+import {IInitFunction} from "../interface/IInitFunction.sol";
 
 //import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
 
@@ -123,15 +123,7 @@ contract CarRegistry is Ownable {
         bytes32 s_brand = keccak256(abi.encodePacked(_brand));
         bytes32 i_brand = keccak256(abi.encodePacked(registry[_brand].brand));
         require(s_brand != i_brand, BrandAlreadyInRegistry(_brand));
-        //  oracleMaster.registerCarBrand(_brand,oracleAddre,config, brandAdminAddr);
 
-        //   bytes ownershipright = keccak256(msg.send, proofhoash, sign akdd);
-        //  merk.storfroffg(owneshipt);
-        // provide what??
-        // proof of ownership
-        // clone
-
-        //-
         bytes32 requestId = initFunction.sendRequest(
             subscriptionId,
             args,
@@ -219,7 +211,7 @@ contract CarRegistry is Ownable {
         (address oracleAdress, address permissionAddress) = oracle
             .registerCarBrand(
                 _brand,
-                "",
+                address(1), // placeholder for oracle address
                 config,
                 registry[_brand].brandAdminAddr
             );
@@ -237,7 +229,8 @@ contract CarRegistry is Ownable {
             _merkleVerifier,
             permissionAddress,
             oracleAdress,
-            _syncer
+            _syncer,
+            registry[_brand].stateUrl
         );
         registry[_brand].response = _state;
         registry[_brand].status = Status.ACTIVE;
@@ -253,10 +246,11 @@ contract CarRegistry is Ownable {
     }
 
     // move this to reputation - for better payment ways.
-    function stake(string memory _brand, address staker) external payable {
-        // CHANGE STATUS TO STAKED
-        reputation.stake(_brand, staker, true); // ---> why isnt it reflecting the change?? @Todo @dev
-        registry[_brand].status == Status.STAKED;
+    function stake(string memory _brand) external payable {
+        //   reputation.stake(_brand, staker, ); // ---> why isnt it reflecting the change?? @Todo @dev
+        reputation.stake(_brand, msg.sender, msg.value);
+        registry[_brand].status = Status.STAKED;
+
         emit BrandStaked(_brand, msg.sender);
     }
 
@@ -304,4 +298,6 @@ contract CarRegistry is Ownable {
     ) public view returns (Registry memory) {
         return registry[brand];
     }
+
+    receive() external payable {}
 }
