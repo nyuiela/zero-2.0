@@ -51,18 +51,18 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
             steps.map((step, key: number) =>
 
               <div key={key} className="flex items-center space-x-2 bg-red-00">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${activeStep >= key
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${activeStep > key
                   ? 'bg-green-500 text-white' : 'bg-[#00296b] text-white'
                   }`}>
                   {key + 1}
-                  <span className={`text-sm absolute bottom-[-25] font-medium ${activeStep >= key ? 'text-green-600' : 'text-[#00296b]'
+                  <span className={`text-sm absolute bottom-[-25] font-medium ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
                     }`}>
                     {step}
                   </span>
                 </div>
                 {steps.length - 1 != key && (
                   <div className="flex-1 h-0.5 bg-gray-200 absolute w-[25%] mx-14">
-                    <div className={`h-full transition-all duration-300 ${activeStep >= key ? 'bg-green-500' : 'bg-gray-200'
+                    <div className={`h-full transition-all duration-300 ${activeStep > key ? 'bg-green-500' : 'bg-gray-200'
                       }`} style={{ width: '100%' }}></div>
                   </div>
                 )
@@ -120,17 +120,20 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
           </div>
         )}
 
-        <DialogFooter>
-          <Button
-            variant="outline"
-            className="
-             rounded-none border-none p-0 m-0 h-0 text-gray-600 underline hover:text-black cursor-pointer"
-            onClick={() => {
-              onOpenChange(false)
-            }}
-          >
-            Close
-          </Button>
+        <DialogFooter >
+          <div className='w-full flex justify-center'>
+
+            <Button
+              variant="outline"
+              className="
+            rounded-none border-none p-0 m-0 h-0 text-gray-600 underline hover:text-black cursor-pointer w-fit"
+              onClick={() => {
+                onOpenChange(false)
+              }}
+            >
+              Close
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog >

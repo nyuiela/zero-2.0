@@ -214,7 +214,7 @@ export function BrandRegistrationForm() {
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [showStakeActivateModal, setShowStakeActivateModal] = useState(false)
-  const [stakeActivateStep, setStakeActivateStep] = useState(1)
+  const [stakeActivateStep, setStakeActivateStep] = useState(0)
   const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -350,7 +350,7 @@ export function BrandRegistrationForm() {
         value: parseEther(form.getValues("stake") || "0.000000000001"),
         account: address
       })
-      setStakeActivateStep(1)
+      setStakeActivateStep(2)
     } catch (error) {
       setError(parseError(error))
     }
@@ -427,7 +427,7 @@ export function BrandRegistrationForm() {
         <CardContent className="pb-8">
           <Form {...form}>
             <form
-              onSubmit={(e) => { e.preventDefault(); setStakeActivateStep(0); setShowStakeActivateModal(true) }}
+              onSubmit={form.handleSubmit(() => setShowStakeActivateModal(true))}
               className="space-y-6">
               {/* Brand Name */}
               <FormField
@@ -455,7 +455,6 @@ export function BrandRegistrationForm() {
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
                   disabled={showStakeActivateModal}
-                  onSubmit={() => setShowStakeActivateModal(true)}
                 >
                   {showStakeActivateModal ? "Processing..." : "Register Brand"}
                 </Button>
