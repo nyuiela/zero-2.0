@@ -60,22 +60,11 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     //      bytes4(keccak256("decrementProductCount(string)"));
 
     // Events
-    event OracleImplementationUpdated(
-        address indexed oldImpl,
-        address indexed newImpl
-    );
-    event PermissionManagerImplementationUpdated(
-        address indexed oldImpl,
-        address indexed newImpl
-    );
-    event GlobalPermissionManagerUpdated(
-        address indexed oldManager,
-        address indexed newManager
-    );
+    event OracleImplementationUpdated(address indexed oldImpl, address indexed newImpl);
+    event PermissionManagerImplementationUpdated(address indexed oldImpl, address indexed newImpl);
+    event GlobalPermissionManagerUpdated(address indexed oldManager, address indexed newManager);
     event BrandPermissionManagerCreated(
-        string indexed brandName,
-        address indexed permissionManager,
-        address indexed brandOwner
+        string indexed brandName, address indexed permissionManager, address indexed brandOwner
     );
     event ConfigurationUpdated(
         uint256 minUpdateInterval,
@@ -84,29 +73,14 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         uint256 maxDeviationThreshold
     );
 
-    constructor(
-        address _oracleImplementation,
-        address _brandPermissionManager,
-        address _globalPermissionManager
-    ) {
-        require(
-            _oracleImplementation != address(0),
-            "Invalid implementation address"
-        );
-        require(
-            _brandPermissionManager != address(0),
-            "Invalid permission manager implementation address"
-        );
-        require(
-            _globalPermissionManager != address(0),
-            "Invalid global permission manager address"
-        );
+    constructor(address _oracleImplementation, address _brandPermissionManager, address _globalPermissionManager) {
+        require(_oracleImplementation != address(0), "Invalid implementation address");
+        require(_brandPermissionManager != address(0), "Invalid permission manager implementation address");
+        require(_globalPermissionManager != address(0), "Invalid global permission manager address");
         oracleImplementation = _oracleImplementation;
         brandPermissionManager = _brandPermissionManager;
         globalPermissionManager = _globalPermissionManager;
-        globalPermissionManagerContract = IPermissionManager(
-            _globalPermissionManager
-        );
+        globalPermissionManagerContract = IPermissionManager(_globalPermissionManager);
         _transferOwnership(msg.sender);
     }
 
@@ -115,28 +89,16 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         address priceFeedAddress,
         ICarOracle.OracleConfig memory config,
         address brandOwner
-    )
-        external
-        override
-        whenNotPaused
-        nonReentrant
-        returns (address oracleAddress, address)
-    {
+    ) external override whenNotPaused nonReentrant returns (address oracleAddress, address) {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManagerContract.hasPermission(
-                    msg.sender,
-                    IOracleMaster.registerCarBrand.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManagerContract.hasPermission(msg.sender, IOracleMaster.registerCarBrand.selector),
             "Permission denied: registerCarBrand"
         );
 
         require(bytes(brandName).length > 0, "Brand name cannot be empty");
-        require(
-            priceFeedAddress != address(0),
-            "Price feed address cannot be empty"
-        );
+        require(priceFeedAddress != address(0), "Price feed address cannot be empty");
         require(brandOwner != address(0), "Brand owner cannot be zero address");
         require(!_carBrands[brandName].isActive, "Brand already registered");
 
@@ -144,13 +106,8 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         _validateOracleConfig(config);
 
         // Create new oracle clone
-        oracleAddress = OracleCloneLib.createOracleClone(
-            oracleImplementation,
-            brandName,
-            priceFeedAddress,
-            config,
-            address(this)
-        );
+        oracleAddress =
+            OracleCloneLib.createOracleClone(oracleImplementation, brandName, priceFeedAddress, config, address(this));
 
         // Create new permission manager clone
         //oracle address
@@ -164,11 +121,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         //   );
 
         // Initialize the permission manager
-        IBrandPermissionManager(clonedPermission).initialize(
-            brandName,
-            address(this),
-            brandOwner
-        );
+        IBrandPermissionManager(clonedPermission).initialize(brandName, address(this), brandOwner);
 
         // Register the brand
         _carBrands[brandName] = CarBrand({
@@ -184,39 +137,25 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         _oracleToBrand[oracleAddress] = brandName;
         _permissionManagerToBrand[clonedPermission] = brandName;
 
-        emit CarBrandRegistered(
-            brandName,
-            oracleAddress,
-            priceFeedAddress,
-            block.timestamp
-        );
-        emit BrandPermissionManagerCreated(
-            brandName,
-            clonedPermission,
-            brandOwner
-        );
+        emit CarBrandRegistered(brandName, oracleAddress, priceFeedAddress, block.timestamp);
+        emit BrandPermissionManagerCreated(brandName, clonedPermission, brandOwner);
 
         return (oracleAddress, clonedPermission);
     }
 
-    function updateOracle(
-        string memory brandName,
-        ICarOracle.OracleConfig memory config
-    ) external override whenNotPaused {
+    function updateOracle(string memory brandName, ICarOracle.OracleConfig memory config)
+        external
+        override
+        whenNotPaused
+    {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManager.hasPermission(
-                    msg.sender,
-                    IOracleMaster.updateOracle.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManager.hasPermission(msg.sender, IOracleMaster.updateOracle.selector),
             "Permission denied: updateOracle"
         );
 
-        require(
-            _carBrands[brandName].isActive,
-            "Brand not registered or inactive"
-        );
+        require(_carBrands[brandName].isActive, "Brand not registered or inactive");
 
         // Validate configuration
         _validateOracleConfig(config);
@@ -226,22 +165,14 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
 
         _carBrands[brandName].lastUpdateTime = block.timestamp;
 
-        emit OracleUpdated(
-            brandName,
-            oracleAddress,
-            block.timestamp,
-            block.timestamp
-        );
+        emit OracleUpdated(brandName, oracleAddress, block.timestamp, block.timestamp);
     }
 
     function deactivateOracle(string memory brandName) external override {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManagerContract.hasPermission(
-                    msg.sender,
-                    IOracleMaster.deactivateOracle.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManagerContract.hasPermission(msg.sender, IOracleMaster.deactivateOracle.selector),
             "Permission denied: deactivateOracle"
         );
 
@@ -256,49 +187,29 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     function reactivateOracle(string memory brandName) external {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManagerContract.hasPermission(
-                    msg.sender,
-                    IOracleMaster.reactivateOracle.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManagerContract.hasPermission(msg.sender, IOracleMaster.reactivateOracle.selector),
             "Permission denied: reactivateOracle"
         );
 
         require(!_carBrands[brandName].isActive, "Brand already active");
-        require(
-            bytes(_carBrands[brandName].name).length > 0,
-            "Brand not found"
-        );
+        require(bytes(_carBrands[brandName].name).length > 0, "Brand not found");
 
         _carBrands[brandName].isActive = true;
         _carBrands[brandName].lastUpdateTime = block.timestamp;
 
-        emit OracleUpdated(
-            brandName,
-            _carBrands[brandName].oracleAddress,
-            block.timestamp,
-            block.timestamp
-        );
+        emit OracleUpdated(brandName, _carBrands[brandName].oracleAddress, block.timestamp, block.timestamp);
     }
 
-    function getCarBrand(
-        string memory brandName
-    ) external view override returns (CarBrand memory) {
+    function getCarBrand(string memory brandName) external view override returns (CarBrand memory) {
         return _carBrands[brandName];
     }
 
-    function getAllCarBrands()
-        external
-        view
-        override
-        returns (string[] memory)
-    {
+    function getAllCarBrands() external view override returns (string[] memory) {
         return _brandNames;
     }
 
-    function getOracleAddress(
-        string memory brandName
-    ) external view override returns (address) {
+    function getOracleAddress(string memory brandName) external view override returns (address) {
         return _carBrands[brandName].oracleAddress;
     }
 
@@ -309,28 +220,20 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     //     return address(0); // Placeholder
     // }
 
-    function isOracleActive(
-        string memory brandName
-    ) external view override returns (bool) {
+    function isOracleActive(string memory brandName) external view override returns (bool) {
         return _carBrands[brandName].isActive;
     }
 
-    function getLastUpdateTime(
-        string memory brandName
-    ) external view override returns (uint256) {
+    function getLastUpdateTime(string memory brandName) external view override returns (uint256) {
         return _carBrands[brandName].lastUpdateTime;
     }
 
     // Additional utility functions
-    function getBrandByOracle(
-        address oracleAddress
-    ) external view returns (string memory) {
+    function getBrandByOracle(address oracleAddress) external view returns (string memory) {
         return _oracleToBrand[oracleAddress];
     }
 
-    function getBrandByPermissionManager(
-        address permissionManager
-    ) external view returns (string memory) {
+    function getBrandByPermissionManager(address permissionManager) external view returns (string memory) {
         return _permissionManagerToBrand[permissionManager];
     }
 
@@ -357,10 +260,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     function getStaleOracles() external view returns (string[] memory) {
         uint256 staleCount = 0;
         for (uint256 i = 0; i < _brandNames.length; i++) {
-            if (
-                _carBrands[_brandNames[i]].isActive &&
-                ICarOracle(_carBrands[_brandNames[i]].oracleAddress).isStale()
-            ) {
+            if (_carBrands[_brandNames[i]].isActive && ICarOracle(_carBrands[_brandNames[i]].oracleAddress).isStale()) {
                 staleCount++;
             }
         }
@@ -368,10 +268,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         string[] memory staleOracles = new string[](staleCount);
         uint256 index = 0;
         for (uint256 i = 0; i < _brandNames.length; i++) {
-            if (
-                _carBrands[_brandNames[i]].isActive &&
-                ICarOracle(_carBrands[_brandNames[i]].oracleAddress).isStale()
-            ) {
+            if (_carBrands[_brandNames[i]].isActive && ICarOracle(_carBrands[_brandNames[i]].oracleAddress).isStale()) {
                 staleOracles[index] = _brandNames[i];
                 index++;
             }
@@ -380,52 +277,29 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         return staleOracles;
     }
 
-    function updateOracleImplementation(
-        address newImplementation
-    ) external onlyOwner {
-        require(
-            newImplementation != address(0),
-            "Invalid implementation address"
-        );
+    function updateOracleImplementation(address newImplementation) external onlyOwner {
+        require(newImplementation != address(0), "Invalid implementation address");
         address oldImplementation = oracleImplementation;
         oracleImplementation = newImplementation;
 
         emit OracleImplementationUpdated(oldImplementation, newImplementation);
     }
 
-    function updatePermissionManagerImplementation(
-        address newImplementation
-    ) external onlyOwner {
-        require(
-            newImplementation != address(0),
-            "Invalid implementation address"
-        );
+    function updatePermissionManagerImplementation(address newImplementation) external onlyOwner {
+        require(newImplementation != address(0), "Invalid implementation address");
         address oldImplementation = brandPermissionManager;
         brandPermissionManager = newImplementation;
 
-        emit PermissionManagerImplementationUpdated(
-            oldImplementation,
-            newImplementation
-        );
+        emit PermissionManagerImplementationUpdated(oldImplementation, newImplementation);
     }
 
-    function updateGlobalPermissionManager(
-        address newGlobalPermissionManager
-    ) external onlyOwner {
-        require(
-            newGlobalPermissionManager != address(0),
-            "Invalid global permission manager address"
-        );
+    function updateGlobalPermissionManager(address newGlobalPermissionManager) external onlyOwner {
+        require(newGlobalPermissionManager != address(0), "Invalid global permission manager address");
         address oldManager = globalPermissionManager;
         globalPermissionManager = newGlobalPermissionManager;
-        globalPermissionManagerContract = IPermissionManager(
-            newGlobalPermissionManager
-        );
+        globalPermissionManagerContract = IPermissionManager(newGlobalPermissionManager);
 
-        emit GlobalPermissionManagerUpdated(
-            oldManager,
-            newGlobalPermissionManager
-        );
+        emit GlobalPermissionManagerUpdated(oldManager, newGlobalPermissionManager);
     }
 
     function updateConfiguration(
@@ -434,14 +308,8 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         uint256 _minDeviationThreshold,
         uint256 _maxDeviationThreshold
     ) external onlyOwner {
-        require(
-            _minUpdateInterval < _maxUpdateInterval,
-            "Invalid update interval range"
-        );
-        require(
-            _minDeviationThreshold < _maxDeviationThreshold,
-            "Invalid deviation threshold range"
-        );
+        require(_minUpdateInterval < _maxUpdateInterval, "Invalid update interval range");
+        require(_minDeviationThreshold < _maxDeviationThreshold, "Invalid deviation threshold range");
 
         minUpdateInterval = _minUpdateInterval;
         maxUpdateInterval = _maxUpdateInterval;
@@ -449,21 +317,15 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
         maxDeviationThreshold = _maxDeviationThreshold;
 
         emit ConfigurationUpdated(
-            _minUpdateInterval,
-            _maxUpdateInterval,
-            _minDeviationThreshold,
-            _maxDeviationThreshold
+            _minUpdateInterval, _maxUpdateInterval, _minDeviationThreshold, _maxDeviationThreshold
         );
     }
 
     function incrementProductCount(string memory brandName) external {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManagerContract.hasPermission(
-                    msg.sender,
-                    IOracleMaster.incrementProductCount.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManagerContract.hasPermission(msg.sender, IOracleMaster.incrementProductCount.selector),
             "Permission denied: incrementProductCount"
         );
 
@@ -474,19 +336,13 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     function decrementProductCount(string memory brandName) external {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManager.hasPermission(
-                    msg.sender,
-                    IOracleMaster.decrementProductCount.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManager.hasPermission(msg.sender, IOracleMaster.decrementProductCount.selector),
             "Permission denied: decrementProductCount"
         );
 
         require(_carBrands[brandName].isActive, "Brand not active");
-        require(
-            _carBrands[brandName].totalProducts > 0,
-            "No products to decrement"
-        );
+        require(_carBrands[brandName].totalProducts > 0, "No products to decrement");
         _carBrands[brandName].totalProducts--;
     }
 
@@ -500,17 +356,11 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     }
 
     // Batch operations
-    function batchUpdatePrices(
-        string[] memory brandNames,
-        uint256[] memory prices
-    ) external {
+    function batchUpdatePrices(string[] memory brandNames, uint256[] memory prices) external {
         // Check if caller is owner or has permission
         require(
-            msg.sender == owner() ||
-                globalPermissionManagerContract.hasPermission(
-                    msg.sender,
-                    IOracleMaster.batchUpdatePrices.selector
-                ),
+            msg.sender == owner()
+                || globalPermissionManagerContract.hasPermission(msg.sender, IOracleMaster.batchUpdatePrices.selector),
             "Permission denied: batchUpdatePrices"
         );
 
@@ -518,9 +368,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
 
         for (uint256 i = 0; i < brandNames.length; i++) {
             if (_carBrands[brandNames[i]].isActive) {
-                ICarOracle(_carBrands[brandNames[i]].oracleAddress).updatePrice(
-                        prices[i]
-                    );
+                ICarOracle(_carBrands[brandNames[i]].oracleAddress).updatePrice(prices[i]);
                 _carBrands[brandNames[i]].lastUpdateTime = block.timestamp;
             }
         }
@@ -529,11 +377,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     function getOracleStats()
         external
         view
-        returns (
-            uint256 totalBrands,
-            uint256 activeBrands,
-            uint256 totalProducts
-        )
+        returns (uint256 totalBrands, uint256 activeBrands, uint256 totalProducts)
     {
         totalBrands = _brandNames.length;
         uint256 active = 0;
@@ -550,22 +394,16 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     }
 
     // Permission management helpers
-    function checkPermission(
-        address account,
-        bytes4 functionSelector
-    ) external view returns (bool) {
+    function checkPermission(address account, bytes4 functionSelector) external view returns (bool) {
         return globalPermissionManager.hasPermission(account, functionSelector);
     }
 
-    function getPermissionDetails(
-        address account,
-        bytes4 functionSelector
-    ) external view returns (IPermissionManager.Permission memory) {
-        return
-            globalPermissionManagerContract.getPermission(
-                account,
-                functionSelector
-            );
+    function getPermissionDetails(address account, bytes4 functionSelector)
+        external
+        view
+        returns (IPermissionManager.Permission memory)
+    {
+        return globalPermissionManagerContract.getPermission(account, functionSelector);
     }
 
     // Brand-specific permission management
@@ -580,23 +418,16 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
     // }
 
     // Internal functions
-    function _validateOracleConfig(
-        ICarOracle.OracleConfig memory config
-    ) internal view {
+    function _validateOracleConfig(ICarOracle.OracleConfig memory config) internal view {
         require(
-            config.updateInterval >= minUpdateInterval &&
-                config.updateInterval <= maxUpdateInterval,
+            config.updateInterval >= minUpdateInterval && config.updateInterval <= maxUpdateInterval,
             "Update interval out of bounds"
         );
         require(
-            config.deviationThreshold >= minDeviationThreshold &&
-                config.deviationThreshold <= maxDeviationThreshold,
+            config.deviationThreshold >= minDeviationThreshold && config.deviationThreshold <= maxDeviationThreshold,
             "Deviation threshold out of bounds"
         );
         require(config.heartbeat > 0, "Heartbeat must be greater than 0");
-        require(
-            config.minAnswer < config.maxAnswer,
-            "Min answer must be less than max answer"
-        );
+        require(config.minAnswer < config.maxAnswer, "Min answer must be less than max answer");
     }
 }

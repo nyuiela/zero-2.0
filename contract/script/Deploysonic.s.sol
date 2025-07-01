@@ -21,12 +21,9 @@ contract DeployCCIP is Script {
     PermissionManager public permission;
 
     address constant SONIC_ROUTER = 0x2fBd4659774D468Db5ca5bacE37869905d8EfA34;
-    address constant SONIC_LINK_TOKEN =
-        0xd8C1eEE32341240A62eC8BC9988320bcC13c8580;
-    address constant SONIC_ETH_USD_FEED =
-        0x5cfF644dDcd40C2165e2C58d146F852f23fe1b0C;
-    address constant SONIC_USDC_USD_FEED =
-        0x0Cb75Ba04aAfEd69449920759055482F9BaDcdeD;
+    address constant SONIC_LINK_TOKEN = 0xd8C1eEE32341240A62eC8BC9988320bcC13c8580;
+    address constant SONIC_ETH_USD_FEED = 0x5cfF644dDcd40C2165e2C58d146F852f23fe1b0C;
+    address constant SONIC_USDC_USD_FEED = 0x0Cb75Ba04aAfEd69449920759055482F9BaDcdeD;
     uint64 constant SONIC_CHAIN_SELECTOR_ID = 3676871237479449268; // Sonic Chain ID
     uint64 constant BASE_CHAIN_SELECTOR = 10344971235874465080;
     uint256 constant AMOUNT = 1000000000000000000;
@@ -47,9 +44,7 @@ contract DeployCCIP is Script {
         address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
         address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
         //   address permissionManager = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
-        address brandPermissionManager = vm.envAddress(
-            "BRAND_PERMISSION_MANAGER_ADDRESS"
-        );
+        address brandPermissionManager = vm.envAddress("BRAND_PERMISSION_MANAGER_ADDRESS");
         address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
         address profile = vm.envAddress("PROFILE_ADDRESS");
         // uint64 baseSelectorId = vm.env("BASE_SELECTOR_ID");
@@ -58,20 +53,10 @@ contract DeployCCIP is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // deploy cross chain
-        deployCrossChain(
-            carRegistry,
-            oraclemaster,
-            profile,
-            reputationContract,
-            deployer
-        );
+        deployCrossChain(carRegistry, oraclemaster, profile, reputationContract, deployer);
         setConfigs(deployer, BASE_CHAIN_SELECTOR);
         IERC20(SONIC_LINK_TOKEN).approve(address(this), type(uint256).max);
-        IERC20(SONIC_LINK_TOKEN).transferFrom(
-            deployer,
-            address(messenger),
-            AMOUNT
-        );
+        IERC20(SONIC_LINK_TOKEN).transferFrom(deployer, address(messenger), AMOUNT);
         vm.stopBroadcast();
 
         //log
@@ -101,11 +86,7 @@ contract DeployCCIP is Script {
 
         //messanger
         console.log("Deploying Messenger ....");
-        messenger = new Messenger(
-            address(_carRegistry),
-            address(_oraclemaster),
-            address(merkleVerifier)
-        );
+        messenger = new Messenger(address(_carRegistry), address(_oraclemaster), address(merkleVerifier));
         console.log("Messenger deployed at", address(messenger));
 
         //  Deploy State Manager

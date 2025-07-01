@@ -42,6 +42,8 @@ contract ZeroNFTTest is Test {
     ZeroNFT zero;
     Auction auction;
 
+    address usdcToken = address(0x23); // @to deploy a mock bid token
+
     struct NFTMetadata {
         string brandName;
         string carModel;
@@ -134,7 +136,7 @@ contract ZeroNFTTest is Test {
         );
 
         // Use the mock instead of the real InitFunction
-        initFunction = new MockInitFunction(address(state), address(registry));
+        initFunction = new MockInitFunction(address(registry));
         registry.setInitFunction(address(initFunction));
 
         zero = new ZeroNFT(
@@ -153,7 +155,7 @@ contract ZeroNFTTest is Test {
         );
     }
 
-    function testMinting() public {
+    function registerbrand() internal {
         string memory brand = "TestBrand";
 
         address brandAdminAddr = address(0x123);
@@ -170,19 +172,6 @@ contract ZeroNFTTest is Test {
             minAnswer: 0,
             maxAnswer: 1000000
         });
-
-        //      struct NFTMetadata {
-        //     string brandName;
-        //     string carModel;
-        //     string vin;
-        //     uint256 year;
-        //     string color;
-        //     uint256 mileage;
-        //     string description;
-        //     string imageURI;
-        //     uint256 mintTimestamp;
-        //     bool isVerified;
-        // }
 
         IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
             brandName: brand,
@@ -205,14 +194,13 @@ contract ZeroNFTTest is Test {
             stateUrl,
             args
         );
+    }
 
-        // Stake the brand first (required for activation)
+    function stake(string memory brand) internal {
+        registry.stake{value: 1}(brand);
+    }
 
-        registry.stake{value: 1}(brand); // i made a mistake here <----- the registry is the one sending the money lol not users
-        // gotta fix
-        //@fixed the issue
-
-        // Activate the brand
+    function startActivation(string memory brand) internal {
         registry.activate(brand);
 
         // Check that status changed to ACTIVE (3)
@@ -228,194 +216,151 @@ contract ZeroNFTTest is Test {
             registry.isActivate(brand),
             "isActivate should return true for active brand"
         );
+    }
 
-        /// crreate Auction
-        // but mint first
+    function mintnft(string memory brand) internal {
+        string memory stateUrl = "https://state.url";
+        IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
+            brandName: brand,
+            carModel: "lambro567", //<--- i  know nothing about cars lol
+            vin: "ytg",
+            year: 567,
+            color: "pink",
+            mileage: 78,
+            description: "very good car",
+            imageURI: "stateUrl",
+            mintTimestamp: block.timestamp,
+            isVerified: true
+        });
         uint256 current = zero.getCurrentTokenId();
         console2.log("lessToken:", current);
         address lee = address(0x56);
         zero.mint(lee, brand, meta, stateUrl);
 
-        // verifier
-        uint256 leeId = zero.getCurrentTokenId();
-        console2.log("Curent Token ID is :", leeId);
-
-        //check if lee is the owner
-        vm.prank(lee);
-        assertTrue(zero.isOwner(leeId));
+        uint256 brandToken = zero.getCurrentTokenId();
     }
 
-    function test_CanMint() public {
-        string memory brand = "TestBrand";
-
-        address brandAdminAddr = address(0x123);
-        uint64 subscriptionId = 1;
-        string memory stateUrl = "https://state.url";
-        string[] memory args = new string[](1);
-        args[0] = "arg1";
-
-        // Register the brand first
-        ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
-            updateInterval: 3600,
-            deviationThreshold: 100,
-            heartbeat: 86400,
-            minAnswer: 0,
-            maxAnswer: 1000000
-        });
-
-        //      struct NFTMetadata {
-        //     string brandName;
-        //     string carModel;
-        //     string vin;
-        //     uint256 year;
-        //     string color;
-        //     uint256 mileage;
-        //     string description;
-        //     string imageURI;
-        //     uint256 mintTimestamp;
-        //     bool isVerified;
-        // }
-
-        IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
-            brandName: brand,
-            carModel: "lambro567", //<--- i  know nothing about cars lol
-            vin: "ytg",
-            year: 567,
-            color: "pink",
-            mileage: 78,
-            description: "very good car",
-            imageURI: "stateUrl",
-            mintTimestamp: block.timestamp,
-            isVerified: true
-        });
-
-        registry.registerBrand(
-            brand,
-            config,
-            brandAdminAddr,
-            subscriptionId,
-            stateUrl,
-            args
-        );
-
-        // Stake the brand first (required for activation)
-
-        registry.stake{value: 1}(brand); // i made a mistake here <----- the registry is the one sending the money lol not users
-        // gotta fix
-        //@fixed the issue
-
-        // Activate the brand
-        registry.activate(brand);
-
-        // Check that status changed to ACTIVE (3)
-        (, CarRegistry.Status status, , , , , , ) = registry.registry(brand);
-        assertEq(
-            uint256(status),
-            3,
-            "Brand status should be ACTIVE after activation"
-        );
-
-        // Check isActivate function
-        assertTrue(
-            registry.isActivate(brand),
-            "isActivate should return true for active brand"
-        );
-
-        assertTrue(zero.CanMint(brand));
-    }
-
-    function test_creation_Auction() public {
-        string memory brand = "TestBrand";
-
-        address brandAdminAddr = address(0x123);
-        uint64 subscriptionId = 1;
-        string memory stateUrl = "https://state.url";
-        string[] memory args = new string[](1);
-        args[0] = "arg1";
-
-        // Register the brand first
-        ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
-            updateInterval: 3600,
-            deviationThreshold: 100,
-            heartbeat: 86400,
-            minAnswer: 0,
-            maxAnswer: 1000000
-        });
-
-        //      struct NFTMetadata {
-        //     string brandName;
-        //     string carModel;
-        //     string vin;
-        //     uint256 year;
-        //     string color;
-        //     uint256 mileage;
-        //     string description;
-        //     string imageURI;
-        //     uint256 mintTimestamp;
-        //     bool isVerified;
-        // }
-
-        IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
-            brandName: brand,
-            carModel: "lambro567", //<--- i  know nothing about cars lol
-            vin: "ytg",
-            year: 567,
-            color: "pink",
-            mileage: 78,
-            description: "very good car",
-            imageURI: "stateUrl",
-            mintTimestamp: block.timestamp,
-            isVerified: true
-        });
-
-        registry.registerBrand(
-            brand,
-            config,
-            brandAdminAddr,
-            subscriptionId,
-            stateUrl,
-            args
-        );
-
-        // Stake the brand first (required for activation)
-
-        registry.stake{value: 1}(brand); // i made a mistake here <----- the registry is the one sending the money lol not users
-        // gotta fix
-        //@fixed the issue
-
-        // Activate the brand
-        registry.activate(brand);
-
-        // Check that status changed to ACTIVE (3)
-        (, CarRegistry.Status status, , , , , , ) = registry.registry(brand);
-        assertEq(
-            uint256(status),
-            3,
-            "Brand status should be ACTIVE after activation"
-        );
-
-        // Check isActivate function
-        assertTrue(
-            registry.isActivate(brand),
-            "isActivate should return true for active brand"
-        );
-
-        /// crreate Auction
-        // but mint first
-        uint256 current = zero.getCurrentTokenId();
-        console2.log("lessToken:", current);
-        address lee = address(0x56);
-        zero.mint(lee, brand, meta, stateUrl);
+    function createAuction(string memory brand, address owner) internal {
+        uint256 brandToken = zero.getCurrentTokenId();
         uint256 startTime = block.timestamp + 1 days;
-        auction.createAuction(brand, startTime);
+        uint256 endTime = startTime + 4 days;
+
+        assertTrue(zero.isOwner(zero.getCurrentTokenId(), owner));
+        zero.approve(address(auction), brandToken); // approve the auction contract to transfer the token on behalf of the owner
+        auction.createAuction(
+            brand,
+            startTime,
+            endTime,
+            10 ether,
+            40 ether,
+            address(usdc),
+            brandToken,
+            "5t8gfydy" // - proof hash
+        );
+    }
+
+    function bid(uint256 _auctionId, uint256 _amount) internal {
+        // aprove contract to spend funds
+        // write a function to check if the current bid is == to the tresshold and aprove the stake spend
+        (uint256 currentBid, ) = auction.getCurrentHighestBid(_auctionId);
+        uint256 bidthreshold = auction.getBidInfo(_auctionId);
+        if (currentBid >= bidthreshold) {
+            uint256 requiredStake = (_amount * 10) / 100;
+            usdc._approve(address(auction), requiredStake); // stake amount
+            auction.placeBid(_auctionId, _amount);
+        } else {
+            auction.placeBid(_auctionId, _amount);
+        }
+    }
+
+    function test_registerBrand() public {
+        address kaleel = makeAddr("kaleel");
+        vm.prank(kaleel);
+        registerbrand();
+    }
+
+    function test_stakeAndActivate() public {
+        string memory brand = "TestBrand";
+        address kaleel = makeAddr("kaleel");
+        vm.deal(kaleel, 20 ether); // Give kaleel some funds to stake
+        vm.startPrank(kaleel);
+        registerbrand();
+
+        // Stake the brand
+        stake("TestBrand");
+
+        // Activate the brand
+        startActivation("TestBrand");
+        vm.stopPrank();
+    }
+
+    function test_bidOnAuction() public {
+        address kaleel = makeAddr("kaleel");
+        address lee = makeAddr("lee");
+        address kal = makeAddr("kal");
+        address pat = makeAddr("pat");
+        address godknows = makeAddr("godknows");
+        vm.deal(lee, 10 ether); // Give lee some funds to bid
+        vm.deal(kal, 20 ether); // Give kal some funds to bid
+        vm.deal(pat, 30 ether); // Give pat some funds to bid
+        vm.deal(godknows, 50 ether); // Give godknows some
+        vm.deal(kaleel, 100 ether); // Give kaleel some funds to register and stake
+        vm.startPrank(kaleel);
+        registerbrand();
+
+        // Stake and activate the brand
+        stake("TestBrand");
+        startActivation("TestBrand");
+
+        // Mint an NFT for the brand
+        mintnft("TestBrand");
+
+        // Create an auction for the NFT
+        createAuction("TestBrand", kaleel);
+
+        // Bid on the auction
+        uint256 auctionId = 1; // Assuming this is the first auction created
+        vm.stopPrank();
+
+        vm.prank(lee);
+        bid(auctionId, 5 ether);
+
+        vm.prank(kal);
+        bid(auctionId, 6 ether);
+
+        vm.prank(pat);
+        bid(auctionId, 10 ether);
+
+        vm.prank(pat);
+        bid(auctionId, 12 ether);
+
+        vm.prank(godknows);
+        bid(auctionId, 15 ether);
+
+        // Check the highest bid
+        (uint256 highestBid, address highestBidder) = auction
+            .getCurrentHighestBid(auctionId);
+        console2.log("Highest Bid: ", highestBid);
+
+        vm.prank(kal);
+        auction.endAuction(auctionId);
+
+        vm.prank(highestBidder);
+        auction.claimWin(auctionId);
+
+        assertEq(
+            highestBidder,
+            godknows,
+            "Godknows should be the highest bidder"
+        );
     }
 }
 
 contract MockInitFunction is InitFunction {
     constructor(
-        address _stateAddr,
+        //   address _stateAddr,
         address _registry
-    ) InitFunction(_stateAddr, _registry) {}
+    ) InitFunction(_registry) {}
 
     function sendRequest(
         uint64,

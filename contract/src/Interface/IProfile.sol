@@ -31,9 +31,7 @@ interface IProfile {
         string memory _url
     ) external;
 
-    function getProfile(
-        string memory _brand
-    ) external view returns (BrandProfile memory);
+    function getProfile(string memory _brand) external view returns (BrandProfile memory);
 
     function updateState(string memory _brand, string memory _state) external;
 

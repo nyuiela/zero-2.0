@@ -14,24 +14,14 @@ interface IOracleMaster {
     }
 
     event CarBrandRegistered(
-        string indexed brandName,
-        address indexed oracleAddress,
-        address priceFeedAddress,
-        uint256 timestamp
+        string indexed brandName, address indexed oracleAddress, address priceFeedAddress, uint256 timestamp
     );
 
     event OracleUpdated(
-        string indexed brandName,
-        address indexed oracleAddress,
-        uint256 lastUpdateTime,
-        uint256 timestamp
+        string indexed brandName, address indexed oracleAddress, uint256 lastUpdateTime, uint256 timestamp
     );
 
-    event OracleDeactivated(
-        string indexed brandName,
-        address indexed oracleAddress,
-        uint256 timestamp
-    );
+    event OracleDeactivated(string indexed brandName, address indexed oracleAddress, uint256 timestamp);
 
     function registerCarBrand(
         string memory brandName,
@@ -40,10 +30,7 @@ interface IOracleMaster {
         address brandOwner
     ) external returns (address, address);
 
-    function updateOracle(
-        string memory brandName,
-        ICarOracle.OracleConfig memory config
-    ) external;
+    function updateOracle(string memory brandName, ICarOracle.OracleConfig memory config) external;
 
     function reactivateOracle(string memory brandName) external;
 
@@ -51,30 +38,19 @@ interface IOracleMaster {
 
     function decrementProductCount(string memory brandName) external;
 
-    function batchUpdatePrices(
-        string[] memory brandNames,
-        uint256[] memory prices
-    ) external;
+    function batchUpdatePrices(string[] memory brandNames, uint256[] memory prices) external;
 
     function deactivateOracle(string memory brandName) external;
 
-    function getCarBrand(
-        string memory brandName
-    ) external view returns (CarBrand memory);
+    function getCarBrand(string memory brandName) external view returns (CarBrand memory);
 
     function getAllCarBrands() external view returns (string[] memory);
 
-    function getOracleAddress(
-        string memory brandName
-    ) external view returns (address);
+    function getOracleAddress(string memory brandName) external view returns (address);
 
-    function isOracleActive(
-        string memory brandName
-    ) external view returns (bool);
+    function isOracleActive(string memory brandName) external view returns (bool);
 
-    function getLastUpdateTime(
-        string memory brandName
-    ) external view returns (uint256);
+    function getLastUpdateTime(string memory brandName) external view returns (uint256);
 
     function getActiveBrands() external view returns (string[] memory);
 }

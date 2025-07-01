@@ -15,13 +15,7 @@ import {IZeroNFT} from "../interface/IZeronft.sol";
  * @dev RWA Tokenization NFT contract for car brands that have completed registration and protocol procedures
  * Only registered and active car brands can mint NFTs representing their real-world assets
  */
-contract ZeroNFT is
-    IZeroNFT,
-    ERC721,
-    ERC721URIStorage,
-    Ownable,
-    ReentrancyGuard
-{
+contract ZeroNFT is IZeroNFT, ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     ICarRegistry carRegistry;
     // Token ID counter (replaces deprecated Counters library)
     uint256 private _tokenIdCounter;
@@ -68,49 +62,25 @@ contract ZeroNFT is
     // }
 
     // Events
-    event NFTMinted(
-        address indexed to,
-        uint256 indexed tokenId,
-        string brandName,
-        string tokenURI
-    );
+    event NFTMinted(address indexed to, uint256 indexed tokenId, string brandName, string tokenURI);
     event BaseURIUpdated(string newBaseURI);
     event TransferFeeUpdated(uint256 newFee);
     event TransferCooldownUpdated(uint256 newCooldown);
     event TokenLocked(uint256 indexed tokenId, bool locked);
-    event BatchTransfer(
-        address indexed from,
-        address indexed to,
-        uint256[] tokenIds
-    );
+    event BatchTransfer(address indexed from, address indexed to, uint256[] tokenIds);
     event TransferFeeCollected(uint256 indexed tokenId, uint256 feeAmount);
-    event BrandNFTMinted(
-        string indexed brandName,
-        uint256 indexed tokenId,
-        address indexed brandOwner
-    );
+    event BrandNFTMinted(string indexed brandName, uint256 indexed tokenId, address indexed brandOwner);
     event NFTVerified(uint256 indexed tokenId, bool verified);
 
     address auctionContract;
 
-    constructor(
-        address _oracleMaster,
-        address _reputationContract,
-        address _carRegistry,
-        address _auctionContract
-    ) ERC721("Zero", "ZERO") Ownable() {
-        require(
-            _oracleMaster != address(0),
-            "ZeroNFT: Oracle master cannot be zero address"
-        );
-        require(
-            _reputationContract != address(0),
-            "ZeroNFT: Reputation contract cannot be zero address"
-        );
-        require(
-            _carRegistry != address(0),
-            "ZeroNFT: Car registry cannot be zero address"
-        );
+    constructor(address _oracleMaster, address _reputationContract, address _carRegistry, address _auctionContract)
+        ERC721("Zero", "ZERO")
+        Ownable()
+    {
+        require(_oracleMaster != address(0), "ZeroNFT: Oracle master cannot be zero address");
+        require(_reputationContract != address(0), "ZeroNFT: Reputation contract cannot be zero address");
+        require(_carRegistry != address(0), "ZeroNFT: Car registry cannot be zero address");
 
         auctionContract = _auctionContract;
         oracleMaster = _oracleMaster;
@@ -121,12 +91,11 @@ contract ZeroNFT is
     }
 
     //so um if theyve gon through all the nessary steps but will mainly check activation since it means theyve been through all steps
-    function mint(
-        address to,
-        string memory brandName,
-        NFTMetadata memory metadata,
-        string memory tokenUri_
-    ) public override returns (uint256) {
+    function mint(address to, string memory brandName, NFTMetadata memory metadata, string memory tokenUri_)
+        public
+        override
+        returns (uint256)
+    {
         // // Check if brand is registered and active
         // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
 
@@ -143,10 +112,7 @@ contract ZeroNFT is
         CanMint(brandName);
 
         require(to != address(0), "ZeroNFT: Cannot mint to zero address");
-        require(
-            bytes(brandName).length > 0,
-            "ZeroNFT: Brand name cannot be empty"
-        );
+        require(bytes(brandName).length > 0, "ZeroNFT: Brand name cannot be empty");
 
         _tokenIdCounter++;
         uint256 newTokenId = _tokenIdCounter;
@@ -168,12 +134,12 @@ contract ZeroNFT is
 
     // @dev Mint multiple NFTs for a brand in a batch
 
-    function mintBatch(
-        address to,
-        string memory brandName,
-        NFTMetadata[] memory metadatas,
-        string[] memory tokenURIs
-    ) public override nonReentrant returns (uint256[] memory) {
+    function mintBatch(address to, string memory brandName, NFTMetadata[] memory metadatas, string[] memory tokenURIs)
+        public
+        override
+        nonReentrant
+        returns (uint256[] memory)
+    {
         // Check if brand is registered and active
         // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
 
@@ -189,10 +155,7 @@ contract ZeroNFT is
         // );
 
         require(to != address(0), "ZeroNFT: Cannot mint to zero address");
-        require(
-            metadatas.length == tokenURIs.length,
-            "ZeroNFT: Arrays length mismatch"
-        );
+        require(metadatas.length == tokenURIs.length, "ZeroNFT: Arrays length mismatch");
         require(metadatas.length > 0, "ZeroNFT: Empty metadata array");
         require(metadatas.length <= 50, "ZeroNFT: Too many NFTs in batch");
 
@@ -224,21 +187,15 @@ contract ZeroNFT is
     // Brand Verification Functions
 
     //ckeck if brand has an active running oracle
-    function isBrandRegisteredAndActive(
-        string memory brandName
-    ) public view override returns (bool) {
-        try IOracleMaster(oracleMaster).isOracleActive(brandName) returns (
-            bool isActive
-        ) {
+    function isBrandRegisteredAndActive(string memory brandName) public view override returns (bool) {
+        try IOracleMaster(oracleMaster).isOracleActive(brandName) returns (bool isActive) {
             return isActive;
         } catch {
             return false;
         }
     }
 
-    function isBrandActive(
-        string memory brandName
-    ) public view override returns (bool) {
+    function isBrandActive(string memory brandName) public view override returns (bool) {
         // TODO: Implement actual activation logic or remove this stub
         // Removed invalid call
         return carRegistry.isActivate(brandName);
@@ -248,16 +205,12 @@ contract ZeroNFT is
      * @dev Check if a brand has completed staking requirements
      * @param brandName The name of the brand to check
      */
-
-    function CanMint(
-        string memory brandName
-    ) public view override returns (bool) {
+    function CanMint(string memory brandName) public view override returns (bool) {
         // This would need to be implemented based on your reputation contract
         // For now, we'll assume all registered brands are staked
         // will replace with the actiavtion logic after kaleel is done
         //@Todo
-        return
-            isBrandRegisteredAndActive(brandName) && isBrandActive(brandName);
+        return isBrandRegisteredAndActive(brandName) && isBrandActive(brandName);
     }
 
     // function hasBrandPermission(string memory brandName, address account) public view returns (bool) {
@@ -275,15 +228,8 @@ contract ZeroNFT is
 
     // Transfer Functions
 
-    function transferZero(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable override onlyAuction nonReentrant {
-        require(
-            _isApprovedOrOwner(msg.sender, tokenId),
-            "ZeroNFT: Transfer caller is not owner nor approved"
-        );
+    function transferZero(address from, address to, uint256 tokenId) public payable override nonReentrant {
+        require(_isApprovedOrOwner(msg.sender, tokenId), "ZeroNFT: Transfer caller is not owner nor approved");
         require(!_lockedTokens[tokenId], "ZeroNFT: Token is locked");
         // require(block.timestamp >= _lastTransferTime[tokenId] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
@@ -300,20 +246,13 @@ contract ZeroNFT is
      * @param to The address to transfer to
      * @param tokenIds Array of token IDs to transfer
      */
-    function batchTransfer(
-        address from,
-        address to,
-        uint256[] memory tokenIds
-    ) public override nonReentrant onlyAuction {
+    function batchTransfer(address from, address to, uint256[] memory tokenIds) public override nonReentrant {
         require(to != address(0), "ZeroNFT: Cannot transfer to zero address");
         require(tokenIds.length > 0, "ZeroNFT: Empty token array");
         require(tokenIds.length <= 50, "ZeroNFT: Too many tokens in batch");
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(
-                _isApprovedOrOwner(msg.sender, tokenIds[i]),
-                "ZeroNFT: Transfer caller is not owner nor approved"
-            );
+            require(_isApprovedOrOwner(msg.sender, tokenIds[i]), "ZeroNFT: Transfer caller is not owner nor approved");
             require(!_lockedTokens[tokenIds[i]], "ZeroNFT: Token is locked");
             //   require(block.timestamp >= _lastTransferTime[tokenIds[i]] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
@@ -331,21 +270,16 @@ contract ZeroNFT is
      * @param tokenIds Array of token IDs to transfer
      * @param data Additional data to pass to the receiver
      */
-    function safeBatchTransfer(
-        address from,
-        address to,
-        uint256[] memory tokenIds,
-        bytes memory data
-    ) public onlyAuction nonReentrant {
+    function safeBatchTransfer(address from, address to, uint256[] memory tokenIds, bytes memory data)
+        public
+        nonReentrant
+    {
         require(to != address(0), "ZeroNFT: Cannot transfer to zero address");
         require(tokenIds.length > 0, "ZeroNFT: Empty token array");
         require(tokenIds.length <= 50, "ZeroNFT: Too many tokens in batch");
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(
-                _isApprovedOrOwner(msg.sender, tokenIds[i]),
-                "ZeroNFT: Transfer caller is not owner nor approved"
-            );
+            require(_isApprovedOrOwner(msg.sender, tokenIds[i]), "ZeroNFT: Transfer caller is not owner nor approved");
             require(!_lockedTokens[tokenIds[i]], "ZeroNFT: Token is locked");
             //          require(block.timestamp >= _lastTransferTime[tokenIds[i]] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
@@ -367,32 +301,26 @@ contract ZeroNFT is
     // Token Management Functions
 
     //incase something happens and admin needs to step in and hold nft untill its resolved
-    function setTokenLock(
-        uint256 tokenId,
-        bool locked
-    ) public override onlyOwner {
+    function setTokenLock(uint256 tokenId, bool locked) public override onlyOwner {
         require(_exists(tokenId), "ZeroNFT: Token does not exist");
         _lockedTokens[tokenId] = locked;
         emit TokenLocked(tokenId, locked);
     }
 
-    function isTokenLocked(
-        uint256 tokenId
-    ) public view override returns (bool) {
+    function isTokenLocked(uint256 tokenId) public view override returns (bool) {
         return _lockedTokens[tokenId];
     }
 
-    function getLastTransferTime(
-        uint256 tokenId
-    ) public view returns (uint256) {
+    function getLastTransferTime(uint256 tokenId) public view returns (uint256) {
         return _lastTransferTime[tokenId];
     }
 
     function canTransfer(uint256 tokenId) public view returns (bool) {
         if (!_exists(tokenId)) return false;
         if (_lockedTokens[tokenId]) return false;
-        if (block.timestamp < _lastTransferTime[tokenId] + transferCooldown)
+        if (block.timestamp < _lastTransferTime[tokenId] + transferCooldown) {
             return false;
+        }
         return true;
     }
 
@@ -401,11 +329,7 @@ contract ZeroNFT is
     /**
      * @dev Override transfer function to add cooldown and lock checks
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public override onlyAuction {
+    function _transferFrom(address from, address to, uint256 tokenId) internal {
         require(!_lockedTokens[tokenId], "ZeroNFT: Token is locked");
         //  require(block.timestamp >= _lastTransferTime[tokenId] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
@@ -413,15 +337,14 @@ contract ZeroNFT is
         _lastTransferTime[tokenId] = block.timestamp;
     }
 
+    function transferZeroFrom(address from, address to, uint256 tokenId) public override {
+        _transferFrom(from, to, tokenId);
+    }
+
     /**
      * @dev Override safeTransferFrom function to add cooldown and lock checks
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) public override onlyAuction {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
         require(!_lockedTokens[tokenId], "ZeroNFT: Token is locked");
         //  require(block.timestamp >= _lastTransferTime[tokenId] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
@@ -432,16 +355,9 @@ contract ZeroNFT is
     /**
      * @dev Override safeTransferFrom function to add cooldown and lock checks
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public override onlyAuction {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override {
         require(!_lockedTokens[tokenId], "ZeroNFT: Token is locked");
-        require(
-            block.timestamp >= _lastTransferTime[tokenId] + transferCooldown,
-            "ZeroNFT: Transfer cooldown not met"
-        );
+        require(block.timestamp >= _lastTransferTime[tokenId] + transferCooldown, "ZeroNFT: Transfer cooldown not met");
 
         super.safeTransferFrom(from, to, tokenId);
         _lastTransferTime[tokenId] = block.timestamp;
@@ -507,9 +423,7 @@ contract ZeroNFT is
      * @dev Get NFT metadata
      * @param tokenId The token ID to get metadata for
      */
-    function getNFTMetadata(
-        uint256 tokenId
-    ) public view returns (NFTMetadata memory) {
+    function getNFTMetadata(uint256 tokenId) public view returns (NFTMetadata memory) {
         require(_exists(tokenId), "ZeroNFT: Token does not exist");
         return _nftMetadata[tokenId];
     }
@@ -518,9 +432,7 @@ contract ZeroNFT is
      * @dev Get brand name for a token
      * @param tokenId The token ID to get brand for
      */
-    function getTokenBrand(
-        uint256 tokenId
-    ) public view returns (string memory) {
+    function getTokenBrand(uint256 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "ZeroNFT: Token does not exist");
         return _tokenToBrand[tokenId];
     }
@@ -529,9 +441,7 @@ contract ZeroNFT is
      * @dev Get all tokens for a brand
      * @param brandName The brand name to get tokens for
      */
-    function getBrandTokens(
-        string memory brandName
-    ) public view returns (uint256[] memory) {
+    function getBrandTokens(string memory brandName) public view returns (uint256[] memory) {
         return _brandToTokens[brandName];
     }
 
@@ -539,9 +449,7 @@ contract ZeroNFT is
      * @dev Get all registered brands
      */
     function getAllRegisteredBrands() public view returns (string[] memory) {
-        try IOracleMaster(oracleMaster).getAllCarBrands() returns (
-            string[] memory brands
-        ) {
+        try IOracleMaster(oracleMaster).getAllCarBrands() returns (string[] memory brands) {
             return brands;
         } catch {
             return new string[](0);
@@ -552,9 +460,7 @@ contract ZeroNFT is
      * @dev Get all active brands
      */
     function getActiveBrands() public view returns (string[] memory) {
-        try IOracleMaster(oracleMaster).getActiveBrands() returns (
-            string[] memory brands
-        ) {
+        try IOracleMaster(oracleMaster).getActiveBrands() returns (string[] memory brands) {
             return brands;
         } catch {
             return new string[](0);
@@ -584,25 +490,22 @@ contract ZeroNFT is
      * @param _reputationContract New reputation contract address
      * @param _carRegistry New car registry address
      */
-    function updateProtocolAddresses(
-        address _oracleMaster,
-        address _reputationContract,
-        address _carRegistry
-    ) public override onlyOwner {
+    function updateProtocolAddresses(address _oracleMaster, address _reputationContract, address _carRegistry)
+        public
+        override
+        onlyOwner
+    {
         if (_oracleMaster != address(0)) oracleMaster = _oracleMaster;
-        if (_reputationContract != address(0))
+        if (_reputationContract != address(0)) {
             reputationContract = _reputationContract;
-        if (_carRegistry != address(0))
+        }
+        if (_carRegistry != address(0)) {
             carRegistry = ICarRegistry(_carRegistry);
+        }
     }
 
-    function setAuctionContract(
-        address _auctionContract
-    ) external override onlyOwner {
-        require(
-            _auctionContract != address(0),
-            "ZeroNFT: auction contract cannot be zero address"
-        );
+    function setAuctionContract(address _auctionContract) external override onlyOwner {
+        require(_auctionContract != address(0), "ZeroNFT: auction contract cannot be zero address");
         auctionContract = _auctionContract;
     }
 
@@ -618,17 +521,13 @@ contract ZeroNFT is
     /**
      * @dev Override tokenURI to use ERC721URIStorage
      */
-    function tokenURI(
-        uint256 tokenId
-    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
     error ZeroNFT__cannot_burn();
 
-    function _burn(
-        uint256 /*tokenId*/
-    ) internal pure override(ERC721, ERC721URIStorage) {
+    function _burn(uint256 /*tokenId*/ ) internal pure override(ERC721, ERC721URIStorage) {
         revert ZeroNFT__cannot_burn();
         // super._burn(tokenId);
     }
@@ -636,29 +535,25 @@ contract ZeroNFT is
     /**
      * @dev Override supportsInterface to include ERC721URIStorage
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
-    modifier onlyAuction() {
-        require(
-            msg.sender == address(auctionContract),
-            "ZeroNFT: only auction can call"
-        );
-        _;
-    }
+    //  modifier () {
+    //      require(
+    //          msg.sender == address(auctionContract),
+    //          "ZeroNFT: only auction can call"
+    //      );
+    //      _;
+    //  }
     error notOwner();
 
-    function isZeroNftOwner(
-        uint256 _tokenId
-    ) internal view returns (address owner) {
+    function isZeroNftOwner(uint256 _tokenId) internal view returns (address owner) {
         return owner = ownerOf(_tokenId);
     }
 
-    function isOwner(uint256 _tokenId) public view returns (bool) {
+    function isOwner(uint256 _tokenId, address user) public view returns (bool) {
         address owneraddress = isZeroNftOwner(_tokenId);
-        return owneraddress == msg.sender;
+        return owneraddress == user;
     }
 }

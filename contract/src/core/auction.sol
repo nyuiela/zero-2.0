@@ -7,12 +7,14 @@ import {CarRegistry} from "./registry.sol";
 import {OracleMaster} from "../oracle/Oracle.sol";
 import {AggregatorV3Interface} from "../../lib/chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
+import {IZeroNFT} from "../interface/IZeronft.sol";
 
 contract Auction {
     CarRegistry public carRegistry;
     uint256 public auctionCount;
     uint256 public constant COLLATERAL_PERCENT = 10; //@TODO brand should pick this during the creat auction
-    ZeroNFT public zeroNFT;
+    //ZeroNFT public zeroNFT;
+    IZeroNFT public zeroNFT;
     OracleMaster public oracleMaster;
     AggregatorV3Interface public ethUsdPriceFeed;
     AggregatorV3Interface public usdcUsdPriceFeed;
@@ -92,6 +94,7 @@ contract Auction {
         require(carRegistry.isActivate(brandName), "Brand is not active");
         _;
     }
+
     address owner;
 
     constructor(
@@ -104,7 +107,7 @@ contract Auction {
     ) {
         owner = _deployer;
         carRegistry = CarRegistry(_carRegistry);
-        zeroNFT = ZeroNFT(_zeroNFT);
+        zeroNFT = IZeroNFT(_zeroNFT);
         oracleMaster = OracleMaster(_oracleMaster);
         ethUsdPriceFeed = AggregatorV3Interface(_ethUsdFeed);
         usdcUsdPriceFeed = AggregatorV3Interface(_usdcUsdFeed);
@@ -120,7 +123,8 @@ contract Auction {
         uint256 nftTokenId,
         string memory proofHash
     ) external onlyActiveBrand(brandName) {
-        require(zeroNFT.isOwner(nftTokenId));
+        checkOwnership(nftTokenId, msg.sender);
+        // require(zeroNFT.isOwner(nftTokenId)); // @dev why is it returning false?? i get it, using zeronft address as owner
         require(
             startTime >= block.timestamp,
             "Start time must be in the future"
@@ -131,7 +135,7 @@ contract Auction {
             bidThreshold > initialBid,
             "Threshold must be greater than initial bid"
         );
-        require(zeroNFT.ownerOf(nftTokenId) == msg.sender, "Not NFT owner");
+        // require(zeroNFT.ownerOf(nftTokenId) == msg.sender, "Not NFT owner");
         require(
             keccak256(bytes(zeroNFT.getTokenBrand(nftTokenId))) ==
                 keccak256(bytes(brandName)),
@@ -155,7 +159,7 @@ contract Auction {
         a.winningBid = 0;
         a.nftTokenId = nftTokenId;
         a.proofHash = proofHash; // Store the proof hash for verification
-
+        zeroNFT.transferZeroFrom(msg.sender, address(this), nftTokenId);
         emit AuctionCreated(
             auctionCount,
             brandName,
@@ -164,6 +168,10 @@ contract Auction {
             initialBid,
             bidThreshold
         );
+    }
+
+    function checkOwnership(uint256 tokenId, address user) internal {
+        zeroNFT.isOwner(tokenId, user);
     }
 
     function placeBid(uint256 auctionId, uint256 amount) external payable {
@@ -176,7 +184,7 @@ contract Auction {
         if (numBids > 0) {
             minBid = auctionBids[auctionId][numBids - 1].amount + 1;
         }
-        require(amount >= minBid, "Bid too low");
+        require(amount > minBid, "Bid too low");
 
         // If threshold reached, require collateral
         bool requireStake = false;
@@ -270,7 +278,7 @@ contract Auction {
         // TODO: Implement proper ownership registration
         // CarRegistry.registerUndernewOwner(a.brandName, subscriptionId, args); ///register car under new owner
         // Transfer NFT to winner
-        zeroNFT.transferFrom(a.creator, msg.sender, a.nftTokenId);
+        zeroNFT.transferZeroFrom(address(this), msg.sender, a.nftTokenId);
     }
 
     function returnStakes(uint256 auctionId) external {
@@ -361,7 +369,7 @@ contract Auction {
             newBidThreshold > newInitialBid,
             "Threshold must be greater than initial bid"
         );
-        require(zeroNFT.ownerOf(newNftTokenId) == msg.sender, "Not NFT owner");
+        //require(zeroNFT.ownerOf(newNftTokenId) == msg.sender, "Not NFT owner");
         require(
             keccak256(bytes(zeroNFT.getTokenBrand(newNftTokenId))) ==
                 keccak256(bytes(a.brandName)),
@@ -436,6 +444,33 @@ contract Auction {
         }
 
         emit CollateralReturned(auctionId, msg.sender, stake);
+    }
+
+    function getBidInfo(
+        uint256 _auctionId
+    ) public view returns (uint256 threshold) {
+        AuctionItem storage a = auctions[_auctionId];
+        threshold = a.bidThreshold;
+        return threshold;
+    }
+
+    function getCurrentHighestBid(
+        uint256 _auctionId
+    ) public returns (uint256 highestbid, address _highestBidder) {
+        AuctionItem storage a = auctions[_auctionId];
+
+        highestbid = 0;
+        _highestBidder = address(0);
+
+        for (uint256 i = 0; i < auctionBids[_auctionId].length; i++) {
+            if (auctionBids[_auctionId][i].amount > highestbid) {
+                highestbid = auctionBids[_auctionId][i].amount;
+                _highestBidder = auctionBids[_auctionId][i].bidder;
+            }
+        }
+
+        a.winner = _highestBidder;
+        a.winningBid = highestbid;
     }
 
     function setZeroNFT(address _zeroNFT) public onlyOwner {

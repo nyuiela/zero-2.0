@@ -21,12 +21,9 @@ contract DeployCCIP is Script {
     PermissionManager public permission;
 
     address constant HEDERA_ROUTER = 0x802C5F84eAD128Ff36fD6a3f8a418e339f467Ce4;
-    address constant HEDERA_LINK_TOKEN =
-        0x90a386d59b9A6a4795a011e8f032Fc21ED6FEFb6;
-    address constant HEDERA_ETH_USD_FEED =
-        0xb9d461e0b962aF219866aDfA7DD19C52bB9871b9;
-    address constant HEDERA_USDC_USD_FEED =
-        0xb632a7e7e02d76c0Ce99d9C62c7a2d1B5F92B6B5;
+    address constant HEDERA_LINK_TOKEN = 0x90a386d59b9A6a4795a011e8f032Fc21ED6FEFb6;
+    address constant HEDERA_ETH_USD_FEED = 0xb9d461e0b962aF219866aDfA7DD19C52bB9871b9;
+    address constant HEDERA_USDC_USD_FEED = 0xb632a7e7e02d76c0Ce99d9C62c7a2d1B5F92B6B5;
     uint256 constant HEDERA_CHAIN_SELECTOR_ID = 222782988166878823; // Hedera Chain ID
     uint64 constant BASE_CHAIN_SELECTOR = 10344971235874465080;
     uint256 constant AMOUNT = 1000000000000000000;
@@ -42,9 +39,7 @@ contract DeployCCIP is Script {
         address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
         address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
         //   address permissionManager = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
-        address brandPermissionManager = vm.envAddress(
-            "BRAND_PERMISSION_MANAGER_ADDRESS"
-        );
+        address brandPermissionManager = vm.envAddress("BRAND_PERMISSION_MANAGER_ADDRESS");
         address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
         address profile = vm.envAddress("PROFILE_ADDRESS");
         // uint64 baseSelectorId = vm.envAddress("BASE_SELECTOR_ID ");
@@ -53,20 +48,10 @@ contract DeployCCIP is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // deploy cross chain
-        deployCrossChain(
-            carRegistry,
-            oraclemaster,
-            profile,
-            reputationContract,
-            deployer
-        );
+        deployCrossChain(carRegistry, oraclemaster, profile, reputationContract, deployer);
         setConfigs(BASE_CHAIN_SELECTOR);
         IERC20(HEDERA_LINK_TOKEN).transferFrom(deployer, address(ccip), AMOUNT);
-        IERC20(HEDERA_LINK_TOKEN).transferFrom(
-            deployer,
-            address(messenger),
-            AMOUNT
-        );
+        IERC20(HEDERA_LINK_TOKEN).transferFrom(deployer, address(messenger), AMOUNT);
         vm.stopBroadcast();
 
         //loggs
@@ -97,11 +82,7 @@ contract DeployCCIP is Script {
 
         //messanger
         console.log("Deploying Messenger ....");
-        messenger = new Messenger(
-            address(_carRegistry),
-            address(_oraclemaster),
-            address(merkleVerifier)
-        );
+        messenger = new Messenger(address(_carRegistry), address(_oraclemaster), address(merkleVerifier));
         console.log("Messenger deployed at", address(messenger));
 
         //  Deploy State Manager
