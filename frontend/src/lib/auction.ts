@@ -158,7 +158,7 @@ export const auctions = [
       model: 'Vanquish',
       location: 'Scarsborough, Ontario, Canada',
       image: 'https://ext.same-assets.com/360451443/1101411790.jpeg',
-      auctionStart: '17 June'
+      auctionStart: '17 July'
     },
     {
       id: 347,
@@ -167,7 +167,7 @@ export const auctions = [
       model: 'Corvette Stingray Restomod',
       location: 'Scarsborough, Ontario, Canada',
       image: 'https://ext.same-assets.com/360451443/3915515407.jpeg',
-      auctionStart: '18 June'
+      auctionStart: '18 July'
     }
   ]
 

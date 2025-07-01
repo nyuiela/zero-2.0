@@ -158,3 +158,85 @@
     box-shadow: var(--shadow-card);
   }
 }
+
+/* Mobile Dialog Improvements */
+@layer components {
+  /* Better mobile dialog positioning */
+  [data-slot="dialog-content"] {
+    /* Ensure proper viewport height calculation on mobile */
+    max-height: calc(100vh - 2rem);
+    /* Prevent horizontal scrolling */
+    max-width: calc(100vw - 2rem);
+  }
+  
+  /* Keyboard avoidance for mobile inputs */
+  @media (max-width: 640px) {
+    [data-slot="dialog-content"] {
+      /* Position from top instead of center for better keyboard handling */
+      top: 1rem !important;
+      transform: translateX(-50%) !important;
+      /* Remove vertical centering on mobile */
+      transform: translateX(-50%) !important;
+    }
+    
+    /* Ensure inputs are visible when keyboard appears */
+    [data-slot="dialog-content"] input {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+  
+  /* RainbowKit modal centering fix */
+  [data-rk] {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure modal overlay covers the entire screen */
+  [data-slot="dialog-overlay"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+}
+
+/* Mobile Dialog Improvements */
+@layer components {
+  /* Better mobile dialog positioning */
+  [data-slot="dialog-content"] {
+    /* Ensure proper viewport height calculation on mobile */
+    max-height: calc(100vh - 2rem);
+    /* Prevent horizontal scrolling */
+    max-width: calc(100vw - 2rem);
+  }
+  
+  /* Keyboard avoidance for mobile inputs */
+  @media (max-width: 640px) {
+    [data-slot="dialog-content"] {
+      /* Position from top instead of center for better keyboard handling */
+      top: 1rem !important;
+      transform: translateX(-50%) !important;
+      /* Remove vertical centering on mobile */
+      transform: translateX(-50%) !important;
+    }
+    
+    /* Ensure inputs are visible when keyboard appears */
+    [data-slot="dialog-content"] input {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+  
+  /* RainbowKit modal centering fix */
+  [data-rk] {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure modal overlay covers the entire screen */
+  [data-slot="dialog-overlay"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+}

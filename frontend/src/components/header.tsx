@@ -30,8 +30,7 @@ export default function Header() {
   const { switchChain } = useSwitchChain()
   console.log("user ", user);
   const { writeContract } = useWriteContract();
-
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Check if user is fully authenticated (wallet connected + auth completed)
   const isAuthenticated = isConnected && user
@@ -108,10 +107,7 @@ export default function Header() {
           {/* <button className='flex cursor-pointer' onClick={() => setIsBrandModalOpen(false)}>close</button> */}
         </div>
         <div className='h-full overflow-y-auto px-4 py-6'>
-          <BrandRegistrationForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-          />
+          <BrandRegistrationForm />
         </div>
       </div>}
       {/* <BrandRegistrationForm
@@ -132,45 +128,39 @@ export default function Header() {
       </div>
       {/* Main Navigation */}
       <nav className="w-full bg-white border-b border-gray-200 pt-5">
-        {/* Logo */}
-        <div className="flex-1 flex justify-center">
-          <Link href="/" className="flex flex-col items-center">
-            <span className="text-3xl  tracking-widest font-extralight font-serif text-[#00296b]">ZE | RO</span>
-            <span className="text-xs tracking-widest text-gray-500 mt-1 font-extralight font-serif">Decentralized Cars</span>
-          </Link>
-        </div>
-        <div className="max-w-7xl mx-auto flex items-center justify-between py-6 px-4">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-6 relative">
+          {/* Hamburger Menu - Mobile Only */}
+          <button
+            className="sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#7400b8]"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6 text-[#202626]" /> : <Menu className="h-6 w-6 text-[#202626]" />}
+          </button>
 
-          {/* Navigation Links */}
-
-          <div className="absolute left-1/2 -translate-x-1/2 flex space-x-8 max-sm:text-sm">
-            <Link href="/auctions" className="text-[#202626] hover:text-amber-500 font-medium">Auctions</Link>
-            <Link href="/sell" className="text-[#202626] hover:text-amber-500 font-medium">Sell</Link>
-            <Link href="/verify" className="text-[#202626] hover:text-amber-500 font-medium">Verify</Link>
-            <Link href="/brands" className="text-[#202626] hover:text-amber-500 font-medium">Brands</Link>
+          {/* Logo - Always Centered */}
+          <div className="flex-1 flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:static sm:translate-x-0 sm:translate-y-0">
+            <Link href="/" className="flex flex-col items-center">
+              <span className="text-3xl tracking-widest font-extralight font-serif text-[#00296b]">ZE | RO</span>
+              <span className="text-xs tracking-widest text-gray-500 mt-1 font-extralight font-serif">Decentralized Cars</span>
+            </Link>
           </div>
-          {/* Search and Sign In */}
-          <div className="flex-1 flex justify-end items-center space-x-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full max-sm:hidden">
+
+          {/* Search and Sign In - Always Right Aligned */}
+          <div className="flex items-center space-x-4 ml-auto">
+            <button className="p-2 hover:bg-gray-100 rounded-full">
               <Search className="h-5 w-5 text-[#202626]" />
             </button>
-            {/* <Link href="/login" className="text-[#202626] hover:text-amber-500 font-medium">Sign in</Link> */}
-
-
             {/* Auth Section */}
             {!isAuthenticated ? (
-              // Login Button (when not authenticated)
               <div
                 onClick={() => setOpen(true)}
-                className="bg-transparent hover:bg-white text-[#202626] hover:text-amber-500 font-medium cursor-pointer"
+                className="bg-transparent hover:bg-white text-[#202626] hover:text-[#7400b8] font-medium cursor-pointer"
               >
                 Login
               </div>
             ) : (
-              // Two Dropdown Buttons (when wallet is connected)
-
               <div className="flex items-center space-x-3 text-black">
-                {/* Address Dropdown */}
                 <div className='max-sm:hidden'>{chainId}</div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -185,10 +175,8 @@ export default function Header() {
                   >
                     <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
                       <Link href="/profile" className="flex items-center w-full">
-                        {/* <div className='w-full h-[5rem] bg-red-300'> */}
                         <User className="h-4 w-4 mr-3" />
                         Profile
-                        {/* </div> */}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
@@ -217,6 +205,24 @@ export default function Header() {
             )}
           </div>
 
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="sm:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50 animate-fade-in">
+              <div className="flex flex-col py-4 px-6 space-y-2">
+                <Link href="/auctions" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Auctions</Link>
+                <Link href="/sell" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Sell</Link>
+                <Link href="/verify" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Verify</Link>
+                <Link href="/brands" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Nav Links Row - Desktop Only */}
+        <div className="hidden sm:flex w-full justify-center space-x-10 py-2 border-t border-gray-100 bg-white">
+          <Link href="/auctions" className="hover:text-[#7400b8] text-[#202626] font-medium">Auctions</Link>
+          <Link href="/sell" className="hover:text-[#7400b8] text-[#202626] font-medium">Sell</Link>
+          <Link href="/verify" className="hover:text-[#7400b8] text-[#202626] font-medium">Verify</Link>
+          <Link href="/brands" className="hover:text-[#7400b8] text-[#202626] font-medium">Brands</Link>
         </div>
       </nav>
       <LoginModal />

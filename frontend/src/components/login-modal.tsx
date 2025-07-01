@@ -567,7 +567,7 @@ export function LoginModal() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] border-gray-800 text-[#202626]">
+      <DialogContent className="sm:max-w-[425px] border-gray-800 text-[#202626] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className='text-xl'>{getStepTitle()}</DialogTitle>
           <DialogDescription className='text-lg'>

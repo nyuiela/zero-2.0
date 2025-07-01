@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Clock, Gavel } from 'lucide-react'
 import { CarAuctioned } from '@/lib/data'
+import { useState, useEffect } from 'react'
 
 // interface Auction {
 //   id: number
@@ -49,15 +50,19 @@ function breakdownCountdown(totalSeconds: number) {
 
 const AuctionCard = ({ auction }: AuctionCardProps) => {
   // Default to ETH for now
-  // const date = new Date();
-  const time = new Date(auction.auction?.end_time); // in milliseconds
-  const targetTime = time.getTime()
-  const now = Date.now(); // current time in milliseconds
-  const secondsLeft = Math.floor((targetTime - now) / 1000); // convert to seconds
-  const { hours, minutes, seconds } = breakdownCountdown(secondsLeft)
-  console.log("Seconds left:", secondsLeft);
-
   const currency = 'ETH'
+  const endTime = new Date(auction.auction?.end_time).getTime()
+  const [secondsLeft, setSecondsLeft] = useState(() => Math.abs(Math.floor((endTime - Date.now()) / 1000)))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecondsLeft(prev => prev > 0 ? prev - 1 : prev)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [endTime])
+
+  const { hours, minutes, seconds } = breakdownCountdown(Math.max(0, secondsLeft))
+
   return (
     <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
       {/* Car Image */}
@@ -124,7 +129,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 Time Left
               </div>
               <div className="text-black font-semibold text-lg">
-                {hours}:{minutes}:{seconds}
+                {`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
               </div>
             </div>
           </div>
