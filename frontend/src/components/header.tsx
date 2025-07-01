@@ -148,7 +148,7 @@ export default function Header() {
 
           {/* Search and Sign In - Always Right Aligned */}
           <div className="flex items-center space-x-4 ml-auto absolute right-10">
-            <button className="p-2 hover:bg-gray-100 rounded-full">
+            <button className="p-2 hover:bg-gray-100 rounded-full cursor-pointer">
               <Search className="h-5 w-5 text-[#202626]" />
             </button>
             {/* Auth Section */}
@@ -161,7 +161,7 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-3 text-black">
-                <div className='max-sm:hidden'>{chainId}</div>
+                <div className='max-sm:hidden text-sm'>{chainId}</div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-00 hover:text-amber-00 py-3 px-4 border-0 shadow-none">
@@ -170,33 +170,36 @@ export default function Header() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-60 bg-white border-gray-700 text-black border-none shadow-2xl p-2 z-[100]"
+                    className="w-60 bg-white border-gray-700 text-black border-none shadow-2xl p-2 z-[100] rounded-sm"
                     sideOffset={8}
                   >
-                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
+                    <div className='w-full h-[5rem] bg-green-300 rounded-sm mb-2 text-center flex items-center justify-center font-bold text-shadow-indigo-50 text-white/90'>
+                      ZE | RO
+                    </div>
+                    <DropdownMenuItem className="py-2 px-2 rounded-[8px] hover:bg-gray-300 transition-colors cursor-pointer">
                       <Link href="/profile" className="flex items-center w-full">
-                        <User className="h-4 w-4 mr-3" />
+                        <User className="h-3.5 w-4 mr-3" />
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
+                    <DropdownMenuItem className="py-2 px-2 rounded-[8px] hover:bg-gray-300 transition-colors cursor-pointer">
                       <Link href="/profile/my-bids" className="flex items-center w-full">
-                        <Gavel className="h-4 w-4 mr-3" />
+                        <Gavel className="h-3.5 w-4 mr-3" />
                         My Bids
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="py-3 px-3 rounded-md hover:bg-gray-300 transition-colors">
+                    <DropdownMenuItem className="py-2 px-2 rounded-[8px] hover:bg-gray-300 transition-colors cursor-pointer">
                       <div className="flex items-center w-full">
-                        <Heart className="h-4 w-4 mr-3" />
+                        <Heart className="h-3.5 w-4 mr-3" />
                         Saved Auctions
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-300 my-2" />
                     <DropdownMenuItem
                       onClick={handleDisconnect}
-                      className="py-3 px-3 rounded-md text-red-500 hover:bg-red-200 hover:text-red-600 transition-colors"
+                      className="py-2 px-1 rounded-[8px] text-black hover:bg-red-400 hover:text-white/90 transition-colors flex items-center pl-3 cursor-pointer"
                     >
-                      <LogOut className="h-4 w-4 mr-3" />
+                      <LogOut className="h-3.5 w-4 mr-3" />
                       Disconnect
                     </DropdownMenuItem>
                   </DropdownMenuContent>

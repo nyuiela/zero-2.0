@@ -345,8 +345,13 @@ contract ZeroNFTTest is Test {
         vm.prank(kal);
         auction.endAuction(auctionId);
 
-        vm.prank(highestBidder);
+        vm.startPrank(highestBidder);
+        deal(highestBidder, highestBid);
+        usdc.mint(highestBidder, highestBid);
+        usdc._approve(address(auction), highestBid);
         auction.claimWin(auctionId);
+        vm.stopPrank();
+        console2.log("winnnnnnner is:", highestBidder);
 
         assertEq(
             highestBidder,

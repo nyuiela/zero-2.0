@@ -266,7 +266,10 @@ contract Auction {
         require(!received[msg.sender], "already received");
 
         if (a.bidToken == address(0)) {
-            require(msg.value >= a.winningBid, "Insufficient ETH payment");
+            require(msg.value == a.winningBid, "Insufficient ETH payment");
+
+            (bool success, ) = payable(a.winner).call{value: a.winningBid}("");
+            require(success, "ETH Transfer failed");
         } else {
             require(msg.value == 0, "Do not send ETH for token auction");
             IERC20(a.bidToken).transferFrom(
@@ -286,8 +289,14 @@ contract Auction {
 
     function returnStakes(uint256 auctionId) external {
         AuctionItem storage a = auctions[auctionId];
+        require(
+            requiresStake[auctionId],
+            "Auction nostakes added for this auction"
+        );
+        if (msg.sender == a.winner) {
+            require(received[msg.sender], "Auction claim first");
+        }
         require(a.ended, "Auction not ended");
-        require(a.winner == address(0), "Winner must claim first");
 
         // Return all stakes to bidders
         for (uint256 i = 0; i < a.bidders.length; i++) {
