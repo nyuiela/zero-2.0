@@ -245,12 +245,14 @@ export default function ProfilePage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-100">
-              <TabsTrigger value="profile" className="text-black">Profile</TabsTrigger>
-              <TabsTrigger value="seller" className="text-black">Become a Seller</TabsTrigger>
-              <TabsTrigger value="activity" className="text-black">Activity</TabsTrigger>
-              <TabsTrigger value="nfts" className="text-black">My NFTs</TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto w-full sm:overflow-x-visible">
+              <TabsList className="flex min-w-[320px] w-max gap-2 sm:grid sm:w-full sm:grid-cols-4 sm:min-w-0 bg-gray-100">
+                <TabsTrigger value="profile" className="text-black whitespace-nowrap sm:whitespace-normal">Profile</TabsTrigger>
+                <TabsTrigger value="seller" className="text-black whitespace-nowrap sm:whitespace-normal">Become a Seller</TabsTrigger>
+                <TabsTrigger value="activity" className="text-black whitespace-nowrap sm:whitespace-normal">Activity</TabsTrigger>
+                <TabsTrigger value="nfts" className="text-black whitespace-nowrap sm:whitespace-normal">My NFTs</TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="profile" className="mt-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -265,14 +267,14 @@ export default function ProfilePage() {
                   <CardContent className="space-y-4">
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Wallet Address</label>
-                      <p className="text-foreground font-mono bg-muted px-3 py-2 rounded mt-1 text-sm">
+                      <p className="text-foreground font-mono bg-muted px-3 py-2 rounded mt-1 text-sm break-all">
                         {displayAddress}
                       </p>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Username</label>
-                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1">
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
                         {displayUsername}
                       </p>
                     </div>
@@ -312,14 +314,14 @@ export default function ProfilePage() {
                   <CardContent className="space-y-4">
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Authentication Method</label>
-                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1">
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
                         Wallet Signature + Zero-Knowledge Proof
                       </p>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Last Login</label>
-                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1">
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
                         {new Date().toLocaleString()}
                       </p>
                     </div>
@@ -330,7 +332,7 @@ export default function ProfilePage() {
                           <AlertCircle className="h-4 w-4 text-yellow-600" />
                           <span className="text-sm font-medium text-yellow-800">Verification in Progress</span>
                         </div>
-                        <p className="text-sm text-yellow-700">
+                        <p className="text-sm text-yellow-700 break-words">
                           Your identity verification is being processed. This usually takes 2-5 minutes.
                         </p>
                       </div>
@@ -342,7 +344,7 @@ export default function ProfilePage() {
                           <AlertCircle className="h-4 w-4 text-blue-600" />
                           <span className="text-sm font-medium text-blue-800">Complete Your Login</span>
                         </div>
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-blue-700 break-words">
                           You&apos;re connected with your wallet but haven&apos;t completed the login process.
                           Click the Login button in the header to complete your account setup.
                         </p>
@@ -548,7 +550,7 @@ export default function ProfilePage() {
                         onChange={(e) => setSellerApplication(prev => ({ ...prev, description: e.target.value }))}
                         required
                         placeholder="Tell us about your business, experience, and what makes you unique..."
-                        className="mt-1"
+                        className="mt-1 break-words"
                         rows={4}
                       />
                     </div>
@@ -751,15 +753,15 @@ function CarNFTCard({ nft }: { nft: CarNFT }) {
           {/* Brand and Model */}
           {/* Additional Info */}
           <div className="text-xs text-muted-foreground border-none m-0 border-t flex p-0 justify-between">
-            <p>Minted: {new Date(nft.mintTimestamp).toLocaleDateString()}</p>
-            <p>Owner: {nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</p>
+            <p className="break-words">Minted: {new Date(nft.mintTimestamp).toLocaleDateString()}</p>
+            <p className="break-all">Owner: {nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-lg text-foreground">
+            <h3 className="font-semibold text-lg text-foreground break-words">
               {nft.brandName} {nft.model}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground break-words">
               {nft.year} • {nft.color}
             </p>
           </div>
