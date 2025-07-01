@@ -320,6 +320,94 @@ contract ZeroNFTTest is Test {
             registry.isActivate(brand),
             "isActivate should return true for active brand"
         );
+
+        assertTrue(zero.CanMint(brand));
+    }
+
+    function test_creation_Auction() public {
+        string memory brand = "TestBrand";
+
+        address brandAdminAddr = address(0x123);
+        uint64 subscriptionId = 1;
+        string memory stateUrl = "https://state.url";
+        string[] memory args = new string[](1);
+        args[0] = "arg1";
+
+        // Register the brand first
+        ICarOracle.OracleConfig memory config = ICarOracle.OracleConfig({
+            updateInterval: 3600,
+            deviationThreshold: 100,
+            heartbeat: 86400,
+            minAnswer: 0,
+            maxAnswer: 1000000
+        });
+
+        //      struct NFTMetadata {
+        //     string brandName;
+        //     string carModel;
+        //     string vin;
+        //     uint256 year;
+        //     string color;
+        //     uint256 mileage;
+        //     string description;
+        //     string imageURI;
+        //     uint256 mintTimestamp;
+        //     bool isVerified;
+        // }
+
+        IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
+            brandName: brand,
+            carModel: "lambro567", //<--- i  know nothing about cars lol
+            vin: "ytg",
+            year: 567,
+            color: "pink",
+            mileage: 78,
+            description: "very good car",
+            imageURI: "stateUrl",
+            mintTimestamp: block.timestamp,
+            isVerified: true
+        });
+
+        registry.registerBrand(
+            brand,
+            config,
+            brandAdminAddr,
+            subscriptionId,
+            stateUrl,
+            args
+        );
+
+        // Stake the brand first (required for activation)
+
+        registry.stake{value: 1}(brand); // i made a mistake here <----- the registry is the one sending the money lol not users
+        // gotta fix
+        //@fixed the issue
+
+        // Activate the brand
+        registry.activate(brand);
+
+        // Check that status changed to ACTIVE (3)
+        (, CarRegistry.Status status, , , , , , ) = registry.registry(brand);
+        assertEq(
+            uint256(status),
+            3,
+            "Brand status should be ACTIVE after activation"
+        );
+
+        // Check isActivate function
+        assertTrue(
+            registry.isActivate(brand),
+            "isActivate should return true for active brand"
+        );
+
+        /// crreate Auction
+        // but mint first
+        uint256 current = zero.getCurrentTokenId();
+        console2.log("lessToken:", current);
+        address lee = address(0x56);
+        zero.mint(lee, brand, meta, stateUrl);
+        uint256 startTime = block.timestamp + 1 days;
+        auction.createAuction(brand, startTime);
     }
 }
 

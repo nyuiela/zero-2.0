@@ -176,7 +176,7 @@ contract OracleMaster is IOracleMaster, Ownable, Pausable, ReentrancyGuard {
             oracleAddress: oracleAddress,
             priceFeedAddress: priceFeedAddress,
             lastUpdateTime: block.timestamp,
-            isActive: false,
+            isActive: true,
             totalProducts: 0
         });
 
