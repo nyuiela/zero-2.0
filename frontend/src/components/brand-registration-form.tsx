@@ -215,7 +215,7 @@ export function BrandRegistrationForm() {
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [showStakeActivateModal, setShowStakeActivateModal] = useState(false)
   const [stakeActivateStep, setStakeActivateStep] = useState(0)
-  const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
+  // const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       confirmations: 3,
@@ -310,9 +310,10 @@ export function BrandRegistrationForm() {
       })
       // Simulate transaction hash - in real implementation, this would come from the transaction
       // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      setRegisteredBrandName(data.brand)
-      setStakeActivateStep(1)
-      setIsLoading(false)
+      if (isConfirmed) {
+        setStakeActivateStep(1)
+        setIsLoading(false)
+      }
     } catch (error) {
       console.error("Failed to submit form ", error)
       setIsLoading(false)
@@ -339,18 +340,18 @@ export function BrandRegistrationForm() {
 
   // Stake function
   const handleStake = async () => {
-    if (!registeredBrandName) return
+    if (!form.getValues("brand")) return
     setError(null)
     try {
       await writeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'stake',
-        args: [registeredBrandName],
+        args: [form.getValues("brand")],
         value: parseEther(form.getValues("stake") || "0.000000000001"),
         account: address
       })
-      setStakeActivateStep(2)
+      isConfirmed && setStakeActivateStep(2)
     } catch (error) {
       setError(parseError(error))
     }
@@ -358,19 +359,19 @@ export function BrandRegistrationForm() {
 
   // Activate function
   const handleActivate = async () => {
-    if (!registeredBrandName) return
+    if (!form.getValues("brand")) return
     setError(null)
     try {
       await writeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'activate',
-        args: [registeredBrandName],
+        args: [form.getValues("brand")],
         account: address
       })
-      // setShowStakeActivateModal(false)
-      setStakeActivateStep(3)
-      setRegisteredBrandName('')
+      if (isConfirmed) {
+        setStakeActivateStep(3)
+      }
     } catch (error) {
       setError(parseError(error))
     }
@@ -404,15 +405,15 @@ export function BrandRegistrationForm() {
       <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[() => onSubmit(form.getValues()), handleStake, handleActivate]} step={stakeActivateStep} isLoading={isPending} button={["Register", "Stake", "Activate"]} message={[
         {
           header: 'Step 1: Register',
-          body: `Register "${registeredBrandName}" on ZE | RO to drive your customers insane`
+          body: `Register "${form.getValues("brand")}" on ZE | RO to drive your customers insane`
         },
         {
           header: 'Step 2: Stake',
-          body: `Stake ${form.getValues("stake") || "0.01"} ETH for brand "${registeredBrandName}" to complete registration.`
+          body: `Stake ${form.getValues("stake") || "0.01"} ETH for brand "${form.getValues("brand")}" to complete registration.`
         },
         {
           header: 'Step 3: Activate',
-          body: `Activate brand "${registeredBrandName}" to make it live on the platform`
+          body: `Activate brand "${form.getValues("brand")}" to make it live on the platform`
         }
         // {/* Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration. */}
       ]} />
