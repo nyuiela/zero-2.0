@@ -404,15 +404,15 @@ export function BrandRegistrationForm() {
       <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[() => onSubmit(form.getValues()), handleStake, handleActivate]} step={stakeActivateStep} isLoading={isPending} button={["Register", "Stake", "Activate"]} message={[
         {
           header: 'Step 1: Register',
-          body: `Register "${registeredBrandName}" on ZE | RO to drive your customers insane`
+          body: `Register "${form.getValues("brand")}" on ZE | RO to drive your customers insane`
         },
         {
           header: 'Step 2: Stake',
-          body: `Stake ${form.getValues("stake") || "0.01"} ETH for brand "${registeredBrandName}" to complete registration.`
+          body: `Stake ${form.getValues("stake") || "0.01"} ETH for brand "${form.getValues("brand")}" to complete registration.`
         },
         {
           header: 'Step 3: Activate',
-          body: `Activate brand "${registeredBrandName}" to make it live on the platform`
+          body: `Activate brand "${form.getValues("brand")}" to make it live on the platform`
         }
         // {/* Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration. */}
       ]} />
