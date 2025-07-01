@@ -14,11 +14,13 @@ import {ICarRegistry} from "../src/interface/ICarRegistry.sol";
 import {ICarOracle} from "../src/interface/oracle/IcarOracle.sol";
 import {ISync} from "../src/interface/ISync.sol";
 import {IPermissionManager} from "../src/interface/permissions/IPermissionManager.sol";
+import {IAuction} from "../src/interface/IAuction.sol";
 
 contract ContractConfig is Script {
     address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
 
     address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
+    address AUCTION_ADDRESS = vm.envAddress("");
     string constant BRANDNAME = "lesscars";
     address constant PERMISSIONADDRESS =
         0xf0830060f836B8d54bF02049E5905F619487989e;
@@ -67,7 +69,7 @@ contract BrandInteraction is Script {
     address PERMISSION_ADDRESS = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
     IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
     IProfile profile = IProfile(vm.envAddress("PROFILE_ADDRESS"));
-    string constant BRANDNAME1 = "lesscars1";
+    string constant BRANDNAME1 = "lesscars12";
 
     address constant PERMISSIONADDRESS =
         0xccfC47DaC852fa570f2D92D198fD45177B12280b;
@@ -148,5 +150,7 @@ contract BrandInteraction is Script {
         // check if it actually work
 
         assert(ICarRegistry(CAR_REGISTRY).isActivate(BRANDNAME1));
+
+        //create an nft
     }
 }

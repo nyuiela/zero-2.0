@@ -8,13 +8,20 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 import {Reputation} from "../core/reputation.sol";
 import {ICarRegistry} from "../Interface/ICarRegistry.sol";
+import {IZeroNFT} from "../interface/IZeronft.sol";
 
 /**
  * @title ZeroNFT
  * @dev RWA Tokenization NFT contract for car brands that have completed registration and protocol procedures
  * Only registered and active car brands can mint NFTs representing their real-world assets
  */
-contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
+contract ZeroNFT is
+    IZeroNFT,
+    ERC721,
+    ERC721URIStorage,
+    Ownable,
+    ReentrancyGuard
+{
     ICarRegistry carRegistry;
     // Token ID counter (replaces deprecated Counters library)
     uint256 private _tokenIdCounter;
@@ -47,18 +54,18 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     mapping(uint256 => NFTMetadata) private _nftMetadata;
 
     // Struct for NFT metadata
-    struct NFTMetadata {
-        string brandName;
-        string carModel;
-        string vin;
-        uint256 year;
-        string color;
-        uint256 mileage;
-        string description;
-        string imageURI;
-        uint256 mintTimestamp;
-        bool isVerified;
-    }
+    // struct NFTMetadata {
+    //     string brandName;
+    //     string carModel;
+    //     string vin;
+    //     uint256 year;
+    //     string color;
+    //     uint256 mileage;
+    //     string description;
+    //     string imageURI;
+    //     uint256 mintTimestamp;
+    //     bool isVerified;
+    // }
 
     // Events
     event NFTMinted(
@@ -119,7 +126,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         string memory brandName,
         NFTMetadata memory metadata,
         string memory tokenUri_
-    ) public nonReentrant returns (uint256) {
+    ) public override returns (uint256) {
         // // Check if brand is registered and active
         // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
 
@@ -166,7 +173,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         string memory brandName,
         NFTMetadata[] memory metadatas,
         string[] memory tokenURIs
-    ) public nonReentrant returns (uint256[] memory) {
+    ) public override nonReentrant returns (uint256[] memory) {
         // Check if brand is registered and active
         // require(isBrandRegisteredAndActive(brandName), "ZeroNFT: Brand not registered or inactive");
 
@@ -219,7 +226,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     //ckeck if brand has an active running oracle
     function isBrandRegisteredAndActive(
         string memory brandName
-    ) public view returns (bool) {
+    ) public view override returns (bool) {
         try IOracleMaster(oracleMaster).isOracleActive(brandName) returns (
             bool isActive
         ) {
@@ -229,7 +236,9 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         }
     }
 
-    function isBrandActive(string memory brandName) public view returns (bool) {
+    function isBrandActive(
+        string memory brandName
+    ) public view override returns (bool) {
         // TODO: Implement actual activation logic or remove this stub
         // Removed invalid call
         return carRegistry.isActivate(brandName);
@@ -240,7 +249,9 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
      * @param brandName The name of the brand to check
      */
 
-    function CanMint(string memory brandName) public view returns (bool) {
+    function CanMint(
+        string memory brandName
+    ) public view override returns (bool) {
         // This would need to be implemented based on your reputation contract
         // For now, we'll assume all registered brands are staked
         // will replace with the actiavtion logic after kaleel is done
@@ -256,7 +267,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     // }
 
     // users can call this to chek if owner is the actual owner
-    function verifyNFT(uint256 tokenId, bool verified) public {
+    function verifyNFT(uint256 tokenId, bool verified) public override {
         require(_exists(tokenId), "ZeroNFT: Token does not exist");
         _nftMetadata[tokenId].isVerified = verified;
         emit NFTVerified(tokenId, verified);
@@ -268,7 +279,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         address from,
         address to,
         uint256 tokenId
-    ) public payable onlyAuction nonReentrant {
+    ) public payable override onlyAuction nonReentrant {
         require(
             _isApprovedOrOwner(msg.sender, tokenId),
             "ZeroNFT: Transfer caller is not owner nor approved"
@@ -293,7 +304,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         address from,
         address to,
         uint256[] memory tokenIds
-    ) public nonReentrant onlyAuction {
+    ) public override nonReentrant onlyAuction {
         require(to != address(0), "ZeroNFT: Cannot transfer to zero address");
         require(tokenIds.length > 0, "ZeroNFT: Empty token array");
         require(tokenIds.length <= 50, "ZeroNFT: Too many tokens in batch");
@@ -356,13 +367,18 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     // Token Management Functions
 
     //incase something happens and admin needs to step in and hold nft untill its resolved
-    function setTokenLock(uint256 tokenId, bool locked) public onlyOwner {
+    function setTokenLock(
+        uint256 tokenId,
+        bool locked
+    ) public override onlyOwner {
         require(_exists(tokenId), "ZeroNFT: Token does not exist");
         _lockedTokens[tokenId] = locked;
         emit TokenLocked(tokenId, locked);
     }
 
-    function isTokenLocked(uint256 tokenId) public view returns (bool) {
+    function isTokenLocked(
+        uint256 tokenId
+    ) public view override returns (bool) {
         return _lockedTokens[tokenId];
     }
 
@@ -572,7 +588,7 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         address _oracleMaster,
         address _reputationContract,
         address _carRegistry
-    ) public onlyOwner {
+    ) public override onlyOwner {
         if (_oracleMaster != address(0)) oracleMaster = _oracleMaster;
         if (_reputationContract != address(0))
             reputationContract = _reputationContract;
@@ -580,7 +596,9 @@ contract ZeroNFT is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
             carRegistry = ICarRegistry(_carRegistry);
     }
 
-    function setAuctionContract(address _auctionContract) external onlyOwner {
+    function setAuctionContract(
+        address _auctionContract
+    ) external override onlyOwner {
         require(
             _auctionContract != address(0),
             "ZeroNFT: auction contract cannot be zero address"

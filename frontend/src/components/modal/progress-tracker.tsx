@@ -52,10 +52,10 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
 
               <div key={key} className="flex items-center space-x-2 bg-red-00">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${activeStep > key
-                  ? 'bg-green-500 text-white' : 'bg-[#00296b] text-white'
+                  ? 'bg-green-500 text-white' : 'bg-[#828487] text-white'
                   }`}>
                   {key + 1}
-                  <span className={`text-sm absolute bottom-[-25] font-medium ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
+                  <span className={`text-xs absolute bottom-[-25] font-medium  ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
                     }`}>
                     {step}
                   </span>
@@ -90,7 +90,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
                 <Button
                   onClick={handleSubmit[activeStep]}
                   disabled={isLoading}
-                  className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+                  className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer text-sm"
                 >
                   {isLoading ? "Loading..." : button[activeStep]}
                 </Button>

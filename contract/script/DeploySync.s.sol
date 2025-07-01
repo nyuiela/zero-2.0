@@ -8,14 +8,20 @@ import {Sync} from "../src/chainlink/sync_function.sol";
 
 contract DeployScript is Script {
     // Base Network Addresses
-    address constant _BASE_ETH_USD_FEED = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
-    address constant _BASE_USDC_USD_FEED = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
-    address constant _BASE_USDC_TOKEN = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
+    address constant _BASE_ETH_USD_FEED =
+        0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
+    address constant _BASE_USDC_USD_FEED =
+        0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
+    address constant _BASE_USDC_TOKEN =
+        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
     address constant _BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
-    address constant _BASE_LINK_TOKEN = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
+    address constant _BASE_LINK_TOKEN =
+        0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
 
-    address constant _BASE_FUNCTION_ROUTER = 0xf9B8fc078197181C841c296C876945aaa425B278;
-    bytes32 constant _BASE_FUNCTION_DON_ID = 0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
+    address constant _BASE_FUNCTION_ROUTER =
+        0xf9B8fc078197181C841c296C876945aaa425B278;
+    bytes32 constant _BASE_FUNCTION_DON_ID =
+        0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000; // fun-base-sepolia-1
     //uint64 const ant BASE_CHAIN_SELECTOR_ID = 10344971235874465080; // Base Sepolia Chain ID
     uint256 constant _AMOUNT = 1000000000000000000; // 1 LINK in wei
 
@@ -55,5 +61,20 @@ contract DeployScript is Script {
         console.log("Network: Base");
         console.log("Deployer:", deployer);
         console.log("SyncContract=", address(sync));
+    }
+}
+
+contract DeployNFT is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.addr(deployerPrivateKey);
+
+        vm.createSelectFork(vm.rpcUrl("basechain"));
+        vm.startBroadcast(deployerPrivateKey);
+
+        console.log("Deploying contracts to Base network...");
+        console.log("Deployer address:", deployer);
+
+        vm.stopBroadcast();
     }
 }

@@ -59,8 +59,8 @@ const validateFormData = (data: BrandRegistrationFormData): string[] => {
   }
 
   const deviationThreshold = parseInt(data.deviationThreshold)
-  if (isNaN(deviationThreshold) || deviationThreshold < 0 || deviationThreshold > 100) {
-    errors.push("Deviation threshold must be between 0 and 100 percent")
+  if (isNaN(deviationThreshold) || deviationThreshold < 100 || deviationThreshold > 5000) {
+    errors.push("Deviation threshold must be between 100 and 5000 percent")
   }
 
   const heartbeat = parseInt(data.heartbeat)
@@ -226,15 +226,15 @@ export function BrandRegistrationForm() {
     defaultValues: {
       brand: "",
       updateInterval: "",
-      deviationThreshold: "",
+      deviationThreshold: "500",
       heartbeat: "",
       minAnswer: "",
       maxAnswer: "",
       brandAdminAddr: "",
-      subscriptionId: "",
-      stateUrl: "",
-      args: "",
-      stake: ""
+      subscriptionId: "387",
+      stateUrl: "http://13.222.216.169:8080/api/sync",
+      args: "http://13.222.216.169:8080/api/sync",
+      stake: "0.000005"
     },
   })
   const steps = ["register", "stake", "activate"]
@@ -310,10 +310,10 @@ export function BrandRegistrationForm() {
       })
       // Simulate transaction hash - in real implementation, this would come from the transaction
       // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      if (isConfirmed) {
-        setStakeActivateStep(1)
-        setIsLoading(false)
-      }
+      // if (isConfirmed) {
+      //   setStakeActivateStep(1)
+      //   setIsLoading(false)
+      // }
     } catch (error) {
       console.error("Failed to submit form ", error)
       setIsLoading(false)
@@ -336,7 +336,11 @@ export function BrandRegistrationForm() {
       setError(errorMessage)
       setIsLoading(false)
     }
-  }, [isError, contractError])
+    if (isConfirmed) {
+      setStakeActivateStep((prev) => prev + 1)
+      setIsLoading(false)
+    }
+  }, [isError, contractError, isConfirmed])
 
   // Stake function
   const handleStake = async () => {
@@ -351,7 +355,8 @@ export function BrandRegistrationForm() {
         value: parseEther(form.getValues("stake") || "0.000000000001"),
         account: address
       })
-      isConfirmed && setStakeActivateStep(2)
+      // isConfirmed && 
+      // setStakeActivateStep(2)
     } catch (error) {
       setError(parseError(error))
     }
@@ -362,16 +367,16 @@ export function BrandRegistrationForm() {
     if (!form.getValues("brand")) return
     setError(null)
     try {
-      await writeContract({
+      writeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'activate',
         args: [form.getValues("brand")],
         account: address
       })
-      if (isConfirmed) {
-        setStakeActivateStep(3)
-      }
+      // if (isConfirmed) {
+      // setStakeActivateStep(3)
+      // }
     } catch (error) {
       setError(parseError(error))
     }
@@ -387,17 +392,17 @@ export function BrandRegistrationForm() {
   }, [isModalError, modalContractError])
 
   const fillSample = () => {
-    form.setValue("brand", "lesscars1");
+    form.setValue("brand", "lesscars21");
     form.setValue("updateInterval", "3600");
-    form.setValue("deviationThreshold", "5");
+    form.setValue("deviationThreshold", "100");
     form.setValue("heartbeat", "86400");
     form.setValue("minAnswer", "0");
     form.setValue("maxAnswer", "1000000");
-    form.setValue("brandAdminAddr", "0x108f8Df99A5edE55ddA08b545db5F6886dc61d74");
-    form.setValue("subscriptionId", "1");
-    form.setValue("stateUrl", "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1");
-    form.setValue("args", "arg1, arg2, arg3");
-    form.setValue("stake", "1");
+    form.setValue("brandAdminAddr", "0xf0830060f836B8d54bF02049E5905F619487989e");
+    form.setValue("subscriptionId", "387");
+    form.setValue("stateUrl", "http://13.222.216.169:8080/api/sync");
+    form.setValue("args", "http://13.222.216.169:8080/api/sync");
+    form.setValue("stake", "0.00005");
   }
   console.log("Open ", showStakeActivateModal)
   return (
