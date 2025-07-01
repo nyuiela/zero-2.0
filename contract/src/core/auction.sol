@@ -55,11 +55,28 @@ contract Auction {
         uint256 initialBid,
         uint256 bidThreshold
     );
-    event BidPlaced(uint256 indexed auctionId, address indexed bidder, uint256 amount, bool staked);
+    event BidPlaced(
+        uint256 indexed auctionId,
+        address indexed bidder,
+        uint256 amount,
+        bool staked
+    );
     event ThresholdReached(uint256 indexed auctionId);
-    event AuctionEnded(uint256 indexed auctionId, address winner, uint256 winningBid);
-    event CollateralForfeited(uint256 indexed auctionId, address forfeitedBidder, uint256 amount);
-    event CollateralReturned(uint256 indexed auctionId, address bidder, uint256 amount);
+    event AuctionEnded(
+        uint256 indexed auctionId,
+        address winner,
+        uint256 winningBid
+    );
+    event CollateralForfeited(
+        uint256 indexed auctionId,
+        address forfeitedBidder,
+        uint256 amount
+    );
+    event CollateralReturned(
+        uint256 indexed auctionId,
+        address bidder,
+        uint256 amount
+    );
     event StakesReturned(uint256 indexed auctionId);
     event AuctionInfoUpdated(
         uint256 indexed auctionId,
@@ -75,14 +92,17 @@ contract Auction {
         require(carRegistry.isActivate(brandName), "Brand is not active");
         _;
     }
+    address owner;
 
     constructor(
         address payable _carRegistry,
         address _zeroNFT,
         address _oracleMaster,
         address _ethUsdFeed,
-        address _usdcUsdFeed
+        address _usdcUsdFeed,
+        address _deployer
     ) {
+        owner = _deployer;
         carRegistry = CarRegistry(_carRegistry);
         zeroNFT = ZeroNFT(_zeroNFT);
         oracleMaster = OracleMaster(_oracleMaster);
@@ -100,12 +120,22 @@ contract Auction {
         uint256 nftTokenId,
         string memory proofHash
     ) external onlyActiveBrand(brandName) {
-        require(startTime >= block.timestamp, "Start time must be in the future");
+        require(
+            startTime >= block.timestamp,
+            "Start time must be in the future"
+        );
         require(endTime > startTime, "End time must be after start time");
         require(initialBid > 0, "Initial bid must be positive");
-        require(bidThreshold > initialBid, "Threshold must be greater than initial bid");
+        require(
+            bidThreshold > initialBid,
+            "Threshold must be greater than initial bid"
+        );
         require(zeroNFT.ownerOf(nftTokenId) == msg.sender, "Not NFT owner");
-        require(keccak256(bytes(zeroNFT.getTokenBrand(nftTokenId))) == keccak256(bytes(brandName)), "NFT not of brand");
+        require(
+            keccak256(bytes(zeroNFT.getTokenBrand(nftTokenId))) ==
+                keccak256(bytes(brandName)),
+            "NFT not of brand"
+        );
         require(!zeroNFT.isTokenLocked(nftTokenId), "NFT is locked");
 
         auctionCount++;
@@ -125,7 +155,14 @@ contract Auction {
         a.nftTokenId = nftTokenId;
         a.proofHash = proofHash; // Store the proof hash for verification
 
-        emit AuctionCreated(auctionCount, brandName, startTime, endTime, initialBid, bidThreshold);
+        emit AuctionCreated(
+            auctionCount,
+            brandName,
+            startTime,
+            endTime,
+            initialBid,
+            bidThreshold
+        );
     }
 
     function placeBid(uint256 auctionId, uint256 amount) external payable {
@@ -149,11 +186,18 @@ contract Auction {
         if (a.thresholdReached) {
             uint256 requiredStake = (amount * COLLATERAL_PERCENT) / 100;
             if (a.bidToken == address(0)) {
-                require(msg.value >= requiredStake, "Insufficient ETH collateral");
+                require(
+                    msg.value >= requiredStake,
+                    "Insufficient ETH collateral"
+                );
                 a.stakes[msg.sender] += msg.value;
             } else {
                 require(msg.value == 0, "Send collateral in token, not ETH");
-                IERC20(a.bidToken).transferFrom(msg.sender, address(this), requiredStake);
+                IERC20(a.bidToken).transferFrom(
+                    msg.sender,
+                    address(this),
+                    requiredStake
+                );
                 a.stakes[msg.sender] += requiredStake;
             }
             requireStake = true;
@@ -172,7 +216,9 @@ contract Auction {
             require(msg.value == 0, "Do not send ETH before threshold");
         }
 
-        auctionBids[auctionId].push(Bid({bidder: msg.sender, amount: amount, staked: requireStake}));
+        auctionBids[auctionId].push(
+            Bid({bidder: msg.sender, amount: amount, staked: requireStake})
+        );
         emit BidPlaced(auctionId, msg.sender, amount, requireStake);
     }
 
@@ -211,7 +257,11 @@ contract Auction {
             require(msg.value >= a.winningBid, "Insufficient ETH payment");
         } else {
             require(msg.value == 0, "Do not send ETH for token auction");
-            IERC20(a.bidToken).transferFrom(msg.sender, a.creator, a.winningBid);
+            IERC20(a.bidToken).transferFrom(
+                msg.sender,
+                a.creator,
+                a.winningBid
+            );
         }
 
         // Mark that winner has claimed and register them
@@ -234,7 +284,7 @@ contract Auction {
             if (stake > 0) {
                 a.stakes[bidder] = 0;
                 if (a.bidToken == address(0)) {
-                    (bool sent,) = bidder.call{value: stake}("");
+                    (bool sent, ) = bidder.call{value: stake}("");
                     if (sent) emit CollateralReturned(auctionId, bidder, stake);
                 } else {
                     IERC20(a.bidToken).transfer(bidder, stake);
@@ -300,13 +350,21 @@ contract Auction {
         require(msg.sender == a.creator, "Only creator can update");
         require(block.timestamp <= a.startTime, "Auction started");
         require(!a.ended, "Auction already ended");
-        require(newStartTime >= block.timestamp, "Start time must be in the future");
+        require(
+            newStartTime >= block.timestamp,
+            "Start time must be in the future"
+        );
         require(newEndTime > newStartTime, "End time must be after start time");
         require(newInitialBid > 0, "Initial bid must be positive");
-        require(newBidThreshold > newInitialBid, "Threshold must be greater than initial bid");
+        require(
+            newBidThreshold > newInitialBid,
+            "Threshold must be greater than initial bid"
+        );
         require(zeroNFT.ownerOf(newNftTokenId) == msg.sender, "Not NFT owner");
         require(
-            keccak256(bytes(zeroNFT.getTokenBrand(newNftTokenId))) == keccak256(bytes(a.brandName)), "NFT not of brand"
+            keccak256(bytes(zeroNFT.getTokenBrand(newNftTokenId))) ==
+                keccak256(bytes(a.brandName)),
+            "NFT not of brand"
         );
         require(!zeroNFT.isTokenLocked(newNftTokenId), "NFT is locked");
         a.startTime = newStartTime;
@@ -316,30 +374,43 @@ contract Auction {
         a.bidToken = newBidToken;
         a.nftTokenId = newNftTokenId;
         emit AuctionInfoUpdated(
-            auctionId, newStartTime, newEndTime, newInitialBid, newBidThreshold, newBidToken, newNftTokenId
+            auctionId,
+            newStartTime,
+            newEndTime,
+            newInitialBid,
+            newBidThreshold,
+            newBidToken,
+            newNftTokenId
         );
     }
 
-    function getNftPriceInUSD(uint256 nftTokenId) public view returns (uint256 priceUSD) {
+    function getNftPriceInUSD(
+        uint256 nftTokenId
+    ) public view returns (uint256 priceUSD) {
         string memory brand = zeroNFT.getTokenBrand(nftTokenId);
         address brandOracle = oracleMaster.getOracleAddress(brand);
-        ICarOracle.PriceData memory priceData = ICarOracle(brandOracle).getLatestPrice();
+        ICarOracle.PriceData memory priceData = ICarOracle(brandOracle)
+            .getLatestPrice();
         require(priceData.isValid, "No valid price");
         return priceData.price;
     }
 
-    function getNftPriceInETH(uint256 nftTokenId) public view returns (uint256 priceETH) {
+    function getNftPriceInETH(
+        uint256 nftTokenId
+    ) public view returns (uint256 priceETH) {
         uint256 priceUSD = getNftPriceInUSD(nftTokenId);
-        (, int256 ethUsd,,,) = ethUsdPriceFeed.latestRoundData();
+        (, int256 ethUsd, , , ) = ethUsdPriceFeed.latestRoundData();
         require(ethUsd > 0, "Invalid ETH/USD price");
         // priceUSD and ethUsd are both 8 decimals (Chainlink standard)
         // priceETH = priceUSD / ethUsd
         return (priceUSD * 1e18) / uint256(ethUsd);
     }
 
-    function getNftPriceInUSDC(uint256 nftTokenId) public view returns (uint256 priceUSDC) {
+    function getNftPriceInUSDC(
+        uint256 nftTokenId
+    ) public view returns (uint256 priceUSDC) {
         uint256 priceUSD = getNftPriceInUSD(nftTokenId);
-        (, int256 usdcUsd,,,) = usdcUsdPriceFeed.latestRoundData();
+        (, int256 usdcUsd, , , ) = usdcUsdPriceFeed.latestRoundData();
         require(usdcUsd > 0, "Invalid USDC/USD price");
         // priceUSD and usdcUsd are both 8 decimals (Chainlink standard)
         // priceUSDC = priceUSD / usdcUsd
@@ -357,13 +428,26 @@ contract Auction {
         a.stakes[msg.sender] = 0;
 
         if (a.bidToken == address(0)) {
-            (bool sent,) = msg.sender.call{value: stake}("");
+            (bool sent, ) = msg.sender.call{value: stake}("");
             require(sent, "Failed to send ETH");
         } else {
             IERC20(a.bidToken).transfer(msg.sender, stake);
         }
 
         emit CollateralReturned(auctionId, msg.sender, stake);
+    }
+
+    function setZeroNFT(address _zeroNFT) public onlyOwner {
+        zeroNFT = ZeroNFT(_zeroNFT);
+    }
+
+    function setOwner(address _newOwner) public onlyOwner {
+        owner = _newOwner;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == address(owner), "auction: authorized");
+        _;
     }
 
     // a function that store the auction a timelock function , go back to to se ethe next in line highest stake

@@ -72,7 +72,7 @@ contract DeployScript is Script {
 
         deployCoreContracts();
         deployOracleAndChainlinkContracts();
-        deployCarSystem();
+        deployCarSystem(deployer);
         deployAuxiliaryContracts();
         configurePostDeployment(deployer);
 
@@ -114,7 +114,7 @@ contract DeployScript is Script {
         console.log("Oracle and Chainlink contracts deployed.");
     }
 
-    function deployCarSystem() internal {
+    function deployCarSystem(address _deployer) internal {
         fee = new Fee(address(0), address(0), address(permissionManager), 10);
         reputation = new Reputation(
             1,
@@ -154,7 +154,8 @@ contract DeployScript is Script {
             address(zeroNFT),
             address(oracleMaster),
             _BASE_ETH_USD_FEED,
-            _BASE_USDC_USD_FEED
+            _BASE_USDC_USD_FEED,
+            _deployer
         );
 
         console.log("Car system contracts deployed.");

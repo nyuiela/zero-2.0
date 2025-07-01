@@ -347,6 +347,8 @@ contract RegistryTest is Test {
             registry.isActivate(brand),
             "isActivate should return true for active brand"
         );
+
+        /// crreate Auction
     }
 
     function testActivateWithoutStaking() public {

@@ -57,7 +57,8 @@ contract DeployCCIP is Script {
             carRegistry,
             oraclemaster,
             profile,
-            reputationContract
+            reputationContract,
+            deployer
         );
         setConfigs(BASE_CHAIN_SELECTOR);
         IERC20(HEDERA_LINK_TOKEN).transferFrom(deployer, address(ccip), AMOUNT);
@@ -76,7 +77,8 @@ contract DeployCCIP is Script {
         address _carRegistry,
         address _oraclemaster,
         address _profile,
-        address _reputation
+        address _reputation,
+        address _deployer
     ) internal {
         //permission
         console.log("Deploying PermissionManager...");
@@ -124,7 +126,8 @@ contract DeployCCIP is Script {
             address(zeroNFT),
             address(_oraclemaster),
             HEDERA_ETH_USD_FEED,
-            HEDERA_USDC_USD_FEED
+            HEDERA_USDC_USD_FEED,
+            _deployer
         );
         console.log("Auction deployed at:", address(auction));
     }

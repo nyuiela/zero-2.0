@@ -58,7 +58,8 @@ contract DeployCCIP is Script {
             carRegistry,
             oraclemaster,
             profile,
-            reputationContract
+            reputationContract,
+            deployer
         );
         setConfigs(deployer, BASE_CHAIN_SELECTOR);
         IERC20(ETHERUM_LINK_TOKEN).transferFrom(
@@ -81,7 +82,8 @@ contract DeployCCIP is Script {
         address _carRegistry,
         address _oraclemaster,
         address _profile,
-        address _reputation
+        address _reputation,
+        address _deployer
     ) internal {
         //permission
         console.log("Deploying Permission manager .....");
@@ -128,7 +130,8 @@ contract DeployCCIP is Script {
             address(zeroNFT),
             address(_oraclemaster),
             ETHERUM_ETH_USD_FEED,
-            ETHERUM_USDC_USD_FEED
+            ETHERUM_USDC_USD_FEED,
+            _deployer
         );
         console.log("Auction deployed at:", address(auction));
     }

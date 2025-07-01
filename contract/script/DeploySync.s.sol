@@ -5,6 +5,7 @@ import {IERC20} from "../lib/foundry-chainlink-toolkit/lib/openzeppelin-contract
 import "forge-std/Script.sol";
 import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 import {Sync} from "../src/chainlink/sync_function.sol";
+import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
 
 contract DeployScript is Script {
     // Base Network Addresses
@@ -65,16 +66,36 @@ contract DeployScript is Script {
 }
 
 contract DeployNFT is Script {
+    ZeroNFT public zeroNft;
+
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
+        address auction = vm.envAddress("AUCTION_ADDRESS");
+        address _oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
+        address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
+        address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
 
         vm.createSelectFork(vm.rpcUrl("basechain"));
         vm.startBroadcast(deployerPrivateKey);
 
         console.log("Deploying contracts to Base network...");
         console.log("Deployer address:", deployer);
-
+        deployZeroNft(_oraclemaster, carRegistry, reputationContract, auction);
         vm.stopBroadcast();
+    }
+
+    function deployZeroNft(
+        address oracleMaster,
+        address carRegistry,
+        address reputation,
+        address _auction
+    ) internal {
+        zeroNft = new ZeroNFT(
+            address(oracleMaster),
+            address(reputation),
+            address(carRegistry),
+            address(_auction)
+        );
     }
 }
