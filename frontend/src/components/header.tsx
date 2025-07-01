@@ -107,10 +107,7 @@ export default function Header() {
           {/* <button className='flex cursor-pointer' onClick={() => setIsBrandModalOpen(false)}>close</button> */}
         </div>
         <div className='h-full overflow-y-auto px-4 py-6'>
-          <BrandRegistrationForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-          />
+          <BrandRegistrationForm />
         </div>
       </div>}
       {/* <BrandRegistrationForm

@@ -41,19 +41,26 @@ export default function AuctionGridClient() {
         <h1 className="text-3xl font-bold text-foreground">
           Live Auctions: <span className="text-brand">({filteredAuctions.length})</span>
         </h1>
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-muted-foreground">Country:</span>
-          <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-            <SelectTrigger className="w-32 text-black">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className='text-black'>
-              {countryOptions.map(opt => (
-                <SelectItem className='text-black' key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className="text-sm text-brand">{auctions.length}</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 text-gray-300 border-[1px] rounded-xs pl-2">
+            <span className="text-sm lg:text-base text-[#202626]">Country</span>
+            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <SelectTrigger className="w-20 text-[#202626] font-semibold rounded-none border-none shadow-none bg-transparent">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className=" border-gray-50 border-[1px] rounded-xs bg-white selection:bg-white">
+                <SelectItem value="ALL" className="text-[#202626] hover:text-white data-[state=checked]:bg-gray-300 data-[state=checked]:text-black data-[state=checked]:rounded-none data-[state=checked]:hover:bg-white">ALL</SelectItem>
+                <SelectItem value="USA" className="text-[#202626] hover:text-white data-[state=checked]:bg-gray-300 data-[state=checked]:text-black data-[state=checked]:rounded-none data-[state=unchecked]::hover:bg-white">USA</SelectItem>
+                <SelectItem value="UAE" className="text-[#202626] hover:text-white">UAE</SelectItem>
+                <SelectItem value="Germany" className="text-[#202626] hover:text-white">Germany</SelectItem>
+                <SelectItem value="Netherlands" className="text-[#202626] hover:text-white">Netherlands</SelectItem>
+                <SelectItem value="Canada" className="text-[#202626] hover:text-white">Canada</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-[#202626] font-normal text-md p-2 bg-gray-100">
+              {filteredAuctions.length}
+            </span>
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -37,21 +37,6 @@ const CarGrid = () => {
             <div className="flex items-center gap-4 text-gray-300 border-[1px] rounded-xs pl-2">
               <span className="text-sm lg:text-base text-[#202626]">Country</span>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-<<<<<<< HEAD
-                <SelectTrigger className="w-32 bg-white text-[#202626] font-semibold">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-none">
-                  <SelectItem value="ALL" className="text-[#202626] hover:bg-[#7400b8]">ALL</SelectItem>
-                  <SelectItem value="USA" className="text-[#202626] hover:bg-[#7400b8]">USA</SelectItem>
-                  <SelectItem value="UAE" className="text-[#202626] hover:bg-[#7400b8]">UAE</SelectItem>
-                  <SelectItem value="Germany" className="text-[#202626] hover:bg-[#7400b8]">Germany</SelectItem>
-                  <SelectItem value="Netherlands" className="text-[#202626] hover:bg-[#7400b8]">Netherlands</SelectItem>
-                  <SelectItem value="Canada" className="text-[#202626] hover:bg-[#7400b8]">Canada</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-white font-bold text-md bg-[#7400b8] p-2">
-=======
                 <SelectTrigger className="w-20 text-[#202626] font-semibold rounded-none border-none shadow-none bg-transparent">
                   <SelectValue />
                 </SelectTrigger>
@@ -70,7 +55,6 @@ const CarGrid = () => {
                 </SelectContent>
               </Select>
               <span className="text-[#202626] font-normal text-md p-2 bg-gray-100">
->>>>>>> c3bf784c15984255a72c02d736190ef40ebad17f
                 {displayedAuctions}
               </span>
             </div>

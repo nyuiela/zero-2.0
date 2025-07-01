@@ -64,20 +64,19 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   // Fetch car data using the same source as listing page
   const { data: auctions, isLoading: aucLoading, isError: aucError } = useQuery({
     queryKey: ['auction', auctionId],
-    queryFn: () => fetchAuctionedCars(auctionId),
+    queryFn: () => fetchAuctionedCars(),
   })
   const { data: cars = mockListings, isLoading: carsLoading, isError: carsError } = useQuery({
     queryKey: ['cars', auctionId],
     queryFn: () => fetchCarById(auctionId),
   })
 
-  // 
-
-  // Find the car listing for this auction
-  // const carListing: CarAuctioned | undefined = cars.find((c: CarAuctioned) => c.id.toString() === auctionId)
-  const carListing: Partial<CarAuctioned> | null = {
-    ...auctions,
-    ...cars,
+  // Fix: If cars is an array (from API), use the first element
+  let carListing: Partial<CarAuctioned> | null = null;
+  if (Array.isArray(cars) && cars.length > 0) {
+    carListing = cars[0] as Partial<CarAuctioned>;
+  } else if (cars && typeof cars === 'object' && !Array.isArray(cars)) {
+    carListing = cars as Partial<CarAuctioned>;
   }
 
   // Show loading if car data is loading or auctionId not set yet
@@ -105,77 +104,18 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
     )
   }
 
-  // Fetch bids (polling for real-time)
-  // useEffect(() => {
-  //   const fetchBids = async () => {
-  //     try {
-  //       const res = await fetch(`/api/bid?auctionId=${auctionId}`)
-  //       const data = await res.json()
-  //       if (data.status === 'success') {
-  //         setBids(data.bids)
-  //         if (data.bids.length > 0) {
-  //           setLastBidTimestamp(data.bids[0].timestamp)
-  //           setTimer(60) // Reset timer on new bid
-  //           // Prefill bid input with current highest bid
-  //           setBidAmount(data.bids[0].amount.toString())
-  //         }
-  //       }
-  //     } catch (e) {
-  //       // fallback: do nothing, just keep last state
-  //     }
-  //   }
-  //   fetchBids()
-  //   intervalRef.current = setInterval(fetchBids, 2000)
-  //   return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  // }, [auctionId])
-
-  // Timer logic
-  // useEffect(() => {
-  //   if (timerRef.current) clearInterval(timerRef.current)
-  //   timerRef.current = setInterval(() => {
-  //     setTimer((prev) => {
-  //       if (prev > 0) return prev - 1
-  //       return 0
-  //     })
-  //   }, 1000)
-  //   return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  // }, [lastBidTimestamp])
-
-  // Quick bid suggestions (10–80%)
-  // useEffect(() => {
-  //   if (bids.length > 0) {
-  //     const current = bids[0].amount
-  //     setQuickBids([
-  //       Math.ceil(current * 1.1),
-  //       Math.ceil(current * 1.2),
-  //       Math.ceil(current * 1.4),
-  //       Math.ceil(current * 1.5),
-  //       Math.ceil(current * 1.6),
-  //       Math.ceil(current * 1.7),
-  //       Math.ceil(current * 1.8),
-  //     ])
-  //   } else {
-  //     // Use starting bid for quick bids if no bids yet
-  //     const startingBid = parseFloat(carListing.startingBid.replace(/[^\d.]/g, ''))
-  //     setQuickBids([
-  //       Math.ceil(startingBid * 1.1),
-  //       Math.ceil(startingBid * 1.2),
-  //       Math.ceil(startingBid * 1.3),
-  //       Math.ceil(startingBid * 1.4),
-  //       Math.ceil(startingBid * 1.5),
-  //       Math.ceil(startingBid * 1.6),
-  //       Math.ceil(startingBid * 1.7),
-  //     ])
-  //   }
-  // }, [bids, carListing.startingBid])
-
-  // Confetti on new top bid
-  // useEffect(() => {
-  //   if (bids.length > 0 && address && bids[0].address === address) {
-  //     setShowConfetti(true)
-  //     setTimeout(() => setShowConfetti(false), 2500)
-  //   }
-  // }, [bids, address])
+  // Safe access for image_url and other fields
+  const images = Array.isArray(carListing?.image_url) && carListing.image_url.length > 0
+    ? carListing.image_url
+    : ["https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"];
+  const seller = typeof carListing?.seller === 'string' ? { name: carListing.seller, verified: false } : (carListing?.seller || { name: 'Unknown', verified: false });
+  const features = carListing?.features || { exterior: [], interior: [], mechanical: [] };
+  const startingPrice = carListing?.starting_price || 0;
+  const description = carListing?.description || '';
+  const year = carListing?.year || '';
+  const make = carListing?.make || '';
+  const model = carListing?.model || '';
+  const location = carListing?.location || '';
 
   const handleBid = async (amount: number) => {
     if (!isConnected || !address) {
@@ -213,8 +153,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   const handleBidSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const amount = parseFloat(bidAmount)
-    const currentHighestBid = bids.length > 0 ? bids[0].amount : parseFloat(carListing.startingBid.replace(/[^\d.]/g, ''))
-    if (!isNaN(amount) && amount > currentHighestBid) {
+    if (!isNaN(amount) && amount > 0) {
       handleBid(amount)
     } else {
       toast.error('Bid must be higher than current!')
@@ -244,7 +183,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">{carListing.year} {carListing.make} {carListing.model}</h1>
+              <h1 className="text-3xl font-bold mb-2">{year} {make} {model}</h1>
               <p className="text-amber-900">Auction #{auctionId}</p>
             </div>
             <Badge className="bg-white text-amber-600 border-amber-400 text-lg px-4 py-2">LIVE AUCTION</Badge>
@@ -260,22 +199,12 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
             <Card className="overflow-hidden">
               <div className="aspect-video relative">
                 <Image
-                  src={carListing.images[0]}
-                  alt={`${carListing.year} ${carListing.make} ${carListing.model}`}
+                  src={images[0]}
+                  alt={`${year} ${make} ${model}`}
                   fill
                   className="object-cover"
                   priority
                 />
-                {carListing.reserve && (
-                  <div className="absolute top-4 left-4">
-                    <Badge className={`${carListing.reserve === 'Reserve Almost Met'
-                      ? 'bg-orange-500 hover:bg-orange-600'
-                      : 'bg-blue-500 hover:bg-blue-600'
-                      } text-white`}>
-                      {carListing.reserve}
-                    </Badge>
-                  </div>
-                )}
               </div>
             </Card>
 
@@ -288,15 +217,15 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed mb-4">{carListing.description}</p>
+                <p className="text-gray-700 leading-relaxed mb-4">{description}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2">Specifications</h4>
                     <div className="space-y-1 text-sm text-gray-600">
-                      <div>Engine: {carListing.specifications.engine}</div>
-                      <div>Power: {carListing.specifications.power}</div>
-                      <div>Transmission: {carListing.specifications.transmission}</div>
-                      <div>Top Speed: {carListing.specifications.topSpeed}</div>
+                      <div>Engine: {carListing?.engine_size || 'N/A'}</div>
+                      <div>Transmission: {carListing?.transmission || 'N/A'}</div>
+                      <div>Fuel Type: {carListing?.fuel_type || 'N/A'}</div>
+                      <div>Mileage: {carListing?.mileage || 'N/A'} km</div>
                     </div>
                   </div>
                   <div>
@@ -304,12 +233,12 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <div className="space-y-1 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        {carListing.location}
+                        {location}
                       </div>
                       <div className="flex items-center gap-1">
                         <User className="h-4 w-4" />
-                        {carListing.seller.name}
-                        {carListing.seller.verified && (
+                        {seller.name}
+                        {seller.verified && (
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         )}
                       </div>
@@ -381,7 +310,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                   </div>
                 ) : (
                   <div className="text-center mb-4">
-                    <div className="text-3xl font-bold text-gray-400">{formatCurrency(carListing.startingBid, currency)}</div>
+                    <div className="text-3xl font-bold text-gray-400">{formatCurrency(startingPrice, currency)}</div>
                     <div className="text-sm text-gray-500">Starting Price</div>
                   </div>
                 )}
@@ -403,11 +332,11 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900">{carListing.bidCount}</div>
+                    <div className="text-lg font-bold text-gray-900">{carListing?.auction?.bid_count || 0}</div>
                     <div className="text-sm text-gray-600">Total Bids</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900">{carListing.watchers}</div>
+                    <div className="text-lg font-bold text-gray-900">0</div>
                     <div className="text-sm text-gray-600">Watching</div>
                   </div>
                 </div>
@@ -436,7 +365,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <label className="block text-sm font-medium text-gray-700 mb-1">Bid Amount ({currency})</label>
                     <Input
                       type="number"
-                      min={bids[0]?.amount ? bids[0].amount + 1 : parseFloat(carListing.startingBid.replace(/[^\d.]/g, ''))}
+                      min={bids[0]?.amount ? bids[0].amount + 1 : startingPrice}
                       step="1"
                       value={bidAmount}
                       onChange={e => setBidAmount(e.target.value)}
@@ -446,46 +375,45 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     />
                   </div>
 
-                  {/* Stake Info */}
-                  {bidAmount && parseFloat(bidAmount) > 0 && (
-                    <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
-                      <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || timer === 0}
-                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
-                  >
-                    {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
-                  </Button>
-                </form>
-
-                {/* Quick Bid Buttons */}
-                {quickBids.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {quickBids.map((amt) => (
-                        <Button
-                          key={amt}
-                          variant="outline"
-                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
-                          onClick={() => handleBid(amt)}
-                        >
-                          {formatCurrency(amt, currency)}
-                        </Button>
-                      ))}
-                    </div>
+                {/* Stake Info */}
+                {bidAmount && parseFloat(bidAmount) > 0 && (
+                  <div className="text-sm text-gray-700 p-3 bg-blue-50 border border-blue-200">
+                    <span className="font-semibold">Stake Required:</span> {formatCurrency(parseFloat(bidAmount) * 0.05, currency)} (5% of bid)
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || timer === 0}
+                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
+                >
+                  {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
+                </Button>
+              </form>
+
+              {/* Quick Bid Buttons */}
+              {quickBids.length > 0 && (
+                <div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">Quick Bids:</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {quickBids.map((amt) => (
+                      <Button
+                        key={amt}
+                        variant="outline"
+                        className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
+                        onClick={() => handleBid(amt)}
+                      >
+                        {formatCurrency(amt, currency)}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
-
+    </div>
     </div>
   )
 } 

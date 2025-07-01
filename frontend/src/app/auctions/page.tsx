@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Footer from '@/components/footer'
 import AuctionGridClient from '@/components/auction-grid-client'
 import Image from 'next/image'
+import { ArrowRight } from 'lucide-react'
 
 interface Auction {
   id: number
@@ -200,7 +201,7 @@ export default function AuctionsPage() {
       model: 'Vanquish',
       location: 'Scarsborough, Ontario, Canada',
       image: 'https://ext.same-assets.com/360451443/1101411790.jpeg',
-      auctionStart: '17 June'
+      auctionStart: '17 July'
     },
     {
       id: 347,
@@ -209,7 +210,7 @@ export default function AuctionsPage() {
       model: 'Corvette Stingray Restomod',
       location: 'Scarsborough, Ontario, Canada',
       image: 'https://ext.same-assets.com/360451443/3915515407.jpeg',
-      auctionStart: '18 June'
+      auctionStart: '18 July'
     }
   ]
 
@@ -263,24 +264,27 @@ export default function AuctionsPage() {
                     width={100}
                     height={100}
                   />
-                </div>
-                <div className="p-5">
-                  <div className="mb-3">
-                    <div className="text-white text-sm font-semibold mb-1 tracking-wide">
-                      {auction.year}
+                  {/* Overlay gradient for readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10 opacity-70 pointer-events-none" />
+                  {/* Text Overlay */}
+                  <div className="absolute bottom-0 left-0 w-full p-5 z-10">
+                    <div className="mb-3">
+                      <div className="text-white text-sm font-semibold mb-1 tracking-wide">
+                        {auction.year}
+                      </div>
+                      <h3 className="text-white text-xl font-bold leading-tight">
+                        {auction.make}
+                      </h3>
+                      <p className="text-gray-100 text-lg leading-tight">
+                        {auction.model}
+                      </p>
                     </div>
-                    <h3 className="text-white text-xl font-bold leading-tight">
-                      {auction.make}
-                    </h3>
-                    <p className="text-gray-100 text-lg leading-tight">
-                      {auction.model}
-                    </p>
-                  </div>
-                  <div className="text-sm text-gray-400 mb-4">
-                    {auction.location}
-                  </div>
-                  <div className="text-white font-semibold">
-                    Auction Begins: {auction.auctionStart}
+                    <div className="text-sm text-gray-300 mb-4">
+                      {auction.location}
+                    </div>
+                    <div className="text-white font-semibold">
+                      Auction Begins: {auction.auctionStart}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -305,24 +309,28 @@ export default function AuctionsPage() {
                     width={100}
                     height={100}
                   />
-                </div>
-                <div className="p-5">
-                  <div className="mb-3">
-                    <div className="text-white text-sm font-semibold mb-1 tracking-wide">
-                      {car.year}
+                  {/* Overlay gradient for readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10 opacity-70 pointer-events-none" />
+                  {/* Text Overlay */}
+                  <div className="absolute bottom-0 left-0 w-full p-5 z-10">
+                    <div className="mb-3">
+                      <div className="text-white text-sm font-semibold mb-1 tracking-wide">
+                        {car.year}
+                      </div>
+                      <h3 className="text-white text-xl font-bold leading-tight">
+                        {car.make}
+                      </h3>
+                      <p className="text-gray-100 text-lg leading-tight">
+                        {car.model}
+                      </p>
                     </div>
-                    <h3 className="text-white text-xl font-bold leading-tight">
-                      {car.make}
-                    </h3>
-                    <p className="text-gray-100 text-lg leading-tight">
-                      {car.model}
-                    </p>
-                  </div>
-                  <div className="text-sm text-gray-400 mb-4">
-                    {car.location}
-                  </div>
-                  <div className="text-white font-semibold text-lg">
-                    Available Now
+                    <div className="text-sm text-gray-300 mb-4">
+                      {car.location}
+                    </div>
+                    <div className="text-white font-semibold text-lg flex items-center gap-2">
+                      Available Now
+                      <ArrowRight className="transition-all duration-300 ease-in-out opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-2" />
+                    </div>
                   </div>
                 </div>
               </div>
