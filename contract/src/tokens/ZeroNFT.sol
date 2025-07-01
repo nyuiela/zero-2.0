@@ -649,4 +649,16 @@ contract ZeroNFT is
         );
         _;
     }
+    error notOwner();
+
+    function isZeroNftOwner(
+        uint256 _tokenId
+    ) internal view returns (address owner) {
+        return owner = ownerOf(_tokenId);
+    }
+
+    function isOwner(uint256 _tokenId) public view returns (bool) {
+        address owneraddress = isZeroNftOwner(_tokenId);
+        return owneraddress == msg.sender;
+    }
 }

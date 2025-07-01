@@ -102,4 +102,6 @@ interface IZeroNFT {
         address reputation,
         address _carRegistry
     ) external;
+
+    function isOwner(uint256 _tokenid) external returns (bool);
 }

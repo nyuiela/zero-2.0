@@ -41,11 +41,11 @@ function getAuctionImage(auction: CarAuctioned | { image: string }): string {
 }
 
 function breakdownCountdown(totalSeconds: number) {
-  const hours = Math.floor(totalSeconds / 3600);
+  const days = Math.floor(totalSeconds / (24 * 3600));
+  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-
-  return { hours, minutes, seconds };
+  return { days, hours, minutes, seconds };
 }
 
 const AuctionCard = ({ auction }: AuctionCardProps) => {
@@ -61,7 +61,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
     return () => clearInterval(interval)
   }, [endTime])
 
-  const { hours, minutes, seconds } = breakdownCountdown(Math.max(0, secondsLeft))
+  const { days, hours, minutes, seconds } = breakdownCountdown(Math.max(0, secondsLeft))
 
   return (
     <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
@@ -114,20 +114,21 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
             <span className="truncate">{auction.location}</span>
           </div>
           {/* Bidding Info */}
-          <div className="border-t border-white pt-4 flex items-center justify-between bg-[#E4DFDA]/30 p-2 backdrop-blur-md">
-            <div>
+          <div className="border-t border-white pt-4 flex items-stretch justify-between bg-[#E4DFDA]/30 p-2 backdrop-blur-md">
+            <div className='flex flex-col justify-center h-full'>
               <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium ">
                 Current Bid
               </div>
-              <div className="text-white font-bold text-xl flex items-center gap-2 ">
+              <div className="text-white font-bold text-xl flex items-center gap-2">
                 {auction.auction?.current_bid && formatCurrency(auction.auction.current_bid, currency)}
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-gray-800 text-xs mb-1 uppercase tracking-wide font-medium flex items-center justify-end">
+            <div className="flex flex-col justify-center text-right h-full">
+              <div className="text-gray-800 text-xs mb-0 uppercase tracking-wide font-medium flex items-center justify-end">
                 <Clock className="w-3 h-3 mr-1" />
                 Time Left
               </div>
+              <i className='font-normal text-[12px] p-0 m-0 gap-0 '>{days} days</i>
               <div className="text-black font-semibold text-lg">
                 {`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
               </div>

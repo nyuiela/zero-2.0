@@ -120,6 +120,7 @@ contract Auction {
         uint256 nftTokenId,
         string memory proofHash
     ) external onlyActiveBrand(brandName) {
+        require(zeroNFT.isOwner(nftTokenId));
         require(
             startTime >= block.timestamp,
             "Start time must be in the future"
