@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { useAccount, useReadContract } from 'wagmi'
 import { Car, TrendingUp, Users, Award, ArrowRight } from 'lucide-react'
 import { profile } from 'console'
-import { profile_abi, profile_addr } from '@/lib/abi/abi'
+import { profile_abi, profile_addr, registry_abi, registry_addr } from '@/lib/abi/abi'
 
 interface Brand {
   brand: string
@@ -36,6 +36,14 @@ export default function BrandsPage() {
     account: address,
     args: ["lesscars1"],
   })
+  const brandStatus = useReadContract({
+    functionName: "getBrandinfo",
+    abi: registry_abi,
+    address: registry_addr,
+    args: ["KALEEL"],
+    account: address
+  })
+  console.log("Brand Status ", brandStatus.data)
   console.log("Profile ", profile.data)
   // Mock data for charts - in real implementation, this would come from API
   const popularBrandsData = [

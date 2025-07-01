@@ -36,6 +36,153 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import ProgressTracker from "./modal/progress-tracker"
+import OracleConfigSection from './OracleConfigSection'
+import AdminSubscriptionSection from './AdminSubscriptionSection'
+import ArgumentsSection from './ArgumentsSection'
+import StakeSection from './StakeSection'
+import ValidationErrors from './ValidationErrors'
+import TransactionError from './TransactionError'
+import TransactionHash from './TransactionHash'
+
+const validateFormData = (data: BrandRegistrationFormData): string[] => {
+  const errors: string[] = []
+
+  // Brand name validation
+  if (!data.brand || data.brand.trim().length < 2) {
+    errors.push("Brand name must be at least 2 characters long")
+  }
+  if (data.brand && data.brand.length > 50) {
+    errors.push("Brand name must be less than 50 characters")
+  }
+
+  // Admin address validation
+  if (!data.brandAdminAddr || !data.brandAdminAddr.startsWith("0x") || data.brandAdminAddr.length !== 42) {
+    errors.push("Invalid brand admin address format")
+  }
+  if (data.brandAdminAddr === "0x0000000000000000000000000000000000000000") {
+    errors.push("Brand admin address cannot be zero address")
+  }
+
+  // Oracle configuration validation
+  const updateInterval = parseInt(data.updateInterval)
+  if (isNaN(updateInterval) || updateInterval < 1 || updateInterval > 86400) {
+    errors.push("Update interval must be between 1 and 86400 seconds")
+  }
+
+  const deviationThreshold = parseInt(data.deviationThreshold)
+  if (isNaN(deviationThreshold) || deviationThreshold < 0 || deviationThreshold > 100) {
+    errors.push("Deviation threshold must be between 0 and 100 percent")
+  }
+
+  const heartbeat = parseInt(data.heartbeat)
+  if (isNaN(heartbeat) || heartbeat < 1 || heartbeat > 604800) {
+    errors.push("Heartbeat must be between 1 and 604800 seconds (1 week)")
+  }
+
+  const minAnswer = parseInt(data.minAnswer)
+  const maxAnswer = parseInt(data.maxAnswer)
+  if (isNaN(minAnswer) || isNaN(maxAnswer) || minAnswer >= maxAnswer) {
+    errors.push("Minimum answer must be less than maximum answer")
+  }
+
+  // Subscription ID validation
+  const subscriptionId = parseInt(data.subscriptionId)
+  if (isNaN(subscriptionId) || subscriptionId < 1) {
+    errors.push("Subscription ID must be a positive number")
+  }
+
+  // State URL validation
+  if (!data.stateUrl || !data.stateUrl.startsWith("http")) {
+    errors.push("State URL must be a valid HTTP/HTTPS URL")
+  }
+
+  // Stake validation
+  const stake = parseFloat(data.stake)
+  if (isNaN(stake) || stake <= 0) {
+    errors.push("Stake amount must be a positive number")
+  }
+
+  return errors
+}
+// Enhanced error parsing function
+const parseError = (error: any): string => {
+  console.log('=== PARSING ERROR ===')
+  console.log('Error object:', error)
+  console.log('Error type:', typeof error)
+  console.log('Error constructor:', error?.constructor?.name)
+  console.log('Error message:', error?.message)
+  console.log('Error name:', error?.name)
+  console.log('Error cause:', error?.cause)
+  console.log('Error details:', error?.details)
+  console.log('Error reason:', error?.reason)
+  console.log('Error code:', error?.code)
+  console.log('Error data:', error?.data)
+  console.log('====================')
+
+  if (error?.message?.includes("execution reverted")) {
+    // Try to extract revert reason
+    const revertReason = error.message.match(/reason: (.+)/)?.[1] ||
+      error.message.match(/reverted: (.+)/)?.[1] ||
+      error.message.match(/reverted with reason: (.+)/)?.[1] ||
+      error.message.match(/execution reverted: (.+)/)?.[1]
+
+    if (revertReason) {
+      return `Transaction failed: ${revertReason}`
+    }
+
+    // Check for common revert patterns
+    if (error.message.includes("Brand already exists")) {
+      return "Brand name already exists. Please choose a different name."
+    }
+    if (error.message.includes("Invalid admin address")) {
+      return "Invalid brand admin address. Please check the address format."
+    }
+    if (error.message.includes("Insufficient stake")) {
+      return "Insufficient stake amount. Please increase the stake value."
+    }
+    if (error.message.includes("Invalid subscription")) {
+      return "Invalid subscription ID. Please verify the Chainlink VRF subscription."
+    }
+
+    return "Transaction failed: Contract execution reverted"
+  }
+
+  if (error?.message?.includes("insufficient funds")) {
+    return "Insufficient ETH for gas fees. Please add more ETH to your wallet."
+  }
+
+  if (error?.message?.includes("user rejected")) {
+    return "Transaction was cancelled by user"
+  }
+
+  if (error?.message?.includes("nonce too low")) {
+    return "Transaction nonce error. Please try again."
+  }
+
+  if (error?.message?.includes("gas required exceeds allowance")) {
+    return "Gas limit too low. Please try with higher gas limit."
+  }
+
+  // Handle wagmi specific errors
+  if (error?.name === "ContractFunctionExecutionError") {
+    return `Contract error: ${error.message}`
+  }
+
+  if (error?.name === "UserRejectedRequestError") {
+    return "Transaction was rejected by user"
+  }
+
+  if (error?.name === "SwitchChainError") {
+    return "Network switch error. Please switch to Base Sepolia network."
+  }
+
+  if (error?.name === "ConnectorNotFoundError") {
+    return "Wallet not connected. Please connect your wallet first."
+  }
+
+  return `Transaction failed: ${error?.message || 'Unknown error'}`
+}
 
 // Validation schema for the form
 const brandRegistrationSchema = z.object({
@@ -68,7 +215,7 @@ export function BrandRegistrationForm() {
     error: contractError,
     isError
   } = useWriteContract()
-  
+
   // Separate writeContract for modal transactions
   const {
     data: modalHash,
@@ -77,7 +224,7 @@ export function BrandRegistrationForm() {
     error: modalContractError,
     isError: isModalError
   } = useWriteContract()
-  
+
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
   const [showProofModal, setShowProofModal] = useState(false)
@@ -85,14 +232,13 @@ export function BrandRegistrationForm() {
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [showStakeActivateModal, setShowStakeActivateModal] = useState(false)
-  const [stakeActivateStep, setStakeActivateStep] = useState<'stake' | 'activate'>('stake')
+  const [stakeActivateStep, setStakeActivateStep] = useState<'register' | 'stake' | 'activate'>('register')
   const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
   const [modalTransactionHash, setModalTransactionHash] = useState<string>('')
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
     })
-
   const form = useForm<BrandRegistrationFormData>({
     resolver: zodResolver(brandRegistrationSchema),
     defaultValues: {
@@ -109,7 +255,7 @@ export function BrandRegistrationForm() {
       stake: ""
     },
   })
-
+  const steps = ["register", "stake", "activate"]
   // Get current brand name from form
   const currentBrandName = form.watch("brand")
 
@@ -119,7 +265,7 @@ export function BrandRegistrationForm() {
     account: address,
     functionName: 'getBrandinfo',
     args: [form.watch("brand") || "kal"],
-    enabled: !!form.watch("brand") && form.watch("brand").length > 0
+    // enabled: !!form.watch("brand") && form.watch("brand").length > 0 // Remove 'enabled' property if not supported
   })
   console.log("isRegistered for brand:", form.watch("brand"), isRegistered.data)
 
@@ -178,208 +324,50 @@ export function BrandRegistrationForm() {
     }
   }
 
-  // Enhanced error parsing function
-  const parseError = (error: any): string => {
-    console.log('=== PARSING ERROR ===')
-    console.log('Error object:', error)
-    console.log('Error type:', typeof error)
-    console.log('Error constructor:', error?.constructor?.name)
-    console.log('Error message:', error?.message)
-    console.log('Error name:', error?.name)
-    console.log('Error cause:', error?.cause)
-    console.log('Error details:', error?.details)
-    console.log('Error reason:', error?.reason)
-    console.log('Error code:', error?.code)
-    console.log('Error data:', error?.data)
-    console.log('====================')
-    
-    if (error?.message?.includes("execution reverted")) {
-      // Try to extract revert reason
-      const revertReason = error.message.match(/reason: (.+)/)?.[1] || 
-                          error.message.match(/reverted: (.+)/)?.[1] ||
-                          error.message.match(/reverted with reason: (.+)/)?.[1] ||
-                          error.message.match(/execution reverted: (.+)/)?.[1]
-      
-      if (revertReason) {
-        return `Transaction failed: ${revertReason}`
-      }
-      
-      // Check for common revert patterns
-      if (error.message.includes("Brand already exists")) {
-        return "Brand name already exists. Please choose a different name."
-      }
-      if (error.message.includes("Invalid admin address")) {
-        return "Invalid brand admin address. Please check the address format."
-      }
-      if (error.message.includes("Insufficient stake")) {
-        return "Insufficient stake amount. Please increase the stake value."
-      }
-      if (error.message.includes("Invalid subscription")) {
-        return "Invalid subscription ID. Please verify the Chainlink VRF subscription."
-      }
-      
-      return "Transaction failed: Contract execution reverted"
-    }
-    
-    if (error?.message?.includes("insufficient funds")) {
-      return "Insufficient ETH for gas fees. Please add more ETH to your wallet."
-    }
-    
-    if (error?.message?.includes("user rejected")) {
-      return "Transaction was cancelled by user"
-    }
-    
-    if (error?.message?.includes("nonce too low")) {
-      return "Transaction nonce error. Please try again."
-    }
-    
-    if (error?.message?.includes("gas required exceeds allowance")) {
-      return "Gas limit too low. Please try with higher gas limit."
-    }
-    
-    // Handle wagmi specific errors
-    if (error?.name === "ContractFunctionExecutionError") {
-      return `Contract error: ${error.message}`
-    }
-    
-    if (error?.name === "UserRejectedRequestError") {
-      return "Transaction was rejected by user"
-    }
-    
-    if (error?.name === "SwitchChainError") {
-      return "Network switch error. Please switch to Base Sepolia network."
-    }
-    
-    if (error?.name === "ConnectorNotFoundError") {
-      return "Wallet not connected. Please connect your wallet first."
-    }
-    
-    return `Transaction failed: ${error?.message || 'Unknown error'}`
-  }
 
+  const handleRegister = () => {
+    const data = form.getValues()
+    writeContract({
+      address: registry_addr,
+      abi: registry_abi,
+      functionName: 'registerBrand',
+      args: [
+        data.brand, // string
+        {
+          updateInterval: BigInt(data.updateInterval),
+          deviationThreshold: BigInt(data.deviationThreshold),
+          heartbeat: BigInt(data.heartbeat),
+          minAnswer: BigInt(data.minAnswer),
+          maxAnswer: BigInt(data.maxAnswer)
+        }, // OracleConfig struct
+        data.brandAdminAddr, // address
+        BigInt(data.subscriptionId), // uint64
+        data.stateUrl, // string
+        argsArray // string[]
+      ],
+      account: address
+    })
+  }
   // Pre-submit validation function
-  const validateFormData = (data: BrandRegistrationFormData): string[] => {
-    const errors: string[] = []
-    
-    // Brand name validation
-    if (!data.brand || data.brand.trim().length < 2) {
-      errors.push("Brand name must be at least 2 characters long")
-    }
-    if (data.brand && data.brand.length > 50) {
-      errors.push("Brand name must be less than 50 characters")
-    }
-    
-    // Admin address validation
-    if (!data.brandAdminAddr || !data.brandAdminAddr.startsWith("0x") || data.brandAdminAddr.length !== 42) {
-      errors.push("Invalid brand admin address format")
-    }
-    if (data.brandAdminAddr === "0x0000000000000000000000000000000000000000") {
-      errors.push("Brand admin address cannot be zero address")
-    }
-    
-    // Oracle configuration validation
-    const updateInterval = parseInt(data.updateInterval)
-    if (isNaN(updateInterval) || updateInterval < 1 || updateInterval > 86400) {
-      errors.push("Update interval must be between 1 and 86400 seconds")
-    }
-    
-    const deviationThreshold = parseInt(data.deviationThreshold)
-    if (isNaN(deviationThreshold) || deviationThreshold < 0 || deviationThreshold > 100) {
-      errors.push("Deviation threshold must be between 0 and 100 percent")
-    }
-    
-    const heartbeat = parseInt(data.heartbeat)
-    if (isNaN(heartbeat) || heartbeat < 1 || heartbeat > 604800) {
-      errors.push("Heartbeat must be between 1 and 604800 seconds (1 week)")
-    }
-    
-    const minAnswer = parseInt(data.minAnswer)
-    const maxAnswer = parseInt(data.maxAnswer)
-    if (isNaN(minAnswer) || isNaN(maxAnswer) || minAnswer >= maxAnswer) {
-      errors.push("Minimum answer must be less than maximum answer")
-    }
-    
-    // Subscription ID validation
-    const subscriptionId = parseInt(data.subscriptionId)
-    if (isNaN(subscriptionId) || subscriptionId < 1) {
-      errors.push("Subscription ID must be a positive number")
-    }
-    
-    // State URL validation
-    if (!data.stateUrl || !data.stateUrl.startsWith("http")) {
-      errors.push("State URL must be a valid HTTP/HTTPS URL")
-    }
-    
-    // Stake validation
-    const stake = parseFloat(data.stake)
-    if (isNaN(stake) || stake <= 0) {
-      errors.push("Stake amount must be a positive number")
-    }
-    
-    return errors
-  }
-
   const onSubmit = async (data: BrandRegistrationFormData) => {
     setIsLoading(true)
-
+    setError(null)
+    setValidationErrors([])
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
-
-    console.log(data)
     try {
-      writeContract({
-        address: registry_addr,
-        abi: registry_abi,
-        functionName: 'registerBrand',
-        args: [
-          data.brand, // string
-          {
-            updateInterval: BigInt(data.updateInterval),
-            deviationThreshold: BigInt(data.deviationThreshold),
-            heartbeat: BigInt(data.heartbeat),
-            minAnswer: BigInt(data.minAnswer),
-            maxAnswer: BigInt(data.maxAnswer)
-          }, // OracleConfig struct
-          data.brandAdminAddr, // address
-          BigInt(data.subscriptionId), // uint64
-          data.stateUrl, // string
-          argsArray // string[]
-        ],
-        account: address
-      })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'stake',
-      //   value: parseEther(data.stake),
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
-      // writeContract({
-      //   address: registry_addr,
-      //   abi: registry_abi,
-      //   functionName: 'activate',
-      //   args: [
-      //     data.brand
-      //   ],
-      //   account: address
-      // })
 
       // Simulate transaction hash - in real implementation, this would come from the transaction
       const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
       setTransactionHash(mockHash)
-
-      // Show proof modal after successful transaction
-      // setTimeout(() => {
-      //   setShowProofModal(true)
-      // }, 2000)
+      setRegisteredBrandName(data.brand)
+      setStakeActivateStep('stake')
+      setShowStakeActivateModal(true)
       setIsLoading(false)
-
     } catch (error) {
       console.error("Failed to submit form ", error)
       setIsLoading(false)
+      setError(parseError(error))
     }
   }
 
@@ -393,98 +381,52 @@ export function BrandRegistrationForm() {
 
   // Handle contract errors from wagmi
   useEffect(() => {
-    console.log('=== WAGMI STATE DEBUG ===')
-    console.log('isError:', isError)
-    console.log('contractError:', contractError)
-    console.log('isPending:', isPending)
-    console.log('hash:', hash)
-    console.log('isConfirmed:', isConfirmed)
-    console.log('showStakeActivateModal:', showStakeActivateModal)
-    console.log('========================')
-    
     if (isError && contractError) {
-      console.log('Contract error detected:', contractError)
-      console.log('Error details:', {
-        name: contractError.name,
-        message: contractError.message,
-        cause: contractError.cause,
-        stack: contractError.stack
-      })
-      
       const errorMessage = parseError(contractError)
       setError(errorMessage)
-      setIsLoading(false) // Reset loading state on error
-    }
-    
-    // If we get a hash, transaction was submitted successfully
-    if (hash) {
-      console.log('Transaction submitted successfully with hash:', hash)
       setIsLoading(false)
-      
-      // Show stake/activate modal immediately after transaction submission
-      if (!showStakeActivateModal) {
-        console.log('Registration submitted, showing stake/activate modal')
-        const formData = form.getValues()
-        setRegisteredBrandName(formData.brand)
-        setShowStakeActivateModal(true)
-        console.log('Modal state set to true, brand name:', formData.brand)
-      } else {
-        console.log('Modal already showing, not opening again')
-      }
     }
-  }, [isError, contractError, isPending, hash, form, showStakeActivateModal])
+  }, [isError, contractError])
 
   // Stake function
   const handleStake = async () => {
     if (!registeredBrandName) return
-    
-    console.log('Staking for brand:', registeredBrandName)
-    setError(null) // Clear previous errors
-    
-    writeModalContract({
-      address: registry_addr,
-      abi: registry_abi,
-      functionName: 'stake',
-      args: [registeredBrandName],
-      value: parseEther(form.getValues("stake") || "0.000000000001"), // Use form stake amount or default
-      account: address
-    })
+    setError(null)
+    try {
+      await writeContract({
+        address: registry_addr,
+        abi: registry_abi,
+        functionName: 'stake',
+        args: [registeredBrandName],
+        value: parseEther(form.getValues("stake") || "0.000000000001"),
+        account: address
+      })
+      setStakeActivateStep('activate')
+    } catch (error) {
+      setError(parseError(error))
+    }
   }
 
   // Activate function
   const handleActivate = async () => {
     if (!registeredBrandName) return
-    
-    console.log('Activating brand:', registeredBrandName)
-    setError(null) // Clear previous errors
-    
-    writeModalContract({
-      address: registry_addr,
-      abi: registry_abi,
-      functionName: 'activate',
-      args: [registeredBrandName],
-      account: address
-    })
-  }
-
-  // Handle stake/activate success
-  useEffect(() => {
-    if (modalHash && showStakeActivateModal) {
-      console.log('Modal transaction completed, step:', stakeActivateStep)
-      if (stakeActivateStep === 'stake') {
-        // Stake completed, move to activate step
-        console.log('Stake completed, moving to activate step')
-        setStakeActivateStep('activate')
-      } else if (stakeActivateStep === 'activate') {
-        // Activate completed, close modal
-        console.log('Activate completed, closing modal')
-        setShowStakeActivateModal(false)
-        setStakeActivateStep('stake')
-        setRegisteredBrandName('')
-        setModalTransactionHash('')
-      }
+    setError(null)
+    try {
+      await writeContract({
+        address: registry_addr,
+        abi: registry_abi,
+        functionName: 'activate',
+        args: [registeredBrandName],
+        account: address
+      })
+      setShowStakeActivateModal(false)
+      setStakeActivateStep('register')
+      setRegisteredBrandName('')
+      setModalTransactionHash('')
+    } catch (error) {
+      setError(parseError(error))
     }
-  }, [modalHash, showStakeActivateModal, stakeActivateStep])
+  }
 
   // Handle modal transaction errors
   useEffect(() => {
@@ -495,9 +437,39 @@ export function BrandRegistrationForm() {
     }
   }, [isModalError, modalContractError])
 
+  const fillSample = () => {
+    form.setValue("brand", "lesscars1");
+    form.setValue("updateInterval", "3600");
+    form.setValue("deviationThreshold", "5");
+    form.setValue("heartbeat", "86400");
+    form.setValue("minAnswer", "0");
+    form.setValue("maxAnswer", "1000000");
+    form.setValue("brandAdminAddr", "0x108f8Df99A5edE55ddA08b545db5F6886dc61d74");
+    form.setValue("subscriptionId", "1");
+    form.setValue("stateUrl", "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1");
+    form.setValue("args", "arg1, arg2, arg3");
+    form.setValue("stake", "1");
+  }
+  console.log("Open ", showStakeActivateModal)
   return (
     <>
+      <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[handleRegister, handleStake, handleActivate]} message={[
+        {
+          header: 'Step 1: Register',
+          body: ""
+        },
+        {
+          header: 'Step 2: Stake',
+          body: ""
+        },
+        {
+          header: 'Step 3: Activate',
+          body: ""
+        }
+      ]} />
       <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
+
+
         <CardHeader className="pb-4">
           <CardTitle className="text-2xl font-bold text-brand">Brand Registration</CardTitle>
           <CardDescription>
@@ -506,7 +478,9 @@ export function BrandRegistrationForm() {
         </CardHeader>
         <CardContent className="pb-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6">
               {/* Brand Name */}
               <FormField
                 control={form.control}
@@ -524,271 +498,33 @@ export function BrandRegistrationForm() {
                   </FormItem>
                 )}
               />
-
-              {/* Oracle Configuration Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-brand">Oracle Configuration</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="updateInterval"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Update Interval (seconds)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="3600" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          How often the oracle should update prices
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="deviationThreshold"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Deviation Threshold (%)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="5" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Maximum allowed price deviation before triggering update
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="heartbeat"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Heartbeat (seconds)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="86400" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Maximum time between updates before considering stale
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="minAnswer"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Minimum Answer</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="0" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Minimum acceptable oracle answer value
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="maxAnswer"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Maximum Answer</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="1000000" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Maximum acceptable oracle answer value
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Admin and Subscription Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-brand">Admin & Subscription</h3>
-
-                <FormField
-                  control={form.control}
-                  name="brandAdminAddr"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Brand Admin Address</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="0x..."
-                          {...field}
-                          className="font-mono"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Ethereum address of the brand administrator
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="subscriptionId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subscription ID</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="1" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Chainlink VRF subscription ID for random number generation
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="stateUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>State URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://api.example.com/brand-state"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        URL where the brand state information is stored
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Arguments Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-brand">Arguments</h3>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addArg}
-                  >
-                    Add Argument
-                  </Button>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="args"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Arguments (comma-separated)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="arg1, arg2, arg3"
-                          className="min-h-[80px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Additional arguments for the oracle request (comma-separated)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Stake */}
-
-              <FormField
-                control={form.control}
-                name="stake"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Stake Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="1" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Stake USDC as collateral for any damages or misbehavior
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-
-              {/* Submit Button */}
+              <OracleConfigSection form={form} />
+              <AdminSubscriptionSection form={form} />
+              <ArgumentsSection form={form} addArg={addArg} />
+              <StakeSection form={form} />
               <div className="flex flex-col space-y-4 pt-4">
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-                  disabled={isPending || isLoading}
+                  disabled={isPending}
+                  onSubmit={() => onSubmit(form.getValues())}
                 >
                   {isPending ? "Registering Brand..." : "Register Brand"}
-
                 </Button>
-                
-                {/* Validation Errors Display */}
-                {validationErrors.length > 0 && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="text-red-800 font-semibold text-sm mb-2">Please fix the following errors:</h4>
-                    <ul className="text-red-700 text-sm space-y-1">
-                      {validationErrors.map((error, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-red-500 mr-2">•</span>
-                          {error}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Transaction Error Display */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="text-red-800 font-semibold text-sm mb-2">Transaction Error:</h4>
-                    <p className="text-red-700 text-sm">{error}</p>
-                  </div>
-                )}
-                
-                {hash && (
-                  <div className="text-center">
-                    <a 
-                      href={`https://sepolia.basescan.org/tx/${hash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline text-sm"
-                    >
-                      Transaction Hash: {hash}
-                    </a>
-                  </div>
-                )}
-                
+                <ValidationErrors errors={validationErrors} />
+                <TransactionError error={error} />
+                <TransactionHash hash={hash} />
                 {isConfirming && (
                   <div className="text-center text-sm text-gray-600">
                     Waiting for confirmation...
                   </div>
                 )}
               </div>
+              {process.env.NODE_ENV === 'development' && (
+                <Button type="button" onClick={fillSample}>
+                  Fill Sample
+                </Button>
+              )}
             </form>
           </Form>
         </CardContent>
@@ -802,135 +538,7 @@ export function BrandRegistrationForm() {
         transactionHash={transactionHash}
       />
 
-      {/* Stake/Activate Modal */}
-      <Dialog open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-[#00296b]">
-              Complete Brand Registration
-            </DialogTitle>
-            <DialogDescription>
-              Complete the registration process by staking and activating your brand
-            </DialogDescription>
-          </DialogHeader>
-          
-          {/* Progress Tracker */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                stakeActivateStep === 'stake' 
-                  ? 'bg-[#00296b] text-white' 
-                  : 'bg-green-500 text-white'
-              }`}>
-                1
-              </div>
-              <span className={`text-sm font-medium ${
-                stakeActivateStep === 'stake' ? 'text-[#00296b]' : 'text-green-600'
-              }`}>
-                Stake
-              </span>
-            </div>
-            
-            <div className="flex-1 h-0.5 bg-gray-200 mx-4">
-              <div className={`h-full transition-all duration-300 ${
-                stakeActivateStep === 'activate' ? 'bg-green-500' : 'bg-gray-200'
-              }`} style={{ width: stakeActivateStep === 'activate' ? '100%' : '0%' }}></div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                stakeActivateStep === 'activate' 
-                  ? 'bg-[#00296b] text-white' 
-                  : stakeActivateStep === 'stake' 
-                    ? 'bg-gray-200 text-gray-500' 
-                    : 'bg-green-500 text-white'
-              }`}>
-                2
-              </div>
-              <span className={`text-sm font-medium ${
-                stakeActivateStep === 'activate' ? 'text-[#00296b]' : 'text-gray-500'
-              }`}>
-                Activate
-              </span>
-            </div>
-          </div>
-          
-          {/* Step Content */}
-          <div className="space-y-4">
-            {stakeActivateStep === 'stake' ? (
-              <div className="space-y-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="text-blue-800 font-semibold text-sm mb-2">Step 1: Stake</h4>
-                  <p className="text-blue-700 text-sm">
-                    Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration.
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={handleStake}
-                  disabled={isModalPending}
-                  className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
-                >
-                  {isModalPending ? "Staking..." : "Stake Brand"}
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h4 className="text-green-800 font-semibold text-sm mb-2">Step 2: Activate</h4>
-                  <p className="text-green-700 text-sm">
-                    Activate brand "{registeredBrandName}" to make it live on the platform.
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={handleActivate}
-                  disabled={isModalPending}
-                  className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
-                >
-                  {isModalPending ? "Activating..." : "Activate Brand"}
-                </Button>
-              </div>
-            )}
-          </div>
-          
-          {/* Error Display */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-              <h4 className="text-red-800 font-semibold text-sm mb-2">Error:</h4>
-              <p className="text-red-700 text-sm">An erorr occured try again</p>
-            </div>
-          )}
-          
-          {/* Transaction Hash */}
-          {modalHash && (
-            <div className="text-center mt-4">
-              <a 
-                href={`https://sepolia.basescan.org/tx/${modalHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline text-sm"
-              >
-                View Transaction: {modalHash.slice(0, 10)}...{modalHash.slice(-8)}
-              </a>
-            </div>
-          )}
-          
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowStakeActivateModal(false)
-                setStakeActivateStep('stake')
-                setRegisteredBrandName('')
-                setError(null)
-              }}
-            >
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
     </>
   )
 }
