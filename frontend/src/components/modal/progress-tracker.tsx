@@ -16,25 +16,19 @@ interface ProgressModalProps {
   }[],
   handleSubmit: (() => void)[]
   title: string,
-  description: string
+  description: string,
+  isLoading?: boolean,
+  button: string[],
+  step: number
 }
 
 
 //       <p className="text-green-700 text-sm">
 //         Activate brand "{registeredBrandName}" to make it live on the platform.
 //       </p>
-const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message, handleSubmit, title, description }: ProgressModalProps) => {
-  const [activeStep, setActiveStep] = useState<number>(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const handleClick = async () => {
-    try {
-      setIsLoading(true);
-      await handleSubmit[activeStep]();
-      setIsLoading(false)
-    } catch (error) {
-      setIsLoading(false)
-    }
-  }
+const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message, handleSubmit, title, description, isLoading, button, step: activeStep }: ProgressModalProps) => {
+  // const [activeStep, setActiveStep] = useState<number>(0)
+
   return (
     < Dialog open={open}
       onOpenChange={onOpenChange}
@@ -57,19 +51,18 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
             steps.map((step, key: number) =>
 
               <div key={key} className="flex items-center space-x-2 bg-red-00">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${key >= activeStep
-                  ? 'bg-[#00296b] text-white'
-                  : 'bg-green-500 text-white'
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${activeStep >= key
+                  ? 'bg-green-500 text-white' : 'bg-[#00296b] text-white'
                   }`}>
                   {key + 1}
-                  <span className={`text-sm absolute bottom-[-25] font-medium ${key >= activeStep ? 'text-[#00296b]' : 'text-green-600'
+                  <span className={`text-sm absolute bottom-[-25] font-medium ${activeStep >= key ? 'text-green-600' : 'text-[#00296b]'
                     }`}>
                     {step}
                   </span>
                 </div>
                 {steps.length - 1 != key && (
                   <div className="flex-1 h-0.5 bg-gray-200 absolute w-[25%] mx-14">
-                    <div className={`h-full transition-all duration-300 ${key >= activeStep ? 'bg-green-500' : 'bg-gray-200'
+                    <div className={`h-full transition-all duration-300 ${activeStep >= key ? 'bg-green-500' : 'bg-gray-200'
                       }`} style={{ width: '100%' }}></div>
                   </div>
                 )
@@ -89,16 +82,16 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
                 <h4 className="text-blue-800 font-semibold text-sm mb-2">{message[activeStep].header}</h4>
                 <p className="text-blue-700 text-sm">
                   {message[activeStep].body}
-                  {/* Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration. */}
+
                 </p>
               </div>
 
               <Button
-                onClick={() => handleClick()}
+                onClick={handleSubmit[activeStep]}
                 disabled={isLoading}
                 className="w-full bg-[#00296b] text-white hover:bg-[#00296b]/95 disabled:opacity-50"
               >
-                {isLoading ? "Staking..." : "Stake Brand"}
+                {isLoading ? "Loading..." : button[activeStep]}
               </Button>
             </div>)
           }
@@ -108,8 +101,8 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
         {/* Error Display */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4 overflow-hidden">
-            <h4 className="text-red-800 font-semibold text-sm mb-2">Error:</h4>
-            <p className="text-red-700 text-sm">{error}</p>
+            <h4 className="text-red-800 font-semibold text-sm mb-1">Error:</h4>
+            <p className="text-red-700 text-sm line-clamp-4">{error}</p>
           </div>
         )}
 

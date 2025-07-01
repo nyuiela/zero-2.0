@@ -1,11 +1,9 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { registry_abi, registry_addr } from "../lib/abi/abi"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -24,18 +22,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
-import { ProofModal } from "./proof-modal"
 import { parseEther } from "viem"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import ProgressTracker from "./modal/progress-tracker"
 import OracleConfigSection from './OracleConfigSection'
 import AdminSubscriptionSection from './AdminSubscriptionSection'
@@ -201,11 +189,6 @@ const brandRegistrationSchema = z.object({
 
 export type BrandRegistrationFormData = z.infer<typeof brandRegistrationSchema>
 
-// interface BrandRegistrationFormProps {
-//   onSubmit: (data: Omit<BrandRegistrationFormData, 'args'> & { args: string[] }) => void
-//   isLoading?: boolean
-// }
-
 export function BrandRegistrationForm() {
   const [argsArray, setArgsArray] = useState<string[]>([])
   const {
@@ -225,18 +208,17 @@ export function BrandRegistrationForm() {
     isError: isModalError
   } = useWriteContract()
 
+
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
-  const [showProofModal, setShowProofModal] = useState(false)
-  const [transactionHash, setTransactionHash] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [showStakeActivateModal, setShowStakeActivateModal] = useState(false)
-  const [stakeActivateStep, setStakeActivateStep] = useState<'register' | 'stake' | 'activate'>('register')
+  const [stakeActivateStep, setStakeActivateStep] = useState(1)
   const [registeredBrandName, setRegisteredBrandName] = useState<string>('')
-  const [modalTransactionHash, setModalTransactionHash] = useState<string>('')
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
+      confirmations: 3,
       hash,
     })
   const form = useForm<BrandRegistrationFormData>({
@@ -256,7 +238,6 @@ export function BrandRegistrationForm() {
     },
   })
   const steps = ["register", "stake", "activate"]
-  // Get current brand name from form
   const currentBrandName = form.watch("brand")
 
   const isRegistered = useReadContract({
@@ -269,60 +250,6 @@ export function BrandRegistrationForm() {
   })
   console.log("isRegistered for brand:", form.watch("brand"), isRegistered.data)
 
-  // Sample proof data - in real implementation, this would come from the transaction
-  const sampleProof: ProofData = {
-    receipt: {
-      inner: {
-        "Fake": {
-          "claim": {
-            "Value": {
-              "exit_code": {
-                "Halted": 0
-              },
-              "input": {
-                "Pruned": [0, 0, 0, 0, 0, 0, 0, 0]
-              },
-              "output": {
-                "Value": {
-                  "assumptions": {
-                    "Value": []
-                  },
-                  "journal": {
-                    "Value": [1, 0, 0, 0, 42, 0, 0, 0, 48, 120, 100, 53, 55, 98, 55, 102, 98, 48, 52, 55, 48, 53, 102, 50, 51, 53, 98, 55, 100, 50, 56, 48, 54, 54, 98, 51, 57, 53, 51, 48, 99, 51, 53, 55, 97, 98, 97, 98, 101, 52, 0, 0, 206, 113, 92, 104, 0, 0, 0, 0, 6, 0, 0, 0, 107, 97, 108, 101, 101, 108, 0, 0]
-                  }
-                }
-              },
-              "post": {
-                "Value": {
-                  "merkle_root": [0, 0, 0, 0, 0, 0, 0, 0],
-                  "pc": 0
-                }
-              },
-              "pre": {
-                "Value": {
-                  "merkle_root": [1355755649, 145095981, 1945602564, 1827369077, 346262116, 1637052400, 1857755399, 1497292232],
-                  "pc": 0
-                }
-              }
-            }
-          }
-        }
-      },
-      journal: {
-        bytes: [1, 0, 0, 0, 42, 0, 0, 0, 48, 120, 100, 53, 55, 98, 55, 102, 98, 48, 52, 55, 48, 53, 102, 50, 51, 53, 98, 55, 100, 50, 56, 48, 54, 54, 98, 51, 57, 53, 51, 48, 99, 51, 53, 55, 97, 98, 97, 98, 101, 52, 0, 0, 206, 113, 92, 104, 0, 0, 0, 0, 6, 0, 0, 0, 107, 97, 108, 101, 101, 108, 0, 0]
-      },
-      metadata: {
-        verifier_parameters: [0, 0, 0, 0, 0, 0, 0, 0]
-      }
-    },
-    stats: {
-      paging_cycles: 227651,
-      reserved_cycles: 519606,
-      segments: 10,
-      total_cycles: 9961472,
-      user_cycles: 9214215
-    }
-  }
 
 
   const handleRegister = () => {
@@ -347,6 +274,11 @@ export function BrandRegistrationForm() {
       ],
       account: address
     })
+    // setTransactionHash(mockHash)
+    // setRegisteredBrandName(data.brand)
+    // setStakeActivateStep(0)
+    // setShowStakeActivateModal(true)
+    // setIsLoading(false)
   }
   // Pre-submit validation function
   const onSubmit = async (data: BrandRegistrationFormData) => {
@@ -356,13 +288,30 @@ export function BrandRegistrationForm() {
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
     try {
-
+      writeContract({
+        address: registry_addr,
+        abi: registry_abi,
+        functionName: 'registerBrand',
+        args: [
+          data.brand, // string
+          {
+            updateInterval: BigInt(data.updateInterval),
+            deviationThreshold: BigInt(data.deviationThreshold),
+            heartbeat: BigInt(data.heartbeat),
+            minAnswer: BigInt(data.minAnswer),
+            maxAnswer: BigInt(data.maxAnswer)
+          }, // OracleConfig struct
+          data.brandAdminAddr, // address
+          BigInt(data.subscriptionId), // uint64
+          data.stateUrl, // string
+          argsArray // string[]
+        ],
+        account: address
+      })
       // Simulate transaction hash - in real implementation, this would come from the transaction
-      const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      setTransactionHash(mockHash)
+      // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
       setRegisteredBrandName(data.brand)
-      setStakeActivateStep('stake')
-      setShowStakeActivateModal(true)
+      setStakeActivateStep(1)
       setIsLoading(false)
     } catch (error) {
       console.error("Failed to submit form ", error)
@@ -401,7 +350,7 @@ export function BrandRegistrationForm() {
         value: parseEther(form.getValues("stake") || "0.000000000001"),
         account: address
       })
-      setStakeActivateStep('activate')
+      setStakeActivateStep(1)
     } catch (error) {
       setError(parseError(error))
     }
@@ -419,10 +368,8 @@ export function BrandRegistrationForm() {
         args: [registeredBrandName],
         account: address
       })
-      setShowStakeActivateModal(false)
-      setStakeActivateStep('register')
+      setStakeActivateStep(2)
       setRegisteredBrandName('')
-      setModalTransactionHash('')
     } catch (error) {
       setError(parseError(error))
     }
@@ -453,19 +400,20 @@ export function BrandRegistrationForm() {
   console.log("Open ", showStakeActivateModal)
   return (
     <>
-      <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[handleRegister, handleStake, handleActivate]} message={[
+      <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[() => onSubmit(form.getValues()), handleStake, handleActivate]} step={stakeActivateStep} isLoading={isPending} button={["Register", "Stake", "Activate"]} message={[
         {
           header: 'Step 1: Register',
-          body: ""
+          body: `Register "${registeredBrandName}" on ZE | RO to drive your customers insane`
         },
         {
           header: 'Step 2: Stake',
-          body: ""
+          body: `Stake ${form.getValues("stake") || "0.01"} ETH for brand "${registeredBrandName}" to complete registration.`
         },
         {
           header: 'Step 3: Activate',
-          body: ""
+          body: `Activate brand "${registeredBrandName}" to make it live on the platform`
         }
+        // {/* Stake {form.getValues("stake") || "0.01"} ETH for brand "{registeredBrandName}" to complete registration. */}
       ]} />
       <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
 
@@ -479,7 +427,7 @@ export function BrandRegistrationForm() {
         <CardContent className="pb-8">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={(e) => { e.preventDefault(); setStakeActivateStep(0); setShowStakeActivateModal(true) }}
               className="space-y-6">
               {/* Brand Name */}
               <FormField
@@ -506,10 +454,10 @@ export function BrandRegistrationForm() {
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-                  disabled={isPending}
-                  onSubmit={() => onSubmit(form.getValues())}
+                  disabled={showStakeActivateModal}
+                  onSubmit={() => setShowStakeActivateModal(true)}
                 >
-                  {isPending ? "Registering Brand..." : "Register Brand"}
+                  {showStakeActivateModal ? "Processing..." : "Register Brand"}
                 </Button>
                 <ValidationErrors errors={validationErrors} />
                 <TransactionError error={error} />
@@ -528,15 +476,7 @@ export function BrandRegistrationForm() {
             </form>
           </Form>
         </CardContent>
-      </Card>
-
-      {/* Proof Modal */}
-      <ProofModal
-        isOpen={showProofModal}
-        onClose={() => setShowProofModal(false)}
-        proof={sampleProof}
-        transactionHash={transactionHash}
-      />
+      </Card >
 
 
     </>
