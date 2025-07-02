@@ -64,6 +64,46 @@ ZERO enables:
 
 All proofs are cryptographically verifiable, ensuring transparency, privacy, and trust.
 
+## 🏁 Getting Started with the ZERO Stack
+
+To run the full ZERO 2.0 stack locally, follow these steps to configure your environment, run the backend (zkVM), and prepare your database and cache systems.
+
+### 1. 🛠️ Clone the Repository
+
+```bash
+git clone https://github.com/nyuiela/zero-2.0
+cd zero-2.0
+```
+
+### 2. Setup the Environment Variable
+
+Setup your project by starting a postgresql and redis server.
+Create a database for this project `zero`
+Create a `.env` file in the `/zk` folder and add the the following details
+
+```bash
+DATABASE_URL=postgres://username:password@localhost:5432/zero_db
+REDIS_URL=redis://127.0.0.1/
+```
+
+### 3. Running the zero server
+
+Run the ZK and backend server to have access to it on port `3001`
+
+```bash
+cd zk
+cargo run --bin db
+```
+
+### 4. Running the frontend
+
+Change directory back to the `/frontend` folder and run your the frontend on port `3000` using this command
+
+```bash
+pnpm install
+pnpm dev
+```
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
