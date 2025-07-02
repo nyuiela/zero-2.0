@@ -19,12 +19,12 @@ import {Sync} from "../src/chainlink/sync_function.sol";
 import {ICarOracle} from "../src/Interface/oracle/IcarOracle.sol";
 import {InitFunction} from "../src/chainlink/init_function.sol";
 import {Sync} from "../src/chainlink/sync_function.sol";
-import {ZeroNFT} from "src/tokens/ZeroNFT.sol";
-import {IZeroNFT} from "src/interface/IZeronft.sol";
-import {Auction} from "src/core/auction.sol";
+import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
+import {IZeroNFT} from "../src/interface/IZeronft.sol";
+import {Auction} from "../src/core/auction.sol";
 import {console2} from "forge-std/Console2.sol";
 
-contract ZeroNFTTest is Test {
+contract IntergrationTest is Test {
     CarRegistry registry;
     Profile profile;
     StateManager state;
@@ -322,20 +322,23 @@ contract ZeroNFTTest is Test {
 
         vm.warp(block.timestamp + 2 days);
 
-        vm.prank(lee);
+        vm.startPrank(lee);
         bid(auctionId, 5 ether);
 
-        vm.prank(kal);
+        vm.startPrank(kal);
         bid(auctionId, 6 ether);
 
-        vm.prank(pat);
+        vm.startPrank(pat);
         bid(auctionId, 10 ether);
+        vm.stopPrank();
 
-        vm.prank(pat);
+        vm.startPrank(pat);
         bid(auctionId, 12 ether);
+        vm.stopPrank();
 
-        vm.prank(godknows);
+        vm.startPrank(godknows);
         bid(auctionId, 15 ether);
+        vm.stopPrank();
 
         // Check the highest bid
         (uint256 highestBid, address highestBidder) = auction
@@ -353,11 +356,11 @@ contract ZeroNFTTest is Test {
         vm.stopPrank();
         console2.log("winnnnnnner is:", highestBidder);
 
-        // assertEq(
-        //     highestBidder,
-        //     godknows,
-        //     "Godknows should be the highest bidder"
-        // );
+        assertEq(
+            highestBidder,
+            godknows,
+            "Godknows should be the highest bidder"
+        );
     }
 }
 

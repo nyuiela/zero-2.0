@@ -24,13 +24,19 @@ import {StateCheckFunction} from "../src/chainlink/state_check_function.sol";
 
 contract DeployScript is Script {
     // Base Network Addresses
-    address constant _BASE_ETH_USD_FEED = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
-    address constant _BASE_USDC_USD_FEED = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
-    address constant _BASE_USDC_TOKEN = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
+    address constant _BASE_ETH_USD_FEED =
+        0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
+    address constant _BASE_USDC_USD_FEED =
+        0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
+    address constant _BASE_USDC_TOKEN =
+        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
     address constant _BASE_ROUTER = 0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93;
-    address constant _BASE_LINK_TOKEN = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
-    address constant _BASE_FUNCTION_ROUTER = 0xf9B8fc078197181C841c296C876945aaa425B278;
-    bytes32 constant _BASE_FUNCTION_DON_ID = 0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000;
+    address constant _BASE_LINK_TOKEN =
+        0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
+    address constant _BASE_FUNCTION_ROUTER =
+        0xf9B8fc078197181C841c296C876945aaa425B278;
+    bytes32 constant _BASE_FUNCTION_DON_ID =
+        0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000;
 
     // Contracts
     PermissionManager public permissionManager;
@@ -79,7 +85,10 @@ contract DeployScript is Script {
         permissionManager = new PermissionManager();
         brandPermissionManager = new BrandPermissionManager();
         profile = new Profile(address(permissionManager));
-        stateManager = new StateManager(address(profile), address(permissionManager));
+        stateManager = new StateManager(
+            address(profile),
+            address(permissionManager)
+        );
         merkleVerifier = new MerkleVerifier();
         syncFunction = new Sync();
         console.log("Core contracts deployed.");
@@ -87,10 +96,21 @@ contract DeployScript is Script {
 
     function deployOracleAndChainlinkContracts() internal {
         carOracle = new CarOracle();
-        oracleMaster = new OracleMaster(address(carOracle), address(brandPermissionManager), address(permissionManager));
+        oracleMaster = new OracleMaster(
+            address(carOracle),
+            address(brandPermissionManager),
+            address(permissionManager)
+        );
         ccip = new CrossToken(_BASE_ROUTER, _BASE_LINK_TOKEN);
-        messenger = new Messenger(_BASE_ROUTER, _BASE_LINK_TOKEN, address(merkleVerifier));
-        proofSync = new ProofSync(address(merkleVerifier), payable(address(messenger)));
+        messenger = new Messenger(
+            _BASE_ROUTER,
+            _BASE_LINK_TOKEN,
+            address(merkleVerifier)
+        );
+        proofSync = new ProofSync(
+            address(merkleVerifier),
+            payable(address(messenger))
+        );
         console.log("Oracle and Chainlink contracts deployed.");
     }
 
@@ -114,10 +134,18 @@ contract DeployScript is Script {
             address(proofSync)
         );
 
-        stateCheckFunction = new StateCheckFunction(address(stateManager), payable(carRegistry));
+        stateCheckFunction = new StateCheckFunction(
+            address(stateManager),
+            payable(carRegistry)
+        );
         initFunction = new InitFunction(address(carRegistry));
         // address(stateManager),
-        zeroNFT = new ZeroNFT(address(oracleMaster), address(reputation), address(carRegistry), address(0));
+        zeroNFT = new ZeroNFT(
+            address(oracleMaster),
+            address(reputation),
+            address(carRegistry),
+            address(0)
+        );
 
         auction = new Auction(
             payable(carRegistry),
@@ -179,6 +207,11 @@ contract DeployScript is Script {
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions = new bytes4[](20);
         bytes4[] memory registryPermissions = new bytes4[](20);
+        bytes4[] memory statecalls = new bytes4[](2);
+
+        statecalls[0] = profile.updateState.selector;
+        statecalls[1] = profile.lockBrand.selector;
+        statecalls[2] = profile.unlockBrand.selector;
 
         permissions[0] = oracleMaster.registerCarBrand.selector;
         permissions[1] = oracleMaster.updateOracle.selector;
@@ -214,9 +247,26 @@ contract DeployScript is Script {
         registryPermissions[6] = stateManager.UNLOCK_CONTRACT();
         registryPermissions[7] = stateManager.INITIATE();
 
-        permissionManager.grantBatchPermissions(permissionAddress, permissions, block.timestamp + 365 days);
-        permissionManager.grantBatchPermissions(dep_loyer, permissions, block.timestamp + 365 days);
-        permissionManager.grantBatchPermissions(address(carRegistry), registryPermissions, block.timestamp + 365 days);
+        permissionManager.grantBatchPermissions(
+            permissionAddress,
+            permissions,
+            block.timestamp + 365 days
+        );
+        permissionManager.grantBatchPermissions(
+            dep_loyer,
+            permissions,
+            block.timestamp + 365 days
+        );
+        permissionManager.grantBatchPermissions(
+            address(carRegistry),
+            registryPermissions,
+            block.timestamp + 365 days
+        );
+        permissionManager.grantBatchPermissions(
+            address(stateManager),
+            statecalls,
+            block.timestamp + 365 days
+        );
 
         console.log("Permissions granted to:", permissionAddress);
     }
@@ -225,14 +275,26 @@ contract DeployScript is Script {
         console.log("\n=== DEPLOYMENT SUMMARY ===");
         console.log("Network= Base");
         console.log("Deployer=", deployer);
-        console.log("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS=", address(permissionManager));
-        console.log("NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS=", address(brandPermissionManager));
+        console.log(
+            "NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS=",
+            address(permissionManager)
+        );
+        console.log(
+            "NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS=",
+            address(brandPermissionManager)
+        );
         console.log("NEXT_PUBLIC_CAR_ORACLE_ADDRESS=", address(carOracle));
-        console.log("NEXT_PUBLIC_ORACLE_MASTER_ADDRESS=", address(oracleMaster));
+        console.log(
+            "NEXT_PUBLIC_ORACLE_MASTER_ADDRESS=",
+            address(oracleMaster)
+        );
         console.log("NEXT_PUBLIC_PROFILE_ADDRESS=", address(profile));
         console.log("NEXT_PUBLIC_STATEMANAGER_ADDRESS=", address(stateManager));
         console.log("NEXT_PUBLIC_INITFUNCTION_ADDRESS=", address(initFunction));
-        console.log("NEXT_PUBLIC_MERKLEVERIFIER_ADDRESS=", address(merkleVerifier));
+        console.log(
+            "NEXT_PUBLIC_MERKLEVERIFIER_ADDRESS=",
+            address(merkleVerifier)
+        );
         console.log("NEXT_PUBLIC_PROOFSYNC_ADDRESS=", address(proofSync));
         console.log("NEXT_PUBLIC_CROSS_TOKEN_ADDRESS=", address(ccip));
         console.log("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS=", address(syncFunction));
@@ -241,8 +303,13 @@ contract DeployScript is Script {
         console.log("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS=", address(carRegistry));
         console.log("NEXT_PUBLIC_ZERO_NFT_ADDRESS=", address(zeroNFT));
         console.log("NEXT_PUBLIC_AUCTION_ADDRESS=", address(auction));
-        console.log("NEXT_PUBLIC_STATECHECKFUNCTION_ADDRESS=", address(stateCheckFunction));
+        console.log(
+            "NEXT_PUBLIC_STATECHECKFUNCTION_ADDRESS=",
+            address(stateCheckFunction)
+        );
         console.log("NEXT_PUBLIC_MESSENGER_ADDRESS=", address(messenger));
         console.log("=== DEPLOYMENT COMPLETE ===\n");
     }
 }
+
+///with the state contract should permsion to call the the profile contract
