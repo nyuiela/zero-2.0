@@ -49,7 +49,46 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
     queryFn: () => fetchBidByAuctionId(listing.auction_id),
     // enabled: open,
   })
-  console.log("Bid ", bids)
+
+  // Mock bids data for testing when API returns null
+  const mockBids = [
+    {
+      id: 1,
+      auction_id: listing.auction_id,
+      amount: 45000,
+      bidder_id: "0x1234...5678",
+      created_at: "2024-12-15T10:30:00Z",
+      updated_at: "2024-12-15T10:30:00Z"
+    },
+    {
+      id: 2,
+      auction_id: listing.auction_id,
+      amount: 44000,
+      bidder_id: "0x8765...4321",
+      created_at: "2024-12-15T09:15:00Z",
+      updated_at: "2024-12-15T09:15:00Z"
+    },
+    {
+      id: 3,
+      auction_id: listing.auction_id,
+      amount: 43000,
+      bidder_id: "0xabcd...efgh",
+      created_at: "2024-12-15T08:45:00Z",
+      updated_at: "2024-12-15T08:45:00Z"
+    },
+    {
+      id: 4,
+      auction_id: listing.auction_id,
+      amount: 42000,
+      bidder_id: "0x9876...5432",
+      created_at: "2024-12-15T08:00:00Z",
+      updated_at: "2024-12-15T08:00:00Z"
+    }
+  ]
+
+  // Use mock data if API returns null
+  const displayBids = bids || mockBids
+  console.log("Bid ", displayBids)
 
   // Calculate 5% stake
   const stake = (typeof bidAmount === 'string' ? parseFloat(bidAmount.replace(/[^\d.]/g, '')) : bidAmount) * 0.05
@@ -140,8 +179,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
       </div>
 
-
-
       {/* Bid Modal */}
       {isBidModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
@@ -179,10 +216,11 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
       )}
 
-      {/* Header Section */}
+      {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
-        {/* Image Gallery */}
-        <div className="lg:col-span-2">
+        {/* Left Column - Images and Car Details */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Image Gallery */}
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card">
@@ -213,10 +251,129 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               ))}
             </div>
           </div>
+
+          {/* Car Details Section */}
+          <div className="space-y-8">
+            {/* Title and Location */}
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                {listing.year} {listing.make} {listing.model}
+              </h1>
+              <div className="flex items-center space-x-4 text-muted-foreground">
+                <div className="flex items-center space-x-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{listing.location}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-transparent rounded-none">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {listing.description}
+              </p>
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Vehicle Overview</h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {listing.vehicale_overview}
+              </p>
+            </div>
+
+            {/* Report Section */}
+            {listing.report && (
+              <div className="">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Condition Report</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 -ml-8 lg:-ml-16 -mt-4 gap-2 lg:gap-24">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-600 mb-1">Condition</div>
+                    <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.condition}</div>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-600 mb-1">Inspection</div>
+                    <div className="text-lg font-semibold text-green-600 capitalize">{listing.report.inspection}</div>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-600 mb-1">Notes</div>
+                    <div className="text-sm text-gray-900">{listing.report.notes}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Key Features */}
+            <div className="bg-transparent rounded-none">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Exterior</h4>
+                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                    {listing.features.exterior.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Interior</h4>
+                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                    {listing.features.interior.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="md:col-span-2">
+                  <h4 className="font-semibold text-foreground mb-2">Mechanical</h4>
+                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                    {listing.features.mechanical.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Specifications */}
+            <div className="bg-transparent rounded-none">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Specifications</h2>
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-0">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Engine Size:</span>
+                  <span className="text-foreground font-medium">{listing.engine_size}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Transmission:</span>
+                  <span className="text-foreground font-medium">{listing.transmission}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Fuel Type:</span>
+                  <span className="text-foreground font-medium">{listing.fuel_type}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Exterior Color:</span>
+                  <span className="text-foreground font-medium">{listing.exterior_color}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Interior Color:</span>
+                  <span className="text-foreground font-medium">{listing.interior_color}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Mileage:</span>
+                  <span className="text-foreground font-medium">{listing.mileage.toLocaleString()} mi</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">VIN:</span>
+                  <span className="text-foreground font-medium font-mono text-sm">{listing.vin}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted-foreground">Lot Number:</span>
+                  <span className="text-foreground font-medium">{listing.lot}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Bidding Panel */}
-        <div className="space-y-6 bg-red-00 overflow-hidden">
+        {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
+        <div className="hidden lg:block space-y-6">
           {/* Action Buttons */}
           <div className='flex items-baseline flex-row bg-green-00 md:justify-between lg:flex-col lg:space-y-6 max-sm:flex-col max-sm:space-y-6'>
             {/* <div> */}
@@ -236,24 +393,19 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 </div>
               </div>
             </div>
-            <div className='flex flex-col justify-end gap-2 w-full'>
-              <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm mr-2 hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
+            <div className='flex flex-col gap-2 w-full'>
+              <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
                 Place Bid
               </Button>
-              <Button className="text-black py-5 px-8 rounded-none  transition-all shadow-none text-md cursor-pointer text-sm underline bg-red-00" asChild>
+              <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
                 <Link href={`/auctions/${listing.id}`}>
                   Join Bidding Room
                 </Link>
               </Button>
-              {/* <div className="ml-auto flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Currency:</span>
-              <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
-              <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
-              </div> */}
             </div>
           </div>
 
-
+          {/* Summary */}
           <div className="bg-gradient-to-br border-none">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xl font-bold text-brand">Summary</div>
@@ -262,17 +414,11 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               <div className="text-md text-brand">
                 {listing.summary}
               </div>
-              {/* <Separator />
-              <div className="space-y-3">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Starting Price:</span>
-                  <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
-                </div>
-              </div> */}
             </div>
           </div>
+
           {/* Seller Info */}
-          <div className="bg-transparent shadow-none rounded-sm ">
+          <div className="bg-transparent shadow-none rounded-sm">
             <div className="text-lg font-bold mb-2 flex items-center space-x-2">
               <span>Brand Information</span>
             </div>
@@ -288,7 +434,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
           </div>
 
         </div>
-      </div >
+      </div>
 
       {/* Car Details Section */}
       < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
@@ -305,84 +451,53 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <span>{listing.location}</span>
               </div>
             </div>
-          </div >
-          {/* Car Details Sections */}
-          < div className="bg-transparent rounded-none mb-6" >
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              {listing.description}
-            </p>
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Vehicle Overview</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              {listing.vehicale_overview}
-            </p>
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h2>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Exterior</h4>
-                <ul className="list-disc ml-5 text-muted-foreground">
-                  {listing.features.exterior.map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Interior</h4>
-                <ul className="list-disc ml-5 text-muted-foreground">
-                  {listing.features.interior.map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Mechanical</h4>
-                <ul className="list-disc ml-5 text-muted-foreground">
-                  {listing.features.mechanical.map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Specifications</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Engine Size:</span>
-                <span className="text-foreground">{listing.engine_size}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Transmission:</span>
-                <span className="text-foreground">{listing.transmission}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Fuel Type:</span>
-                <span className="text-foreground">{listing.fuel_type}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Exterior Color:</span>
-                <span className="text-foreground">{listing.exterior_color}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Interior Color:</span>
-                <span className="text-foreground">{listing.interior_color}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Mileage:</span>
-                <span className="text-foreground">{listing.mileage} mi</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">VIN:</span>
-                <span className="text-foreground">{listing.vin}</span>
-              </div>
-            </div>
-          </div >
-        </div >
+          </div>
+          <div className='flex flex-col gap-2 w-full'>
+            <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
+              Place Bid
+            </Button>
+            <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
+              <Link href={`/auctions/${listing.id}`}>
+                Join Bidding Room
+              </Link>
+            </Button>
+          </div>
+        </div>
 
-        {/* (Optional) Add more side details here if needed */}
-        <div className="bg-gradient-to-br border-none p-6 px-0 ">
+        {/* Summary */}
+        <div className="bg-gradient-to-br border-none">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-xl font-bold text-brand">Summary</div>
+          </div>
+          <div className="space-y-4">
+            <div className="text-md text-brand">
+              {listing.summary}
+            </div>
+          </div>
+        </div>
+
+        {/* Seller Info */}
+        <div className="bg-transparent shadow-none rounded-sm">
+          <div className="text-lg font-bold mb-2 flex items-center space-x-2">
+            <span>Brand Information</span>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="font-semibold text-foreground">{listing.seller}</div>
+              <div className="text-sm text-muted-foreground flex items-center mt-1">
+                <MapPin className="w-3 h-3 mr-1" />
+                {listing.location}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bids Section */}
+        <div className="bg-gradient-to-br border-none p-6 px-0">
           <div className="flex items-center justify-between mb-4">
             <div className="text-xl font-bold text-brand">Bids</div>
           </div>
-          {bids?.map((bid, key) => (
+          {displayBids?.map((bid, key) => (
             <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
               <div className="text-lg font-bold flex items-center space-x-2">
                 <span className='text-xl'>
@@ -393,13 +508,11 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <div className='flex justify-between'>
                   <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
                   <div className="text-sm text-muted-foreground flex items-center mt-1">
-                    {/* <MapPin className="w-3 h-3 mr-1" /> */}
                     <User className='w-4 h-3 mr-1' />
                     {bid.bidder_id}
                   </div>
                 </div>
                 <div className='flex justify-between'>
-                  {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
                   <div></div>
                   <div className="text-sm text-muted-foreground flex items-center mt-1">
                     {bid.updated_at}
@@ -409,17 +522,81 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
           ))}
 
-
-        </div>
+          {/* Horizontal Scrollable Bid Cards Carousel */}
+          {displayBids && displayBids.length > 0 && (
+            <div className="mt-6">
+              <div className="text-lg font-bold text-brand mb-3">Recent Bidders</div>
+              <div className="relative">
+                <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+                  {displayBids.map((bid, index) => (
+                    <div
+                      key={`carousel-${bid.id}`}
+                      className="flex-shrink-0 w-48 bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {bid.bidder_id?.slice(0, 6)}...{bid.bidder_id?.slice(-4)}
+                        </div>
+                        <div className="text-xs text-gray-500">#{index + 1}</div>
+                      </div>
+                      <div className="text-lg font-bold text-green-600">
+                        {formatCurrency(bid.amount, "USDC")}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {new Date(bid.updated_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Auto-scroll indicator */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
+              </div>
+            </div>
+          </div >
       </div >
 
+      {/* (Optional) Add more side details here if needed */}
+      <div className="bg-gradient-to-br border-none p-6 px-0 ">
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-xl font-bold text-brand">Bids</div>
+        </div>
+        {bids?.map((bid, key) => (
+          <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
+            <div className="text-lg font-bold flex items-center space-x-2">
+              <span className='text-xl'>
+                {formatCurrency(bid.amount, "USDC")}
+              </span>
+            </div>
+            <div className="space-y-3 mt-2">
+              <div className='flex justify-between'>
+                <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
+                <div className="text-sm text-muted-foreground flex items-center mt-1">
+                  {/* <MapPin className="w-3 h-3 mr-1" /> */}
+                  <User className='w-4 h-3 mr-1' />
+                  {bid.bidder_id}
+                </div>
+              </div>
+              <div className='flex justify-between'>
+                {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
+                <div></div>
+                <div className="text-sm text-muted-foreground flex items-center mt-1">
+                  {bid.updated_at}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
 
 
-      {/* Related Auctions */}
-      < div className="mt-16 pt-8 border-t border-border" >
+      </div>
+    </div >
+
+
+
+      {/* Related Auctions */ }
+      < div className = "mt-16 pt-8 border-t border-border" >
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          { }
           {/* {relatedAuctions.map((auction) => (
             <AuctionCard key={auction.id} auction={auction} />
           ))} */}
