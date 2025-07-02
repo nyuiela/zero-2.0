@@ -1,4 +1,5 @@
-﻿# Zero 2.0 - Next-Generation Privacy-Preserving Car Auction Platform
+﻿# ZE | RO
+### RWA Tokenization Platform using proof system for execution verification
 
 > **Transforming real-world asset auctions with zero-knowledge proofs and blockchain for ultimate privacy, security, and transparency**
 
@@ -8,7 +9,9 @@
 ![NextJS](https://img.shields.io/badge/NextJS-15.3+-black?style=for-the-badge&logo=next.js)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=for-the-badge&logo=postgresql)
 
-## 🚗 What is Zero 2.0?
+<img width="1840" alt="Screenshot 2025-06-29 at 10 26 40 PM" src="https://github.com/user-attachments/assets/9863604a-7c02-4f6a-9b15-5cbb50d04ba2" />
+
+## 🚗 What is Zero?
 
 ZERO is the next-generation decentralized car auction platform, built on blockchain and zero-knowledge technology. By incorporating zero-knowledge proofs (RISC Zero zkVM), the platform ensures secure execution across both off-chain and on-chain systems.
 
