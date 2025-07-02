@@ -175,7 +175,7 @@ contract IntergrationTest is Test {
 
         IZeroNFT.NFTMetadata memory meta = IZeroNFT.NFTMetadata({
             brandName: brand,
-            carModel: "lambro567", //<--- i  know nothing about cars lol
+            carModel: "lambro567", //<--- i  know nothing about cars lol: Yooo which one is Lambro?? 😂
             vin: "ytg",
             year: 567,
             color: "pink",
