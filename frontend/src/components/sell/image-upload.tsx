@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { X, Upload, Link, Camera, Image as ImageIcon } from "lucide-react"
 import { CarImage } from "@/lib/types/car"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 interface ImageUploadProps {
   images: CarImage[]
@@ -124,7 +125,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'gallery' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('gallery')}
-          className="flex-1"
+          className={activeTab === "gallery" ? "flex-1 bg-white" : "flex-1 bg-none"}
         >
           <Upload className="w-4 h-4 mr-2" />
           Gallery
@@ -133,7 +134,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'url' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('url')}
-          className="flex-1"
+          className={activeTab === "url" ? "flex-1 bg-white" : "flex-1 bg-none"}
         >
           <Link className="w-4 h-4 mr-2" />
           URL
@@ -142,7 +143,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'capture' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('capture')}
-          className="flex-1"
+          className={activeTab === "capture" ? "flex-1 bg-white" : "flex-1 bg-none"}
         >
           <Camera className="w-4 h-4 mr-2" />
           Camera

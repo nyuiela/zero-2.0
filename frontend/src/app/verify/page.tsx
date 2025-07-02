@@ -537,7 +537,7 @@ export default function VerifyPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 bg-white">
                   <div className="space-y-4">
                     <div>
                       <p className="text-gray-600 text-sm mb-1">Description:</p>
@@ -548,7 +548,7 @@ export default function VerifyPage() {
                       <div>
                         <p className="text-gray-600 text-sm mb-1">Transaction Hash:</p>
                         <div className="flex items-center gap-2">
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm font-mono bg-white px-2 py-1 rounded">
                             {formatAddress(proof.transactionHash)}
                           </code>
                           <Button
@@ -565,7 +565,7 @@ export default function VerifyPage() {
                       {proof.metadata.username && (
                         <div>
                           <p className="text-gray-600 text-sm mb-1">Username:</p>
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm font-mono bg-white px-2 py-1 rounded">
                             {proof.metadata.username}
                           </code>
                         </div>
@@ -574,7 +574,7 @@ export default function VerifyPage() {
                       {proof.metadata.brandName && (
                         <div>
                           <p className="text-gray-600 text-sm mb-1">Brand:</p>
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm font-mono bg-white px-2 py-1 rounded">
                             {proof.metadata.brandName}
                           </code>
                         </div>
@@ -583,7 +583,7 @@ export default function VerifyPage() {
                       {proof.metadata.carId && (
                         <div>
                           <p className="text-gray-600 text-sm mb-1">Car ID:</p>
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm font-mono bg-white px-2 py-1 rounded">
                             {proof.metadata.carId}
                           </code>
                         </div>
@@ -592,7 +592,7 @@ export default function VerifyPage() {
                       {proof.metadata.amount && (
                         <div>
                           <p className="text-gray-600 text-sm mb-1">Amount:</p>
-                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm font-mono bg-white px-2 py-1 rounded">
                             {proof.metadata.amount}
                           </code>
                         </div>
@@ -603,31 +603,31 @@ export default function VerifyPage() {
                     <div>
                       <p className="text-gray-600 text-sm mb-2">Proof Statistics:</p>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        <div className="bg-blue-50 p-3 rounded-lg border">
+                        <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">Total Cycles</p>
                           <p className="font-mono text-sm font-semibold text-blue-700">
                             {proof.proofData.stats.total_cycles.toLocaleString()}
                           </p>
                         </div>
-                        <div className="bg-green-50 p-3 rounded-lg border">
+                        <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">User Cycles</p>
                           <p className="font-mono text-sm font-semibold text-green-700">
                             {proof.proofData.stats.user_cycles.toLocaleString()}
                           </p>
                         </div>
-                        <div className="bg-purple-50 p-3 rounded-lg border">
+                        <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">Segments</p>
                           <p className="font-mono text-sm font-semibold text-purple-700">
                             {proof.proofData.stats.segments}
                           </p>
                         </div>
-                        <div className="bg-orange-50 p-3 rounded-lg border">
+                        <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">Paging Cycles</p>
                           <p className="font-mono text-sm font-semibold text-orange-700">
                             {proof.proofData.stats.paging_cycles.toLocaleString()}
                           </p>
                         </div>
-                        <div className="bg-red-50 p-3 rounded-lg border">
+                        <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">Reserved Cycles</p>
                           <p className="font-mono text-sm font-semibold text-red-700">
                             {proof.proofData.stats.reserved_cycles.toLocaleString()}
@@ -641,7 +641,7 @@ export default function VerifyPage() {
                       <Button
                         variant="outline"
                         onClick={() => handleViewProof(proof)}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 bg-white"
                       >
                         <Eye className="h-4 w-4" />
                         View Full Proof
@@ -649,7 +649,7 @@ export default function VerifyPage() {
                       <Button
                         variant="outline"
                         onClick={() => openBlockExplorer(proof.transactionHash)}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 bg-white"
                       >
                         <ExternalLink className="h-4 w-4" />
                         View on Etherscan

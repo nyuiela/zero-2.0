@@ -89,7 +89,9 @@ export default function SellYourCarPage() {
   const [errors, setErrors] = useState<FormErrors>({})
   const { user } = useAuthStore()
 
-  const progress = (currentStep / steps.length) * 100
+  // Calculate progress based on completed steps (not current step)
+  const completedSteps = Math.max(0, currentStep - 1) // Step 1 = 0 completed, Step 2 = 1 completed, etc.
+  const progress = (completedSteps / steps.length) * 100
 
   const handleDataChange = (newData: Partial<CarFormData>) => {
     setFormData(prev => ({ ...prev, ...newData }))
@@ -238,19 +240,12 @@ export default function SellYourCarPage() {
       // Prepare form data for submission
       const submitData = {
         ...formData,
-        // Convert images to FormData for multipart upload
-        image_url: formData.images?.map(img => {
-          // if (img.type === 'gallery' && img.file) {
-          //   return img.file
-          // }
-          // if (img.type === 'capture' && img.file) {
-          //   return img.file
-          // }
-          if (img.type === 'url' && img.url) {
-            return img.url
-          }
-          return []
-        }).filter(Boolean)
+        // Convert images to string array for API submission
+        image_url: formData.images
+          ?.filter((img): img is { type: 'url'; url: string; preview: string; id: string } => 
+            img.type === 'url' && typeof img.url === 'string' && img.url.length > 0
+          )
+          .map(img => img.url) || []
       }
 
       // Create FormData for multipart submission
@@ -278,7 +273,7 @@ export default function SellYourCarPage() {
         })
       }
 
-      const result = await createCar(submitData, user.jwt);
+      const result = await createCar(submitData, `${user.jwt}`);
 
       // Submit to API
       // const response = await fetch('/api/cars', {
@@ -389,31 +384,45 @@ export default function SellYourCarPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Progress</h2>
-              <Badge variant="secondary">{Math.round(progress)}% Complete</Badge>
+              <Badge 
+                variant="secondary" 
+                className="transition-all duration-300 ease-in-out transform hover:scale-105"
+              >
+                {Math.round(progress)}% Complete
+              </Badge>
             </div>
-            <Progress value={progress} className="mb-4" />
+            <Progress 
+              value={progress} 
+              className="mb-4 transition-all duration-500 ease-in-out h-3 bg-gray-200 [&>div]:bg-[#00296b]" 
+            />
 
             {/* Step Indicators */}
             <div className="flex justify-between">
               {steps.map((step) => {
                 const StepIcon = step.icon
+                const isCompleted = currentStep > step.id
+                const isCurrent = currentStep === step.id
+                const isUpcoming = currentStep < step.id
+                
                 return (
                   <div key={step.id} className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${currentStep > step.id
-                      ? 'bg-green-500 text-white'
-                      : currentStep === step.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                      }`}>
-                      {currentStep > step.id ? (
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
+                      isCompleted
+                        ? 'bg-green-500 text-white scale-110'
+                        : isCurrent
+                          ? 'bg-primary text-primary-foreground ring-2 ring-primary/20'
+                          : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {isCompleted ? (
                         <CheckCircle className="w-5 h-5" />
                       ) : (
                         <StepIcon className="w-5 h-5" />
                       )}
                     </div>
                     <div className="text-center">
-                      <p className={`text-sm font-medium ${currentStep >= step.id ? 'text-foreground' : 'text-muted-foreground'
-                        }`}>
+                      <p className={`text-sm font-medium transition-colors duration-300 ${
+                        isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                      }`}>
                         {step.title}
                       </p>
                       <p className="text-xs text-muted-foreground hidden sm:block">
