@@ -437,11 +437,11 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       </div>
 
       {/* Car Details Section */}
-      < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
         {/* Main Details */}
-        < div className="lg:col-span-2 space-y-8" >
+        <div className="lg:col-span-2 space-y-8">
           {/* Title and Location */}
-          < div >
+          <div>
             <h1 className="text-4xl font-bold text-foreground mb-2">
               {listing.year} {listing.make} {listing.model}
             </h1>
@@ -552,56 +552,19 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
               </div>
             </div>
-          </div >
-      </div >
-
-      {/* (Optional) Add more side details here if needed */}
-      <div className="bg-gradient-to-br border-none p-6 px-0 ">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-xl font-bold text-brand">Bids</div>
+          )}
         </div>
-        {bids?.map((bid, key) => (
-          <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
-            <div className="text-lg font-bold flex items-center space-x-2">
-              <span className='text-xl'>
-                {formatCurrency(bid.amount, "USDC")}
-              </span>
-            </div>
-            <div className="space-y-3 mt-2">
-              <div className='flex justify-between'>
-                <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
-                <div className="text-sm text-muted-foreground flex items-center mt-1">
-                  {/* <MapPin className="w-3 h-3 mr-1" /> */}
-                  <User className='w-4 h-3 mr-1' />
-                  {bid.bidder_id}
-                </div>
-              </div>
-              <div className='flex justify-between'>
-                {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
-                <div></div>
-                <div className="text-sm text-muted-foreground flex items-center mt-1">
-                  {bid.updated_at}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-
       </div>
-    </div >
 
-
-
-      {/* Related Auctions */ }
-      < div className = "mt-16 pt-8 border-t border-border" >
+      {/* Related Auctions */}
+      <div className="mt-16 pt-8 border-t border-border">
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {/* {relatedAuctions.map((auction) => (
             <AuctionCard key={auction.id} auction={auction} />
           ))} */}
         </div>
-      </div >
+      </div>
     </>
   )
 }
