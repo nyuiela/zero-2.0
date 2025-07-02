@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAccount, useReadContract } from 'wagmi'
-import { Car, TrendingUp, Users, Award, ArrowRight } from 'lucide-react'
+import { Car, TrendingUp, Users, Award, ArrowRight, Lock } from 'lucide-react'
 import { profile } from 'console'
 import { profile_abi, profile_addr, registry_abi, registry_addr } from '@/lib/abi/abi'
 import { useRouter } from 'next/navigation'
+import { BrandStatusBadge } from '@/components/brand-status-badge'
+import { BrandRegistrationForm } from '@/components/brand-registration-form'
 
 interface Brand {
   brand: string
@@ -23,12 +25,14 @@ interface Brand {
   state: string
   syncer: string
   url: string
+  status: string
 }
 
 export default function BrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([])
   const [userBrands, setUserBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false)
   const { address } = useAccount()
   const profile = useReadContract({
     functionName: "getProfile",
@@ -89,6 +93,7 @@ export default function BrandsPage() {
           chainFunction: "0x1b88549cd82C06875766DF1F6c696c089afad628",
           lastUpdated: 1751336196n,
           locked: false,
+          status: "pending",
           merkleVerifier: "0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E",
           oracle: "0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C",
           state: "",
@@ -102,6 +107,7 @@ export default function BrandsPage() {
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
           lastUpdated: 1751336196n,
           locked: false,
+          status: "in_progress",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
           oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
           state: '',
@@ -115,6 +121,7 @@ export default function BrandsPage() {
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
           lastUpdated: 1751336196n,
           locked: false,
+          status: "submitted",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
           oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
           state: '',
@@ -128,6 +135,7 @@ export default function BrandsPage() {
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
           lastUpdated: 1751336196n,
           locked: false,
+          status: "in_review",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
           oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
           state: '',
@@ -140,7 +148,8 @@ export default function BrandsPage() {
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
           lastUpdated: 1751336196n,
-          locked: false,
+          locked: true,
+          status: "failed",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
           oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
           state: '',
@@ -154,6 +163,21 @@ export default function BrandsPage() {
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
           lastUpdated: 1751336196n,
           locked: false,
+          status: "success",
+          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
+          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
+          state: '',
+          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
+          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
+        },
+        {
+          brand: 'Ferrari',
+          brandPermission: '0x9999...aaaa',
+          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
+          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
+          lastUpdated: 1751336196,
+          locked: false,
+          status: "expired",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
           oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
           state: '',
@@ -182,10 +206,9 @@ export default function BrandsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00296b] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading brands...</p>
-        </div>
+        <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
+          ZERO
+        </p>
       </div>
     )
   }
@@ -202,14 +225,23 @@ export default function BrandsPage() {
                 Discover and explore car brands on the platform
               </p>
             </div>
-            <Button className="bg-[#00296b] text-white hover:bg-[#00296b]/90"
-            // onClick={() => router.push("/")}
-            >
+            <Button className="bg-[#00296b] text-white hover:bg-[#00296b]/90" onClick={() => setIsBrandModalOpen(true)}>
               Register Brand
             </Button>
           </div>
         </div>
       </div>
+
+      {isBrandModalOpen && (
+        <div className="fixed inset-0 bg-gray-50 z-50 overflow-hidden">
+          <div className="w-full p-2 flex justify-end bg-[#d6be8a]">
+            <button className="text-2xl font-light cursor-pointer" onClick={() => setIsBrandModalOpen(false)}>&times;</button>
+          </div>
+          <div className="h-full overflow-y-auto px-4 py-6">
+            <BrandRegistrationForm />
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -223,11 +255,14 @@ export default function BrandsPage() {
                   {userBrands.map((brand) => (
                     <Card key={brand.brand} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-4 relative">
                           <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
-                          <Badge variant={brand.locked ? "secondary" : "default"}>
-                            {brand.locked ? "Locked" : "Active"}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <BrandStatusBadge status={brand.status} />
+                            {brand.locked && (
+                              <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
+                            )}
+                          </div>
                         </div>
                         <div className="space-y-2 text-sm text-gray-600">
                           <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
@@ -259,11 +294,14 @@ export default function BrandsPage() {
                 {brands.map((brand) => (
                   <Card key={brand.brand} className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
                     <CardContent className="bg-white p-5 py-0">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-4 relative">
                         <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
-                        <Badge variant={brand.locked ? "secondary" : "default"}>
-                          {brand.locked ? "Locked" : "Active"}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <BrandStatusBadge status={brand.status} />
+                          {brand.locked && (
+                            <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
+                          )}
+                        </div>
                       </div>
                       <div className="space-y-2 text-sm text-gray-600">
                         <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
