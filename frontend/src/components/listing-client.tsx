@@ -375,10 +375,8 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
         <div className="hidden lg:block space-y-6">
           {/* Action Buttons */}
-          <div className='flex items-baseline flex-row bg-green-00 md:justify-between lg:flex-col lg:space-y-6 max-sm:flex-col max-sm:space-y-6'>
-            {/* <div> */}
-
-            <div className="bg-gradient-to-br border-none w-full bg-red-00">
+          <div className='flex flex-col space-y-4'>
+            <div className="bg-gradient-to-br border-none w-full">
               <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-2">
@@ -433,22 +431,87 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
           </div>
 
+          {/* Bids Section */}
+          <div className="bg-gradient-to-br border-none p-6 px-0">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xl font-bold text-brand">Bids</div>
+            </div>
+            {displayBids?.map((bid, key) => (
+              <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
+                <div className="text-lg font-bold flex items-center space-x-2">
+                  <span className='text-xl'>
+                    {formatCurrency(bid.amount, "USDC")}
+                  </span>
+                </div>
+                <div className="space-y-3 mt-2">
+                  <div className='flex justify-between'>
+                    <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
+                    <div className="text-sm text-muted-foreground flex items-center mt-1">
+                      <User className='w-4 h-3 mr-1 flex-shrink-0' />
+                      <span className="truncate max-w-[80px]">{bid.bidder_id}</span>
+                    </div>
+                  </div>
+                  <div className='flex justify-between'>
+                    <div></div>
+                    <div className="text-sm text-muted-foreground flex items-center mt-1">
+                      <span className="truncate max-w-[100px]">{bid.updated_at}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Horizontal Scrollable Bid Cards Carousel */}
+            {displayBids && displayBids.length > 0 && (
+              <div className="mt-6">
+                <div className="text-lg font-bold text-brand mb-3">Recent Bidders</div>
+                <div className="relative">
+                  <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+                    {displayBids.map((bid, index) => (
+                      <div
+                        key={`carousel-${bid.id}`}
+                        className="flex-shrink-0 w-48 bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
+                            {bid.bidder_id?.slice(0, 6)}...{bid.bidder_id?.slice(-4)}
+                          </div>
+                          <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
+                        </div>
+                        <div className="text-lg font-bold text-green-600 truncate">
+                          {formatCurrency(bid.amount, "USDC")}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1 truncate">
+                          {new Date(bid.updated_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Auto-scroll indicator */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Car Details Section */}
-      < div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
-        {/* Main Details */}
-        < div className="lg:col-span-2 space-y-8" >
-          {/* Title and Location */}
-          < div >
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              {listing.year} {listing.make} {listing.model}
-            </h1>
-            <div className="flex items-center space-x-4 text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <MapPin className="w-4 h-4" />
-                <span>{listing.location}</span>
+      {/* Mobile Bidding Panel - Below Car Details */}
+      <div className="lg:hidden space-y-6 mb-8 px-4">
+        {/* Action Buttons */}
+        <div className='flex flex-col space-y-4'>
+          <div className="bg-gradient-to-br border-none w-full">
+            <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-md font-normal text-gray-700">Current Price</div>
+              </div>
+              <Separator />
+              <div className="space-y-3">
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Starting Price:</span>
+                  <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -508,14 +571,14 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <div className='flex justify-between'>
                   <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
                   <div className="text-sm text-muted-foreground flex items-center mt-1">
-                    <User className='w-4 h-3 mr-1' />
-                    {bid.bidder_id}
+                    <User className='w-4 h-3 mr-1 flex-shrink-0' />
+                    <span className="truncate max-w-[80px]">{bid.bidder_id}</span>
                   </div>
                 </div>
                 <div className='flex justify-between'>
                   <div></div>
                   <div className="text-sm text-muted-foreground flex items-center mt-1">
-                    {bid.updated_at}
+                    <span className="truncate max-w-[100px]">{bid.updated_at}</span>
                   </div>
                 </div>
               </div>
@@ -534,15 +597,15 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                       className="flex-shrink-0 w-48 bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm font-medium text-gray-900 truncate">
+                        <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
                           {bid.bidder_id?.slice(0, 6)}...{bid.bidder_id?.slice(-4)}
                         </div>
-                        <div className="text-xs text-gray-500">#{index + 1}</div>
+                        <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
                       </div>
-                      <div className="text-lg font-bold text-green-600">
+                      <div className="text-lg font-bold text-green-600 truncate">
                         {formatCurrency(bid.amount, "USDC")}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-500 mt-1 truncate">
                         {new Date(bid.updated_at).toLocaleDateString()}
                       </div>
                     </div>
@@ -552,56 +615,19 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
               </div>
             </div>
-          </div >
-      </div >
-
-      {/* (Optional) Add more side details here if needed */}
-      <div className="bg-gradient-to-br border-none p-6 px-0 ">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-xl font-bold text-brand">Bids</div>
+          )}
         </div>
-        {bids?.map((bid, key) => (
-          <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
-            <div className="text-lg font-bold flex items-center space-x-2">
-              <span className='text-xl'>
-                {formatCurrency(bid.amount, "USDC")}
-              </span>
-            </div>
-            <div className="space-y-3 mt-2">
-              <div className='flex justify-between'>
-                <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
-                <div className="text-sm text-muted-foreground flex items-center mt-1">
-                  {/* <MapPin className="w-3 h-3 mr-1" /> */}
-                  <User className='w-4 h-3 mr-1' />
-                  {bid.bidder_id}
-                </div>
-              </div>
-              <div className='flex justify-between'>
-                {/* <div className="font-semibold text-gray-600 text-sm">Created at #{bid.created_at}</div> */}
-                <div></div>
-                <div className="text-sm text-muted-foreground flex items-center mt-1">
-                  {bid.updated_at}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-
       </div>
-    </div >
 
-
-
-      {/* Related Auctions */ }
-      < div className = "mt-16 pt-8 border-t border-border" >
+      {/* Related Auctions */}
+      <div className="mt-16 pt-8 border-t border-border">
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {/* {relatedAuctions.map((auction) => (
             <AuctionCard key={auction.id} auction={auction} />
           ))} */}
         </div>
-      </div >
+      </div>
     </>
   )
 }
