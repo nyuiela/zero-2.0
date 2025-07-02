@@ -57,7 +57,9 @@ export async function placeBid(bidData: Partial<Bid>, jwt: string): Promise<Proo
   try {
     const res = await apiRequest(`/api/bids-proxy`, {
       method: 'POST',
-      body: JSON.stringify(bidData),
+      body: JSON.stringify(
+        bidData
+      ),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwt}`
