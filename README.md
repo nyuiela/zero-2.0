@@ -93,9 +93,15 @@ REDIS_URL=redis://127.0.0.1/
 
 Run the ZK and backend server to have access to it on port `3001`
 
+Seed the database
 ```bash
 cd zk
 cargo run --bin db
+```
+
+Run the zk host in dev mode for faster proving
+```bash
+RISC0_DEV_MODE=1 RUST_LOG=info RISC0_INFO=1 cargo run -p host
 ```
 
 ### 4. Running the frontend
