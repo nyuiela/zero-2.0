@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle } from "lucide-react"
+import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle, MessageSquare, AlertTriangle } from "lucide-react"
 import Image from "next/image"
 import { fetchAuctionById, fetchAuctionedCars } from "@/lib/api/auction"
 
@@ -41,7 +41,29 @@ function formatCurrency(amount: number | string, currency: 'ETH' | 'USDC' = 'ETH
 export default function AuctionPage({ params }: { params: Promise<{ id: string }> }) {
   const { address, isConnected } = useAccount()
   const [auctionId, setAuctionId] = useState<string>('')
-  const [bids, setBids] = useState<Bid[]>([])
+  const [bids, setBids] = useState<Bid[]>([
+    {
+      auctionId: auctionId,
+      address: "0x1234...5678",
+      amount: 45000,
+      timestamp: Date.now() - 3600000, // 1 hour ago
+      rank: 1
+    },
+    {
+      auctionId: auctionId,
+      address: "0x8765...4321", 
+      amount: 44000,
+      timestamp: Date.now() - 7200000, // 2 hours ago
+      rank: 2
+    },
+    {
+      auctionId: auctionId,
+      address: "0xabcd...efgh",
+      amount: 43000,
+      timestamp: Date.now() - 10800000, // 3 hours ago
+      rank: 3
+    }
+  ])
   const [bidAmount, setBidAmount] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [quickBids, setQuickBids] = useState<number[]>([])
@@ -61,22 +83,32 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
     getParams()
   }, [params])
 
-  // Fetch car data using the same source as listing page
-  const { data: auctions, isLoading: aucLoading, isError: aucError } = useQuery({
+  // Fetch auction data
+  const { data: auctionData, isLoading: aucLoading, isError: aucError } = useQuery({
     queryKey: ['auction', auctionId],
-    queryFn: () => fetchAuctionedCars(),
+    queryFn: () => fetchAuctionById(auctionId),
   })
+  
+  // Fetch car data using the same source as listing page
   const { data: cars = mockListings, isLoading: carsLoading, isError: carsError } = useQuery({
     queryKey: ['cars', auctionId],
     queryFn: () => fetchCarById(auctionId),
   })
 
-  // Fix: If cars is an array (from API), use the first element
+  // Handle API response structure safely
   let carListing: Partial<CarAuctioned> | null = null;
+  let auctionInfo: any = null;
+  
+  // Handle cars data - could be array or single object
   if (Array.isArray(cars) && cars.length > 0) {
     carListing = cars[0] as Partial<CarAuctioned>;
   } else if (cars && typeof cars === 'object' && !Array.isArray(cars)) {
     carListing = cars as Partial<CarAuctioned>;
+  }
+  
+  // Handle auction data - could have comments, reports, etc.
+  if (auctionData && typeof auctionData === 'object') {
+    auctionInfo = auctionData;
   }
 
   // Show loading if car data is loading or auctionId not set yet
@@ -110,12 +142,53 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
     : ["https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"];
   const seller = typeof carListing?.seller === 'string' ? { name: carListing.seller, verified: false } : (carListing?.seller || { name: 'Unknown', verified: false });
   const features = carListing?.features || { exterior: [], interior: [], mechanical: [] };
-  const startingPrice = carListing?.starting_price || 0;
+  const startingPrice = carListing?.starting_price || auctionInfo?.starting_price || 0;
   const description = carListing?.description || '';
   const year = carListing?.year || '';
   const make = carListing?.make || '';
   const model = carListing?.model || '';
   const location = carListing?.location || '';
+  
+  // Mock data for testing when API returns empty
+  const mockComments = [
+    {
+      id: 1,
+      user: "0x1234...5678",
+      text: "Great condition! I'm interested in this auction.",
+      timestamp: "2024-12-15T10:30:00Z",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+    },
+    {
+      id: 2,
+      user: "0x8765...4321", 
+      text: "Has anyone seen this car in person? The photos look good.",
+      timestamp: "2024-12-15T09:15:00Z",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
+    },
+    {
+      id: 3,
+      user: "0xabcd...efgh",
+      text: "The mileage seems reasonable for the year. Good value!",
+      timestamp: "2024-12-15T08:45:00Z",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face"
+    }
+  ]
+  
+  const mockReports = [
+    {
+      id: 1,
+      type: "Minor Issue",
+      description: "Small scratch on passenger door",
+      timestamp: "2024-12-15T11:00:00Z"
+    }
+  ]
+  
+  // Handle auction-specific data from API response
+  const comments = auctionInfo?.comments?.length > 0 ? auctionInfo.comments : mockComments;
+  const reports = auctionInfo?.reports?.length > 0 ? auctionInfo.reports : mockReports;
+  const auctionStatus = auctionInfo?.status || 'active';
+  const currentBid = auctionInfo?.current_bid || startingPrice;
+  const bidCount = auctionInfo?.bid_count || 0;
 
   const handleBid = async (amount: number) => {
     if (!isConnected || !address) {
@@ -248,6 +321,62 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
               </CardContent>
             </Card>
 
+            {/* Comments Section */}
+            {comments.length > 0 && (
+              <Card className="border-gray-200 shadow-none">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    Comments ({comments.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {comments.map((comment: any, index: number) => (
+                      <div key={index} className="bg-gray-50 border border-gray-200 p-3 rounded">
+                        <div className="flex items-center gap-2 mb-2">
+                          <User className="h-4 w-4 text-gray-500" />
+                          <span className="font-medium text-sm">{comment.user || 'Anonymous'}</span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(comment.timestamp || Date.now()).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-gray-700">{comment.text || comment.content || comment.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Reports Section */}
+            {reports.length > 0 && (
+              <Card className="border-gray-200 shadow-none">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Reports ({reports.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {reports.map((report: any, index: number) => (
+                      <div key={index} className="bg-red-50 border border-red-200 p-3 rounded">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                          <span className="font-medium text-sm text-red-700">{report.type || 'Issue Reported'}</span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(report.timestamp || Date.now()).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-red-700">{report.description || report.text || report.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* All Bidders Section */}
             <Card className="border-gray-200 shadow-none">
               <CardHeader>
@@ -303,10 +432,10 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                {bids.length > 0 ? (
+                {currentBid > startingPrice ? (
                   <div className="text-center mb-4">
-                    <div className="text-3xl font-bold text-green-700 mb-2">{formatCurrency(bids[0].amount, currency)}</div>
-                    <div className="text-sm text-gray-600">by {bids[0].address.slice(0, 6)}...{bids[0].address.slice(-4)}</div>
+                    <div className="text-3xl font-bold text-green-700 mb-2">{formatCurrency(currentBid, currency)}</div>
+                    <div className="text-sm text-gray-600">Current Highest Bid</div>
                   </div>
                 ) : (
                   <div className="text-center mb-4">
@@ -332,12 +461,12 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900">{carListing?.auction?.bid_count || 0}</div>
+                    <div className="text-lg font-bold text-gray-900">{bidCount}</div>
                     <div className="text-sm text-gray-600">Total Bids</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900">0</div>
-                    <div className="text-sm text-gray-600">Watching</div>
+                    <div className="text-lg font-bold text-gray-900">{comments.length}</div>
+                    <div className="text-sm text-gray-600">Comments</div>
                   </div>
                 </div>
               </CardContent>

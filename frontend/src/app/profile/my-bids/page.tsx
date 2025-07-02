@@ -80,7 +80,7 @@ export default function MyBidsPage() {
         {/* Advanced Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-br from-[#fffbe6] to-[#e0e7ff] border-none shadow-lg animate-fade-in-up">
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-4 text-center bg-transparent">
               <div className="text-3xl font-extrabold text-[#00296b] flex items-center justify-center gap-2">
                 {totalBids} <BarChart3 className="h-6 w-6 text-amber-500" />
               </div>
@@ -88,7 +88,7 @@ export default function MyBidsPage() {
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-[#e0ffe6] to-[#e0e7ff] border-none shadow-lg animate-fade-in-up delay-100">
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-4 text-center bg-transparent">
               <div className="text-3xl font-extrabold text-green-600 flex items-center justify-center gap-2">
                 {wins} <Trophy className="h-6 w-6 text-green-400" />
               </div>
@@ -96,7 +96,7 @@ export default function MyBidsPage() {
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-[#ffe6e6] to-[#e0e7ff] border-none shadow-lg animate-fade-in-up delay-200">
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-4 text-center bg-transparent">
               <div className="text-3xl font-extrabold text-red-500 flex items-center justify-center gap-2">
                 {losses} <ArrowDownLeft className="h-6 w-6 text-red-400" />
               </div>
@@ -104,7 +104,7 @@ export default function MyBidsPage() {
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-[#fffbe6] to-[#e0e7ff] border-none shadow-lg animate-fade-in-up delay-300">
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-4 text-center bg-transparent">
               <div className="text-3xl font-extrabold text-yellow-500 flex items-center justify-center gap-2">
                 {almost} <Flame className="h-6 w-6 text-yellow-400" />
               </div>
