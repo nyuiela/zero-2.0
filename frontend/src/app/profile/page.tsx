@@ -29,6 +29,8 @@ import { toast } from 'sonner'
 import { AuctionRegistrationForm } from "@/components/auction-registration-form"
 import { useRouter } from 'next/navigation'
 import { zero_abi, zero_addr } from '@/lib/abi/abi'
+import Image from 'next/image'
+import ProfileBanner from '@/components/profile-banner'
 
 interface SellerApplication {
   businessName: string
@@ -79,6 +81,9 @@ export default function ProfilePage() {
 
   const [newSpecialty, setNewSpecialty] = useState('')
 
+  // Add state for profile NFT image
+  const [profileNft, setProfileNft] = useState<string | null>(null)
+
   // Debug logging
   useEffect(() => {
     console.log('Profile Page Debug:', {
@@ -88,6 +93,14 @@ export default function ProfilePage() {
       hasUser: !!user
     })
   }, [isConnected, address, user])
+
+  // Fetch NFT image after login (simulate on mount for now)
+  useEffect(() => {
+    fetch('/api/request-nft')
+      .then(res => res.json())
+      .then(data => setProfileNft(data.image))
+      .catch(() => setProfileNft(null))
+  }, [])
 
   // Show loading if wallet not connected
   if (!isConnected) {
@@ -211,8 +224,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <div className="w-full flex justify-center mb-6">
+          <ProfileBanner image={profileNft} height="h-32" />
+        </div>
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Profile</h1>
@@ -603,7 +619,7 @@ export default function ProfilePage() {
           </Tabs>
         </div>
 
-      </main>
+      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
 import Header from "@/components/header";
 import AuthInitializer from '@/components/auth-initializer'
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClientBody>
+          <Toaster />
           <AuthInitializer />
           <Header />
           <main>

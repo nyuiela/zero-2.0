@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LogOut, Search, User, Menu, X, Wallet, Network, Gavel, Heart } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
@@ -11,6 +11,8 @@ import { LoginModal } from './login-modal';
 import { BrandRegistrationForm, BrandRegistrationFormData } from './brand-registration-form';
 import { readContract, writeContract } from 'viem/actions';
 import { registry_abi, registry_addr } from '@/lib/abi/abi';
+import Image from 'next/image';
+import ProfileBanner from '@/components/profile-banner';
 
 const contactInfo = [
   { label: 'US', value: '+1 323-407-8523' },
@@ -31,6 +33,8 @@ export default function Header() {
   console.log("user ", user);
   const { writeContract } = useWriteContract();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  // Add state for profile NFT image
+  const [profileNft, setProfileNft] = useState<string | null>(null);
 
   // Check if user is fully authenticated (wallet connected + auth completed)
   const isAuthenticated = isConnected && user
@@ -91,6 +95,19 @@ export default function Header() {
       setLoading(false)
     }
   }
+
+  // Fetch NFT image after login
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetch('/api/request-nft')
+        .then(res => res.json())
+        .then(data => setProfileNft(data.image))
+        .catch(() => setProfileNft(null));
+    } else {
+      setProfileNft(null);
+    }
+  }, [isAuthenticated]);
+
   return (
     <header className="w-full relative z-50">
       {/* Top Bar */}
@@ -173,8 +190,9 @@ export default function Header() {
                     className="w-60 bg-white border-gray-700 text-black border-none shadow-2xl p-2 z-[100] rounded-sm"
                     sideOffset={8}
                   >
-                    <div className='w-full h-[5rem] bg-green-300 rounded-sm mb-2 text-center flex items-center justify-center font-bold text-shadow-indigo-50 text-white/90'>
-                      ZE | RO
+                    {/* NFT Banner or fallback */}
+                    <div className='w-full flex justify-center mb-2'>
+                      <ProfileBanner image={profileNft} height="h-20" />
                     </div>
                     <DropdownMenuItem className="py-2 px-2 rounded-[8px] hover:bg-gray-300 transition-colors cursor-pointer">
                       <Link href="/profile" className="flex items-center w-full">
