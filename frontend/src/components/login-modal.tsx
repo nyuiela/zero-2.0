@@ -250,10 +250,12 @@ export function LoginModal() {
       console.log('Advancing from username to connect step')
       setAuthStep('connect')
     }
-    
+    setOpen(false); // Explicitly close the login modal
     setIsConnectingFromModal(true) // Set flag before opening RainbowKit modal
-    openConnectModal?.()
-  }, [openConnectModal, setIsConnectingFromModal, open, authStep, username, setAuthStep])
+    setTimeout(() => {
+      openConnectModal?.()
+    }, 100); // Small delay to ensure modal closes first
+  }, [openConnectModal, setIsConnectingFromModal, setOpen, open, authStep, username, setAuthStep])
 
   const handleSignAndVerify = async () => {
     if (!address || !username || !currentMessage || !currentNonce) {
