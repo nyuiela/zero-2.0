@@ -94,7 +94,7 @@ export default function Header() {
   return (
     <header className="w-full relative z-50">
       {/* Top Bar */}
-      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-center px-4 py-2 cursor-pointer relative" onClick={() => setIsBrandModalOpen(true)}>
+      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-center px-4 py-2 cursor-pointer relative max-md:hidden" onClick={() => setIsBrandModalOpen(true)}>
         <span className='font-normal text-xs'>Register as a brand</span>
         <button className="text-xl font-light absolute right-5">&times;</button>
       </div>
@@ -116,7 +116,7 @@ export default function Header() {
       /> */}
 
       {/* Contact Info Bar */}
-      <div className="w-full bg-gray-50 text-[#202626] text-xs flex items-center justify-center px-4 py-1 border-b border-gray-200 max-md:text-[10px]">
+      <div className="w-full bg-gray-50 text-[#202626] text-xs flex items-center justify-center px-4 py-1 border-b border-gray-200 max-md:text-[10px] max-md:hidden">
         {contactInfo.map((item, idx) => (
           <span key={item.label} className="mx-1">
             {item.label} {item.value}
@@ -148,7 +148,7 @@ export default function Header() {
 
           {/* Search and Sign In - Always Right Aligned */}
           <div className="flex items-center space-x-4 ml-auto absolute right-10">
-            <button className="p-2 hover:bg-gray-100 rounded-full cursor-pointer">
+            <button className="p-2 hover:bg-gray-100 rounded-full cursor-pointer max-md:hidden">
               <Search className="h-5 w-5 text-[#202626]" />
             </button>
             {/* Auth Section */}
@@ -216,6 +216,11 @@ export default function Header() {
                 <Link href="/sell" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Sell</Link>
                 <Link href="/verify" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Verify</Link>
                 <Link href="/brands" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
+
+                <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer bg-gray-100 flex items-center justify-betweens px-5">
+                  <input type="text" placeholder="Search" className="w-full outline-none" />
+                  <Search className="h-5 w-5 text-[#202626]" />
+                </div>
               </div>
             </div>
           )}
