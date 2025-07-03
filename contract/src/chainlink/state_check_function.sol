@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {FunctionsClient} from "@chainlink/contracts/functions/v1_0_0/FunctionsClient.sol";
-import {ConfirmedOwner} from "@chainlink/contracts/shared/access/ConfirmedOwner.sol";
-import {FunctionsRequest} from "@chainlink/contracts/functions/v1_0_0/libraries/FunctionsRequest.sol";
+import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol";
+import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
+import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import {StateManager} from "../core/State.sol";
 import {CarRegistry} from "../core/registry.sol";
 
@@ -38,7 +38,12 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     // error StateChange
 
     // Event to log responses
-    event Response(bytes32 indexed requestId, string state, bytes response, bytes err);
+    event Response(
+        bytes32 indexed requestId,
+        string state,
+        bytes response,
+        bytes err
+    );
     event ChangeDON(bytes32 indexed donId, address owner);
     event ChangeRouter(address indexed router, address owner);
     event ChangeGasLimit(uint256 gas, address owner);
@@ -48,9 +53,17 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
 
     // JavaScript source code
 
-    string source = "const url = args[0];" "const apiResponse = await Functions.makeHttpRequest({" "  url: `${url}`"
-        "})" "if (apiResponse.error) {" "  console.error(apiResponse.error)" "  throw Error('Request failed')" "}"
-        "const { data } = apiResponse;" "console.log('API response data:', JSON.stringify(data, null, 2));"
+    string source =
+        "const url = args[0];"
+        "const apiResponse = await Functions.makeHttpRequest({"
+        "  url: `${url}`"
+        "})"
+        "if (apiResponse.error) {"
+        "  console.error(apiResponse.error)"
+        "  throw Error('Request failed')"
+        "}"
+        "const { data } = apiResponse;"
+        "console.log('API response data:', JSON.stringify(data, null, 2));"
         "return Functions.encodeString(data.cid);";
 
     // using the deployed ip address to check state
@@ -65,7 +78,8 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
 
     // donID - Hardcoded for Sepolia
 
-    bytes32 donID = 0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000;
+    bytes32 donID =
+        0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000;
 
     // State variable to store the returned state information
     string public state;
@@ -88,7 +102,10 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
     /**
      * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    constructor(address _stateAddr, address payable _registry) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(
+        address _stateAddr,
+        address payable _registry
+    ) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         stateAddress = _stateAddr;
 
         stateContract = StateManager(_stateAddr);
@@ -101,18 +118,22 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
      * @param args The arguments to pass to the HTTP request
      * @return requestId The ID of the request
      */
-    function sendRequest(uint64 subscriptionId, string[] calldata args, string memory _brand)
-        external
-        virtual
-        onlyRegistry
-        returns (bytes32 requestId)
-    {
+    function sendRequest(
+        uint64 subscriptionId,
+        string[] calldata args,
+        string memory _brand
+    ) external virtual onlyRegistry returns (bytes32 requestId) {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
         if (args.length > 0) req.setArgs(args); // Set the arguments for the request
 
         // Send the request and store the request ID
-        s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
+        s_lastRequestId = _sendRequest(
+            req.encodeCBOR(),
+            subscriptionId,
+            gasLimit,
+            donID
+        );
 
         request[_brand] = s_lastRequestId;
 
@@ -125,7 +146,11 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
      * @param _response The HTTP response data
      * @param err Any errors from the Functions request
      */
-    function fulfillRequest(bytes32 requestId, bytes memory _response, bytes memory err) internal override {
+    function fulfillRequest(
+        bytes32 requestId,
+        bytes memory _response,
+        bytes memory err
+    ) internal override {
         if (s_lastRequestId != requestId) {
             revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
@@ -150,13 +175,18 @@ contract StateCheckFunction is FunctionsClient, ConfirmedOwner {
         emit Response(requestId, state, s_lastResponse, s_lastError);
     }
 
-    function getResponse(string memory _brand) public view returns (string memory) {
+    function getResponse(
+        string memory _brand
+    ) public view returns (string memory) {
         bytes32 id = request[_brand];
         return response[id];
     }
 
     modifier onlyRegistry() {
-        require(msg.sender == address(_registryContract), "Init_Function: not authorized");
+        require(
+            msg.sender == address(_registryContract),
+            "Init_Function: not authorized"
+        );
         _;
     }
 }
