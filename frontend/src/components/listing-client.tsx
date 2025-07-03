@@ -163,7 +163,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
     <>
       <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={handleSubmitBid} name="Create Auction onchain & submit proof" />
       {/* Breadcrumb */}
-      <nav className="text-sm text-muted-foreground mb-6">
+      <nav className="text-sm text-muted-foreground mb-6 px-4 md:px-8 xl:px-12">
         <Link href="/" className="hover:text-brand">Home</Link>
         <span className="mx-2">/</span>
         <Link href="/auctions" className="hover:text-brand">Auctions</Link>
@@ -172,7 +172,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       </nav>
 
       {/* Current Bid Display */}
-      <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 mx-4">
+      <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 px-4 md:px-8 xl:px-12">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
           <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, 'USDC')}</div>
@@ -217,13 +217,13 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       )}
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 px-2 sm:px-2 md:px-4 xl:px-4">
         {/* Left Column - Images and Car Details */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-8 space-y-8">
           {/* Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card">
+          <div className="space-y-4 -mr-2 lg:-mr-44">
+            {/* Main Image - maximize within column, no overflow */}
+            <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card w-full max-w-full">
               <Image
                 src={listing.image_url[selectedImage]}
                 alt={`${listing.year} ${listing.make} ${listing.model}`}
@@ -233,7 +233,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               />
             </div>
             {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-6 gap-2">
+            <div className="grid grid-cols-6 gap-2 px-2 sm:px-2 md:px-4 xl:px-4">
               {listing.image_url.map((image, index) => (
                 <button
                   key={image}
@@ -373,7 +373,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
 
         {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
-        <div className="hidden lg:block space-y-6">
+        <div className="hidden lg:block space-y-6 lg:col-span-4 -mr-36 ml-44">
           {/* Action Buttons */}
           <div className='flex flex-col space-y-4'>
             <div className="bg-gradient-to-br border-none w-full">

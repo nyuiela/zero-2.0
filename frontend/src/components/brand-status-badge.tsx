@@ -8,6 +8,8 @@ import {
   XCircle,
   Clock,
   Search,
+  Circle,
+  CircleDashed,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -21,28 +23,28 @@ const STATUS_CONFIG = {
   },
   in_progress: {
     label: "In progress",
-    icon: Loader2,
-    color: "text-blue-600",
+    icon: CircleDashed,
+    color: "text-blue-700 font-bold",
     bg: "bg-blue-900/40",
     spin: true,
   },
   submitted: {
     label: "Submitted",
     icon: Send,
-    color: "text-violet-600",
+    color: "text-violet-800",
     bg: "bg-violet-900/60",
   },
   in_review: {
     label: "In review",
     icon: null, // handled specially
     color: "text-yellow-400",
-    bg: "bg-yellow-900/60",
+    bg: "bg-green-900",
   },
   success: {
     label: "Success",
     icon: CheckCircle,
     color: "text-yellow-400",
-    bg: "bg-green-900/60",
+    bg: "bg-yellow-900/90",
   },
   failed: {
     label: "Failed",
@@ -69,7 +71,7 @@ export function BrandStatusBadge({ status }: { status: string }) {
     return (
       <span
         className={clsx(
-          "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-sm",
+          "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-[15px]",
           config.bg,
           config.color
         )}
@@ -88,14 +90,14 @@ export function BrandStatusBadge({ status }: { status: string }) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-sm",
+        "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-[15px]",
         config.bg,
         config.color
       )}
       style={{ minWidth: 110 }}
     >
       {Icon && (
-        <Icon className={clsx("w-5 h-5 mr-1", config.spin && "animate-spin")}/>
+        <Icon className="w-5 h-5 mr-1" />
       )}
       {config.label}
     </span>

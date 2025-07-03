@@ -49,8 +49,8 @@ export default function BrandsPage() {
     account: address
   })
   const router = useRouter()
-  console.log("Brand Status ", brandStatus.data)
-  console.log("Profile ", profile.data)
+  console.log("Brand Status ", brandStatus)
+  console.log("Profile ", profile)
   // Mock data for charts - in real implementation, this would come from API
   const popularBrandsData = [
     { name: 'Toyota', value: 45, color: '#8884d8' },
@@ -91,7 +91,7 @@ export default function BrandsPage() {
           brandPermission: "0x108f8Df99A5edE55ddA08b545db5F6886dc61d74",
           ccip: "0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925",
           chainFunction: "0x1b88549cd82C06875766DF1F6c696c089afad628",
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: false,
           status: "pending",
           merkleVerifier: "0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E",
@@ -102,10 +102,10 @@ export default function BrandsPage() {
         },
         {
           brand: 'BMW',
-          brandPermission: '0x8765...4321',
+          brandPermission: '0x8765ssf49982480130we241234r1831430114321',
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: false,
           status: "in_progress",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
@@ -119,7 +119,7 @@ export default function BrandsPage() {
           brandPermission: '0x1111...2222',
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: false,
           status: "submitted",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
@@ -133,7 +133,7 @@ export default function BrandsPage() {
           brandPermission: '0x3333...4444',
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: false,
           status: "in_review",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
@@ -147,7 +147,7 @@ export default function BrandsPage() {
           brandPermission: '0x5555...6666',
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: true,
           status: "failed",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
@@ -161,7 +161,7 @@ export default function BrandsPage() {
           brandPermission: '0x7777...8888',
           ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
           chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196n,
+          lastUpdated: 1751336196,
           locked: false,
           status: "success",
           merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
