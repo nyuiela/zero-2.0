@@ -32,6 +32,7 @@ import StakeSection from './StakeSection'
 import ValidationErrors from './ValidationErrors'
 import TransactionError from './TransactionError'
 import TransactionHash from './TransactionHash'
+import { toast } from "sonner"
 
 const validateFormData = (data: BrandRegistrationFormData): string[] => {
   const errors: string[] = []
@@ -308,16 +309,15 @@ export function BrandRegistrationForm() {
         ],
         account: address
       })
-      // Simulate transaction hash - in real implementation, this would come from the transaction
-      // const mockHash = "0x" + Math.random().toString(16).substr(2, 64)
-      // if (isConfirmed) {
-      //   setStakeActivateStep(1)
-      //   setIsLoading(false)
-      // }
+      toast.success("Brand registered successfully!", {
+        description: "Your brand has been registered and is pending activation.",
+        duration: 5000,
+      })
     } catch (error) {
-      console.error("Failed to submit form ", error)
-      setIsLoading(false)
-      setError(parseError(error))
+      toast.error("Brand registration failed", {
+        description: parseError(error),
+        duration: 5000,
+      })
     }
   }
 

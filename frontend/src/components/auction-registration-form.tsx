@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import dynamic from "next/dynamic"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -143,7 +144,7 @@ export function AuctionRegistrationForm({
   }
   const handleSubmit = async (data: AuctionRegistrationFormData) => {
     if (!address) {
-      alert("Please connect your wallet first.");
+      toast.error("Please connect your wallet first.");
       return;
     }
     setIsLoading(true)
@@ -187,9 +188,17 @@ export function AuctionRegistrationForm({
         "stats": res.stats
       });
       setIsLoading(false)
+      toast.success("Auction created successfully!", {
+        description: "Your auction has been created and is now live.",
+        duration: 5000,
+      });
     } catch (err) {
       setIsLoading(false)
       console.error("Error writing contract:", err);
+      toast.error("Auction creation failed", {
+        description: err?.message || "An error occurred while creating the auction.",
+        duration: 5000,
+      });
     }
   }
 
