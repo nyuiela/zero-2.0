@@ -30,7 +30,29 @@ import {StateCheckFunction} from "../src/chainlink/state_check_function.sol";
 
 import {UsdcToken} from "./mocks/IUSDC.sol";
 
+import {BaseTest} from "./BaseTest.t.sol";
+import {CCIPLocalSimulatorFork} from "@chainlink/local/src/ccip/CCIPLocalSimulatorFork.sol";
+import {BurnMintERC677Helper} from "@chainlink/local/src/ccip/BurnMintERC677Helper.sol";
+import {Register} from "@chainlink/local/src/ccip/Register.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IRouterClient} from "@chainlink/contracts-ccip/contracts/interfaces/IRouterClient.sol";
+import {Client} from "@chainlink/contracts-ccip/contracts/libraries/Client.sol";
+
 contract BaseTest is Test {
+    string DESTINATION_RPC_URL = vm.envString("ETHERUM_URL");
+    string SOURCE_RPC_URL = vm.envString("BASE_URL");
+    uint256 destinationFork;
+    uint256 sourceFork;
+    CCIPLocalSimulatorFork ccipLocalSimulatorFork;
+    address bob = makeAddr("bob");
+    address alice = makeAddr("alice");
+    BurnMintERC677Helper destinationCCIPBnMToken;
+    BurnMintERC677Helper sourceCCIPBnMToken;
+    IERC20 sourceLinkToken;
+    IRouterClient sourceRouter;
+    uint64 destinationChainSelector;
+    uint64 sourceChainSelector;
+
     Fee fee;
     StateManager state;
     PermissionManager permissions;
@@ -52,6 +74,10 @@ contract BaseTest is Test {
     ZeroNFT zero;
     Auction auction;
 
+    // destination contracts
+    MerkleVerifier d_merkle;
+    Messenger d_messenger;
+
     string constant BRAND = "leeees1";
     address public lee = address(0x23);
     // Base Network Addresses
@@ -69,7 +95,59 @@ contract BaseTest is Test {
     bytes32 constant _BASE_FUNCTION_DON_ID =
         0x66756e2d626173652d7365706f6c69612d310000000000000000000000000000;
 
-    function baseSetUp() public {
+    // ETHEREUM
+    address _ETH_ROUTER;
+    address _ETH_LINK_TOKEN;
+
+    function setUp() public {
+        // set up network and fork
+        vm.deal(alice, 100 ether);
+        vm.deal(bob, 100 ether);
+        vm.deal(address(this), 100 ether);
+        ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
+        vm.makePersistent(address(ccipLocalSimulatorFork));
+        destinationFork = vm.createSelectFork(DESTINATION_RPC_URL);
+        sourceFork = vm.createFork(SOURCE_RPC_URL); //sourceFork =
+        Register.NetworkDetails
+            memory destinationNetworkDetails = ccipLocalSimulatorFork
+                .getNetworkDetails(block.chainid);
+        _ETH_ROUTER = destinationNetworkDetails.routerAddress;
+        _ETH_LINK_TOKEN = destinationNetworkDetails.linkAddress;
+
+        destinationCCIPBnMToken = BurnMintERC677Helper(
+            destinationNetworkDetails.ccipBnMAddress
+        );
+        vm.makePersistent(address(destinationCCIPBnMToken));
+        destinationChainSelector = destinationNetworkDetails.chainSelector;
+        //   vm.makePersistent(destinationChainSelector);
+        vm.selectFork(sourceFork);
+        Register.NetworkDetails
+            memory sourceNetworkDetails = ccipLocalSimulatorFork
+                .getNetworkDetails(block.chainid);
+
+        sourceCCIPBnMToken = BurnMintERC677Helper(
+            sourceNetworkDetails.ccipBnMAddress
+        );
+        //   vm.makePersistent(address(sourceCCIPBnMToken));
+        sourceLinkToken = IERC20(sourceNetworkDetails.linkAddress);
+        //   vm.makePersistent(address(sourceLinkToken));
+        sourceRouter = IRouterClient(sourceNetworkDetails.routerAddress);
+
+        // check source details
+        assertEq(block.chainid, 84532, "Chain ID should match Base network");
+        assertEq(
+            sourceNetworkDetails.linkAddress,
+            _BASE_LINK_TOKEN,
+            "LINK address should match"
+        );
+        assertEq(
+            sourceNetworkDetails.routerAddress,
+            _BASE_ROUTER,
+            "Router address should match"
+        );
+
+        // deploy contracts
+
         usdc = new UsdcToken();
 
         brandPermission = new BrandPermissionManager();
@@ -145,7 +223,7 @@ contract BaseTest is Test {
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions_ = new bytes4[](20);
         bytes4[] memory registryPermissions = new bytes4[](20);
-        bytes4[] memory statecalls = new bytes4[](2);
+        bytes4[] memory statecalls = new bytes4[](3);
 
         statecalls[0] = profile.updateState.selector;
         statecalls[1] = profile.lockBrand.selector;
@@ -225,11 +303,103 @@ contract BaseTest is Test {
         proof.setMessenger(payable(messenger));
         profile.setRegistry(address(registry));
 
+        // sync proof.
+        proof.allowSyncPermission(address(sync));
+        proof.allowSyncPermission(address(this));
+
         // initialize state
         vm.startPrank(lee);
         // initialize
         merkle.initialize("brand", "000", address(proof), address(this));
         state.initiate(BRAND);
+        vm.stopPrank();
+
+        vm.selectFork(destinationFork);
+        d_merkle = new MerkleVerifier();
+        d_merkle.setRegistry(address(registry));
+        d_merkle.initialize("brand", "000", address(proof), address(this));
+        d_messenger = new Messenger(
+            _ETH_ROUTER,
+            _ETH_LINK_TOKEN,
+            address(d_merkle)
+        );
+        d_messenger.allowlistSourceChain(destinationChainSelector, true);
+        d_messenger.allowlistDestinationChain(sourceChainSelector, true); // allowlist source chain on destination messenger
+        vm.selectFork(sourceFork);
+        proof.allowChain(destinationChainSelector, address(d_messenger));
+        messenger.allowlistSourceChain(sourceChainSelector, true);
+        messenger.allowlistDestinationChain(destinationChainSelector, true);
+    }
+
+    function prepareTest()
+        public
+        returns (
+            // Client.EVMTokenAmount[] memory tokensToSendDetails,
+            uint256 amountToSend
+        )
+    {
+        // This function prepares the test
+        vm.selectFork(sourceFork);
+        //   sourceLinkToken.(address(messenger), 100 ether); // Ensure the router has enough LINK for fees
+        vm.startPrank(alice);
+        sourceCCIPBnMToken.drip(alice);
+
+        amountToSend = 1;
+        sourceCCIPBnMToken.approve(address(sourceRouter), amountToSend + 100);
+        //   tokensToSendDetails = new Client.EVMTokenAmount[](1);
+        //   Client.EVMTokenAmount memory tokenToSendDetails = Client
+        //       .EVMTokenAmount({
+        //           token: address(sourceCCIPBnMToken),
+        //           amount: amountToSend
+        //       });
+        //   tokensToSendDetails[0] = tokenToSendDetails;
+        vm.makePersistent(address(sourceRouter));
+        ccipLocalSimulatorFork.requestLinkFromFaucet(
+            address(messenger),
+            100 ether
+        );
+        vm.stopPrank();
+    }
+
+    function testCCIPTransferToEth() public {
+        prepareTest();
+        proof.sendProof("testCCIPTransferOnBase1", bytes32("0x2342"));
+        proof.sendProof("testCCIPTransferOnBase2", bytes32("0x2342"));
+        proof.sendProof("testCCIPTransferOnBase3", bytes32("0x2342"));
+        proof.sendProof("testCCIPTransferOnBase4", bytes32("0x2342"));
+        proof.sendProof("testCCIPTransferOnBase5", bytes32("0x2342"));
+    }
+
+    function testRevertIfLeaveExists() public {
+        // This test checks if the addLeaf function reverts if the leaf already exists
+        vm.selectFork(sourceFork);
+        //   vm.startPrank(lee);
+        proof.sendProof("testRevertifLeaveExists1", bytes32("0x2342"));
+        proof.sendProof("testRevertifLeaveExists1", bytes32("0x2342"));
+        vm.expectRevert("MerkleVerifier: Already exist");
+        vm.stopPrank();
+    }
+
+    function testProofSyncOnEth() public {
+        // This test checks if the proof sync works correctly on Ethereum
+        prepareTest();
+        vm.selectFork(sourceFork);
+        //   vm.startPrank(lee);
+        proof.sendProof("testProofSyncOnEth1", bytes32("0x2342"));
+        proof.sendProof("testProofSyncOnEth2", bytes32("0x2342"));
+        vm.selectFork(destinationFork);
+        // Check if the leaves were added correctly on the destination chain
+        bytes32[] memory proofLeaves = d_merkle.getProof();
+        // bool isInTree = d_merkle.verifyFromRoot(
+        //     proofLeaves,
+        //     "testProofSyncOnEth1"
+        // );
+        bool _state = d_merkle.isleaf("testProofSyncOnEth1");
+        bool state2 = d_merkle.isleaf("testProofSyncOnEth2");
+        assertTrue(_state, "Leaf should be in the tree");
+        assertTrue(state2, "Leaf should be in the tree");
+
+        //   assertEq(proofLeaves.length, 2, "Proof leaves should be 2");
     }
 
     /// check base function for test calls -- clean girl shi

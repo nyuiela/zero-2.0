@@ -186,6 +186,7 @@ contract DeployScript is Script {
         zeroNFT.setAuctionContract(address(auction));
         initFunction.transferOwnership(address(carRegistry));
         proofSync.setMessenger(payable(messenger));
+        merkleVerifier.setRegistry(address(carRegistry));
 
         allowDestinationChains();
         grantPermissions(_deployer);

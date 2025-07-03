@@ -44,8 +44,8 @@ contract CrossMessagingSync is Test {
         vm.startPrank(alice);
         sourceCCIPBnMToken.drip(alice);
 
-        amountToSend = 10;
-        sourceCCIPBnMToken.approve(address(sourceRouter), amountToSend);
+        amountToSend = 1;
+        sourceCCIPBnMToken.approve(address(sourceRouter), amountToSend + 100);
 
         tokensToSendDetails = new Client.EVMTokenAmount[](1);
         Client.EVMTokenAmount memory tokenToSendDetails = Client
@@ -84,9 +84,9 @@ contract CrossMessagingSync is Test {
         sourceCCIPBnMToken = BurnMintERC677Helper(
             sourceNetworkDetails.ccipBnMAddress
         );
-        vm.makePersistent(address(sourceCCIPBnMToken));
+        //   vm.makePersistent(address(sourceCCIPBnMToken));
         sourceLinkToken = IERC20(sourceNetworkDetails.linkAddress);
-        vm.makePersistent(address(sourceLinkToken));
+        //   vm.makePersistent(address(sourceLinkToken));
         sourceRouter = IRouterClient(sourceNetworkDetails.routerAddress);
         //   vm.makePersistent(
         //       address(destinationCCIPBnMToken),
@@ -108,11 +108,11 @@ contract CrossMessagingSync is Test {
         uint256 balanceOfBobBefore = destinationCCIPBnMToken.balanceOf(bob);
 
         vm.selectFork(sourceFork);
-        vm.startPrank(alice);
         uint256 balanceOfAliceBefore = sourceCCIPBnMToken.balanceOf(alice);
 
-        ccipLocalSimulatorFork.requestLinkFromFaucet(alice, 100 ether);
+        ccipLocalSimulatorFork.requestLinkFromFaucet(alice, 10 ether);
 
+        vm.startPrank(alice);
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(bob),
             data: abi.encode(""),
@@ -133,7 +133,7 @@ contract CrossMessagingSync is Test {
         assertEq(balanceOfBobAfter, balanceOfBobBefore + amountToSend);
 
         console.log("Balance of Bob before send: ", balanceOfBobBefore);
-        console.log("Balance of Bob before send: ", balanceOfAliceBefore);
+        console.log("Balance of Bob after send: ", balanceOfBobAfter);
         vm.stopPrank();
         //   am[0].token = address(destinationCCIPBnMToken);
         //   assertEq(am[0].amount, 100, "Amount to send should be 100");

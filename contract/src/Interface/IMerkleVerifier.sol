@@ -6,9 +6,36 @@ interface IMerkleVerifier {
     event AddedLeaf(string lastProof, string newLeaf);
     event ChangedSyncer(address syncer);
 
-    function initialize(string memory _brand, string memory _root, address _syncer, address _owner) external;
-    function getProof() external view returns (string[] memory);
+    // External Read Functions
+    function root() external view returns (bytes32);
+
+    function brand() external view returns (string memory);
+
+    function initialize(
+        string memory _brand,
+        string memory _root,
+        address _syncer,
+        address _owner
+    ) external;
+
+    function getProof() external view returns (bytes32[] memory);
+
+    function registryAddress() external view returns (address);
+
+    function syncer() external view returns (address);
+
+    function owner() external view returns (address);
+
+    function isleaf(string memory leaf) external view returns (bool);
+
+    // External Write Functions
     function setSyncer(address _syncer) external;
-    function verifyProof(string memory leaf) external view returns (bool);
-    function addLeave(string memory _leaf) external;
+
+    function setRegistry(address _registry) external;
+
+    function setRoot(string memory _root) external;
+
+    function addLeaf(string memory leaf) external;
+
+    function removeLeaf(string memory leaf) external;
 }

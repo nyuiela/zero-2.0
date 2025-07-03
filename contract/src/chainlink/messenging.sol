@@ -140,7 +140,7 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
         string calldata _text
     )
         external
-        onlyOwner
+        //   onlyOwner
         onlyAllowlistedDestinationChain(_destinationChainSelector)
         validateReceiver(_receiver)
         returns (bytes32 messageId)
@@ -247,7 +247,7 @@ contract Messenger is CCIPReceiver, OwnerIsCreator {
     {
         s_lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
         s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-        merkleVerifier.addLeave(s_lastReceivedText); // Add the received text to the Merkle tree
+        merkleVerifier.addLeaf(s_lastReceivedText); // Add the received text to the Merkle tree
         emit MessageReceived(
             any2EvmMessage.messageId,
             any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
