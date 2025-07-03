@@ -7,17 +7,6 @@ solc_version = "0.8.28"
 
 fs_permissions = [{ access = "read", path = "lib/foundry-chainlink-toolkit/out"}]
 
-remappings = [
-"@chainlink/contracts/=lib/chainlink/contracts/src/v0.8/",
-"@chainlink/contracts-ccip/=lib/chainlink/contracts/src/v0.8/ccip/",
-"@openzeppelin/contracts/=lib/chainlink/contracts/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/",
-"@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
-"chainlink-brownie-contracts/=lib/foundry-chainlink-toolkit/lib/chainlink-brownie-contracts/contracts/src/v0.6/vendor/@arbitrum/nitro-contracts/src/",
-"ds-test/=lib/foundry-chainlink-toolkit/lib/forge-std/lib/ds-test/src/",
-"forge-std/=lib/forge-std/src/",
-"foundry-chainlink-toolkit/=lib/foundry-chainlink-toolkit/"
-]
-
 # Base Network Configuration
 [rpc_endpoints]
 localchain = "${LOCALCHAIN_URL}"

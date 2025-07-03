@@ -24,6 +24,7 @@ contract MerkleVerifier is Initializable {
     string[] proof;
     address syncer;
     address owner;
+
     //mappings
 
     // constructor
@@ -40,7 +41,12 @@ contract MerkleVerifier is Initializable {
         _;
     }
 
-    function initialize(string memory _brand, string memory _root, address _syncer, address _owner) public {
+    function initialize(
+        string memory _brand,
+        string memory _root,
+        address _syncer,
+        address _owner
+    ) public {
         brand = _brand;
         root = _root;
         syncer = _syncer;
@@ -63,10 +69,14 @@ contract MerkleVerifier is Initializable {
             bytes32 proofElement = keccak256(abi.encodePacked(proof[i]));
             if (computedHash <= proofElement) {
                 // Hash(current computed hash + current element of the proof)
-                computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
+                computedHash = keccak256(
+                    abi.encodePacked(computedHash, proofElement)
+                );
             } else {
                 // Hash(current element of the proof + current computed hash)
-                computedHash = keccak256(abi.encodePacked(proofElement, computedHash));
+                computedHash = keccak256(
+                    abi.encodePacked(proofElement, computedHash)
+                );
             }
         }
         // Check if the computed hash (root) is equal to the provided root
@@ -79,7 +89,9 @@ contract MerkleVerifier is Initializable {
     //     emit SetRoot(brand, msg.sender);
     // }
 
-    function addLeave(string memory _leaf) public onlySyncer /* only permissioned user */ {
+    function addLeave(
+        string memory _leaf
+    ) public onlySyncer /* only permissioned user */ {
         // verifier proof using Function
 
         proof.push(_leaf);
