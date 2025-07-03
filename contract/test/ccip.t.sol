@@ -40,16 +40,17 @@ contract CrossMessagingSync is Test {
         // This function prepares the test
         // I got this.
         vm.selectFork(sourceFork);
+        //   sourceCCIPBnMToken.mint(alice, 1000 ether);
         vm.startPrank(alice);
         sourceCCIPBnMToken.drip(alice);
 
-        amountToSend = 100;
+        amountToSend = 10;
         sourceCCIPBnMToken.approve(address(sourceRouter), amountToSend);
 
         tokensToSendDetails = new Client.EVMTokenAmount[](1);
         Client.EVMTokenAmount memory tokenToSendDetails = Client
             .EVMTokenAmount({
-                token: address(destinationCCIPBnMToken),
+                token: address(sourceCCIPBnMToken),
                 amount: amountToSend
             });
         tokensToSendDetails[0] = tokenToSendDetails;
@@ -59,6 +60,9 @@ contract CrossMessagingSync is Test {
 
     function setUp() public {
         // ccip setup
+        vm.deal(alice, 100 ether);
+        vm.deal(bob, 100 ether);
+        vm.deal(address(this), 100 ether);
         ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
         vm.makePersistent(address(ccipLocalSimulatorFork));
         destinationFork = vm.createSelectFork(DESTINATION_RPC_URL);
@@ -104,11 +108,10 @@ contract CrossMessagingSync is Test {
         uint256 balanceOfBobBefore = destinationCCIPBnMToken.balanceOf(bob);
 
         vm.selectFork(sourceFork);
+        vm.startPrank(alice);
         uint256 balanceOfAliceBefore = sourceCCIPBnMToken.balanceOf(alice);
 
-        ccipLocalSimulatorFork.requestLinkFromFaucet(alice, 10 ether);
-
-        vm.startPrank(alice);
+        ccipLocalSimulatorFork.requestLinkFromFaucet(alice, 100 ether);
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(bob),
@@ -122,7 +125,6 @@ contract CrossMessagingSync is Test {
         uint256 fees = sourceRouter.getFee(destinationChainSelector, message);
         sourceLinkToken.approve(address(sourceRouter), fees + amountToSend);
         sourceRouter.ccipSend(destinationChainSelector, message);
-        vm.stopPrank();
         uint256 balanceOfAliceAfter = sourceCCIPBnMToken.balanceOf(alice);
         assertEq(balanceOfAliceAfter, balanceOfAliceBefore - amountToSend);
 
@@ -132,6 +134,7 @@ contract CrossMessagingSync is Test {
 
         console.log("Balance of Bob before send: ", balanceOfBobBefore);
         console.log("Balance of Bob before send: ", balanceOfAliceBefore);
+        vm.stopPrank();
         //   am[0].token = address(destinationCCIPBnMToken);
         //   assertEq(am[0].amount, 100, "Amount to send should be 100");
     }
