@@ -53,6 +53,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
   const currency = 'ETH'
   const endTime = new Date(auction.auction?.end_time).getTime()
   const [secondsLeft, setSecondsLeft] = useState(() => Math.abs(Math.floor((endTime - Date.now()) / 1000)))
+  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,7 +62,10 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
     return () => clearInterval(interval)
   }, [endTime])
 
-  const { days, hours, minutes, seconds } = breakdownCountdown(Math.max(0, secondsLeft))
+
+  useEffect(() => {
+    setTime(breakdownCountdown(Math.max(0, secondsLeft)))
+  }, [auction])
 
   return (
     <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
@@ -128,9 +132,9 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
                 <Clock className="w-3 h-3 mr-1" />
                 Time Left
               </div>
-              <i className='font-normal text-[12px] p-0 m-0 gap-0 '>{days} days</i>
+              <i className='font-normal text-[12px] p-0 m-0 gap-0 '>{time.days} days</i>
               <div className="text-black font-semibold text-lg">
-                {`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}
+                {`${String(time.hours).padStart(2, '0')}:${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`}
               </div>
             </div>
           </div>
