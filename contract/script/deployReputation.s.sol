@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
 import "forge-std/Script.sol";
 import {CarRegistry} from "../src/core/registry.sol";
 import {Reputation} from "../src/core/reputation.sol";
@@ -5,7 +8,8 @@ import {Reputation} from "../src/core/reputation.sol";
 contract DeployScript is Script {
     CarRegistry public carRegistry;
     Reputation public reputation;
-    address constant _BASE_USDC_TOKEN = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
+    address constant _BASE_USDC_TOKEN =
+        0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -14,7 +18,9 @@ contract DeployScript is Script {
         address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
 
         address stateManager = vm.envAddress("STATEMANAGER_ADDRESS");
-        address brandPermissionManager = vm.envAddress("BRAND_PERMISSION_MANAGER_ADDRESS");
+        address brandPermissionManager = vm.envAddress(
+            "BRAND_PERMISSION_MANAGER_ADDRESS"
+        );
 
         address profile = vm.envAddress("PROFILE_ADDRESS");
         address sync_function = vm.envAddress("SYNCFUNCTION_ADDRESS ");

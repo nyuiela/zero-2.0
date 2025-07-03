@@ -32,7 +32,13 @@ export default function AuctionGridClient() {
   //   : auctions.filter((auction: Auction) => auction.country === selectedCountry)
   const filteredAuctions = auctions;
 
-  if (isLoading) return <div>Loading auctions...</div>
+  if (isLoading) return (
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+      <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
+        ZERO
+      </p>
+    </div>
+  )
   if (isError) return <div>Failed to load auctions.</div>
 
   return (
