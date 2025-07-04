@@ -1,7 +1,6 @@
 "use client";
 
 import '@rainbow-me/rainbowkit/styles.css'
-// import '@coinbase/onchainkit/styles.css';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { QueryClientProvider } from '@tanstack/react-query'
