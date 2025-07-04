@@ -31,13 +31,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group [&_.toast]:bg-white [&_.toast]:shadow-lg [&_.toast]:rounded-lg"
       toastOptions={{
         className:
-          `relative bg-white shadow-[0_8px_32px_0_rgba(31,38,135,0.12)] rounded-xl border border-gray-200 text-gray-900 px-5 py-4
+          `relative bg-white shadow-[0_8px_32px_0_rgba(31,38,135,0.12)] rounded-xl text-xl text-gray-900 px-5 py-4
           [&_.toast-title]:text-gray-900 [&_.toast-title]:font-semibold [&_.toast-title]:text-base [&_.toast-title]:tracking-tight
-          [&_.toast-description]:text-gray-900 [&_.toast-description]:font-medium [&_.toast-description]:tracking-tight [&_.toast-description]:opacity-100
+          [&_.toast-description]:text-gray-900 [&_.toast-description]:font-medium [&_.toast-description]:tracking-tight
           before:content-[''] before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1.5 before:rounded-full before:bg-gradient-to-b before:from-yellow-400 before:to-yellow-300`,
         style: {
           background: 'white',
-          color: '#18181b', // even deeper gray
+          color: 'black', // even deeper gray
         },
       }}
       closeButton

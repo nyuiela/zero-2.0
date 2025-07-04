@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { Slider } from "@/components/ui/slider"
 import { toast } from "sonner"
-import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle, MessageSquare, AlertTriangle } from "lucide-react"
+import { Clock, Users, Eye, TrendingUp, Award, Timer, DollarSign, User, MapPin, CheckCircle, MessageSquare, AlertTriangle, ChevronDown, ChevronUp, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { fetchAuctionById, fetchAuctionedCars } from "@/lib/api/auction"
 
@@ -73,6 +74,72 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
+
+  // Swap functionality state
+  const [showSwapForm, setShowSwapForm] = useState(false)
+  const [swapAmount, setSwapAmount] = useState('')
+  const [borrowPercentage, setBorrowPercentage] = useState([0])
+  const [isSwapSubmitting, setIsSwapSubmitting] = useState(false)
+  const [userBalance, setUserBalance] = useState({ ETH: 0, USDC: 0 }) // Mock balance - in real app, fetch from wallet
+
+  // Mock function to check if user has enough balance
+  const hasEnoughBalance = (amount: number, currency: 'ETH' | 'USDC') => {
+    return userBalance[currency] >= amount
+  }
+
+  // Calculate required amount (bid + stake)
+  const getRequiredAmount = (bidAmount: string) => {
+    const bid = parseFloat(bidAmount) || 0
+    const stake = bid * 0.05
+    return bid + stake
+  }
+
+  // Check if user needs to swap
+  const needsSwap = (bidAmount: string, currency: 'ETH' | 'USDC') => {
+    const required = getRequiredAmount(bidAmount)
+    return !hasEnoughBalance(required, currency)
+  }
+
+  // Handle swap form submission
+  const handleSwapSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!swapAmount || parseFloat(swapAmount) <= 0) {
+      toast.error('Please enter a valid amount to swap')
+      return
+    }
+
+    setIsSwapSubmitting(true)
+    try {
+      // Mock swap logic - in real app, this would call the swap contract
+      const amount = parseFloat(swapAmount)
+      const percentage = borrowPercentage[0]
+      
+      if (percentage > 0) {
+        // Borrowing swap with percentage increase
+        const borrowedAmount = amount * (1 + percentage / 100)
+        toast.success(`Swap successful! You received ${formatCurrency(borrowedAmount, currency)} (${percentage}% borrowed)`)
+        toast.info(`You will need to pay back ${formatCurrency(amount * (percentage / 100), currency)} later`)
+      } else {
+        // Direct swap
+        toast.success(`Swap successful! You received ${formatCurrency(amount, currency)}`)
+      }
+      
+      setShowSwapForm(false)
+      setSwapAmount('')
+      setBorrowPercentage([0])
+    } catch (error) {
+      toast.error('Swap failed. Please try again.')
+    } finally {
+      setIsSwapSubmitting(false)
+    }
+  }
+
+  // Handle direct swap (using existing swap utility)
+  const handleDirectSwap = () => {
+    // This would open the existing swap widget/modal
+    toast.info('Opening swap interface...')
+    // In real implementation, this would trigger the existing swap component
+  }
 
   // Await params to get the auction ID
   useEffect(() => {
@@ -481,12 +548,108 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Currency Toggle */}
-                <div className="flex gap-2 items-center">
-                  <span className="text-sm text-gray-600">Currency:</span>
-                  <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
-                  <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
-                </div>
+                {/* Currency Toggle - Only show if user has enough balance */}
+                {!needsSwap(bidAmount, currency) ? (
+                  <div className="flex gap-2 items-center">
+                    <span className="text-sm text-gray-600">Currency:</span>
+                    <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
+                    <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <span className="text-sm font-medium text-amber-800">Don't have {currency}?</span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowSwapForm(!showSwapForm)}
+                      className="border-amber-400 text-amber-600 hover:bg-amber-400 hover:text-white"
+                    >
+                      Swap with Euler
+                      {showSwapForm ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Swap Form - Dropdown */}
+                {showSwapForm && (
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-900">Swap Options</h4>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleDirectSwap}
+                          className="text-sm"
+                        >
+                          Direct Swap
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <form onSubmit={handleSwapSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Amount to Swap
+                        </label>
+                        <Input
+                          type="number"
+                          value={swapAmount}
+                          onChange={e => setSwapAmount(e.target.value)}
+                          placeholder="Enter amount"
+                          className="w-full"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Borrow Percentage: {borrowPercentage[0]}%
+                        </label>
+                        <Slider
+                          value={borrowPercentage}
+                          onValueChange={setBorrowPercentage}
+                          max={50}
+                          min={0}
+                          step={1}
+                          className="w-full"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          This increment is being lent to you and will have to be paid back
+                        </p>
+                      </div>
+
+                      {borrowPercentage[0] > 0 && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="text-sm text-blue-800">
+                            <div className="font-medium">Borrowing Summary:</div>
+                            <div>Base amount: {formatCurrency(swapAmount || '0', currency)}</div>
+                            <div>Borrowed: {formatCurrency((parseFloat(swapAmount || '0') * borrowPercentage[0] / 100).toString(), currency)}</div>
+                            <div className="font-medium">Total received: {formatCurrency((parseFloat(swapAmount || '0') * (1 + borrowPercentage[0] / 100)).toString(), currency)}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Button
+                          type="submit"
+                          disabled={isSwapSubmitting}
+                          className="flex-1 bg-gradient-to-r from-blue-800 to-purple-400 text-whitefont-bold"
+                        >
+                          {isSwapSubmitting ? 'Processing...' : 'Execute Swap'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setShowSwapForm(false)}
+                          className="px-4"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                )}
 
                 {/* Bid Form */}
                 <form onSubmit={handleBidSubmit} className="space-y-3">
@@ -511,10 +674,17 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     </div>
                   )}
 
+                  {/* Insufficient Balance Warning */}
+                  {bidAmount && parseFloat(bidAmount) > 0 && needsSwap(bidAmount, currency) && (
+                    <div className="text-sm text-red-700 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <span className="font-semibold">Insufficient Balance:</span> You need {formatCurrency(getRequiredAmount(bidAmount), currency)} but have {formatCurrency(userBalance[currency], currency)}
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
-                    disabled={isSubmitting || timer === 0}
-                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-3"
+                    disabled={isSubmitting || timer === 0 || (bidAmount && parseFloat(bidAmount) > 0 && needsSwap(bidAmount, currency))}
+                    className="w-full bg-gradient-to-r from-blue-900 to-purple-800 text-black font-bold py-3"
                   >
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
                   </Button>

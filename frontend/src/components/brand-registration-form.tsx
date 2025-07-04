@@ -233,9 +233,9 @@ export function BrandRegistrationForm() {
       maxAnswer: "",
       brandAdminAddr: "",
       subscriptionId: "387",
-      stateUrl: "http://13.222.216.169:8080/api/sync",
-      args: "http://13.222.216.169:8080/api/sync",
-      stake: "0.000005"
+      stateUrl: "http://srv894182.hstgr.cloud/api/sync",
+      args: "http://srv894182.hstgr.cloud/api/sync",
+      stake: "0.0000005"
     },
   })
   const steps = ["register", "stake", "activate"]
@@ -400,9 +400,9 @@ export function BrandRegistrationForm() {
     form.setValue("maxAnswer", "1000000");
     form.setValue("brandAdminAddr", "0xf0830060f836B8d54bF02049E5905F619487989e");
     form.setValue("subscriptionId", "387");
-    form.setValue("stateUrl", "http://13.222.216.169:8080/api/sync");
-    form.setValue("args", "http://13.222.216.169:8080/api/sync");
-    form.setValue("stake", "0.00005");
+    form.setValue("stateUrl", "http://srv894182.hstgr.cloud/api/sync");
+    form.setValue("args", "http://srv894182.hstgr.cloud/api/sync");
+    form.setValue("stake", "0.0000005");
   }
   console.log("Open ", showStakeActivateModal)
   return (
