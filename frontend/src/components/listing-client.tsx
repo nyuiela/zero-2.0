@@ -175,7 +175,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 px-4 md:px-8 xl:px-12">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
-          <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, 'USDC')}</div>
+          <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, currency)}</div>
         </div>
       </div>
 
@@ -440,7 +440,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
                 <div className="text-lg font-bold flex items-center space-x-2">
                   <span className='text-xl'>
-                    {formatCurrency(bid.amount, "USDC")}
+                    {formatCurrency(bid.amount, currency)}
                   </span>
                 </div>
                 <div className="space-y-3 mt-2">
@@ -479,7 +479,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                           <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
                         </div>
                         <div className="text-lg font-bold text-green-600 truncate">
-                          {formatCurrency(bid.amount, "USDC")}
+                          {formatCurrency(bid.amount, currency)}
                         </div>
                         <div className="text-xs text-gray-500 mt-1 truncate">
                           {new Date(bid.updated_at).toLocaleDateString()}
@@ -564,7 +564,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
               <div className="text-lg font-bold flex items-center space-x-2">
                 <span className='text-xl'>
-                  {formatCurrency(bid.amount, "USDC")}
+                  {formatCurrency(bid.amount, currency)}
                 </span>
               </div>
               <div className="space-y-3 mt-2">
@@ -603,7 +603,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                         <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
                       </div>
                       <div className="text-lg font-bold text-green-600 truncate">
-                        {formatCurrency(bid.amount, "USDC")}
+                        {formatCurrency(bid.amount, currency)}
                       </div>
                       <div className="text-xs text-gray-500 mt-1 truncate">
                         {new Date(bid.updated_at).toLocaleDateString()}
