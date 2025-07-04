@@ -124,6 +124,7 @@ contract BaseTest is Test {
         Register.NetworkDetails
             memory sourceNetworkDetails = ccipLocalSimulatorFork
                 .getNetworkDetails(block.chainid);
+        sourceChainSelector = 84532;
 
         sourceCCIPBnMToken = BurnMintERC677Helper(
             sourceNetworkDetails.ccipBnMAddress
@@ -145,6 +146,8 @@ contract BaseTest is Test {
             _BASE_ROUTER,
             "Router address should match"
         );
+
+        // check
 
         // deploy contracts
 
@@ -323,8 +326,8 @@ contract BaseTest is Test {
             _ETH_LINK_TOKEN,
             address(d_merkle)
         );
-        d_messenger.allowlistSourceChain(destinationChainSelector, true);
-        d_messenger.allowlistDestinationChain(sourceChainSelector, true); // allowlist source chain on destination messenger
+        d_messenger.allowlistSourceChain(sourceChainSelector, true);
+        d_messenger.allowlistDestinationChain(destinationChainSelector, true); // allowlist source chain on destination messenger
         vm.selectFork(sourceFork);
         proof.allowChain(destinationChainSelector, address(d_messenger));
         messenger.allowlistSourceChain(sourceChainSelector, true);
@@ -387,7 +390,8 @@ contract BaseTest is Test {
         //   vm.startPrank(lee);
         proof.sendProof("testProofSyncOnEth1", bytes32("0x2342"));
         proof.sendProof("testProofSyncOnEth2", bytes32("0x2342"));
-        vm.selectFork(destinationFork);
+        ccipLocalSimulatorFork.switchChainAndRouteMessage(destinationFork);
+        //   vm.selectFork(destinationFork);
         // Check if the leaves were added correctly on the destination chain
         bytes32[] memory proofLeaves = d_merkle.getProof();
         // bool isInTree = d_merkle.verifyFromRoot(

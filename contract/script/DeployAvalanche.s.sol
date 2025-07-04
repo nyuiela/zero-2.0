@@ -141,6 +141,7 @@ contract DeployCCIP is Script {
         // Set auction in ZeroNFT
         zeroNFT.setAuctionContract(address(auction));
         console.log("Auction set in ZeroNFT");
+        //eroNFT.setAuctionContract(address(auction));
 
         // dest chain
         ccip.allowlistDestinationChain(_baseSelectorId, true);
