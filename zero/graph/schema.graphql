@@ -1,0 +1,83 @@
+type BrandActivated @entity(immutable: true) {
+  id: Bytes!
+  brand: String! # string
+  state: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BrandRegistryRequested @entity(immutable: true) {
+  id: Bytes!
+  brand: String! # string
+  requestId: Bytes! # bytes32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BrandStaked @entity(immutable: true) {
+  id: Bytes!
+  brand: String! # string
+  staker: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedCCIP @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedChainFunction @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedInitFunction @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedProfile @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedReputation @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ChangedState @entity(immutable: true) {
+  id: Bytes!
+  newp: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
