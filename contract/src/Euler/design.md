@@ -15,5 +15,23 @@ eth collateral
 
 -- user--usdc - at end
 
+/// usdc ---- usdt
+
+SWaps
+usdc --- wth
+
+// pools pair to use
+usdc collateral -- borrow
+----> usdc/Wsteth
+// wsteth collateral
+----> wsteth/ eth
+eth collateral
+---->eth/usdc ------------>
+usdc collateral wste
+
+-- user--usdc - at end
+
+/// usdc ---- usdt
+
 SWaps
 usdc --- wth

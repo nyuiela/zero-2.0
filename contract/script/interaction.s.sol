@@ -52,7 +52,7 @@ contract ContractConfig is Script {
 
     function setInit() internal {
         string[] memory args = new string[](1);
-        args[0] = "http://13.222.216.169:8080/api/sync";
+        args[0] = "http://srv894182.hstgr.cloud/api/sync";
         ICarRegistry(CAR_REGISTRY).setInitFunction(
             0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
         );
@@ -74,7 +74,7 @@ contract BrandInteraction is Script {
         vm.envAddress("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS");
     IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
     IProfile profile = IProfile(vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS"));
-    string constant BRANDNAME1 = "lesscars12";
+    string constant BRANDNAME1 = "lesscars123";
 
     address constant PERMISSIONADDRESS =
         0xccfC47DaC852fa570f2D92D198fD45177B12280b;
@@ -103,7 +103,8 @@ contract BrandInteraction is Script {
 
     function setInit() internal {
         ICarRegistry(CAR_REGISTRY).setInitFunction(
-            0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+            // 0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+            0xE2766BB943D16671621F98eeb354B5536e95d914
         );
     }
 
@@ -111,7 +112,7 @@ contract BrandInteraction is Script {
         //  address zeronft = vm.envAddress("ZERO_NFT_ADDRESS ");
 
         string[] memory args = new string[](1);
-        args[0] = "http://13.222.216.169:8080/api/sync";
+        args[0] = "http:/srv894182.hstgr.cloud/api/sync";
         ICarRegistry(CAR_REGISTRY).setInitFunction(
             0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
         );
