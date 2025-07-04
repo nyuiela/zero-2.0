@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import '@coinbase/onchainkit/styles.css';
+import '@coinbase/onchainkit/styles.css';
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "./base.css";
