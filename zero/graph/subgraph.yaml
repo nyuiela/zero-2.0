@@ -1,0 +1,249 @@
+specVersion: 1.3.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: CarRegistry
+    network: base-sepolia
+    source:
+      address: "0x4bD333f77cc2f583BC237B1095B2aA6942D8d242"
+      abi: CarRegistry
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BrandActivated
+        - BrandRegistryRequested
+        - BrandStaked
+        - ChangedCCIP
+        - ChangedChainFunction
+        - ChangedInitFunction
+        - ChangedProfile
+        - ChangedReputation
+        - ChangedState
+        - OwnershipTransferred
+      abis:
+        - name: CarRegistry
+          file: ./abis/CarRegistry.json
+      eventHandlers:
+        - event: BrandActivated(string,string)
+          handler: handleBrandActivated
+        - event: BrandRegistryRequested(string,bytes32)
+          handler: handleBrandRegistryRequested
+        - event: BrandStaked(string,address)
+          handler: handleBrandStaked
+        - event: ChangedCCIP(address)
+          handler: handleChangedCCIP
+        - event: ChangedChainFunction(address)
+          handler: handleChangedChainFunction
+        - event: ChangedInitFunction(address)
+          handler: handleChangedInitFunction
+        - event: ChangedProfile(address)
+          handler: handleChangedProfile
+        - event: ChangedReputation(address)
+          handler: handleChangedReputation
+        - event: ChangedState(address)
+          handler: handleChangedState
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/car-registry.ts
+  - kind: ethereum
+    name: Profile
+    network: base-sepolia
+    source:
+      address: "0xd910FfFEe925F5504Ab3bC21184D9e544F803979"
+      abi: Profile
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ChangedRegistry
+        - ProfileCreated
+        - UpdatedState
+      abis:
+        - name: Profile
+          file: ./abis/Profile.json
+      eventHandlers:
+        - event: ChangedRegistry(address)
+          handler: handleChangedRegistry
+        - event: ProfileCreated(string,address)
+          handler: handleProfileCreated
+        - event: UpdatedState(string,string)
+          handler: handleUpdatedState
+      file: ./src/profile.ts
+  - kind: ethereum
+    name: Auction
+    network: base-sepolia
+    source:
+      address: "0xeD97941795956c7C8E208616E6c695A73420979b"
+      abi: Auction
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - AuctionCreated
+        - AuctionEnded
+        - AuctionInfoUpdated
+        - BidPlaced
+        - CollateralForfeited
+        - CollateralReturned
+        - StakesReturned
+        - ThresholdReached
+      abis:
+        - name: Auction
+          file: ./abis/Auction.json
+      eventHandlers:
+        - event: AuctionCreated(indexed uint256,string,uint256,uint256,uint256,uint256)
+          handler: handleAuctionCreated
+        - event: AuctionEnded(indexed uint256,address,uint256)
+          handler: handleAuctionEnded
+        - event: AuctionInfoUpdated(indexed uint256,uint256,uint256,uint256,uint256,address,uint256)
+          handler: handleAuctionInfoUpdated
+        - event: BidPlaced(indexed uint256,indexed address,uint256,bool)
+          handler: handleBidPlaced
+        - event: CollateralForfeited(indexed uint256,address,uint256)
+          handler: handleCollateralForfeited
+        - event: CollateralReturned(indexed uint256,address,uint256)
+          handler: handleCollateralReturned
+        - event: StakesReturned(indexed uint256)
+          handler: handleStakesReturned
+        - event: ThresholdReached(indexed uint256)
+          handler: handleThresholdReached
+      file: ./src/auction.ts
+  - kind: ethereum
+    name: ZeroNFT
+    network: base-sepolia
+    source:
+      address: "0xF4d2a2245CB595Da6FCfCB882761b9bBDCE74C47"
+      abi: ZeroNFT
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - BaseURIUpdated
+        - BatchMetadataUpdate
+        - BatchTransfer
+        - BrandNFTMinted
+        - MetadataUpdate
+        - NFTMinted
+        - NFTVerified
+        - ZeroNFTOwnershipTransferred
+        - TokenLocked
+        - Transfer
+        - TransferCooldownUpdated
+        - TransferFeeCollected
+        - TransferFeeUpdated
+      abis:
+        - name: ZeroNFT
+          file: ./abis/ZeroNFT.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: BaseURIUpdated(string)
+          handler: handleBaseURIUpdated
+        - event: BatchMetadataUpdate(uint256,uint256)
+          handler: handleBatchMetadataUpdate
+        - event: BatchTransfer(indexed address,indexed address,uint256[])
+          handler: handleBatchTransfer
+        - event: BrandNFTMinted(indexed string,indexed uint256,indexed address)
+          handler: handleBrandNFTMinted
+        - event: MetadataUpdate(uint256)
+          handler: handleMetadataUpdate
+        - event: NFTMinted(indexed address,indexed uint256,string,string)
+          handler: handleNFTMinted
+        - event: NFTVerified(indexed uint256,bool)
+          handler: handleNFTVerified
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: TokenLocked(indexed uint256,bool)
+          handler: handleTokenLocked
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: TransferCooldownUpdated(uint256)
+          handler: handleTransferCooldownUpdated
+        - event: TransferFeeCollected(indexed uint256,uint256)
+          handler: handleTransferFeeCollected
+        - event: TransferFeeUpdated(uint256)
+          handler: handleTransferFeeUpdated
+      file: ./src/zero-nft.ts
+  - kind: ethereum
+    name: ProofSync
+    network: base-sepolia
+    source:
+      address: "0xed1923afba58d0d12836b512FeFdb27Dd627B04c"
+      abi: ProofSync
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ContractLockedEvent
+        - ContractUnlocked
+        - ProofSubmitted
+        - ProofSynced
+        - SyncPermissionGranted
+        - SyncPermissionRevoked
+      abis:
+        - name: ProofSync
+          file: ./abis/ProofSync.json
+      eventHandlers:
+        - event: ContractLockedEvent(string)
+          handler: handleContractLockedEvent
+        - event: ContractUnlocked()
+          handler: handleContractUnlocked
+        - event: ProofSubmitted(indexed address,string,bytes32)
+          handler: handleProofSubmitted
+        - event: ProofSynced(string,uint64[],bytes32[])
+          handler: handleProofSynced
+        - event: SyncPermissionGranted(indexed address)
+          handler: handleSyncPermissionGranted
+        - event: SyncPermissionRevoked(indexed address)
+          handler: handleSyncPermissionRevoked
+      file: ./src/proof-sync.ts
+  - kind: ethereum
+    name: MerkleVerifier
+    network: base-sepolia
+    source:
+      address: "0xb34854192F06d29e0C5Cfbc24b0B23d84b6AE977"
+      abi: MerkleVerifier
+      startBlock: 27933428
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - AddedLeaf
+        - ChangedSyncer
+        - SetRoot
+        - leafAdded
+        - leafRemoved
+      abis:
+        - name: MerkleVerifier
+          file: ./abis/MerkleVerifier.json
+      eventHandlers:
+        - event: AddedLeaf(string,string)
+          handler: handleAddedLeaf
+        - event: ChangedSyncer(address)
+          handler: handleChangedSyncer
+        - event: SetRoot(string,address)
+          handler: handleSetRoot
+        - event: leafAdded(bytes32)
+          handler: handleleafAdded
+        - event: leafRemoved(bytes32)
+          handler: handleleafRemoved
+      file: ./src/merkle-verifier.ts

@@ -1,0 +1,237 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_globalPermissionManager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "LOCKBRAND",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bytes4", "internalType": "bytes4" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "UNLOCKBRAND",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bytes4", "internalType": "bytes4" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "UPDATESTATE",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bytes4", "internalType": "bytes4" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "create",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" },
+      { "name": "_state", "type": "string", "internalType": "string" },
+      {
+        "name": "_chainFunction",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "_ccip", "type": "address", "internalType": "address" },
+      {
+        "name": "_merkleVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "_brandP", "type": "address", "internalType": "address" },
+      { "name": "_oracle", "type": "address", "internalType": "address" },
+      { "name": "_syncer", "type": "address", "internalType": "address" },
+      { "name": "_url", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getProfile",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct Profile.BrandProfile",
+        "components": [
+          { "name": "brand", "type": "string", "internalType": "string" },
+          {
+            "name": "lastUpdated",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          { "name": "state", "type": "string", "internalType": "string" },
+          {
+            "name": "chainFunction",
+            "type": "address",
+            "internalType": "address"
+          },
+          { "name": "ccip", "type": "address", "internalType": "address" },
+          {
+            "name": "merkleVerifier",
+            "type": "address",
+            "internalType": "address"
+          },
+          { "name": "locked", "type": "bool", "internalType": "bool" },
+          {
+            "name": "brandPermission",
+            "type": "address",
+            "internalType": "address"
+          },
+          { "name": "oracle", "type": "address", "internalType": "address" },
+          { "name": "syncer", "type": "address", "internalType": "address" },
+          { "name": "url", "type": "string", "internalType": "string" }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "globalPermissionManager",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "lockBrand",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "permissionManagerImplementation",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "profile",
+    "inputs": [{ "name": "", "type": "string", "internalType": "string" }],
+    "outputs": [
+      { "name": "brand", "type": "string", "internalType": "string" },
+      { "name": "lastUpdated", "type": "uint256", "internalType": "uint256" },
+      { "name": "state", "type": "string", "internalType": "string" },
+      { "name": "chainFunction", "type": "address", "internalType": "address" },
+      { "name": "ccip", "type": "address", "internalType": "address" },
+      {
+        "name": "merkleVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "locked", "type": "bool", "internalType": "bool" },
+      {
+        "name": "brandPermission",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "oracle", "type": "address", "internalType": "address" },
+      { "name": "syncer", "type": "address", "internalType": "address" },
+      { "name": "url", "type": "string", "internalType": "string" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setRegistry",
+    "inputs": [
+      { "name": "_registry", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "unlockBrand",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateState",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" },
+      { "name": "_state", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "ChangedRegistry",
+    "inputs": [
+      {
+        "name": "newRegistry",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProfileCreated",
+    "inputs": [
+      {
+        "name": "_brand",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "initiator",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UpdatedState",
+    "inputs": [
+      {
+        "name": "_brand",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "state",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "BrandNotFound",
+    "inputs": [{ "name": "_brand", "type": "string", "internalType": "string" }]
+  }
+]

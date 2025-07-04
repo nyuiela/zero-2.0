@@ -61,7 +61,7 @@ deploy:
 	@forge script script/Deploy.s.sol:DeployScript $(NETWORK_ARGS)
 
 deploy-base:
-	@forge script script/Deploy.s.sol:DeployScript --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
+	@forge script script/Deploy.s.sol:DeployScript --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast --verify -vvvv
 
 deploy-local:
 	@forge script script/Deploy.s.sol:DeployScript --rpc-url $(LOCALCHAIN_URL) --private-key $(DEFAULT_ANVIL_KEY) --broadcast -vvvv

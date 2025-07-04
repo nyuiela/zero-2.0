@@ -11,6 +11,7 @@ fs_permissions = [{ access = "read", path = "lib/foundry-chainlink-toolkit/out"}
 [rpc_endpoints]
 localchain = "${LOCALCHAIN_URL}"
 basechain = "${BASE_URL}"
+base-sepolia = "${BASE_URL}"
 etherum = "${ETHERUM_URL}"
 sonicchain = "${SONIC_URL}"
 hedera = "${HEDERA_URL}"
