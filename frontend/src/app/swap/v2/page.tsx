@@ -1,0 +1,88 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { SwapBridgeModal } from "../src/components/SwapBridgeModal";
+import { SwapBridgeProvider } from "../src/providers/SwapBridgeProvider";
+import { InjectedState } from "../src/state/injected-store";
+import "./index.css";
+
+// Sample injected state for demo
+const demoInjectedState: InjectedState = {
+  id: "superbridge",
+  superbridgeTestnets: false,
+  superbridgeConfig: null,
+  deployments: [],
+  acrossDomains: [],
+  cctpDomains: [],
+  lzDomains: [],
+  ccipDomains: [],
+  hyperlaneMailboxes: [],
+  opInteropDomains: [],
+  ecoDomains: [],
+  relayDomains: [],
+  signetHosts: [],
+  signetChildren: [],
+  fromChainId: 1, // Ethereum mainnet
+  toChainId: 137, // Polygon
+  chains: [
+    {
+      id: 1,
+      name: "Ethereum",
+      nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+      rpcUrls: ["https://ethereum.rpc.thirdweb.com"],
+      blockExplorerUrls: ["https://etherscan.io"],
+      testnet: false,
+      solana: false,
+    },
+    {
+      id: 137,
+      name: "Polygon",
+      nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
+      rpcUrls: ["https://polygon.rpc.thirdweb.com"],
+      blockExplorerUrls: ["https://polygonscan.com"],
+      testnet: false,
+      solana: false,
+    },
+    {
+      id: 42161,
+      name: "Arbitrum One",
+      nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+      rpcUrls: ["https://arbitrum-one.rpc.thirdweb.com"],
+      blockExplorerUrls: ["https://arbiscan.io"],
+      testnet: false,
+      solana: false,
+    },
+  ],
+  app: {
+    name: "Superbridge",
+    description: "Cross-chain bridge",
+    url: "https://superbridge.app",
+    icon: "https://superbridge.app/icon.png",
+  },
+  host: "https://superbridge.app",
+  widget: false,
+  isPaid: false,
+  deletedAt: null,
+  defaultRoute: null,
+  supportsOnRamp: true,
+  tos: {
+    url: "https://superbridge.app/terms",
+    version: "1.0.0",
+  },
+  tokensId: null,
+};
+
+const App = () => {
+  return (
+    <SwapBridgeProvider injectedState={demoInjectedState}>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <SwapBridgeModal />
+      </div>
+    </SwapBridgeProvider>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+); 
