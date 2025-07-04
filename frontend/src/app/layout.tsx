@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+// import '@coinbase/onchainkit/styles.css';
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./base.css";
 import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
 import Header from "@/components/header";
-import AuthInitializer from '@/components/auth-initializer'
+import AuthInitializer from '@/components/auth-initializer';
 import { Toaster } from "@/components/ui/sonner";
+import SwapWidget from '@/components/swap-widget';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,6 +33,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientBody>
           <Toaster />
+          <SwapWidget />
           <AuthInitializer />
           <Header />
           <main>

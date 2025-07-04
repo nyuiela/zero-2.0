@@ -1,0 +1,124 @@
+/* Modal background */
+.ock-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  /* Modal content */
+  .ock-modal-content {
+    border-radius: var(--radius) !important;
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+    border: 1px solid var(--border) !important;
+  }
+  
+  /* Modal header */
+  .ock-modal-header {
+    border-bottom: 1px solid var(--border) !important;
+  }
+  
+  /* Modal title */
+  .ock-modal-title {
+    color: var(--foreground) !important;
+  }
+  
+  /* Close button */
+  .ock-modal-close-button {
+    color: var(--muted-foreground) !important;
+  }
+  
+  /* Wallet buttons */
+  .ock-wallet-button {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--foreground) !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .ock-wallet-button:hover {
+    background-color: var(--accent) !important;
+  }
+  
+  /* Active wallet button */
+  .ock-wallet-button-active {
+    border-color: var(--primary) !important;
+  }
+  
+  /* Wallet name */
+  .ock-wallet-name {
+    color: var(--foreground) !important;
+  }
+  
+  /* Wallet description */
+  .ock-wallet-description {
+    color: var(--muted-foreground) !important;
+  }
+  
+  /* QR code container */
+  .ock-qr-container {
+    background-color: var(--background) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  /* Copy button */
+  .ock-copy-button {
+    background-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  
+  /* Tabs */
+  .ock-tab {
+    color: var(--muted-foreground) !important;
+  }
+  
+  .ock-tab-active {
+    color: var(--foreground) !important;
+    border-bottom-color: var(--primary) !important;
+  }
+  
+  /* Wallet dropdown */
+  .ock-wallet-dropdown {
+    background-color: var(--background) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    min-width: 240px !important;
+    z-index: 100 !important;
+  }
+  
+  /* Wallet dropdown items */
+  .ock-wallet-dropdown-item {
+    color: var(--foreground) !important;
+  }
+  
+  .ock-wallet-dropdown-item:hover {
+    background-color: var(--accent) !important;
+  }
+  
+  /* Wallet dropdown disconnect button */
+  .ock-wallet-dropdown-disconnect {
+    color: var(--destructive) !important;
+  }
+  
+  .ock-wallet-dropdown-disconnect:hover {
+    background-color: var(--accent) !important;
+  }
+  
+  /* Identity components */
+  .ock-identity {
+    color: var(--foreground) !important;
+  }
+  
+  .ock-identity-name {
+    color: var(--foreground) !important;
+  }
+  
+  .ock-identity-address {
+    color: var(--muted-foreground) !important;
+  }
+  
+  .ock-identity-balance {
+    color: var(--foreground) !important;
+  }
+  
