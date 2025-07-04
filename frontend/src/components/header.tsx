@@ -234,7 +234,7 @@ export default function Header() {
                 <Link href="/sell" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Sell</Link>
                 <Link href="/verify" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Verify</Link>
                 <Link href="/brands" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
-
+                <Link href="/swap" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Swap</Link>
                 <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer bg-gray-100 flex items-center justify-betweens px-5">
                   <input type="text" placeholder="Search" className="w-full outline-none" />
                   <Search className="h-5 w-5 text-[#202626]" />
@@ -249,6 +249,7 @@ export default function Header() {
           <Link href="/sell" className="hover:text-[#7400b8] text-[#202626] font-medium">Sell</Link>
           <Link href="/verify" className="hover:text-[#7400b8] text-[#202626] font-medium">Verify</Link>
           <Link href="/brands" className="hover:text-[#7400b8] text-[#202626] font-medium">Brands</Link>
+          <Link href="/swap" className="hover:text-[#7400b8] text-[#202626] font-medium">Swap</Link>
         </div>
       </nav>
       <LoginModal />

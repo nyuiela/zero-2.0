@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
 import Header from "@/components/header";
-import AuthInitializer from '@/components/auth-initializer'
+import AuthInitializer from '@/components/auth-initializer';
+// import '@coinbase/onchainkit/styles.css';
+import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import SwapWidget from '@/components/swap-widget';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,8 +20,8 @@ export const metadata: Metadata = {
     description: "Discover your dream supercar at ZERO auction platform",
     type: "website",
   },
+  
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -30,6 +32,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientBody>
           <Toaster />
+          <SwapWidget />
           <AuthInitializer />
           <Header />
           <main>
