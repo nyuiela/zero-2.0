@@ -17,10 +17,14 @@ import {IPermissionManager} from "../src/interface/permissions/IPermissionManage
 import {IAuction} from "../src/interface/IAuction.sol";
 
 contract ContractConfig is Script {
-    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
-
-    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
     address AUCTION_ADDRESS = vm.envAddress("");
+    address CAR_REGISTRY = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
+
+    address SYNC_ADDRESS = vm.envAddress("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS");
+    address PERMISSION_ADDRESS =
+        vm.envAddress("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS");
+    IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
+    IProfile profile = IProfile(vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS"));
     string constant BRANDNAME = "lesscars";
     address constant PERMISSIONADDRESS =
         0xf0830060f836B8d54bF02049E5905F619487989e;
@@ -63,12 +67,13 @@ contract ContractConfig is Script {
 }
 
 contract BrandInteraction is Script {
-    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
+    address CAR_REGISTRY = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
 
-    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
-    address PERMISSION_ADDRESS = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
+    address SYNC_ADDRESS = vm.envAddress("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS");
+    address PERMISSION_ADDRESS =
+        vm.envAddress("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS");
     IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
-    IProfile profile = IProfile(vm.envAddress("PROFILE_ADDRESS"));
+    IProfile profile = IProfile(vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS"));
     string constant BRANDNAME1 = "lesscars12";
 
     address constant PERMISSIONADDRESS =

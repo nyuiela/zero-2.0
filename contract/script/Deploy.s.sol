@@ -214,7 +214,7 @@ contract DeployScript is Script {
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions = new bytes4[](20);
         bytes4[] memory registryPermissions = new bytes4[](20);
-        bytes4[] memory statecalls = new bytes4[](2);
+        bytes4[] memory statecalls = new bytes4[](3);
 
         statecalls[0] = profile.updateState.selector;
         statecalls[1] = profile.lockBrand.selector;

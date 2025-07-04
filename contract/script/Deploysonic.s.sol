@@ -44,14 +44,19 @@ contract DeployCCIP is Script {
         console.log("Deployer address:", deployer);
 
         /// min chain deployed address
-        address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
-        address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
+        address oraclemaster = vm.envAddress(
+            "NEXT_PUBLIC_ORACLE_MASTER_ADDRESS"
+        );
+        address reputationContract = vm.envAddress(
+            "NEXT_PUBLIC_REPUTATION_ADDRESS"
+        );
         //   address permissionManager = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
         address brandPermissionManager = vm.envAddress(
-            "BRAND_PERMISSION_MANAGER_ADDRESS"
+            "NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS"
         );
-        address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
-        address profile = vm.envAddress("PROFILE_ADDRESS");
+        address auction = vm.envAddress("AUCTION_ADDRESS");
+        address carRegistry = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
+        address profile = vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS");
         // uint64 baseSelectorId = vm.env("BASE_SELECTOR_ID");
 
         vm.createSelectFork(vm.rpcUrl("sonicchain"));
@@ -158,3 +163,8 @@ contract DeployCCIP is Script {
         console.log("=== SONIC  NETWORK DEPLOYMENT COMPLETE ===");
     }
 }
+
+// which contracts are going to be cross chain?
+//1. cross token
+//1. messenging
+//1. Zero-NFT
