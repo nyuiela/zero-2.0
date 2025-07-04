@@ -13,7 +13,11 @@ contract ProofSync {
     error ContractLocked(string reason);
 
     // Events
-    event ProofSubmitted(address indexed submitter, string ipfsHash, bytes32 method);
+    event ProofSubmitted(
+        address indexed submitter,
+        string ipfsHash,
+        bytes32 method
+    );
     event ProofSynced(string ipfsHash, uint64[] chains, bytes32[] messageIds);
     event ContractLockedEvent(string reason);
     event ContractUnlocked();
@@ -69,7 +73,10 @@ contract ProofSync {
         emit SyncPermissionRevoked(syncer);
     }
 
-    function allowChain(uint64 _chainSelector, address _receiver) external onlyOwner {
+    function allowChain(
+        uint64 _chainSelector,
+        address _receiver
+    ) external onlyOwner {
         chainsAllowed[_chainSelector] = true;
         chainSelectors.push(_chainSelector);
         receivers[_chainSelector] = _receiver;
@@ -99,16 +106,21 @@ contract ProofSync {
     }
 
     // Submit a proof (ipfs hash) and sync across chains
-    function sendProof(string calldata ipfsHash, bytes32 _method) external onlyAllowedSyncers notLocked {
+    function sendProof(
+        string calldata ipfsHash,
+        bytes32 _method
+    ) external onlyAllowedSyncers notLocked {
         // Optionally: verify proof with Merkle root if needed
-        triggerSync();
+        triggerSync(ipfsHash);
         s_lastSubmittedProof = ipfsHash;
         emit ProofSubmitted(msg.sender, ipfsHash, _method);
         // triggerSync(); // Optionally auto-trigger sync
     }
 
     // Trigger sync across allowed chains (stub, to be implemented with CCIP)
-    function triggerSync() public onlyAllowedSyncers notLocked {
+    function triggerSync(
+        string calldata ipfsHash
+    ) public onlyAllowedSyncers notLocked {
         // For each chain, send the proof (integration with CCIP/messaging contract)
         // If fail, revert or emit error
         bytes32[] memory msgId = new bytes32[](chainSelectors.length);
@@ -117,26 +129,41 @@ contract ProofSync {
             uint64 chainSelector = chainSelectors[i];
             if (!chainsAllowed[chainSelector]) revert ChainNotAllowListed();
             // Here you can add logic to verify the proof against a Merkle root if required
-            bytes32 messageId =
-                messenger.sendMessagePayLINK(chainSelector, receivers[chainSelector], s_lastSubmittedProof);
+            bytes32 messageId = messenger.sendMessagePayLINK(
+                chainSelector,
+                receivers[chainSelector],
+                ipfsHash
+            );
             msgId[i] = messageId;
         }
         // Add & Verify the proof using the Merkle verifier
-        merkleVerifier.addLeave(s_lastSubmittedProof);
-        emit ProofSynced(s_lastSubmittedProof, chainSelectors, msgId);
+        merkleVerifier.addLeaf(ipfsHash);
+        emit ProofSynced(ipfsHash, chainSelectors, msgId);
     }
 
-    function triggerReSync(uint64 chainSelector) external onlyAllowedSyncers notLocked {
+    function triggerReSync(
+        uint64 chainSelector
+    ) external onlyAllowedSyncers notLocked {
         if (!chainsAllowed[chainSelector]) revert ChainNotAllowListed();
         // Re-send the last proof to the specified chain
         // If fail, revert or emit error
-        bytes32 messageId = messenger.sendMessagePayLINK(chainSelector, receivers[chainSelector], s_lastSubmittedProof);
+        bytes32 messageId = messenger.sendMessagePayLINK(
+            chainSelector,
+            receivers[chainSelector],
+            s_lastSubmittedProof
+        );
         bytes32[] memory _messageIds = new bytes32[](1);
         _messageIds[0] = messageId;
-        emit ProofSynced(s_lastSubmittedProof, _toArray(chainSelector), _messageIds);
+        emit ProofSynced(
+            s_lastSubmittedProof,
+            _toArray(chainSelector),
+            _messageIds
+        );
     }
 
-    function _toArray(uint64 chainSelector) internal pure returns (uint64[] memory arr) {
+    function _toArray(
+        uint64 chainSelector
+    ) internal pure returns (uint64[] memory arr) {
         arr = new uint64[](1);
         arr[0] = chainSelector;
     }

@@ -19,6 +19,7 @@ const countryOptions = [
   { value: 'UAE', label: 'UAE' },
   { value: 'USA', label: 'USA' },
 ]
+// just a few comments
 
 export default function AuctionGridClient() {
   const [selectedCountry, setSelectedCountry] = useState('ALL')

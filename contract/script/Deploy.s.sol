@@ -186,6 +186,7 @@ contract DeployScript is Script {
         zeroNFT.setAuctionContract(address(auction));
         initFunction.transferOwnership(address(carRegistry));
         proofSync.setMessenger(payable(messenger));
+        merkleVerifier.setRegistry(address(carRegistry));
 
         allowDestinationChains();
         grantPermissions(_deployer);
@@ -199,6 +200,12 @@ contract DeployScript is Script {
         ccip.allowlistDestinationChain(222782988166878823, true); // hedera
         ccip.allowlistDestinationChain(16015286601757825753, true); // eth
         ccip.allowlistDestinationChain(14767482510784806043, true); // avalanche
+        messenger.allowlistDestinationChain(3676871237479449268, true); //sonic
+        messenger.allowlistDestinationChain(222782988166878823, true);
+        messenger.allowlistDestinationChain(16015286601757825753, true);
+        messenger.allowlistDestinationChain(14767482510784806043, true);
+        //messenger.allowlistSender(true);
+        messenger.allowlistSourceChain(10344971235874465080, true);
     }
 
     function grantPermissions(address dep_loyer) internal {
