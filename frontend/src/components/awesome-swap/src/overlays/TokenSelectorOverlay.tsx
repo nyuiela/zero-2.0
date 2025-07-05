@@ -185,16 +185,16 @@ const TokenItem: React.FC<TokenItemProps> = ({
       className={clsx(
         "flex justify-between hover:bg-muted transition cursor-pointer p-4 relative",
         selectedToken &&
-          fromToken &&
-          toToken &&
-          isAddressEqual(
-            from,
-            `0x${selectedToken?.[from?.id ?? 0]?.address}`,
-            from,
-            `0x${fromToken.address}`
-          ) &&
-          isAddressEqual(to, `0x${selectedToken?.[to?.id ?? 0]?.address}`, to, `0x${toToken.address}`) &&
-          "bg-muted"
+        fromToken &&
+        toToken &&
+        isAddressEqual(
+          from,
+          `0x${selectedToken?.[from?.id ?? 0]?.address}`,
+          from,
+          `0x${fromToken.address}`
+        ) &&
+        isAddressEqual(to, `0x${selectedToken?.[to?.id ?? 0]?.address}`, to, `0x${toToken.address}`) &&
+        "bg-muted"
       )}
       onClick={onClick}
     >

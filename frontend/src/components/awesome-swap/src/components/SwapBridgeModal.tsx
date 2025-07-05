@@ -11,15 +11,16 @@ import { SwapBridgeHeader } from "./SwapBridgeHeader";
 export const SwapBridgeModal = () => {
   const isWidget = useInjectedStore((s) => s.widget);
   const deletedAt = useInjectedStore((s) => s.deletedAt);
-  
-  const displayTokenNetworkSelector = useConfigState.useDisplayTokenNetworkSelector();
-  const setDisplayTokenNetworkSelector = useConfigState.useSetDisplayTokenNetworkSelector();
-  const displayTokenSelector = useConfigState.useDisplayTokenSelector();
-  const setDisplayTokenSelector = useConfigState.useSetDisplayTokenSelector();
+
+  // const displayTokenNetworkSelector = useConfigState.useDisplayTokenNetworkSelector();
+  // const setDisplayTokenNetworkSelector = useConfigState.useSetDisplayTokenNetworkSelector();
+  const { setDisplayTokenNetworkSelector, setDisplayTokenSelector, displayTokenSelector, displayTokenNetworkSelector } = useConfigState();
+  // const displayTokenSelector = useConfigState.useDisplayTokenSelector();
+  // const setDisplayTokenSelector = useConfigState.useSetDisplayTokenSelector();
 
   return (
     <main
-      className="relative flex flex-col items-center justify-start w-screen h-screen inset-0 overflow-y-auto overflow-x-hidden"
+      className="relative flex flex-col items-center justify-start w-screen h-screen inset-0 overflow-y-auto overflow-x-hidden bg-transparent top-10"
       key="bridgeMain"
     >
       <div
@@ -47,7 +48,7 @@ export const SwapBridgeModal = () => {
                 className={clsx(
                   "bg-card",
                   !isWidget &&
-                    "rounded-t-[24px] rounded-b-[32px] shadow-sm w-full",
+                  "rounded-t-[24px] rounded-b-[32px] shadow-sm w-full",
                   isWidget && "h-screen w-screen"
                 )}
               >
@@ -60,10 +61,11 @@ export const SwapBridgeModal = () => {
       </div>
 
       {/* Overlays */}
-      <NetworkSelectorOverlay
-        // isOpen={displayTokenNetworkSelector}
-        onClose={() => setDisplayTokenNetworkSelector(false)}
-      />
+      {/* <NetworkSelectorOverlay */}
+      {/* // isOpen={displayTokenNetworkSelector} */}
+      {/* // onClose={() => setDisplayTokenNetworkSelector(false)} */}
+      {/* /> */}
+      <NetworkSelectorOverlay />
       <TokenSelectorOverlay
         isOpen={displayTokenSelector}
         onClose={() => setDisplayTokenSelector(false)}

@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { AuctionRegistrationForm } from "@/components/auction-registration-form"
 import { useAccount } from "wagmi"
@@ -23,25 +22,6 @@ export default function CreateAuctionPage() {
 
   // Demo data - in real app, these would come from your smart contract/API
   const availableBrands = ["Toyota", "BMW", "Mercedes", "Audi", "Tesla", "Ferrari"]
-
-  const userNFTs = [
-    {
-      tokenId: "1",
-      brandName: "Toyota",
-      isLocked: false
-    },
-    {
-      tokenId: "2",
-      brandName: "BMW",
-      isLocked: false
-    },
-    {
-      tokenId: "3",
-      brandName: "Mercedes",
-      isLocked: true // This one is locked, won't show in available NFTs
-    }
-  ]
-
   const handleSubmit = async (data: AuctionData) => {
     setIsLoading(true)
 
@@ -108,7 +88,7 @@ export default function CreateAuctionPage() {
           onSubmit={handleSubmit}
           isLoading={isLoading}
           availableBrands={availableBrands}
-          userNFTs={userNFTs}
+        // userNFTs={data?.nftminteds || []}
         />
 
         {submittedData && (

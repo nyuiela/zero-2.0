@@ -13,8 +13,9 @@ export const NetworkSelectorOverlay: React.FC<NetworkSelectorOverlayProps> = ({ 
   const toChainId = useInjectedStore((s) => s.toChainId);
   const setFromChainId = useInjectedStore((s) => s.setFromChainId);
   const setToChainId = useInjectedStore((s) => s.setToChainId);
-  const networkSelectorDirection = useConfigState.useNetworkSelectorDirection();
-  const setDisplayTokenNetworkSelector = useConfigState.useSetDisplayTokenNetworkSelector();
+  // const networkSelectorDirection = useConfigState.useNetworkSelectorDirection();
+  // const setDisplayTokenNetworkSelector = useConfigState.useSetDisplayTokenNetworkSelector();
+  const { setDisplayTokenNetworkSelector, networkSelectorDirection } = useConfigState();
 
   const handleSelect = (chainId: number) => {
     if (networkSelectorDirection === "from") {
@@ -46,13 +47,12 @@ export const NetworkSelectorOverlay: React.FC<NetworkSelectorOverlayProps> = ({ 
             <button
               key={chain.id}
               onClick={() => handleSelect(chain.id)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
-                (networkSelectorDirection === "from"
-                  ? fromChainId === chain.id
-                  : toChainId === chain.id)
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
-              }`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${(networkSelectorDirection === "from"
+                ? fromChainId === chain.id
+                : toChainId === chain.id)
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+                }`}
             >
               <span className="w-6 h-6 bg-muted rounded-full flex items-center justify-center font-bold">
                 {chain.name.charAt(0)}

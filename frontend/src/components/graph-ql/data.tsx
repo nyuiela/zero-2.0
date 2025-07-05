@@ -160,5 +160,6 @@ export default function Data() {
       return await request(url, query, {}, headers)
     }
   })
+  console.log("Graph Query ", data)
   return <div>{JSON.stringify(data ?? {})}</div>
 }

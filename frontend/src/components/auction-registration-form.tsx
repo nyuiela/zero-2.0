@@ -33,6 +33,7 @@ import { createAuction } from "@/lib/api/auction"
 import { useAuthStore } from "@/lib/authStore"
 import { toRustCompatibleTimestamp } from "@/lib/utils"
 import { ProofData, ProofModal } from "./proof-modal"
+import { Nftminted, useGraph } from "@/hooks/useGraph"
 
 // Dynamically import ProofModalTransaction to avoid SSR issues
 const ProofModalTransaction = dynamic(() => import("./proof-transaction").then(mod => ({ default: mod.ProofModalTransaction })), {
@@ -81,20 +82,16 @@ interface AuctionRegistrationFormProps {
   onSubmit: (data: AuctionRegistrationFormData) => void
   isLoading?: boolean
   availableBrands?: string[]
-  userNFTs?: Array<{
-    tokenId: string
-    brandName: string
-    isLocked: boolean
-  }>
+  // userNFTs?: Array<Nftminted>
 }
 
 export function AuctionRegistrationForm({
   onSubmit,
   // isLoading = false,
   availableBrands = [],
-  userNFTs = []
+  // userNFTs = []
 }: AuctionRegistrationFormProps) {
-  const [selectedNFT, setSelectedNFT] = useState<string>("")
+  const [selectedNFT, setSelectedNFT] = useState<Number>()
   const { address } = useAccount();
   const form = useForm<AuctionRegistrationFormData>({
     resolver: zodResolver(auctionRegistrationSchema),
@@ -142,6 +139,10 @@ export function AuctionRegistrationForm({
       account: address
     });
   }
+  const { data } = useGraph();
+  const [userNFTs, setNft] = useState(data.nftminteds)
+  // const userNFTs = data?.nftminteds;
+
   const handleSubmit = async (data: AuctionRegistrationFormData) => {
     if (!address) {
       toast.error("Please connect your wallet first.");
@@ -202,17 +203,25 @@ export function AuctionRegistrationForm({
     }
   }
 
-  const handleNFTSelect = (tokenId: string) => {
+  const handleNFTSelect = (tokenId: Number) => {
     setSelectedNFT(tokenId)
-    const nft = userNFTs.find(nft => nft.tokenId === tokenId)
+    if (userNFTs.length < 0) return
+    const nft = userNFTs.find(nft => nft!.tokenId === tokenId)
     if (nft) {
-      form.setValue("nftTokenId", tokenId)
+      form.setValue("nftTokenId", tokenId.toString())
       form.setValue("brandName", nft.brandName)
     }
   }
 
   // Filter available NFTs (not locked)
-  const availableUserNFTs = userNFTs.filter(nft => !nft.isLocked)
+  // const availableUserNFTs = userNFTs.filter(nft => !nft.isLocked)
+  const availableUserNFTs = userNFTs
+
+  // if (userNFTs.length > 0) return (
+  //   <div>
+  //     User can not create auction unless he has nft
+  //   </div>
+  // )
   return (
     <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
       <CardHeader className="pb-4">
@@ -276,7 +285,7 @@ export function AuctionRegistrationForm({
                       <Input
                         placeholder="Enter NFT Token ID"
                         {...field}
-                        readOnly={selectedNFT !== ""}
+                        readOnly={selectedNFT !== null}
                       />
                     </FormControl>
                     <FormDescription>
@@ -316,7 +325,7 @@ export function AuctionRegistrationForm({
                         <Input
                           placeholder="Enter brand name"
                           {...field}
-                          readOnly={selectedNFT !== ""}
+                          readOnly={selectedNFT !== null}
                         />
                       )}
                     </FormControl>

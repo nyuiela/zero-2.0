@@ -3,8 +3,19 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import React, { useState, useEffect, useRef } from 'react'
-
+import { useQuery } from '@tanstack/react-query'
+import request from 'graphql-request'
+import { query } from './graph-ql/data'
+const url = 'https://api.studio.thegraph.com/query/87766/zero/version/latest'
+const headers = { Authorization: 'Bearer 6abc6de0d06cbf79f985314ef9647365' }
 const Hero = () => {
+  const { data } = useQuery({
+    queryKey: ['data'],
+    async queryFn() {
+      return await request(url, query, {}, headers)
+    }
+  })
+  console.log("Graph Query ", data)
   const featuredAuctions = [
     {
       id: 340,

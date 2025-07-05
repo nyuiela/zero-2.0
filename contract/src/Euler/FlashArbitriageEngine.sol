@@ -1,256 +1,406 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {ISwapper} from "../interface/Eular/ISwapper.sol";
-import {IEVault} from "../interface/Eular/IEuler.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-///// need the interface for the swap pool and the lending pool we will be using
-// import {IEularSwap} from "";
-// import {IEularBorrow} from "";
+import {IEVault} from "src/interface/Eular/IEVault.sol";
+import {IEulerSwap} from "../interface/Eular/IEulerSwap.sol";
+import {IPoolManager} from "../interface/Eular/IEulerSwap.sol";
 
-/** Capital efficiency system that leverages on Euler's core components (swaps and borrowing)
- */
-contract FlashArbitriageEngine {
+interface IWETH is IERC20 {
+    function deposit() external payable;
+
+    // function withdraw(uint256 amount) external;
+
+    // change to a simple wrap function
+}
+
+contract FlashArbitrageEngine {
     using SafeERC20 for IERC20;
 
-    // will have users transfer eth and we wrapp to WETH
-    address public constant ETHEREUMADDRESS = 0x03333333322222;
-    address public constant USDCADDRESS = 0x033;
-    uint256 nextPositionId;
-    bool private _arbitrageInProgress;
+    IEVault public immutable vault;
+    IEulerSwap public immutable eulerSwap;
+    IWETH public immutable weth;
 
-    uint256 public maxCycles = 10;
-    uint256 public _maxBorrowAmount = 1000000;
-    uint256 repayWindow = 24 hours;
+    // Supported tokens
+    address public constant WETH = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
+    address public constant USDC = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
 
-    struct FlashPositions {
+    // Flash arbitrage position
+    struct FlashPosition {
         uint256 id;
         address user;
         address targetToken;
         uint256 targetAmount;
-        uint256 borrowAmount;
+        uint256 borrowedAmount;
         uint256 arbitrageProfit;
-        uint256 cyclesExcuted;
+        uint256 cyclesExecuted;
         bool isActive;
         uint256 createdAt;
-        uint256 repayBy;
     }
 
- struct collateralParams {
-        address CollateralToken;
-        uint256 _amount;
-    }
+    mapping(uint256 => FlashPosition) public positions;
+    mapping(address => uint256[]) public userPositions;
+    uint256 public nextPositionId;
 
+    // Reentrancy protection
+    bool private _arbitrageInProgress;
 
-    mapping(uint256 => FlashPositions) public positions;
-    mapping(address => uint256[]) private userToPosition;
+    // Configuration
+    uint256 public maxCycles = 10;
+    uint256 public maxBorrowAmount = 1000000e6; // 1M USDC
+    uint256 public minProfitThreshold = 100e6; // 100 USDC
 
+    // Events
+    event FlashPositionOpened(
+        uint256 indexed positionId,
+        address indexed user,
+        address targetToken,
+        uint256 targetAmount
+    );
+    event ArbitrageCycleExecuted(
+        uint256 indexed positionId,
+        uint256 cycle,
+        uint256 profit
+    );
+    event TargetReached(
+        uint256 indexed positionId,
+        address indexed user,
+        uint256 targetAmount
+    );
+    event PositionRepaid(
+        uint256 indexed positionId,
+        address indexed user,
+        uint256 repaidAmount
+    );
+    event PositionLiquidated(uint256 indexed positionId, address indexed user);
+
+    // Modifiers
     modifier arbitrageGuard() {
-        require(
-            !_arbitrageInProgress,
-            "FlashArbitriageEngine: Arbitrage in progress"
-        );
+        require(!_arbitrageInProgress, "Arbitrage in progress");
         _;
     }
 
-    address public euler;
-    address public eulerSwap;
+    // Errors
+    error TargetNotReached();
+    error InsufficientProfit();
+    error PositionExpired();
+    error InvalidTargetAmount();
 
-    constructor(address _euler, address _eulerSwap) {
-        euler = _euler;
-        eulerSwap = _eulerSwap;
+    address owner;
+
+    constructor(address _vault, address _eulerSwap, address _weth) {
+        vault = IEVault(_vault);
+        eulerSwap = IEulerSwap(_eulerSwap);
+        weth = IWETH(_weth);
+        owner = msg.sender;
     }
 
-    event FlashArbitragePositionCreated(
-        uint256 _positionId,
-        address _user,
-        address _targetToken,
-        uint256 _targetAmount
-    );
-    event ArbitrageCycleExcuted(
-        uint256 _positionId,
-        uint256 cycle,
-        uint256 gains
-    );
-    event TargetReached(uint256 position, address _user, uint256 _targetAmount);
-    error TargetNotReached();
+    modifier onlyOwner() {
+        require(msg.sender == owner, "FlashArbitrage: not authorized");
+        _;
+    }
 
+    /**
+     * @dev Execute flash arbitrage to reach target amount
+     * @param targetToken Token user wants (WETH or USDC)
+     * @param targetAmount Amount user needs
+     * @param initialBorrowAmount Initial amount to borrow for arbitrage
+     * @param _maxCycles Maximum arbitrage cycles to execute
+     */
     function executeFlashArbitrage(
-        address _targetToken, // USDc // ETH
-        uint256 _targetAmount,
+        address targetToken,
+        uint256 targetAmount,
         uint256 initialBorrowAmount,
         uint256 _maxCycles
-    ) external arbitrageGuard {
+    ) external payable arbitrageGuard {
+        require(targetAmount > 0, "Invalid target amount");
         require(
-            _targetAmount > 0,
-            "FlashArbitrageEngine: Target cannot be zero"
+            initialBorrowAmount <= maxBorrowAmount,
+            "Borrow amount too high"
         );
+        require(_maxCycles <= maxCycles, "Too many cycles");
         require(
-            _maxCycles <= maxCycles,
-            "FlashArbitrageEngine: cannot be greater than max"
+            targetToken == WETH || targetToken == USDC,
+            "Unsupported target token"
         );
+        require(vault.asset() == targetToken, "Vault asset mismatch");
+        require(msg.value > 0, "No ETH sent");
 
-        uint256 positionId = nextPositionId++;
-        FlashPositions memory position = FlashPositions({
-            id: positionId,
+        // Wrap ETH to WETH
+        weth.deposit{value: msg.value}();
+
+        // Deposit WETH collateral to vault
+        //  IERC20(WETH).safeApprove(address(vault), msg.value);
+        vault.deposit(msg.value, address(this));
+
+        // Create flash position
+        FlashPosition memory position = FlashPosition({
+            id: nextPositionId,
             user: msg.sender,
-            targetToken: _targetToken,
-            targetAmount: _targetAmount,
-            borrowAmount: 0,
+            targetToken: targetToken,
+            targetAmount: targetAmount,
+            borrowedAmount: 0,
             arbitrageProfit: 0,
-            cyclesExcuted: 0,
+            cyclesExecuted: 0,
             isActive: true,
-            createdAt: block.timestamp,
-            repayBy: block.timestamp + repayWindow
+            createdAt: block.timestamp
         });
 
-        positions[positionId] = position;
-        userToPosition[msg.sender].push(positionId);
+        positions[nextPositionId] = position;
+        userPositions[msg.sender].push(nextPositionId);
+        nextPositionId++;
 
-        emit FlashArbitragePositionCreated(
+        emit FlashPositionOpened(
             position.id,
-            position.user,
-            position.targetToken,
-            position.targetAmount
+            msg.sender,
+            targetToken,
+            targetAmount
         );
 
+        // Set reentrancy flag
         _arbitrageInProgress = true;
 
-        uint256 currentBal = 0;
+        // Execute arbitrage cycles
+        uint256 currentBalance = 0;
         uint256 borrowed = 0;
 
-        for (uint256 cycle = 0; cycle < _maxCycles; cycle++) {
-            currentBal = IERC20(_targetToken).balanceOf(address(this));
-            if (currentBal >= _targetAmount) {
+        for (uint256 cycle = 0; cycle < maxCycles; cycle++) {
+            // Check if we've reached the target
+            currentBalance = IERC20(targetToken).balanceOf(address(this));
+            if (currentBalance >= targetAmount) {
                 break;
             }
 
-            uint256 amountStillNeeded = _targetAmount - currentBal;
+            // Calculate how much more we need
+            uint256 needed = targetAmount - currentBalance;
+
+            // Borrow for this cycle
             uint256 borrowAmount = cycle == 0
                 ? initialBorrowAmount
-                : (amountStillNeeded * 2);
-
-            if (borrowAmount > _maxBorrowAmount - borrowed) {
-                borrowAmount = _maxBorrowAmount - borrowed;
+                : (needed * 2); // 2x for arbitrage
+            if (borrowAmount > maxBorrowAmount - borrowed) {
+                borrowAmount = maxBorrowAmount - borrowed;
             }
+
             if (borrowAmount == 0) break;
 
-            // euler.enterMarket();
-            // euler.borrow();
-            IEVault(euler).borrow(borrowAmount, address(this));
-
+            // Borrow from vault
+            vault.borrow(borrowAmount, address(this));
             borrowed += borrowAmount;
 
-            uint256 profit = _executeArbitrageCycle(_targetToken, borrowAmount);
+            // Execute arbitrage cycle
+            uint256 profit = _executeArbitrageCycle(targetToken, borrowAmount);
 
-            positions[positionId].borrowAmount = borrowed;
-            positions[positionId].arbitrageProfit += profit;
-            positions[positionId].cyclesExcuted = cycle + 1;
+            // Update position
+            positions[position.id].borrowedAmount = borrowed;
+            positions[position.id].arbitrageProfit += profit;
+            positions[position.id].cyclesExecuted = cycle + 1;
 
-            emit ArbitrageCycleExcuted(positionId, cycle + 1, profit);
+            emit ArbitrageCycleExecuted(position.id, cycle + 1, profit);
 
-            // euler.repay();
-            IERC20(IEVault(euler).asset()).safeApprove(addres(euler), borrowAmount);
+            // Repay the borrowed amount
+            //  IERC20(vault.asset()).safeApprove(address(vault), borrowAmount);
+            vault.repay(borrowAmount, address(this));
             borrowed -= borrowAmount;
-       , address(this) ;    /// I WILLL KILLLLLLLLLL YOUUUUUUU
-
-            UUUUUUUU  lol 
-            currentBal = IERC20(_targetToken).balanceOf(address(this));
-
-            if (currentBal >= _targetAmount) {
-                IERC20(_targetToken).transfer(msg.sender, _targetAmount);
-                positions[positionId].targetAmount = _targetAmount;
-                emit TargetReached(positionId, msg.sender, _targetAmount);
-                _arbitrageInProgress = false;
-                return;
-            }
         }
 
-        _arbitrageInProgress = false;
-        revert TargetNotReached();
-    }
+        // Check if target was reached
+        currentBalance = IERC20(targetToken).balanceOf(address(this));
+        if (currentBalance >= targetAmount) {
+            // Transfer target amount to user
+            IERC20(targetToken).safeTransfer(msg.sender, targetAmount);
 
-    function _executeArbitrageCycle(
-        address _targetToken,
-        uint256 borrowAmount
-    ) internal returns (uint256 _profit) {
-        uint256 initialBalance = IERC20(_targetToken).balanceOf(address(this));
+            // Update position
+            positions[position.id].targetAmount = targetAmount;
 
-        if (_targetToken == USDCADDRESS) {
-            IERC20(ETHEREUMADDRESS).approve(eulerSwap, borrowAmount);
-
-            uint256 usdcAmount = IEularSwap(eulerSwap).swapExactInputSingle(
-                ETHEREUMADDRESS,
-                USDCADDRESS,
-                borrowAmount,
-                0,
-                address(this)
-            );
-
-            IERC20(USDCADDRESS).approve(eulerSwap, usdcAmount);
-
-            uint256 finalWeth = IEularSwap(eulerSwap).swapExactInputSingle(
-                USDCADDRESS,
-                ETHEREUMADDRESS,
-                usdcAmount,
-                0,
-                address(this)
-            );
-
-            _profit = finalWeth > borrowAmount ? finalWeth - borrowAmount : 0;
+            emit TargetReached(position.id, msg.sender, targetAmount);
         } else {
-            IERC20(USDCADDRESS).approve(eulerSwap, borrowAmount);
+            // Target not reached, revert
+            _arbitrageInProgress = false;
+            revert TargetNotReached();
+        }
 
-            uint256 wethAmount = IEularSwap(eulerSwap).swapExactInputSingle(
-                USDCADDRESS,
-                ETHEREUMADDRESS,
+        // Clear reentrancy flag
+        _arbitrageInProgress = false;
+    }
+
+    /**
+     * @dev Execute a single arbitrage cycle
+     * @param targetToken Token we want to accumulate
+     * @param borrowAmount Amount borrowed for this cycle
+     */
+    function _executeArbitrageCycle(
+        address targetToken,
+        uint256 borrowAmount
+    ) internal returns (uint256 profit) {
+        uint256 initialBalance = IERC20(targetToken).balanceOf(address(this));
+
+        (address asset0, address asset1) = eulerSwap.getAssets();
+
+        if (targetToken == USDC) {
+            // WETH -> USDC -> WETH arbitrage
+            // IERC20(WETH).safeApprove(address(eulerSwap), borrowAmount);
+
+            // WETH -> USDC
+            uint256 usdcAmount = eulerSwap.computeQuote(
+                WETH,
+                USDC,
                 borrowAmount,
-                0,
-                address(this)
+                true
             );
+            bool zeroForOne = asset0 == WETH;
+            IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
+                zeroForOne: zeroForOne,
+                amountSpecified: int256(borrowAmount),
+                sqrtPriceLimitX96: 0
+            });
+            bytes memory swapData = abi.encode(params);
 
-            IERC20(ETHEREUMADDRESS).approve(eulerSwap, wethAmount);
+            if (zeroForOne) {
+                eulerSwap.swap(0, usdcAmount, address(this), swapData);
+            } else {
+                eulerSwap.swap(usdcAmount, 0, address(this), swapData);
+            }
 
-            uint256 finalUsdc = IEularSwap(eulerSwap).swapExactInputSingle(
-                ETHEREUMADDRESS,
-                USDCADDRESS,
+            // USDC -> WETH (with some slippage for profit)
+            IERC20(USDC).approve(address(eulerSwap), usdcAmount);
+            uint256 wethAmount = eulerSwap.computeQuote(
+                USDC,
+                WETH,
+                usdcAmount,
+                true
+            );
+            zeroForOne = asset0 == USDC;
+            params = IPoolManager.SwapParams({
+                zeroForOne: zeroForOne,
+                amountSpecified: int256(usdcAmount),
+                sqrtPriceLimitX96: 0
+            });
+            swapData = abi.encode(params);
+
+            if (zeroForOne) {
+                eulerSwap.swap(0, wethAmount, address(this), swapData);
+            } else {
+                eulerSwap.swap(wethAmount, 0, address(this), swapData);
+            }
+
+            uint256 finalWeth = IERC20(WETH).balanceOf(address(this));
+            profit = finalWeth > initialBalance
+                ? finalWeth - initialBalance
+                : 0;
+        } else {
+            // USDC -> WETH -> USDC arbitrage
+            IERC20(USDC).approve(address(eulerSwap), borrowAmount);
+
+            // USDC -> WETH
+            uint256 wethAmount = eulerSwap.computeQuote(
+                USDC,
+                WETH,
+                borrowAmount,
+                true
+            );
+            bool zeroForOne = asset0 == USDC;
+            IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
+                zeroForOne: zeroForOne,
+                amountSpecified: int256(borrowAmount),
+                sqrtPriceLimitX96: 0
+            });
+            bytes memory swapData = abi.encode(params);
+
+            if (zeroForOne) {
+                eulerSwap.swap(0, wethAmount, address(this), swapData);
+            } else {
+                eulerSwap.swap(wethAmount, 0, address(this), swapData);
+            }
+
+            // WETH -> USDC
+            // IERC20(WETH).safeApprove(address(eulerSwap), wethAmount);
+            uint256 usdcAmount = eulerSwap.computeQuote(
+                WETH,
+                USDC,
                 wethAmount,
-                0,
-                address(this)
+                true
             );
+            zeroForOne = asset0 == WETH;
+            params = IPoolManager.SwapParams({
+                zeroForOne: zeroForOne,
+                amountSpecified: int256(wethAmount),
+                sqrtPriceLimitX96: 0
+            });
+            swapData = abi.encode(params);
 
-            _profit = finalUsdc > borrowAmount ? finalUsdc - borrowAmount : 0;
+            if (zeroForOne) {
+                eulerSwap.swap(0, usdcAmount, address(this), swapData);
+            } else {
+                eulerSwap.swap(usdcAmount, 0, address(this), swapData);
+            }
+
+            uint256 finalUsdc = IERC20(USDC).balanceOf(address(this));
+            profit = finalUsdc > initialBalance
+                ? finalUsdc - initialBalance
+                : 0;
         }
 
-        return _profit;
+        return profit;
     }
 
-   
-    function depositCollateral(collateralParams memory params) internal {
-        require(
-            params.CollateralToken == ETHEREUMADDRESS ||
-                params.CollateralToken == USDCADDRESS
-        );
-        require(
-              IEVault(euler).asset() == params.CollateralToken,
-            "FlashArbitrateEngine: not supported"
-        );
-        IERC20(params.CollateralToken).safeTransferFrom(
-            msg.sender,
-            address(this),
-            params._amount
-        );
-        // Approve and deposit to the vault
-        IERC20(params.CollateralToken).safeApprove(
-            address( euler),
-            params._amount
-        );
-          IEVault(euler).deposit(params._amount, address(this));
-        
-        }
-       
+    /**
+     * @dev Get user's flash positions
+     * @param user Address of the user
+     */
+    function getUserPositions(
+        address user
+    ) external view returns (uint256[] memory) {
+        return userPositions[user];
     }
+
+    /**
+     * @dev Get position by ID
+     * @param positionId ID of the position
+     */
+    function getPosition(
+        uint256 positionId
+    ) external view returns (FlashPosition memory) {
+        return positions[positionId];
+    }
+
+    /**
+     * @dev Update configuration
+     */
+    function updateConfig(
+        uint256 _maxCycles,
+        uint256 _maxBorrowAmount,
+        uint256 _minProfitThreshold
+    ) external onlyOwner {
+        maxCycles = _maxCycles;
+        maxBorrowAmount = _maxBorrowAmount;
+        minProfitThreshold = _minProfitThreshold;
+    }
+
+    /**
+     * @dev Emergency function to rescue stuck tokens
+     */
+    function rescueTokens(
+        address token,
+        uint256 amount,
+        address to
+    ) external onlyOwner {
+        IERC20(token).safeTransfer(to, amount);
+    }
+
+    receive() external payable {}
+
+    // function setPoolAddress(
+    //     address _EVaultPool,
+    //     address swapPool
+    // ) public onlyOwner {
+    //     vault = IEVault(_EVaultPool);
+    //     eulerSwap = IEulerSwap(swapPool);
+    // }
+
+    // wraps eth to weth to be used in excution
+    function wrapEth() internal {}
 }

@@ -1,9 +1,10 @@
+"use client"
 import React from "react";
-import ReactDOM from "react-dom/client";
+// import ReactDOM from "react-dom/client";
 import { SwapBridgeModal } from "@/components/awesome-swap/src/components/SwapBridgeModal";
 import { SwapBridgeProvider } from "@/components/awesome-swap/src/providers/SwapBridgeProvider";
 import { InjectedState } from "@/components/awesome-swap/src/state/injected-store";
-import "@/components/awesome-swap/ui/index.css";
+// import "@/components/awesome-swap/ui/index.css";
 
 // Sample injected state for demo
 const demoInjectedState: InjectedState = {
@@ -69,18 +70,13 @@ const demoInjectedState: InjectedState = {
   tokensId: null,
 };
 
-const App = () => {
+
+export default function Home() {
   return (
     <SwapBridgeProvider injectedState={demoInjectedState}>
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4 m-10">
         <SwapBridgeModal />
       </div>
     </SwapBridgeProvider>
-  );
-};
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-); 
+  )
+}
