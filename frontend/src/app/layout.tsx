@@ -8,6 +8,7 @@ import AuthInitializer from '@/components/auth-initializer';
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import SwapWidget from '@/components/swap-widget';
+import QueryProvider from "@/components/graph-ql/provider";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     description: "Discover your dream supercar at ZERO auction platform",
     type: "website",
   },
-  
+
 };
 export default function RootLayout({
   children,
@@ -30,16 +31,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientBody>
-          <Toaster />
-          <SwapWidget />
-          <AuthInitializer />
-          <Header />
-          <main>
-            {children}
-          </main>
-          <Footer />
-        </ClientBody>
+        <QueryProvider>
+
+          <ClientBody>
+            <Toaster />
+            <SwapWidget />
+            <AuthInitializer />
+            <Header />
+            <main>
+              {children}
+            </main>
+            <Footer />
+          </ClientBody>
+        </QueryProvider>
       </body>
     </html>
   );

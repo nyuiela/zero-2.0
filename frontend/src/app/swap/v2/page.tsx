@@ -70,10 +70,11 @@ const demoInjectedState: InjectedState = {
   tokensId: null,
 };
 
-export default function App() {
+
+export default function Home() {
   return (
     <SwapBridgeProvider injectedState={demoInjectedState}>
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4 m-10">
         <SwapBridgeModal />
       </div>
     </SwapBridgeProvider>

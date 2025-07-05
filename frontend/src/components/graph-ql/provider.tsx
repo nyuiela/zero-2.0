@@ -29,7 +29,7 @@ function getQueryClient() {
     return browserQueryClient
   }
 }
-export default function Providers({ children }: Readonly<{children: React.ReactNode}>) {
+export default function QueryProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const queryClient = getQueryClient()
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

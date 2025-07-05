@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation'
 import { zero_abi, zero_addr } from '@/lib/abi/abi'
 import Image from 'next/image'
 import ProfileBanner from '@/components/profile-banner'
-
+import { useGraph } from "@/hooks/useGraph"
 interface SellerApplication {
   businessName: string
   businessType: 'dealer' | 'auction_house' | 'private_seller'
@@ -79,6 +79,8 @@ export default function ProfilePage() {
     socialMedia: ''
   })
 
+  const { data } = useGraph();
+  console.log('User data ', data)
   const [newSpecialty, setNewSpecialty] = useState('')
 
   // Add state for profile NFT image
