@@ -176,6 +176,8 @@ contract Auction {
 
     mapping(uint256 => bool) private requiresStake;
 
+    // usee arbitrage to et more funds
+
     function placeBid(uint256 auctionId, uint256 amount) external payable {
         AuctionItem storage a = auctions[auctionId];
         require(block.timestamp >= a.startTime, "Auction not started");
