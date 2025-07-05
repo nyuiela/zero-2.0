@@ -29,11 +29,11 @@ export const Recipient = () => {
           className={clsx(
             `h-5 flex justify-center items-center gap-1 px-2 py-1 mr-0.5 rounded-full cursor-pointer hover:scale-105 transition-all bg-card`,
             recipient &&
-              !isAddressEqual(from, sender, to, recipient) &&
+              !isAddressEqual(from, sender, to, `0x${recipient}`) &&
               "bg-card text-foreground"
           )}
         >
-          {recipient && !isAddressEqual(from, sender, to, recipient) ? (
+          {recipient && !isAddressEqual(from, sender, to, `0x${recipient}`) ? (
             <>
               <span className="text-[10px] font-button leading-none">
                 {recipientProfile.data?.name

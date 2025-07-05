@@ -8,9 +8,9 @@ import { useActiveTokens } from "../hooks/use-active-tokens";
 import { useSelectedToken } from "../hooks/use-token";
 import { useFromChain, useToChain } from "../hooks/use-chain";
 import { useConfigState } from "../state/config-store";
-import { MultiChainToken } from "../types/token";
 import { formatDecimals } from "../utils/format-decimals";
 import { isAddressEqual } from "../utils/is-address-equal";
+import { MultiChainToken } from "../types";
 
 interface TokenSelectorOverlayProps {
   isOpen: boolean;
@@ -35,8 +35,8 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
       return true;
     }
 
-    const fromT = token[from?.id ?? 0];
-    const toT = token[to?.id ?? 0];
+    const fromT = token[from?.id ?? 0] as any;
+    const toT = token[to?.id ?? 0] as any;
 
     return (
       fromT?.name
@@ -101,11 +101,11 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
               .filter(Boolean)
               .map((symbol) => {
                 const token = tokens.data?.find((t) => {
-                  const fromT = t.token[from?.id ?? 0];
+                  const fromT = t.token[from?.id ?? 0] as any;
                   return fromT?.symbol === symbol;
                 })?.token;
 
-                const fromToken = token?.[from?.id ?? 0];
+                const fromToken = token?.[from?.id ?? 0] as any;
                 if (!token || !fromToken) {
                   return null;
                 }
@@ -189,11 +189,11 @@ const TokenItem: React.FC<TokenItemProps> = ({
           toToken &&
           isAddressEqual(
             from,
-            selectedToken.address,
+            `0x${selectedToken?.[from?.id ?? 0]?.address}`,
             from,
-            fromToken.address
+            `0x${fromToken.address}`
           ) &&
-          isAddressEqual(to, selectedToken.address, to, toToken.address) &&
+          isAddressEqual(to, `0x${selectedToken?.[to?.id ?? 0]?.address}`, to, `0x${toToken.address}`) &&
           "bg-muted"
       )}
       onClick={onClick}

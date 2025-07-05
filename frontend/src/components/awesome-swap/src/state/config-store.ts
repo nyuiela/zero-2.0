@@ -1,8 +1,6 @@
 import { createSelectorHooks } from "auto-zustand-selectors-hook";
 import { create } from "zustand";
-
-import { RouteProvider } from "../types";
-import { MultiChainToken } from "../types/token";
+import { MultiChainToken, RouteProvider } from "../types";
 
 interface ConfigState {
   fiatOnramp: boolean;

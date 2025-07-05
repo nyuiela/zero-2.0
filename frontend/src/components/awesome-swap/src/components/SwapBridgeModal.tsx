@@ -61,7 +61,7 @@ export const SwapBridgeModal = () => {
 
       {/* Overlays */}
       <NetworkSelectorOverlay
-        isOpen={displayTokenNetworkSelector}
+        // isOpen={displayTokenNetworkSelector}
         onClose={() => setDisplayTokenNetworkSelector(false)}
       />
       <TokenSelectorOverlay
