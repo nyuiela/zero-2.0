@@ -37,8 +37,8 @@ export const useMultichainToken = () => {
       selectedTo &&
       potentialFrom &&
       potentialTo &&
-      isAddressEqual(from, potentialFrom, from, selectedFrom) &&
-      isAddressEqual(to, potentialTo, to, selectedTo)
+      isAddressEqual(from, `0x${potentialFrom}`, from, `0x${selectedFrom}`) &&
+      isAddressEqual(to, `0x${potentialTo}`, to, `0x${selectedTo}`)
     ) {
       return x;
     }
@@ -61,7 +61,7 @@ export const useMultichainToken = () => {
       potentialFrom &&
       selectedTo &&
       potentialTo &&
-      isAddressEqual(from, potentialFrom, from, selectedFrom)
+      isAddressEqual(from, `0x${potentialFrom}`, from, `0x${selectedFrom}`)
     ) {
       return x;
     }
@@ -82,7 +82,7 @@ export const useSelectedToken = () => {
     return null;
   }
 
-  return token[from?.id ?? 0] ?? null;
+  return token?.[from?.id ?? 0] ?? null;
 };
 
 export const useDestinationToken = () => {

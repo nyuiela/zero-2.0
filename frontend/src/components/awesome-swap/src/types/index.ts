@@ -3,13 +3,16 @@
 export interface ChainDto {
   id: number;
   name: string;
-  rpc: string;
-  blockExplorer: string;
+  rpc?: string;
+  rpcUrls: string[];
+  blockExplorerUrls: string[];
   nativeCurrency: {
     name: string;
     symbol: string;
     decimals: number;
   };
+  testnet: boolean;
+  solana: boolean;
 }
 
 export interface DeploymentDto {
@@ -100,3 +103,22 @@ export interface AppConfig {
   name: string;
   description: string;
 } 
+
+// Route provider types
+export type RouteProvider = "across" | "ccip" | "cctp" | "hyperlane" | "lz" | "optimism" | "relay";
+
+
+// Multi-chain token type
+export interface MultiChainToken {
+  [chainId: number]: {
+    address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    chainId: number;
+  };
+} 
+
+export const formatDecimals = (value: number, decimals: number = 4): string => {
+  return value.toFixed(decimals);
+}; 

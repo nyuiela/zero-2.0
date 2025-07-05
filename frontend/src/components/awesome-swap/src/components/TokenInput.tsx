@@ -2,7 +2,7 @@ import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { IconCaretDown } from "./icons";
-import { useSelectedToken, useTokenBalance } from "../hooks/tokens";
+import { useSelectedToken, useTokenBalances } from "../hooks/tokens";
 import { useSender } from "../hooks/use-recipient";
 import { useConfigState } from "../state/config-store";
 import { useFromChain } from "../hooks/use-chain";
@@ -22,7 +22,7 @@ export const TokenInput = () => {
 
   // Use real token hooks
   const selectedToken = useSelectedToken();
-  const tokenBalance = useTokenBalance(selectedToken);
+  const tokenBalance = useTokenBalances();
 
   const fromToken = selectedToken?.[from?.id ?? 0];
   const formattedTokenBalance = formatUnits(

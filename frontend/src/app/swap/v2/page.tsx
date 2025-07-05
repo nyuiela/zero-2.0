@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { SwapBridgeModal } from "../src/components/SwapBridgeModal";
-import { SwapBridgeProvider } from "../src/providers/SwapBridgeProvider";
-import { InjectedState } from "../src/state/injected-store";
-import "./index.css";
+import { SwapBridgeModal } from "@/components/awesome-swap/src/components/SwapBridgeModal";
+import { SwapBridgeProvider } from "@/components/awesome-swap/src/providers/SwapBridgeProvider";
+import { InjectedState } from "@/components/awesome-swap/src/state/injected-store";
+import "@/components/awesome-swap/ui/index.css";
 
 // Sample injected state for demo
 const demoInjectedState: InjectedState = {
@@ -55,8 +55,7 @@ const demoInjectedState: InjectedState = {
   app: {
     name: "Superbridge",
     description: "Cross-chain bridge",
-    url: "https://superbridge.app",
-    icon: "https://superbridge.app/icon.png",
+    version: "1.0.0",
   },
   host: "https://superbridge.app",
   widget: false,
@@ -65,8 +64,7 @@ const demoInjectedState: InjectedState = {
   defaultRoute: null,
   supportsOnRamp: true,
   tos: {
-    url: "https://superbridge.app/terms",
-    version: "1.0.0",
+    accepted: true,
   },
   tokensId: null,
 };
