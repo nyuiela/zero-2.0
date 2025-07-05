@@ -3,6 +3,24 @@ import { isAddressEqual } from "../utils/is-address-equal";
 import { useActiveTokens } from "./use-active-tokens";
 import { useFromChain, useToChain } from "./use-chain";
 
+// Define the actual token structure returned by useActiveTokens
+interface TokenData {
+  address: string;
+  chainId: number;
+  symbol: string;
+  decimals: number;
+  name?: string;
+}
+
+interface ExtendedMultiChainToken {
+  [chainId: number]: TokenData;
+}
+
+interface TokenWithBalance {
+  token: ExtendedMultiChainToken;
+  balance: bigint;
+}
+
 // TODO: Replace with real utility
 const isEth = (token: any) => {
   return token?.symbol === "ETH" || token?.symbol === "MATIC" || token?.symbol === "AVAX";
@@ -17,19 +35,19 @@ export const useMultichainToken = () => {
   if (!token) {
     return (
       tokens.data?.find(
-        (x: any) => isEth(x[from?.id ?? 0]) || isEth(x[to?.id ?? 0])
-      ) ||
-      tokens.data?.[0] ||
+        (x: TokenWithBalance) => isEth(x.token[from?.id ?? 0]) || isEth(x.token[to?.id ?? 0])
+      )?.token ||
+      tokens.data?.[0]?.token ||
       null
     );
   }
 
-  const fullMatch = tokens.data?.find((x: any) => {
-    const potentialFrom = x[from?.id ?? 0]?.address;
-    const potentialTo = x[to?.id ?? 0]?.address;
+  const fullMatch = tokens.data?.find((x: TokenWithBalance) => {
+    const potentialFrom = x.token[from?.id ?? 0]?.address;
+    const potentialTo = x.token[to?.id ?? 0]?.address;
 
-    const selectedFrom = token?.[from?.id ?? 0]?.address;
-    const selectedTo = token?.[to?.id ?? 0]?.address;
+    const selectedFrom = (token as ExtendedMultiChainToken)?.[from?.id ?? 0]?.address;
+    const selectedTo = (token as ExtendedMultiChainToken)?.[to?.id ?? 0]?.address;
 
     // full match
     if (
@@ -45,15 +63,15 @@ export const useMultichainToken = () => {
   });
 
   if (fullMatch) {
-    return fullMatch;
+    return fullMatch.token;
   }
 
-  const partialMatch = tokens.data?.find((x: any) => {
-    const potentialFrom = x[from?.id ?? 0]?.address;
-    const potentialTo = x[to?.id ?? 0]?.address;
+  const partialMatch = tokens.data?.find((x: TokenWithBalance) => {
+    const potentialFrom = x.token[from?.id ?? 0]?.address;
+    const potentialTo = x.token[to?.id ?? 0]?.address;
 
-    const selectedFrom = token?.[from?.id ?? 0]?.address;
-    const selectedTo = token?.[to?.id ?? 0]?.address;
+    const selectedFrom = (token as ExtendedMultiChainToken)?.[from?.id ?? 0]?.address;
+    const selectedTo = (token as ExtendedMultiChainToken)?.[to?.id ?? 0]?.address;
 
     // partial match, like in the case of switching USDC -> USDC.e
     if (
@@ -68,10 +86,10 @@ export const useMultichainToken = () => {
   });
 
   if (partialMatch) {
-    return partialMatch;
+    return partialMatch.token;
   }
 
-  return tokens.data?.[0] ?? null;
+  return tokens.data?.[0]?.token ?? null;
 };
 
 export const useSelectedToken = () => {
@@ -82,12 +100,12 @@ export const useSelectedToken = () => {
     return null;
   }
 
-  return token?.[from?.id ?? 0] ?? null;
+  return (token as ExtendedMultiChainToken)?.[from?.id ?? 0] ?? null;
 };
 
 export const useDestinationToken = () => {
   const token = useMultichainToken();
   const to = useToChain();
 
-  return token?.[to?.id ?? 0] ?? null;
+  return (token as ExtendedMultiChainToken)?.[to?.id ?? 0] ?? null;
 }; 

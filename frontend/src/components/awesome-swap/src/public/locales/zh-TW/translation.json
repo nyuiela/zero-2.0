@@ -1,0 +1,290 @@
+{
+  "reviewBridge": "审核桥接",
+  "bridging": "正在桥接",
+  "connectWallet": "连接钱包",
+  "connectChainWallet": "连接 {{chain}} 钱包",
+  "orAddChainRecipient": "或添加 {{to}} 接收地址",
+  "switchToApprove": "切换",
+  "approve": "批准",
+  "insufficientFunds": "资金不足",
+  "insufficientGas": "{{symbol}} 不足以支付手续费",
+  "bridgeLimit": "{{amount}} {{symbol}} 限额",
+  "bridgeMin": "最低金额 {{amount}} {{symbol}}",
+  "enterAnAmount": "输入金额",
+  "loading": "加载中",
+  "loadMore": "加载更多",
+  "error": "错误",
+  "noAccountConnected": "未连接账户",
+  "save": "保存",
+  "toAddress": "接收地址",
+  "on": "开启",
+  "off": "关闭",
+  "receiveOnChain": "在 {{chain}} 上接收",
+  "transferTime": "传输时间",
+  "transferTimeSeconds_one": "约{{count}}秒",
+  "transferTimeSeconds_other": "约{{count}}秒",
+  "transferTimeMinutes_one": "约{{count}}分钟",
+  "transferTimeMinutes_other": "约{{count}}分钟",
+  "transferTimeHours_one": "约{{count}}小时",
+  "transferTimeHours_other": "约{{count}}小时",
+  "transferTimeDays_one": "约{{count}}天",
+  "transferTimeDays_other": "约{{count}}天",
+  "availableBalance": "可用余额 {{amount}} {{symbol}}",
+  "sorryAnErrorOccurred": "对不起！发生了错误",
+  "about": "关于",
+  "docs": "文档",
+  "from": "从",
+  "to": "到",
+  "manage": "管理",
+  "support": "支持",
+  "ok": "确定",
+
+  "general": {
+    "needHelp": "需要帮助？查看常见问题",
+    "learnMore": "了解更多",
+    "bridgeAmount": "跨链金额",
+    "fee": "手续费"
+  },
+
+  "settings": {
+    "settings": "设置",
+    "escapeHatchDescription": "通过结算链上的抗审查交易强制取款。",
+    "currency": "货币",
+    "language": "语言",
+    "explorer": "区块浏览器",
+    "tokenLists": "代币列表",
+    "enableTestnets": "启用测试网",
+    "darkMode": "夜间模式"
+  },
+
+  "customTokenLists": {
+    "add": "添加自定义代币列表",
+    "name": "代币列表名称",
+    "namePlaceholder": "名称",
+    "url": "代币列表 URL",
+    "urlPlaceholder": "URL",
+    "invalid": "无效的代币列表 URL",
+    "loadedTokens": "已加载 {{num}} 个代币",
+    "disclaimer": "任何人都可以创建代币，包括现有代币的虚假版本。请谨慎行事。一些代币及其技术参数可能与 {{app}} 服务不兼容。通过导入此自定义代币列表，您承认并接受这些风险。",
+    "learnMore": "了解更多风险信息。",
+    "save": "保存列表",
+    "delete": "删除列表"
+  },
+
+  "activity": {
+    "activity": "活动",
+    "actionNeeded": "需要操作",
+    "connectWallet": "请连接您的钱包...",
+    "noTransactions": "暂时没有交易记录...",
+    "error": "对不起！我们无法获取您的活动记录。\n请刷新页面重试",
+    "withdrawn": "已取款",
+    "proving": "正在证明...",
+    "readyToProve": "准备证明",
+    "proved": "已证明",
+    "waitingForStateRoot": "等待状态根...",
+    "waitingForDisputeGame": "等待争议处理...",
+    "stateRootPublished": "状态根已发布",
+    "challengePeriod": "挑战期",
+    "finalizing": "正在完成...",
+    "readyToFinalize": "准备完成",
+    "finalized": "已完成",
+    "deposited": "已存款",
+    "depositing": "正在存款",
+    "l2Confirmation": "L2 确认",
+    "waitingForL2": "正在等待 L2...",
+    "bridged": "桥接完成",
+    "bridging": "正在桥接",
+    "minted": "已铸造",
+    "minting": "铸造中",
+    "readyToMint": "准备铸造",
+    "waitingForAttestation": "等待认证...",
+    "remainingSeconds_one": "剩余 ~{{count}} 秒",
+    "remainingSeconds_other": "剩余 ~{{count}} 秒",
+    "remainingMinutes_one": "剩余 ~{{count}} 分钟",
+    "remainingMinutes_other": "剩余 ~{{count}} 分钟",
+    "remainingHours_one": "剩余 ~{{count}} 小时",
+    "remainingHours_other": "剩余 ~{{count}} 小时",
+    "remainingDays_one": "剩余 ~{{count}} 天",
+    "remainingDays_other": "剩余 ~{{count}} 天",
+    "findANetwork": "搜尋"
+  },
+
+  "tokens": {
+    "tokens": "代币",
+    "selectToken": "选择代币",
+    "noneFound": "未找到结果",
+    "notBridgeable": "不可桥接",
+    "import": "导入",
+    "customImport": "自定义导入",
+    "customImportFromList": "来自 {{name}}",
+    "customImportCheck": "请确保您已检查代币地址，并且它是正确的：",
+    "customL1Address": "L1 地址",
+    "customL2Address": "L2 地址",
+    "customL3Address": "L3 地址"
+  },
+
+  "recipient": {
+    "bridgeDestination": "桥接目的地",
+    "toAddress": "接收地址",
+    "invalidAddress": "无效的地址",
+    "yourChainAddress": "这是您的 {{chain}} 地址",
+    "usedBefore": "之前已使用的账户",
+    "usedBeforeMultiple": "账户之前已使用 {{count}} 次",
+    "newAddress": "新地址 - 请小心！",
+    "checkingAddress": "正在检查地址...",
+    "addRecipientAddress": "添加接收地址",
+    "pleaseNote": "请注意",
+    "sameAddressRequirement": "桥接到或来自 {{chain}} 必须具有相同的接收地址。",
+    "checkRecipientAddress": "检查接收地址"
+  },
+
+  "buttons": {
+    "start": "开始",
+    "finalize": "完成",
+    "claim": "认领",
+    "prove": "证明",
+    "redeem": "赎回",
+    "switchChain": "切换链",
+    "mint": "铸造",
+    "get": "获取",
+    "continue": "继续",
+    "connect": "连接",
+    "completeCheck": "完成检查",
+    "completeChecks": "完成所有检查",
+    "approve": "批准",
+    "approved": "已批准",
+    "approving": "正在批准",
+    "max": "最大",
+    "bridgingDisabled": "桥接已禁用",
+    "bridgingPaused": "桥接已暂停",
+    "reset": "重置"
+  },
+
+  "fees": {
+    "fees": "网络费用",
+    "networkGas": "{{chain}} Gas 费用",
+    "easyModeFee": "简易模式 Gas 费用"
+  },
+
+  "poweredBy": "由 {{name}} 提供支持",
+
+  "transaction": {
+    "via": "通过",
+    "transferTime": "传输时间",
+    "steps": "步骤",
+    "bridgeInfo": "桥接信息",
+
+    "fromChain": "从 {{from}}",
+    "toChain": "到 {{to}}",
+
+    "fromAddress": "发送地址",
+    "toAddress": "接收地址"
+  },
+
+  "confirmationModal": {
+    "goBack": "返回",
+    "proceedAnyway": "仍然继续",
+
+    "noGas": {
+      "youNeedGasOn": "你需要在 {{to}} 上有足够的 Gas",
+      "needHelp": "需要帮助？查看常见问题",
+      "cctp": "跨链 {{symbol}} 需要在 {{to}} 进行额外交易。请充值 {{gas}} 以完成跨链。",
+      "opWithdrawing": "提现需要在 {{to}} 进行 2 笔额外交易。请充值 {{gas}} 以完成提现。",
+      "arbWithdrawing": "提现 {{token}} 需要在 {{to}} 进行额外交易。请充值 {{gas}} 以完成提现。",
+      "depositing": "如果没有足够的 Gas，你将无法在 {{to}} 进行交易。请先充值 {{gas}} 再尝试跨链。"
+    },
+
+    "extraTransactions": {
+      "title": "交易次数与等待时间",
+      "checkboxTitle": "我理解并确认以下内容:",
+
+      "cctpDescriptionSeconds_one": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 秒。",
+      "cctpDescriptionSeconds_other": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 秒。",
+      "cctpDescriptionMinutes_one": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 分钟。",
+      "cctpDescriptionMinutes_other": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 分钟。",
+      "cctpDescriptionHours_one": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 小时。",
+      "cctpDescriptionHours_other": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 小时。",
+      "cctpDescriptionDays_one": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 天。",
+      "cctpDescriptionDays_other": "通过 CCTP 跨链需要在 {{to}} 进行额外交易，并大约需要等待 {{count}} 天。",
+
+      "checkbox1_one": "我需要在 {{to}} 进行一笔额外交易",
+      "checkbox1_other": "我需要在 {{to}} 进行 2 笔额外交易",
+      "checkbox2": "Gas 价格可能在等待时间和交易期间波动",
+      "checkbox3": "一旦跨链开始，无法加速或取消"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "确保你要跨链到的钱包支持 {{to}}",
+      "description": "在跨链前请检查 {{to}} 是否支持，否则你可能会丢失加密资产。不要跨链到交易所。",
+      "checkboxOwnWallet": "我的钱包支持 {{to}}",
+      "checkboxNotOwnWallet": "我发送的地址支持 {{to}}"
+    },
+
+    "expensiveGas": {
+      "title": "高额 Gas 费用",
+      "description": "这笔跨链交易的 Gas 费用可能高于代币的价值。建议等待 Gas 价格降低，或选择其他跨链方式。"
+    },
+
+    "review": "审核",
+    "gasCosts": "Gas 费用",
+    "fees": "手续费"
+  },
+
+  "walletsDrawer": {
+    "title": "钱包",
+    "evmDescription": "连接 {{chain}} 或兼容 EVM 的钱包",
+    "svmDescription": "连接兼容 Solana 或 SVM 的钱包"
+  },
+
+  "tos": {
+    "welcome": "欢迎来到 {{name}}",
+    "poweredBy": "由 Superbridge 提供支持",
+    "superbridge1": "此界面只是官方 Superchain 汇总的原生桥接合约的一个层。",
+    "superbridge2": "Superbridge 在任何时候都不保管资金。",
+    "superbridge3": "如需桥接帮助，请访问 <0>支持与常见问题解答</0>。",
+    "superbridge4": "使用此界面即表示您同意我们的 <0>服务条款和隐私政策</0>。",
+
+    "dedicated1": "此界面只是 <0>{{name}}</0> 的原生桥接合约的一个层。",
+    "agreeAndContinue": "同意并继续",
+
+    "forceReadTerms": "请阅读并同意服务条款",
+    "forceReadPrivacy": "请阅读并同意隐私政策"
+  },
+
+  "legal": {
+    "footerButton": "条款与隐私",
+    "title": "条款与隐私",
+    "superbridgeTerms": "Superbridge 服务条款",
+    "superbridgePrivacy": "Superbridge 隐私政策",
+    "dedicatedTerms": "{{name}} 服务条款",
+    "dedicatedPrivacy": "{{name}} 隐私政策"
+  },
+
+  "feeModal": {
+    "providerFees": "{{provider}} 费用",
+    "acrossFeeBreakdownDescription": "支付给 <0>Across</0> 及其流动性提供商和中继者的费用",
+    "hyperlaneFeeBreakdownDescription": "支付给 <0>Hyperlane</0> 中继者的消息传递费用"
+  },
+
+  "gasInfoModal": {
+    "title": "Gas 费用",
+    "description": "在区块链上进行交易需要支付费用。发送至 {{from}} 的交易需要少量的 {{symbol}} 以确保网络确认它们。",
+
+    "opWithdrawal": "从 OP Stack 汇总取款需要两次额外交易以证明并在结算链上完成取款。",
+    "arbWithdrawal": "从 Arbitrum Nitro 汇总取款需要一次额外交易以在结算链上完成。",
+    "cctp": "通过 CCTP 桥接原生 USDC 需要在目标链上进行额外交易。"
+  },
+
+  "networkSelectorModal": {
+    "title": "选择网络"
+  },
+
+  "routeSelectorModal": {
+    "title": "选择路线"
+  },
+
+  "header": {
+    "supportAndFaqs": "支持与常见问题",
+    "legal": "法律"
+  }
+}

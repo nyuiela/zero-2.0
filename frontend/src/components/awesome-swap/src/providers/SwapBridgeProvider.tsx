@@ -1,3 +1,5 @@
+'use client'
+
 import React, { ReactNode, createContext, useContext } from "react";
 import { InjectedState, createInjectedStore } from "../state/injected-store";
 

@@ -1,0 +1,290 @@
+{
+  "reviewBridge": "Brücke überprüfen",
+  "bridging": "Brücke wird erstellt",
+  "connectWallet": "Wallet verbinden",
+  "connectChainWallet": "Verbinde {{chain}}-Wallet",
+  "orAddChainRecipient": "Oder füge eine {{to}}-Empfängeradresse hinzu",
+  "switchToApprove": "Wechseln",
+  "approve": "Genehmigen",
+  "insufficientFunds": "Unzureichende Mittel",
+  "insufficientGas": "Nicht genügend {{symbol}} für Gas",
+  "bridgeLimit": "{{amount}} {{symbol}} Limit",
+  "bridgeMin": "Mindestbetrag {{amount}} {{symbol}}",
+  "enterAnAmount": "Betrag eingeben",
+  "loading": "Wird geladen",
+  "loadMore": "Mehr laden",
+  "error": "Fehler",
+  "noAccountConnected": "Kein Konto verbunden",
+  "save": "Speichern",
+  "toAddress": "An Adresse",
+  "on": "ein",
+  "off": "aus",
+  "receiveOnChain": "Auf {{chain}} empfangen",
+  "transferTime": "Übertragungszeit",
+  "transferTimeSeconds_one": "~{{count}} Sekunde",
+  "transferTimeSeconds_other": "~{{count}} Sekunden",
+  "transferTimeMinutes_one": "~{{count}} Minute",
+  "transferTimeMinutes_other": "~{{count}} Minuten",
+  "transferTimeHours_one": "~{{count}} Stunde",
+  "transferTimeHours_other": "~{{count}} Stunden",
+  "transferTimeDays_one": "~{{count}} Tag",
+  "transferTimeDays_other": "~{{count}} Tage",
+  "availableBalance": "{{amount}} {{symbol}} verfügbar",
+  "sorryAnErrorOccurred": "Entschuldigung! Ein Fehler ist aufgetreten",
+  "about": "Über",
+  "docs": "Dokumentation",
+  "from": "Von",
+  "to": "An",
+  "manage": "Verwalten",
+  "support": "Support",
+  "ok": "Ok",
+
+  "general": {
+    "needHelp": "Brauchen Sie Hilfe? FAQs ansehen",
+    "learnMore": "Mehr erfahren",
+    "bridgeAmount": "Brückenbetrag",
+    "fee": "Gebühr"
+  },
+
+  "settings": {
+    "settings": "Einstellungen",
+    "escapeHatchDescription": "Erzwingen Sie Abhebungen über zensurresistente Transaktionen auf der Abwicklungskette.",
+    "currency": "Währung",
+    "language": "Sprache",
+    "explorer": "Explorer",
+    "tokenLists": "Token-Listen",
+    "enableTestnets": "Testnetze aktivieren",
+    "darkMode": "Dunkler Modus"
+  },
+
+  "customTokenLists": {
+    "add": "Benutzerdefinierte Token-Liste hinzufügen",
+    "name": "Name der Token-Liste",
+    "namePlaceholder": "Name",
+    "url": "URL der Token-Liste",
+    "urlPlaceholder": "URL",
+    "invalid": "Ungültige Token-Listen-URL",
+    "loadedTokens": "{{num}} Token geladen",
+    "disclaimer": "Jeder kann ein Token erstellen, einschließlich gefälschter Versionen bestehender Token. Seien Sie vorsichtig. Einige Token und ihre technischen Parameter sind möglicherweise nicht mit {{app}}-Diensten kompatibel. Durch das Importieren dieser benutzerdefinierten Token-Liste erkennen Sie die Risiken an und akzeptieren sie.",
+    "learnMore": "Mehr über die Risiken erfahren.",
+    "save": "Liste speichern",
+    "delete": "Liste löschen"
+  },
+
+  "activity": {
+    "activity": "Aktivität",
+    "actionNeeded": "Aktion erforderlich",
+    "connectWallet": "Bitte verbinden Sie Ihre Wallet...",
+    "noTransactions": "Noch keine Transaktionen...",
+    "error": "Entschuldigung! Wir können Ihren Aktivitätsfeed nicht abrufen.\n Bitte versuchen Sie, die Seite zu aktualisieren",
+    "withdrawn": "Abgehoben",
+    "proving": "Wird bewiesen...",
+    "readyToProve": "Bereit zum Beweisen",
+    "proved": "Bewiesen",
+    "waitingForStateRoot": "Warten auf den Status-Root...",
+    "waitingForDisputeGame": "Warten auf das Streitspiel...",
+    "stateRootPublished": "Status-Root veröffentlicht",
+    "challengePeriod": "Herausforderungszeitraum",
+    "finalizing": "Wird abgeschlossen...",
+    "readyToFinalize": "Bereit zum Abschluss",
+    "finalized": "Abgeschlossen",
+    "deposited": "Eingezahlt",
+    "depositing": "Einzahlung wird durchgeführt",
+    "l2Confirmation": "L2 Bestätigung",
+    "waitingForL2": "Warten auf L2...",
+    "bridged": "Überbrückt",
+    "bridging": "Brücke wird erstellt",
+    "minted": "Geprägt",
+    "minting": "Prägung wird durchgeführt",
+    "readyToMint": "Bereit zur Prägung",
+    "waitingForAttestation": "Warten auf die Attestierung...",
+    "remainingSeconds_one": "~{{count}} Sekunde verbleibend",
+    "remainingSeconds_other": "~{{count}} Sekunden verbleibend",
+    "remainingMinutes_one": "~{{count}} Minute verbleibend",
+    "remainingMinutes_other": "~{{count}} Minuten verbleibend",
+    "remainingHours_one": "~{{count}} Stunde verbleibend",
+    "remainingHours_other": "~{{count}} Stunden verbleibend",
+    "remainingDays_one": "~{{count}} Tag verbleibend",
+    "remainingDays_other": "~{{count}} Tage verbleibend",
+    "findANetwork": "Suchen"
+  },
+
+  "tokens": {
+    "tokens": "Token",
+    "selectToken": "Token auswählen",
+    "noneFound": "Keine Ergebnisse gefunden",
+    "notBridgeable": "Nicht überbrückbar",
+    "import": "Importieren",
+    "customImport": "Benutzerdefinierter Import",
+    "customImportFromList": "Von {{name}}",
+    "customImportCheck": "Stellen Sie sicher, dass Sie die Token-Adresse überprüft haben und sie korrekt ist:",
+    "customL1Address": "L1 Adresse",
+    "customL2Address": "L2 Adresse",
+    "customL3Address": "L3 Adresse"
+  },
+
+  "recipient": {
+    "bridgeDestination": "Ziel der Brücke",
+    "toAddress": "An Adresse",
+    "invalidAddress": "Ungültige Adresse",
+    "yourChainAddress": "Das ist Ihre {{chain}} Adresse",
+    "usedBefore": "Konto bereits verwendet",
+    "usedBeforeMultiple": "Konto bereits {{count}} Mal verwendet",
+    "newAddress": "Neue Adresse - bitte seien Sie vorsichtig!",
+    "checkingAddress": "Adresse wird überprüft...",
+    "addRecipientAddress": "Empfängeradresse hinzufügen",
+    "pleaseNote": "Bitte beachten",
+    "sameAddressRequirement": "Brücken zu oder von {{chain}} müssen dieselbe Empfängeradresse haben.",
+    "checkRecipientAddress": "Empfängeradresse prüfen"
+  },
+
+  "buttons": {
+    "start": "Starten",
+    "finalize": "Abschließen",
+    "claim": "Anfordern",
+    "prove": "Beweisen",
+    "redeem": "Einlösen",
+    "switchChain": "Kette wechseln",
+    "mint": "Prägen",
+    "get": "Holen",
+    "continue": "Fortfahren",
+    "connect": "Verbinden",
+    "completeCheck": "Überprüfung abschließen",
+    "completeChecks": "Überprüfungen abschließen",
+    "approve": "Genehmigen",
+    "approved": "Genehmigt",
+    "approving": "Wird genehmigt",
+    "max": "Max",
+    "bridgingDisabled": "Überbrückung deaktiviert",
+    "bridgingPaused": "Überbrückung pausiert",
+    "reset": "Zurücksetzen"
+  },
+
+  "fees": {
+    "fees": "Netzwerkgebühren",
+    "networkGas": "{{chain}} Gas",
+    "easyModeFee": "Einfachmodus-Gas"
+  },
+
+  "poweredBy": "Bereitgestellt von {{name}}",
+
+  "transaction": {
+    "via": "Über",
+    "transferTime": "Übertragungszeit",
+    "steps": "Schritte",
+    "bridgeInfo": "Brückeninformationen",
+
+    "fromChain": "Von {{from}}",
+    "toChain": "Zu {{to}}",
+
+    "fromAddress": "Von Adresse",
+    "toAddress": "Zu Adresse"
+  },
+
+  "confirmationModal": {
+    "goBack": "Zurückgehen",
+    "proceedAnyway": "Trotzdem fortfahren",
+
+    "noGas": {
+      "youNeedGasOn": "Sie benötigen Gas auf {{to}}",
+      "needHelp": "Brauchen Sie Hilfe? FAQs ansehen",
+      "cctp": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}}. Bitte füllen Sie {{gas}} auf {{to}} auf, um diese Brücke abzuschließen.",
+      "opWithdrawing": "Auszahlungen erfordern 2 zusätzliche Transaktionen auf {{to}}. Bitte füllen Sie {{gas}} auf {{to}} auf, um diese Auszahlung abzuschließen.",
+      "arbWithdrawing": "Das Abheben von {{token}} erfordert eine zusätzliche Transaktion auf {{to}}. Bitte füllen Sie {{gas}} auf {{to}} auf, um diese Auszahlung abzuschließen.",
+      "depositing": "Ohne Gas auf {{to}} können Sie keine Transaktionen durchführen. Bitte füllen Sie {{gas}} auf {{to}} auf, bevor Sie versuchen, eine Brücke zu schlagen."
+    },
+
+    "extraTransactions": {
+      "title": "Transaktionen und Wartezeiten",
+      "checkboxTitle": "Ich verstehe und bestätige das Folgende:",
+      
+      "cctpDescriptionSeconds_one": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Sekunde.",
+      "cctpDescriptionSeconds_other": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Sekunden.",
+      "cctpDescriptionMinutes_one": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Minute.",
+      "cctpDescriptionMinutes_other": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Minuten.",
+      "cctpDescriptionHours_one": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Stunde.",
+      "cctpDescriptionHours_other": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Stunden.",
+      "cctpDescriptionDays_one": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Tag.",
+      "cctpDescriptionDays_other": "Brücken über CCTP erfordert eine zusätzliche Transaktion auf {{to}} und eine Wartezeit von ~{{count}} Tagen.",
+
+      "checkbox1_one": "Ich muss eine zusätzliche Transaktion auf {{to}} durchführen",
+      "checkbox1_other": "Ich muss zwei zusätzliche Transaktionen auf {{to}} durchführen",
+      "checkbox2": "Gaspreise können sich erheblich zwischen Wartezeiten und Transaktionen ändern",
+      "checkbox3": "Eine Brücke kann nicht beschleunigt oder abgebrochen werden, sobald sie gestartet wurde"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "Stellen Sie sicher, dass die Wallet, an die Sie senden, {{to}} unterstützt",
+      "description": "Überprüfen Sie die Unterstützung von {{to}}, bevor Sie eine Brücke schlagen, da Sie sonst Ihre Kryptowährung verlieren könnten. Schlagen Sie keine Brücke zu einer Börse.",
+      "checkboxOwnWallet": "Meine Wallet unterstützt {{to}}",
+      "checkboxNotOwnWallet": "Die Adresse, an die ich sende, unterstützt {{to}}"
+    },
+
+    "expensiveGas": {
+      "title": "Teure Brücke",
+      "description": "Diese Brücke kostet wahrscheinlich mehr an Gas oder Gebühren als der Wert der übertragenen Token. Erwägen Sie, zu warten, bis das Gas günstiger ist, oder wählen Sie eine andere Route."
+    },
+
+    "review": "Überprüfung",
+    "gasCosts": "Gasgebühren",
+    "fees": "Gebühren"
+  },
+
+  "walletsDrawer": {
+    "title": "Wallets",
+    "evmDescription": "Verbinden Sie eine {{chain}}- oder EVM-kompatible Wallet",
+    "svmDescription": "Verbinden Sie eine Solana- oder SVM-kompatible Wallet"
+  },
+
+  "tos": {
+    "welcome": "Willkommen bei {{name}}",
+    "poweredBy": "Bereitgestellt von Superbridge",
+    "superbridge1": "Diese Oberfläche ist nur eine Schicht über den nativen Brückenverträgen für offizielle Superchain Rollups.",
+    "superbridge2": "Superbridge verwahrt zu keinem Zeitpunkt Gelder.",
+    "superbridge3": "Für Hilfe beim Überbrücken besuchen Sie bitte <0>Support & FAQs</0>.",
+    "superbridge4": "Durch die Nutzung dieser Oberfläche stimmen Sie unseren <0>Nutzungsbedingungen und Datenschutzrichtlinien</0> zu.",
+
+    "dedicated1": "Diese Oberfläche ist nur eine Schicht über den nativen Brückenverträgen für <0>{{name}}</0>.",
+    "agreeAndContinue": "Zustimmen & fortfahren",
+
+    "forceReadTerms": "Bitte lesen und akzeptieren Sie die Nutzungsbedingungen",
+    "forceReadPrivacy": "Bitte lesen und akzeptieren Sie die Datenschutzrichtlinie"
+  },
+
+  "legal": {
+    "footerButton": "Nutzungsbedingungen & Datenschutz",
+    "title": "Nutzungsbedingungen & Datenschutz",
+    "superbridgeTerms": "Superbridge Nutzungsbedingungen",
+    "superbridgePrivacy": "Superbridge Datenschutzrichtlinie",
+    "dedicatedTerms": "{{name}} Nutzungsbedingungen",
+    "dedicatedPrivacy": "{{name}} Datenschutzrichtlinie"
+  },
+
+  "feeModal": {
+    "providerFees": "{{provider}} Gebühren",
+    "acrossFeeBreakdownDescription": "Gebühren, die an <0>Across</0> und ihre Liquiditätsanbieter und Relayer gezahlt werden",
+    "hyperlaneFeeBreakdownDescription": "Gebühren, die an <0>Hyperlane</0> Relayer für die Zustellung von Nachrichten gezahlt werden"
+  },
+
+  "gasInfoModal": {
+    "title": "Gasgebühren",
+    "description": "Bei Blockchains müssen Sie eine Gebühr zahlen, um Transaktionen durchzuführen. Transaktionen, die an {{from}} gesendet werden, erfordern eine kleine Menge an {{symbol}}, um sicherzustellen, dass sie vom Netzwerk bestätigt werden.",
+
+    "opWithdrawal": "Abhebungen von OP Stack Rollups erfordern zwei zusätzliche Transaktionen, um die Abhebung auf der Abwicklungskette zu beweisen und abzuschließen.",
+    "arbWithdrawal": "Abhebungen von Arbitrum Nitro Rollups erfordern eine zusätzliche Transaktion, um auf der Abwicklungskette abzuschließen.",
+    "cctp": "Native USDC Brücken über CCTP erfordern eine zusätzliche Transaktion auf der Zielkette."
+  },
+
+  "networkSelectorModal": {
+    "title": "Netzwerk auswählen"
+  },
+
+  "routeSelectorModal": {
+    "title": "Route auswählen"
+  },
+
+  "header": {
+    "supportAndFaqs": "Support & FAQs",
+    "legal": "Rechtliches"
+  }
+}

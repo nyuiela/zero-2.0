@@ -12,6 +12,25 @@ import { formatDecimals } from "../utils/format-decimals";
 import { isAddressEqual } from "../utils/is-address-equal";
 import { MultiChainToken } from "../types";
 
+// Define the actual token structure returned by useActiveTokens
+interface TokenData {
+  address: string;
+  chainId: number;
+  symbol: string;
+  decimals: number;
+  name?: string;
+}
+
+// Extended interface that matches the actual data structure from useActiveTokens
+interface ExtendedMultiChainToken {
+  [chainId: number]: TokenData;
+}
+
+interface TokenWithBalance {
+  token: ExtendedMultiChainToken;
+  balance: bigint;
+}
+
 interface TokenSelectorOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,37 +49,37 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
   const tokens = useActiveTokens();
   const selectedToken = useSelectedToken();
 
-  const filteredTokens = tokens.data?.filter(({ token }) => {
+  const filteredTokens = tokens.data?.filter(({ token }: TokenWithBalance) => {
     if (!search) {
       return true;
     }
 
-    const fromT = token[from?.id ?? 0] as any;
-    const toT = token[to?.id ?? 0] as any;
+    const fromT = token[from?.id ?? 0];
+    const toT = token[to?.id ?? 0];
 
     return (
       fromT?.name
-        .replace("₮", "T")
+        ?.replace("₮", "T")
         .toLowerCase()
         .includes(search.toLowerCase()) ||
       fromT?.symbol
-        .replace("₮", "T")
+        ?.replace("₮", "T")
         .toLowerCase()
         .includes(search.toLowerCase()) ||
-      fromT?.address.toLowerCase().includes(search.toLowerCase()) ||
+      fromT?.address?.toLowerCase().includes(search.toLowerCase()) ||
       toT?.name
-        .replace("₮", "T")
+        ?.replace("₮", "T")
         .toLowerCase()
         .includes(search.toLowerCase()) ||
       toT?.symbol
-        .replace("₮", "T")
+        ?.replace("₮", "T")
         .toLowerCase()
         .includes(search.toLowerCase()) ||
-      toT?.address.toLowerCase().includes(search.toLowerCase())
+      toT?.address?.toLowerCase().includes(search.toLowerCase())
     );
   });
 
-  const onClickToken = (t: MultiChainToken) => {
+  const onClickToken = (t: ExtendedMultiChainToken) => {
     const fromToken = t[from?.id ?? 0];
     const toToken = t[to?.id ?? 0];
 
@@ -68,7 +87,7 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
       return;
     }
 
-    setToken(t);
+    setToken(t as MultiChainToken);
     onClose();
   };
 
@@ -100,12 +119,12 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
             {["ETH", "USDC", "wstETH", "USDT"]
               .filter(Boolean)
               .map((symbol) => {
-                const token = tokens.data?.find((t) => {
-                  const fromT = t.token[from?.id ?? 0] as any;
+                const token = tokens.data?.find((t: TokenWithBalance) => {
+                  const fromT = t.token[from?.id ?? 0];
                   return fromT?.symbol === symbol;
                 })?.token;
 
-                const fromToken = token?.[from?.id ?? 0] as any;
+                const fromToken = token?.[from?.id ?? 0];
                 if (!token || !fromToken) {
                   return null;
                 }
@@ -159,7 +178,7 @@ export const TokenSelectorOverlay: React.FC<TokenSelectorOverlayProps> = ({
 };
 
 interface TokenItemProps {
-  token: MultiChainToken;
+  token: ExtendedMultiChainToken;
   balance: bigint;
   onClick: () => void;
   selectedToken: MultiChainToken | null;
@@ -203,7 +222,7 @@ const TokenItem: React.FC<TokenItemProps> = ({
         <div className="flex flex-col">
           <div className="flex items-center gap-1">
             <span className="text-sm font-heading">
-              {fromToken?.name} {addUSDT0Explainer && "(USD₮0)"}
+              {fromToken?.name || fromToken?.symbol} {addUSDT0Explainer && "(USD₮0)"}
             </span>
           </div>
           <span className="text-xs text-muted-foreground">

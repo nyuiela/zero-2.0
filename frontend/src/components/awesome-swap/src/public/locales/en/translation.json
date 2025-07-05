@@ -1,0 +1,329 @@
+{
+  "reviewBridge": "Review bridge",
+  "bridging": "Bridging",
+  "connectWallet": "Connect wallet",
+  "connectChainWallet": "Connect {{chain}} wallet",
+  "orAddChainRecipient": "Or add {{to}} recipient address",
+  "switchToApprove": "Switch",
+  "approve": "Approve",
+  "insufficientFunds": "Insufficient funds",
+  "insufficientGas": "Insufficient {{symbol}} for gas",
+  "bridgeLimit": "{{amount}} {{symbol}} limit",
+  "bridgeMin": "Min. amount {{amount}} {{symbol}}",
+  "enterAnAmount": "Enter an amount",
+  "loading": "Loading",
+  "loadMore": "Load more",
+  "error": "Error",
+  "noAccountConnected": "No account connected",
+  "save": "Save",
+  "toAddress": "To address",
+  "on": "on",
+  "off": "off",
+  "receiveOnChain": "Receive on {{chain}}",
+  "transferTime": "Transfer time",
+  "transferTimeSeconds_one": "~{{count}} sec",
+  "transferTimeSeconds_other": "~{{count}} secs",
+  "transferTimeMinutes_one": "~{{count}} min",
+  "transferTimeMinutes_other": "~{{count}} mins",
+  "transferTimeHours_one": "~{{count}} hour",
+  "transferTimeHours_other": "~{{count}} hours",
+  "transferTimeDays_one": "~{{count}} day",
+  "transferTimeDays_other": "~{{count}} days",
+  "availableBalance": "{{amount}} {{symbol}} available",
+  "sorryAnErrorOccurred": "Sorry! An error occurred",
+  "about": "About",
+  "docs": "Docs",
+  "from": "From",
+  "to": "To",
+  "manage": "Manage",
+  "support": "Support",
+  "ok": "Ok",
+
+  "general": {
+    "needHelp": "Need help? View FAQs",
+    "learnMore": "Learn more",
+    "bridgeAmount": "Bridge amount",
+    "fee": "fee"
+  },
+
+  "settings": {
+    "settings": "Settings",
+    "escapeHatchDescription": "Force withdrawals via censorship resistant transactions on the settlement chain.",
+    "currency": "Currency",
+    "language": "Language",
+    "explorer": "Explorer",
+    "tokenLists": "Token lists",
+    "enableTestnets": "Enable testnets",
+    "darkMode": "Dark mode"
+  },
+
+  "customTokenLists": {
+    "add": "Add custom token list",
+    "name": "Token list name",
+    "namePlaceholder": "Name",
+    "url": "Token list URL",
+    "urlPlaceholder": "URL",
+    "invalid": "Invalid token list URL",
+    "loadedTokens": "Loaded {{num}} tokens",
+    "disclaimer": "Anyone can create any token, including fake versions of existing tokens. Take due care. Some tokens and their technical parameters may be incompatible with {{app}} services. By importing this custom token list you acknowledge and accept the risks.",
+    "learnMore": "Learn more about the risks.",
+    "save": "Save list",
+    "delete": "Delete list"
+  },
+
+  "activity": {
+    "activity": "Activity",
+    "actionNeeded": "Action needed",
+    "connectWallet": "Please connect your wallet…",
+    "noTransactions": "No transactions yet…",
+    "error": "Sorry! We're unable to pull your activity feed.\n Please try and refresh the page",
+    "withdrawn": "Withdrawn",
+    "proving": "Proving…",
+    "readyToProve": "Ready to prove",
+    "proved": "Proved",
+    "waitingForStateRoot": "Waiting for state root…",
+    "waitingForDisputeGame": "Waiting for dispute game…",
+    "stateRootPublished": "State root published",
+    "challengePeriod": "Challenge period",
+    "finalizing": "Finalizing…",
+    "readyToFinalize": "Ready to finalize",
+    "finalized": "Finalized",
+    "deposited": "Deposited",
+    "depositing": "Depositing",
+    "l2Confirmation": "L2 confirmation",
+    "waitingForL2": "Waiting for L2…",
+    "bridged": "Bridged",
+    "bridging": "Bridging",
+    "minted": "Minted",
+    "minting": "Minting",
+    "readyToMint": "Ready to mint",
+    "waitingForAttestation": "Waiting for attestation…",
+    "remainingSeconds_one": "~{{count}} sec remaining",
+    "remainingSeconds_other": "~{{count}} secs remaining",
+    "remainingMinutes_one": "~{{count}} min remaining",
+    "remainingMinutes_other": "~{{count}} mins remaining",
+    "remainingHours_one": "~{{count}} hour remaining",
+    "remainingHours_other": "~{{count}} hours remaining",
+    "remainingDays_one": "~{{count}} day remaining",
+    "remainingDays_other": "~{{count}} days remaining",
+    "findANetwork": "Find a network"
+  },
+
+  "tokens": {
+    "tokens": "Tokens",
+    "selectToken": "Select a token",
+    "noneFound": "No results found",
+    "notBridgeable": "Not bridgeable",
+    "import": "Import",
+    "customImport": "Custom import",
+    "customImportFromList": "From {{name}}",
+    "customImportCheck": "Make sure you have checked the token address and that it is correct:",
+    "customL1Address": "L1 address",
+    "customL2Address": "L2 address",
+    "customL3Address": "L3 address"
+  },
+
+  "recipient": {
+    "bridgeDestination": "Bridge destination",
+    "toAddress": "To address",
+    "invalidAddress": "Not a valid address",
+    "yourChainAddress": "This is your {{chain}} address",
+    "usedBefore": "Account used before",
+    "usedBeforeMultiple": "Account used {{count}} times before",
+    "newAddress": "New address - please be careful!",
+    "checkingAddress": "Checking address…",
+    "addRecipientAddress": "Add recipient address",
+    "pleaseNote": "Please note",
+    "sameAddressRequirement": "Bridges to or from {{chain}} must have the same recipient address.",
+    "checkRecipientAddress": "Check recipient address"
+  },
+
+  "buttons": {
+    "start": "Start",
+    "finalize": "Finalize",
+    "claim": "Claim",
+    "prove": "Prove",
+    "redeem": "Redeem",
+    "switchChain": "Switch chain",
+    "mint": "Mint",
+    "get": "Get",
+    "continue": "Continue",
+    "connect": "Connect",
+    "completeCheck": "Complete the check",
+    "completeChecks": "Complete the checks",
+    "approve": "Approve",
+    "approved": "Approved",
+    "approving": "Approving",
+    "max": "Max",
+    "bridgingDisabled": "Bridging disabled",
+    "bridgingPaused": "Bridging paused",
+    "reset": "Reset"
+  },
+
+  "fees": {
+    "fees": "Network fees",
+    "networkGas": "{{chain}} gas",
+    "easyModeFee": "Easy mode gas"
+  },
+
+  "poweredBy": "Powered by {{name}}",
+
+  "transaction": {
+    "via": "Via",
+    "transferTime": "Transfer time",
+    "steps": "Steps",
+    "bridgeInfo": "Bridge info",
+
+    "fromChain": "From {{from}}",
+    "toChain": "To {{to}}",
+
+    "fromAddress": "From address",
+    "toAddress": "To address"
+  },
+
+  "confirmationModal": {
+    "startBridgeOn": "Start on {{from}}",
+    "forceStartBridgeOn": "Force start on {{from}}",
+    "bridgeFrom": "Bridge from {{from}}",
+    "proveOn": "Prove on {{to}}",
+    "getOn": "Get on {{to}}",
+    "getAmountOn": "Get {{formatted}} on {{to}}",
+    "waitSeconds_one": "Wait ~{{count}} sec",
+    "waitSeconds_other": "Wait ~{{count}} secs",
+    "waitMinutes_one": "Wait ~{{count}} min",
+    "waitMinutes_other": "Wait ~{{count}} mins",
+    "waitHours_one": "Wait ~{{count}} hour",
+    "waitHours_other": "Wait ~{{count}} hours",
+    "waitDays_one": "Wait ~{{count}} day",
+    "waitDays_other": "Wait ~{{count}} days",
+    "prove": "Prove on {{base}}",
+    "finalize": "Claim on {{to}}",
+    "receiveAmountOnChain": "Receive {{receiveAmount}} {{receiveSymbol}} on {{to}}",
+    "receiveAmount": "Receive {{formatted}}",
+    "approve": "Approve {{symbol}}",
+    "approveGasToken": "Approve gas token",
+    "goBack": "Go back",
+    "proceedAnyway": "Proceed anyway",
+
+    "noGas": {
+      "youNeedGasOn": "You need gas on {{to}}",
+      "needHelp": "Need help? View FAQs",
+      "cctp": "Bridging {{symbol}} requires an extra transaction on {{to}}. Please top up {{gas}} on {{to}} to complete this bridge.",
+      "opWithdrawing": "Withdrawing requires 2 extra transactions on {{to}}. Please top up {{gas}} on {{to}} to complete this withdrawal.",
+      "arbWithdrawing": "Withdrawing {{token}} requires an extra transaction on {{to}}. Please top up {{gas}} on {{to}} to complete this withdrawal.",
+      "depositing": "Without gas on {{to}} you won't be able to make any transactions. Please top up {{gas}} on {{to}} before attempting this bridge."
+    },
+    
+    "extraTransactions": {
+      "title": "Transactions and wait times",
+      "checkboxTitle": "I understand and acknowledge the following:",
+
+      "cctpDescriptionSeconds_one": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} second.",
+      "cctpDescriptionSeconds_other": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} seconds.",
+      "cctpDescriptionMinutes_one": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} minute.",
+      "cctpDescriptionMinutes_other": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} minutes.",
+      "cctpDescriptionHours_one": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} hour.",
+      "cctpDescriptionHours_other": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} hours.",
+      "cctpDescriptionDays_one": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} day.",
+      "cctpDescriptionDays_other": "Bridging via CCTP requires an extra transaction on {{to}} and a wait time of ~{{count}} days.",
+
+      "opWithdrawalSeconds_one": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} second.",
+      "opWithdrawalSeconds_other": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} seconds.",
+      "opWithdrawalMinutes_one": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} minute.",
+      "opWithdrawalMinutes_other": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} minutes.",
+      "opWithdrawalHours_one": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} hour.",
+      "opWithdrawalHours_other": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} hours.",
+      "opWithdrawalDays_one": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} day.",
+      "opWithdrawalDays_other": "Native bridge withdrawals require 2 extra transactions on {{to}} and a wait time of ~{{count}} days.",
+
+      "arbWithdrawalSeconds_one": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} second.",
+      "arbWithdrawalSeconds_other": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} seconds.",
+      "arbWithdrawalMinutes_one": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} minute.",
+      "arbWithdrawalMinutes_other": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} minutes.",
+      "arbWithdrawalHours_one": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} hour.",
+      "arbWithdrawalHours_other": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} hours.",
+      "arbWithdrawalDays_one": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} day.",
+      "arbWithdrawalDays_other": "Native bridge withdrawals require an extra transaction on {{to}} and a wait time of ~{{count}} days.",
+
+      "checkbox1_one": "I must complete an extra transaction on {{to}}",
+      "checkbox1_other": "I must complete 2 extra transactions on {{to}}",
+      "checkbox2": "Gas prices may fluctuate significantly between wait times and transactions",
+      "checkbox3": "A bridge cannot be sped up or cancelled once started"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "Make sure the wallet you're bridging to supports {{to}}",
+      "description": "Check {{to}} support before your bridge or you may lose your crypto. Do not bridge to an exchange.",
+      "checkboxOwnWallet": "My wallet supports {{to}}",
+      "checkboxNotOwnWallet": "The address I'm sending to supports {{to}}"
+    },
+
+    "expensiveGas": {
+      "title": "Expensive bridge",
+      "description": "This bridge will likely cost more in gas or fees than the value of the token bring bridged. Consider waiting until gas is cheaper or choose another route."
+    },
+
+    "review": "Review",
+    "gasCosts": "Gas costs",
+    "fees": "Fees"
+  },
+
+  "walletsDrawer": {
+    "title": "Wallets",
+    "evmDescription": "Connect {{chain}} or EVM compatible wallet",
+    "svmDescription": "Connect a Solana or SVM compatible wallet"
+  },
+
+  "tos": {
+    "welcome": "Welcome to {{name}}",
+    "poweredBy": "Powered by Superbridge",
+    "superbridge1": "This interface is only a layer over the native bridge contracts for official Superchain rollups.",
+    "superbridge2": "No funds are held in custody by Superbridge at any point.",
+    "superbridge3": "For bridging help please head over to <0>support & FAQs</0>.",
+    "superbridge4": "By using this interface you agree to our <0>Terms and Privacy Policy</0>.",
+
+    "dedicated1": "This interface is only a layer over the native bridge contracts for <0>{{name}}</0>.",
+    "agreeAndContinue": "Agree & continue",
+
+    "forceReadTerms": "Please read and agree to the Terms of Service",
+    "forceReadPrivacy": "Please read and agree to the Privacy Policy"
+  },
+
+  "legal": {
+    "footerButton": "Terms & Privacy",
+    "title": "Terms & Privacy",
+    "superbridgeTerms": "Superbridge Terms of Service",
+    "superbridgePrivacy": "Superbridge Privacy Policy",
+    "dedicatedTerms": "{{name}} Terms of Service",
+    "dedicatedPrivacy": "{{name}} Privacy Policy"
+  },
+
+  "feeModal": {
+    "providerFees": "{{provider}} fees",
+    "acrossFeeBreakdownDescription": "Fees paid to <0>Across</0> liquidity providers and relayers",
+    "hyperlaneFeeBreakdownDescription": "Fees paid to <0>Hyperlane</0> relayers for message delivery",
+    "lzFeeBreakdownDescription": "Fees paid to <0>LayerZero</0> relayers for message delivery"
+  },
+
+  "gasInfoModal": {
+    "title": "Gas fees",
+    "description": "With blockchains you need to pay a fee to submit transactions. Transactions submitted to {{from}} require a small amount of {{symbol}} to ensure they're confirmed by the network.",
+
+    "opWithdrawal": "Withdrawals from OP Stack rollups require two extra transactions to prove & finalize the withdrawal on the settlement chain.",
+    "arbWithdrawal": "Withdrawals from Arbitrum Nitro rollups require an extra transaction to finalize on the settlement chain.",
+    "cctp": "Native USDC bridges via CCTP require an extra transaction on the destination chain."
+  },
+
+  "networkSelectorModal": {
+    "title": "Select a network"
+  },
+
+  "routeSelectorModal": {
+    "title": "Choose route"
+  },
+
+  "header": {
+    "supportAndFaqs": "Support & FAQs",
+    "legal": "Legal"
+  }
+}

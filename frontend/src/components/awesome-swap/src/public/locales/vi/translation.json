@@ -1,0 +1,290 @@
+{
+  "reviewBridge": "Xem lại cầu nối",
+  "bridging": "Đang tạo cầu nối",
+  "connectWallet": "Kết nối ví",
+  "connectChainWallet": "Kết nối ví {{chain}}",
+  "orAddChainRecipient": "Hoặc thêm địa chỉ người nhận {{to}}",
+  "switchToApprove": "Chuyển đổi",
+  "approve": "Phê duyệt",
+  "insufficientFunds": "Số dư không đủ",
+  "insufficientGas": "{{symbol}} không đủ cho phí gas",
+  "bridgeLimit": "Giới hạn {{amount}} {{symbol}}",
+  "bridgeMin": "Số tiền tối thiểu {{amount}} {{symbol}}",
+  "enterAnAmount": "Nhập số tiền",
+  "loading": "Đang tải",
+  "loadMore": "Tải thêm",
+  "error": "Lỗi",
+  "noAccountConnected": "Không có tài khoản được kết nối",
+  "save": "Lưu",
+  "toAddress": "Đến địa chỉ",
+  "on": "bật",
+  "off": "tắt",
+  "receiveOnChain": "Nhận trên {{chain}}",
+  "transferTime": "Thời gian chuyển",
+  "transferTimeSeconds_one": "~{{count}} giây",
+  "transferTimeSeconds_other": "~{{count}} giây",
+  "transferTimeMinutes_one": "~{{count}} phút",
+  "transferTimeMinutes_other": "~{{count}} phút",
+  "transferTimeHours_one": "~{{count}} giờ",
+  "transferTimeHours_other": "~{{count}} giờ",
+  "transferTimeDays_one": "~{{count}} ngày",
+  "transferTimeDays_other": "~{{count}} ngày",
+  "availableBalance": "{{amount}} {{symbol}} khả dụng",
+  "sorryAnErrorOccurred": "Xin lỗi! Đã xảy ra lỗi",
+  "about": "Về",
+  "docs": "Tài liệu",
+  "from": "Từ",
+  "to": "Đến",
+  "manage": "Quản lý",
+  "support": "Hỗ trợ",
+  "ok": "Ok",
+
+  "general": {
+    "needHelp": "Cần trợ giúp? Xem Câu hỏi thường gặp",
+    "learnMore": "Tìm hiểu thêm",
+    "bridgeAmount": "Số tiền cần chuyển",
+    "fee": "phí"
+  },
+
+  "settings": {
+    "settings": "Cài đặt",
+    "escapeHatchDescription": "Buộc rút tiền thông qua các giao dịch chống kiểm duyệt trên chuỗi thanh toán.",
+    "currency": "Tiền tệ",
+    "language": "Ngôn ngữ",
+    "explorer": "Khám phá",
+    "tokenLists": "Danh sách mã token",
+    "enableTestnets": "Kích hoạt testnet",
+    "darkMode": "Chế độ tối"
+  },
+
+  "customTokenLists": {
+    "add": "Thêm danh sách mã token tùy chỉnh",
+    "name": "Tên danh sách mã token",
+    "namePlaceholder": "Tên",
+    "url": "URL danh sách mã token",
+    "urlPlaceholder": "URL",
+    "invalid": "URL danh sách mã token không hợp lệ",
+    "loadedTokens": "Đã tải {{num}} mã token",
+    "disclaimer": "Bất kỳ ai cũng có thể tạo mã token, bao gồm cả các phiên bản giả của mã token hiện có. Hãy cẩn thận. Một số mã token và thông số kỹ thuật của chúng có thể không tương thích với dịch vụ của {{app}}. Khi nhập danh sách mã token tùy chỉnh này, bạn đồng ý và chấp nhận các rủi ro.",
+    "learnMore": "Tìm hiểu thêm về các rủi ro.",
+    "save": "Lưu danh sách",
+    "delete": "Xóa danh sách"
+  },
+
+  "activity": {
+    "activity": "Hoạt động",
+    "actionNeeded": "Cần hành động",
+    "connectWallet": "Vui lòng kết nối ví của bạn...",
+    "noTransactions": "Chưa có giao dịch...",
+    "error": "Xin lỗi! Chúng tôi không thể tải lịch sử hoạt động của bạn.\n Vui lòng thử làm mới trang",
+    "withdrawn": "Đã rút",
+    "proving": "Đang chứng minh...",
+    "readyToProve": "Sẵn sàng chứng minh",
+    "proved": "Đã chứng minh",
+    "waitingForStateRoot": "Đang chờ gốc trạng thái...",
+    "waitingForDisputeGame": "Đang chờ trò chơi tranh chấp...",
+    "stateRootPublished": "Đã công bố gốc trạng thái",
+    "challengePeriod": "Thời gian thử thách",
+    "finalizing": "Đang hoàn tất...",
+    "readyToFinalize": "Sẵn sàng hoàn tất",
+    "finalized": "Đã hoàn tất",
+    "deposited": "Đã nạp",
+    "depositing": "Đang nạp",
+    "l2Confirmation": "Xác nhận L2",
+    "waitingForL2": "Đang chờ L2...",
+    "bridged": "Đã bắc cầu",
+    "bridging": "Đang bắc cầu",
+    "minted": "Đã đúc",
+    "minting": "Đang đúc",
+    "readyToMint": "Sẵn sàng đúc",
+    "waitingForAttestation": "Đang chờ xác nhận...",
+    "remainingSeconds_one": "Còn ~{{count}} giây",
+    "remainingSeconds_other": "Còn ~{{count}} giây",
+    "remainingMinutes_one": "Còn ~{{count}} phút",
+    "remainingMinutes_other": "Còn ~{{count}} phút",
+    "remainingHours_one": "Còn ~{{count}} giờ",
+    "remainingHours_other": "Còn ~{{count}} giờ",
+    "remainingDays_one": "Còn ~{{count}} ngày",
+    "remainingDays_other": "Còn ~{{count}} ngày",
+    "findANetwork": "Tìm kiếm"
+  },
+
+  "tokens": {
+    "tokens": "Mã token",
+    "selectToken": "Chọn mã token",
+    "noneFound": "Không tìm thấy kết quả",
+    "notBridgeable": "Không thể bắc cầu",
+    "import": "Nhập khẩu",
+    "customImport": "Nhập khẩu tùy chỉnh",
+    "customImportFromList": "Từ {{name}}",
+    "customImportCheck": "Hãy chắc chắn rằng bạn đã kiểm tra địa chỉ mã token và nó chính xác:",
+    "customL1Address": "Địa chỉ L1",
+    "customL2Address": "Địa chỉ L2",
+    "customL3Address": "Địa chỉ L3"
+  },
+
+  "recipient": {
+    "bridgeDestination": "Điểm đến cầu nối",
+    "toAddress": "Đến địa chỉ",
+    "invalidAddress": "Địa chỉ không hợp lệ",
+    "yourChainAddress": "Đây là địa chỉ {{chain}} của bạn",
+    "usedBefore": "Tài khoản đã được sử dụng trước đây",
+    "usedBeforeMultiple": "Tài khoản đã được sử dụng {{count}} lần trước đây",
+    "newAddress": "Địa chỉ mới - hãy cẩn thận!",
+    "checkingAddress": "Đang kiểm tra địa chỉ...",
+    "addRecipientAddress": "Thêm địa chỉ người nhận",
+    "pleaseNote": "Xin lưu ý",
+    "sameAddressRequirement": "Cầu nối đến hoặc từ {{chain}} phải có cùng địa chỉ người nhận.",
+    "checkRecipientAddress": "Kiểm tra địa chỉ người nhận"
+  },
+
+  "buttons": {
+    "start": "Bắt đầu",
+    "finalize": "Hoàn tất",
+    "claim": "Yêu cầu",
+    "prove": "Chứng minh",
+    "redeem": "Đổi",
+    "switchChain": "Chuyển chuỗi",
+    "mint": "Đúc",
+    "get": "Nhận",
+    "continue": "Tiếp tục",
+    "connect": "Kết nối",
+    "completeCheck": "Hoàn thành kiểm tra",
+    "completeChecks": "Hoàn thành tất cả kiểm tra",
+    "approve": "Phê duyệt",
+    "approved": "Đã phê duyệt",
+    "approving": "Đang phê duyệt",
+    "max": "Tối đa",
+    "bridgingDisabled": "Tính năng bắc cầu bị vô hiệu hóa",
+    "bridgingPaused": "Tính năng bắc cầu tạm dừng",
+    "reset": "Đặt lại"
+  },
+
+  "fees": {
+    "fees": "Phí mạng",
+    "networkGas": "Gas {{chain}}",
+    "easyModeFee": "Gas chế độ dễ"
+  },
+
+  "poweredBy": "Được hỗ trợ bởi {{name}}",
+
+  "transaction": {
+    "via": "Thông qua",
+    "transferTime": "Thời gian chuyển",
+    "steps": "Các bước",
+    "bridgeInfo": "Thông tin cầu nối",
+
+    "fromChain": "Từ {{from}}",
+    "toChain": "Đến {{to}}",
+
+    "fromAddress": "Từ địa chỉ",
+    "toAddress": "Đến địa chỉ"
+  },
+
+  "confirmationModal": {
+    "goBack": "Quay lại",
+    "proceedAnyway": "Tiếp tục dù sao",
+
+    "noGas": {
+      "youNeedGasOn": "Bạn cần gas trên {{to}}",
+      "needHelp": "Cần trợ giúp? Xem Câu hỏi thường gặp",
+      "cctp": "Chuyển {{symbol}} yêu cầu một giao dịch bổ sung trên {{to}}. Vui lòng nạp {{gas}} để hoàn tất giao dịch.",
+      "opWithdrawing": "Rút tiền yêu cầu 2 giao dịch bổ sung trên {{to}}. Vui lòng nạp {{gas}} để hoàn tất rút tiền.",
+      "arbWithdrawing": "Rút {{token}} yêu cầu một giao dịch bổ sung trên {{to}}. Vui lòng nạp {{gas}} để hoàn tất rút tiền.",
+      "depositing": "Không có gas trên {{to}}, bạn sẽ không thể thực hiện bất kỳ giao dịch nào. Vui lòng nạp {{gas}} trước khi thực hiện chuyển khoản."
+    },
+
+    "extraTransactions": {
+      "title": "Giao dịch và thời gian chờ",
+      "checkboxTitle": "Tôi hiểu và xác nhận các điều sau:",
+
+      "cctpDescriptionSeconds_one": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} giây.",
+      "cctpDescriptionSeconds_other": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} giây.",
+      "cctpDescriptionMinutes_one": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} phút.",
+      "cctpDescriptionMinutes_other": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} phút.",
+      "cctpDescriptionHours_one": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} giờ.",
+      "cctpDescriptionHours_other": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} giờ.",
+      "cctpDescriptionDays_one": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} ngày.",
+      "cctpDescriptionDays_other": "Chuyển qua CCTP yêu cầu một giao dịch bổ sung trên {{to}} và thời gian chờ khoảng {{count}} ngày.",
+
+      "checkbox1_one": "Tôi cần thực hiện một giao dịch bổ sung trên {{to}}",
+      "checkbox1_other": "Tôi cần thực hiện 2 giao dịch bổ sung trên {{to}}",
+      "checkbox2": "Giá gas có thể thay đổi đáng kể trong thời gian chờ và giữa các giao dịch",
+      "checkbox3": "Một khi quá trình chuyển khoản bắt đầu, nó không thể được tăng tốc hoặc hủy bỏ"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "Đảm bảo ví nhận của bạn hỗ trợ {{to}}",
+      "description": "Kiểm tra xem {{to}} có được hỗ trợ trước khi chuyển khoản, nếu không bạn có thể mất tiền điện tử. Không chuyển vào sàn giao dịch.",
+      "checkboxOwnWallet": "Ví của tôi hỗ trợ {{to}}",
+      "checkboxNotOwnWallet": "Địa chỉ tôi gửi đến hỗ trợ {{to}}"
+    },
+
+    "expensiveGas": {
+      "title": "Phí gas cao",
+      "description": "Giao dịch này có thể tốn nhiều phí gas hơn giá trị của token được chuyển. Hãy cân nhắc chờ đợi giá gas rẻ hơn hoặc chọn một tuyến đường khác."
+    },
+
+    "review": "Xem lại",
+    "gasCosts": "Chi phí gas",
+    "fees": "Phí"
+  },
+
+  "walletsDrawer": {
+    "title": "Ví",
+    "evmDescription": "Kết nối ví {{chain}} hoặc ví tương thích EVM",
+    "svmDescription": "Kết nối ví tương thích với Solana hoặc SVM"
+  },
+
+  "tos": {
+    "welcome": "Chào mừng đến với {{name}}",
+    "poweredBy": "Được hỗ trợ bởi Superbridge",
+    "superbridge1": "Giao diện này chỉ là một lớp trên các hợp đồng cầu nối gốc cho các rollup Superchain chính thức.",
+    "superbridge2": "Superbridge không giữ bất kỳ khoản tiền nào.",
+    "superbridge3": "Để được hỗ trợ về cầu nối, vui lòng truy cập <0>hỗ trợ & FAQ</0>.",
+    "superbridge4": "Bằng cách sử dụng giao diện này, bạn đồng ý với <0>Điều khoản và Chính sách quyền riêng tư</0> của chúng tôi.",
+
+    "dedicated1": "Giao diện này chỉ là một lớp trên các hợp đồng cầu nối gốc cho <0>{{name}}</0>.",
+    "agreeAndContinue": "Đồng ý & tiếp tục",
+
+    "forceReadTerms": "Vui lòng đọc và đồng ý với Điều khoản Dịch vụ",
+    "forceReadPrivacy": "Vui lòng đọc và đồng ý với Chính sách Quyền riêng tư"
+  },
+
+  "legal": {
+    "footerButton": "Điều khoản & Quyền riêng tư",
+    "title": "Điều khoản & Quyền riêng tư",
+    "superbridgeTerms": "Điều khoản Dịch vụ của Superbridge",
+    "superbridgePrivacy": "Chính sách Quyền riêng tư của Superbridge",
+    "dedicatedTerms": "Điều khoản Dịch vụ của {{name}}",
+    "dedicatedPrivacy": "Chính sách Quyền riêng tư của {{name}}"
+  },
+
+  "feeModal": {
+    "providerFees": "Phí của {{provider}}",
+    "acrossFeeBreakdownDescription": "Phí trả cho <0>Across</0> và các nhà cung cấp thanh khoản và tiếp sức của họ",
+    "hyperlaneFeeBreakdownDescription": "Phí trả cho tiếp sức <0>Hyperlane</0> để giao nhận tin nhắn"
+  },
+
+  "gasInfoModal": {
+    "title": "Phí gas",
+    "description": "Với blockchain, bạn cần trả một khoản phí để gửi giao dịch. Các giao dịch gửi đến {{from}} yêu cầu một lượng nhỏ {{symbol}} để đảm bảo chúng được mạng lưới xác nhận.",
+
+    "opWithdrawal": "Rút tiền từ các rollup OP Stack yêu cầu hai giao dịch bổ sung để chứng minh và hoàn tất việc rút tiền trên chuỗi thanh toán.",
+    "arbWithdrawal": "Rút tiền từ các rollup Arbitrum Nitro yêu cầu một giao dịch bổ sung để hoàn tất trên chuỗi thanh toán.",
+    "cctp": "Cầu nối USDC gốc thông qua CCTP yêu cầu một giao dịch bổ sung trên chuỗi đích."
+  },
+
+  "networkSelectorModal": {
+    "title": "Chọn mạng"
+  },
+
+  "routeSelectorModal": {
+    "title": "Chọn lộ trình"
+  },
+
+  "header": {
+    "supportAndFaqs": "Hỗ trợ & Câu hỏi thường gặp",
+    "legal": "Pháp lý"
+  }
+}

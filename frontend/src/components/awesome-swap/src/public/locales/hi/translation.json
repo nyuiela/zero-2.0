@@ -1,0 +1,290 @@
+{
+  "reviewBridge": "ब्रिज की समीक्षा करें",
+  "bridging": "ब्रिजिंग",
+  "connectWallet": "वॉलेट कनेक्ट करें",
+  "connectChainWallet": "{{chain}} वॉलेट कनेक्ट करें",
+  "orAddChainRecipient": "या {{to}} प्राप्तकर्ता पता जोड़ें",
+  "switchToApprove": "स्विच करें",
+  "approve": "अनुमोदित करें",
+  "insufficientFunds": "अपर्याप्त धनराशि",
+  "insufficientGas": "गैस के लिए अपर्याप्त {{symbol}}",
+  "bridgeLimit": "{{amount}} {{symbol}} की सीमा",
+  "bridgeMin": "न्यूनतम राशि {{amount}} {{symbol}}",
+  "enterAnAmount": "राशि दर्ज करें",
+  "loading": "लोड हो रहा है",
+  "loadMore": "और लोड करें",
+  "error": "त्रुटि",
+  "noAccountConnected": "कोई खाता कनेक्ट नहीं किया गया",
+  "save": "सहेजें",
+  "toAddress": "पते पर",
+  "on": "चालू",
+  "off": "बंद",
+  "receiveOnChain": "{{chain}} पर प्राप्त करें",
+  "transferTime": "स्थानांतरण समय",
+  "transferTimeSeconds_one": "~{{count}} सेकंड",
+  "transferTimeSeconds_other": "~{{count}} सेकंड",
+  "transferTimeMinutes_one": "~{{count}} मिनट",
+  "transferTimeMinutes_other": "~{{count}} मिनट",
+  "transferTimeHours_one": "~{{count}} घंटा",
+  "transferTimeHours_other": "~{{count}} घंटे",
+  "transferTimeDays_one": "~{{count}} दिन",
+  "transferTimeDays_other": "~{{count}} दिन",
+  "availableBalance": "{{amount}} {{symbol}} उपलब्ध",
+  "sorryAnErrorOccurred": "माफ़ करें! एक त्रुटि हुई है",
+  "about": "के बारे में",
+  "docs": "दस्तावेज़",
+  "from": "से",
+  "to": "को",
+  "manage": "प्रबंधित करें",
+  "support": "सहायता",
+  "ok": "ठीक है",
+
+  "general": {
+    "needHelp": "सहायता चाहिए? पूछे जाने वाले प्रश्न देखें",
+    "learnMore": "और जानें",
+    "bridgeAmount": "ब्रिज राशि",
+    "fee": "शुल्क"
+  },
+
+  "settings": {
+    "settings": "सेटिंग्स",
+    "escapeHatchDescription": "निपटान श्रृंखला पर सेंसरशिप प्रतिरोधी लेन-देन के माध्यम से निकासी को मजबूर करें।",
+    "currency": "मुद्रा",
+    "language": "भाषा",
+    "explorer": "एक्सप्लोरर",
+    "tokenLists": "टोकन सूची",
+    "enableTestnets": "टेस्टनेट सक्षम करें",
+    "darkMode": "डार्क मोड"
+  },
+
+  "customTokenLists": {
+    "add": "कस्टम टोकन सूची जोड़ें",
+    "name": "टोकन सूची नाम",
+    "namePlaceholder": "नाम",
+    "url": "टोकन सूची URL",
+    "urlPlaceholder": "URL",
+    "invalid": "अमान्य टोकन सूची URL",
+    "loadedTokens": "{{num}} टोकन लोड किए गए",
+    "disclaimer": "कोई भी टोकन बना सकता है, जिसमें नकली संस्करण शामिल हो सकते हैं। सावधानी बरतें। कुछ टोकन {{app}} सेवाओं के साथ असंगत हो सकते हैं। इस कस्टम टोकन सूची को आयात करके, आप जोखिमों को स्वीकार करते हैं।",
+    "learnMore": "जोखिमों के बारे में अधिक जानें।",
+    "save": "सूची सहेजें",
+    "delete": "सूची हटाएं"
+  },
+
+  "activity": {
+    "activity": "गतिविधि",
+    "actionNeeded": "कार्रवाई की आवश्यकता",
+    "connectWallet": "कृपया अपना वॉलेट कनेक्ट करें...",
+    "noTransactions": "अभी तक कोई लेन-देन नहीं...",
+    "error": "माफ़ करें! हम आपकी गतिविधि नहीं देख पा रहे हैं।\n कृपया पृष्ठ को रीफ़्रेश करें",
+    "withdrawn": "निकासी हो चुकी है",
+    "proving": "साबित किया जा रहा है...",
+    "readyToProve": "साबित करने के लिए तैयार",
+    "proved": "साबित हो चुका है",
+    "waitingForStateRoot": "स्टेट रूट का इंतजार हो रहा है...",
+    "waitingForDisputeGame": "विवाद खेल का इंतजार हो रहा है...",
+    "stateRootPublished": "स्टेट रूट प्रकाशित किया गया",
+    "challengePeriod": "चुनौती अवधि",
+    "finalizing": "अंतिम रूप दे रहा है...",
+    "readyToFinalize": "अंतिम रूप देने के लिए तैयार",
+    "finalized": "अंतिम रूप दिया गया",
+    "deposited": "जमा किया गया",
+    "depositing": "जमा हो रहा है",
+    "l2Confirmation": "L2 पुष्टि",
+    "waitingForL2": "L2 की प्रतीक्षा हो रही है...",
+    "bridged": "ब्रिज हो चुका है",
+    "bridging": "ब्रिजिंग हो रही है",
+    "minted": "मिंट किया गया",
+    "minting": "मिंट किया जा रहा है",
+    "readyToMint": "मिंट करने के लिए तैयार",
+    "waitingForAttestation": "पुष्टि का इंतजार हो रहा है...",
+    "remainingSeconds_one": "~{{count}} सेकंड शेष",
+    "remainingSeconds_other": "~{{count}} सेकंड शेष",
+    "remainingMinutes_one": "~{{count}} मिनट शेष",
+    "remainingMinutes_other": "~{{count}} मिनट शेष",
+    "remainingHours_one": "~{{count}} घंटा शेष",
+    "remainingHours_other": "~{{count}} घंटे शेष",
+    "remainingDays_one": "~{{count}} दिन शेष",
+    "remainingDays_other": "~{{count}} दिन शेष",
+    "findANetwork": "खोजें"
+  },
+
+  "tokens": {
+    "tokens": "टोकन",
+    "selectToken": "टोकन चुनें",
+    "noneFound": "कोई परिणाम नहीं मिला",
+    "notBridgeable": "ब्रिज नहीं किया जा सकता",
+    "import": "आयात करें",
+    "customImport": "कस्टम आयात",
+    "customImportFromList": "{{name}} से",
+    "customImportCheck": "सुनिश्चित करें कि आपने टोकन पते की जांच की है और यह सही है:",
+    "customL1Address": "L1 पता",
+    "customL2Address": "L2 पता",
+    "customL3Address": "L3 पता"
+  },
+
+  "recipient": {
+    "bridgeDestination": "ब्रिज गंतव्य",
+    "toAddress": "पते पर",
+    "invalidAddress": "अमान्य पता",
+    "yourChainAddress": "यह आपका {{chain}} पता है",
+    "usedBefore": "पहले इस्तेमाल किया गया खाता",
+    "usedBeforeMultiple": "{{count}} बार पहले इस्तेमाल किया गया",
+    "newAddress": "नया पता - कृपया सावधानी बरतें!",
+    "checkingAddress": "पता की जांच हो रही है...",
+    "addRecipientAddress": "प्राप्तकर्ता का पता जोड़ें",
+    "pleaseNote": "कृपया ध्यान दें",
+    "sameAddressRequirement": "{{chain}} से या {{chain}} पर जाने के लिए एक ही प्राप्तकर्ता पता होना चाहिए।",
+    "checkRecipientAddress": "प्राप्तकर्ता का पता जांचें"
+  },
+
+  "buttons": {
+    "start": "प्रारंभ करें",
+    "finalize": "अंतिम रूप दें",
+    "claim": "दावा करें",
+    "prove": "साबित करें",
+    "redeem": "भुनाएं",
+    "switchChain": "चेन स्विच करें",
+    "mint": "मिंट करें",
+    "get": "प्राप्त करें",
+    "continue": "जारी रखें",
+    "connect": "कनेक्ट करें",
+    "completeCheck": "जांच पूरी करें",
+    "completeChecks": "जांचें पूरी करें",
+    "approve": "अनुमोदन करें",
+    "approved": "अनुमोदित",
+    "approving": "अनुमोदन हो रहा है",
+    "max": "अधिकतम",
+    "bridgingDisabled": "ब्रिजिंग अक्षम",
+    "bridgingPaused": "ब्रिजिंग रोकी गई",
+    "reset": "रीसेट करें"
+  },
+
+  "fees": {
+    "fees": "नेटवर्क शुल्क",
+    "networkGas": "{{chain}} गैस",
+    "easyModeFee": "आसान मोड गैस"
+  },
+
+  "poweredBy": "{{name}} द्वारा संचालित",
+
+  "transaction": {
+    "via": "के माध्यम से",
+    "transferTime": "स्थानांतरण समय",
+    "steps": "चरण",
+    "bridgeInfo": "ब्रिज जानकारी",
+
+    "fromChain": "{{from}} से",
+    "toChain": "{{to}} तक",
+
+    "fromAddress": "पते से",
+    "toAddress": "पते तक"
+  },
+
+  "confirmationModal": {
+    "goBack": "वापस जाएं",
+    "proceedAnyway": "फिर भी जारी रखें",
+
+    "noGas": {
+      "youNeedGasOn": "आपको {{to}} पर गैस की आवश्यकता है",
+      "needHelp": "सहायता चाहिए? पूछे जाने वाले प्रश्न देखें",
+      "cctp": "{{symbol}} ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन की आवश्यकता होती है। कृपया इस ब्रिज को पूरा करने के लिए {{gas}} भरें।",
+      "opWithdrawing": "निकासी के लिए {{to}} पर 2 अतिरिक्त लेन-देन की आवश्यकता होती है। कृपया इसे पूरा करने के लिए {{gas}} भरें।",
+      "arbWithdrawing": "{{token}} निकालने के लिए {{to}} पर एक अतिरिक्त लेन-देन की आवश्यकता होती है। कृपया इसे पूरा करने के लिए {{gas}} भरें।",
+      "depositing": "बिना गैस के {{to}} पर आप कोई भी लेन-देन नहीं कर पाएंगे। कृपया ब्रिज प्रयास करने से पहले {{gas}} भरें।"
+    },
+
+    "extraTransactions": {
+      "title": "लेन-देन और प्रतीक्षा समय",
+      "checkboxTitle": "मैं निम्नलिखित को समझता और स्वीकार करता हूँ:",
+
+      "cctpDescriptionSeconds_one": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} सेकंड का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionSeconds_other": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} सेकंड का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionMinutes_one": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} मिनट का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionMinutes_other": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} मिनट का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionHours_one": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} घंटा प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionHours_other": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} घंटे का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionDays_one": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} दिन का प्रतीक्षा समय आवश्यक है।",
+      "cctpDescriptionDays_other": "CCTP ब्रिजिंग के लिए {{to}} पर एक अतिरिक्त लेन-देन और ~{{count}} दिन का प्रतीक्षा समय आवश्यक है।",
+
+      "checkbox1_one": "मुझे {{to}} पर एक अतिरिक्त लेन-देन पूरा करना होगा",
+      "checkbox1_other": "मुझे {{to}} पर 2 अतिरिक्त लेन-देन पूरे करने होंगे",
+      "checkbox2": "गैस की कीमतें प्रतीक्षा समय और लेन-देन के दौरान काफी बदल सकती हैं",
+      "checkbox3": "एक बार ब्रिज शुरू हो जाने के बाद इसे तेज या रद्द नहीं किया जा सकता"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "सुनिश्चित करें कि जिस वॉलेट में आप ब्रिज कर रहे हैं वह {{to}} को सपोर्ट करता है",
+      "description": "ब्रिज करने से पहले {{to}} समर्थन जांचें, अन्यथा आप अपना क्रिप्टो खो सकते हैं। किसी एक्सचेंज पर ब्रिज न करें।",
+      "checkboxOwnWallet": "मेरा वॉलेट {{to}} को सपोर्ट करता है",
+      "checkboxNotOwnWallet": "जिस पते पर मैं भेज रहा हूँ, वह {{to}} को सपोर्ट करता है"
+    },
+
+    "expensiveGas": {
+      "title": "महंगा ब्रिज",
+      "description": "यह ब्रिज संभवतः गैस या शुल्क में अधिक खर्च करेगा, जिससे टोकन की तुलना में लागत अधिक हो सकती है। सस्ते गैस समय का इंतजार करें या दूसरा मार्ग चुनें।"
+    },
+
+    "review": "समीक्षा करें",
+    "gasCosts": "गैस लागत",
+    "fees": "शुल्क"
+  },
+
+  "walletsDrawer": {
+    "title": "वॉलेट्स",
+    "evmDescription": "{{chain}} या EVM संगत वॉलेट कनेक्ट करें",
+    "svmDescription": "Solana या SVM संगत वॉलेट कनेक्ट करें"
+  },
+
+  "tos": {
+    "welcome": "{{name}} में आपका स्वागत है",
+    "poweredBy": "Superbridge द्वारा संचालित",
+    "superbridge1": "यह इंटरफेस केवल आधिकारिक Superchain रोलअप के लिए देशी ब्रिज अनुबंधों की एक परत है।",
+    "superbridge2": "Superbridge किसी भी समय कोई धनराशि नहीं रखता है।",
+    "superbridge3": "ब्रिजिंग सहायता के लिए कृपया <0>सहायता और FAQs</0> देखें।",
+    "superbridge4": "इस इंटरफेस का उपयोग करके आप हमारी <0>शर्तों और गोपनीयता नीति</0> से सहमत होते हैं।",
+
+    "dedicated1": "यह इंटरफेस केवल <0>{{name}}</0> के लिए देशी ब्रिज अनुबंधों की एक परत है।",
+    "agreeAndContinue": "सहमत हूँ और जारी रखें",
+
+    "forceReadTerms": "कृपया सेवा की शर्तें पढ़ें और सहमत हों",
+    "forceReadPrivacy": "कृपया गोपनीयता नीति पढ़ें और सहमत हों"
+  },
+
+  "legal": {
+    "footerButton": "शर्तें और गोपनीयता",
+    "title": "शर्तें और गोपनीयता",
+    "superbridgeTerms": "Superbridge सेवा की शर्तें",
+    "superbridgePrivacy": "Superbridge गोपनीयता नीति",
+    "dedicatedTerms": "{{name}} सेवा की शर्तें",
+    "dedicatedPrivacy": "{{name}} गोपनीयता नीति"
+  },
+  
+  "feeModal": {
+    "providerFees": "{{provider}} शुल्क",
+    "acrossFeeBreakdownDescription": "<0>Across</0> और उनके तरलता प्रदाताओं और रिलेयर्स को भुगतान की गई फीस",
+    "hyperlaneFeeBreakdownDescription": "<0>Hyperlane</0> रिलेयर्स को संदेश वितरण के लिए भुगतान की गई फीस"
+  },
+
+  "gasInfoModal": {
+    "title": "गैस शुल्क",
+    "description": "ब्लॉकचेन के साथ, आपको लेन-देन जमा करने के लिए शुल्क का भुगतान करना पड़ता है। {{from}} पर जमा किए गए लेन-देन को सुनिश्चित करने के लिए {{symbol}} की थोड़ी मात्रा की आवश्यकता होती है।",
+
+    "opWithdrawal": "OP Stack रोलअप से निकासी को साबित करने और निपटान श्रृंखला पर अंतिम रूप देने के लिए दो अतिरिक्त लेन-देन की आवश्यकता होती है।",
+    "arbWithdrawal": "Arbitrum Nitro रोलअप से निकासी को निपटान श्रृंखला पर अंतिम रूप देने के लिए एक अतिरिक्त लेन-देन की आवश्यकता होती है।",
+    "cctp": "CCTP के माध्यम से देशी USDC ब्रिज के लिए गंतव्य श्रृंखला पर एक अतिरिक्त लेन-देन की आवश्यकता होती है।"
+  },
+
+  "networkSelectorModal": {
+    "title": "नेटवर्क चुनें"
+  },
+
+  "routeSelectorModal": {
+    "title": "रूट चुनें"
+  },
+
+  "header": {
+    "supportAndFaqs": "सहायता और FAQs",
+    "legal": "कानूनी"
+  }
+}

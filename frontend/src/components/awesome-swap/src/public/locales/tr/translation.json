@@ -1,0 +1,299 @@
+{
+  "reviewBridge": "Köprüyü İncele",
+  "bridging": "Köprü kuruluyor",
+  "connectWallet": "Cüzdanı bağla",
+  "connectChainWallet": "{{chain}} cüzdanını bağla",
+  "orAddChainRecipient": "Veya {{to}} alıcı adresi ekle",
+  "switchToApprove": "Değiştir",
+  "approve": "Onayla",
+  "insufficientFunds": "Yetersiz bakiye",
+  "insufficientGas": "{{symbol}} gazı yetersiz",
+  "bridgeLimit": "{{amount}} {{symbol}} limiti",
+  "bridgeMin": "En az tutar {{amount}} {{symbol}}",
+  "enterAnAmount": "Bir tutar girin",
+  "loading": "Yükleniyor",
+  "loadMore": "Daha fazla yükle",
+  "error": "Hata",
+  "noAccountConnected": "Bağlı hesap yok",
+  "save": "Kaydet",
+  "toAddress": "Alıcı adresi",
+  "on": "açık",
+  "off": "kapalı",
+  "receiveOnChain": "{{chain}} üzerinde al",
+  "transferTime": "Transfer süresi",
+  "transferTimeSeconds_one": "Yaklaşık {{count}} saniye",
+  "transferTimeSeconds_other": "Yaklaşık {{count}} saniye",
+  "transferTimeMinutes_one": "Yaklaşık {{count}} dakika",
+  "transferTimeMinutes_other": "Yaklaşık {{count}} dakika",
+  "transferTimeHours_one": "Yaklaşık {{count}} saat",
+  "transferTimeHours_other": "Yaklaşık {{count}} saat",
+  "transferTimeDays_one": "Yaklaşık {{count}} gün",
+  "transferTimeDays_other": "Yaklaşık {{count}} gün",
+  "availableBalance": "{{amount}} {{symbol}} kullanılabilir",
+  "sorryAnErrorOccurred": "Üzgünüz! Bir hata oluştu",
+  "about": "Hakkında",
+  "docs": "Belgeler",
+  "from": "Gönderen",
+  "to": "Alıcı",
+  "manage": "Yönet",
+  "support": "Destek",
+  "ok": "Tamam",
+
+  "general": {
+    "needHelp": "Yardıma mı ihtiyacınız var? SSS'yi görüntüleyin",
+    "learnMore": "Daha fazla bilgi edinin",
+    "bridgeAmount": "Köprüleme miktarı",
+    "fee": "ücret"
+  },
+
+  "settings": {
+    "settings": "Ayarlar",
+    "escapeHatchDescription": "Çözümleme zincirinde sansüre dirençli işlemler yoluyla çekimleri zorlayın.",
+    "currency": "Para birimi",
+    "language": "Dil",
+    "explorer": "Gezgin",
+    "tokenLists": "Token listeleri",
+    "enableTestnets": "Test ağlarını etkinleştir",
+    "darkMode": "Karanlık mod"
+  },
+
+  "customTokenLists": {
+    "add": "Özel token listesi ekle",
+    "name": "Token listesi adı",
+    "namePlaceholder": "Ad",
+    "url": "Token listesi URL'si",
+    "urlPlaceholder": "URL",
+    "invalid": "Geçersiz token listesi URL'si",
+    "loadedTokens": "{{num}} token yüklendi",
+    "disclaimer": "Herkes herhangi bir token oluşturabilir, mevcut tokenların sahte versiyonları dahil. Dikkatli olun. Bazı tokenlar ve teknik parametreleri {{app}} hizmetleriyle uyumlu olmayabilir. Bu özel token listesini içe aktararak riskleri kabul ettiğinizi onaylamış olursunuz.",
+    "learnMore": "Riskler hakkında daha fazla bilgi edinin.",
+    "save": "Listeyi kaydet",
+    "delete": "Listeyi sil"
+  },
+
+  "activity": {
+    "activity": "Etkinlik",
+    "actionNeeded": "Eylem gerekli",
+    "connectWallet": "Lütfen cüzdanınızı bağlayın...",
+    "noTransactions": "Henüz işlem yok...",
+    "error": "Üzgünüz! Etkinlik akışınızı çekemedik.\nLütfen sayfayı yenileyin",
+    "withdrawn": "Çekildi",
+    "proving": "Kanıtlanıyor...",
+    "readyToProve": "Kanıtlamaya hazır",
+    "proved": "Kanıtlandı",
+    "waitingForStateRoot": "Durum kökü bekleniyor...",
+    "waitingForDisputeGame": "İtiraz oyunu bekleniyor...",
+    "stateRootPublished": "Durum kökü yayınlandı",
+    "challengePeriod": "Mücadele dönemi",
+    "finalizing": "Sonlandırılıyor...",
+    "readyToFinalize": "Sonlandırmaya hazır",
+    "finalized": "Sonlandırıldı",
+    "deposited": "Yatırıldı",
+    "depositing": "Yatırılıyor",
+    "l2Confirmation": "L2 onayı",
+    "waitingForL2": "L2 bekleniyor...",
+    "bridged": "Köprü kuruldu",
+    "bridging": "Köprü kuruluyor",
+    "minted": "Basılmış",
+    "minting": "Basılıyor",
+    "readyToMint": "Basmaya hazır",
+    "waitingForAttestation": "Doğrulama bekleniyor...",
+    "remainingSeconds_one": "~{{count}} saniye kaldı",
+    "remainingSeconds_other": "~{{count}} saniye kaldı",
+    "remainingMinutes_one": "~{{count}} dakika kaldı",
+    "remainingMinutes_other": "~{{count}} dakika kaldı",
+    "remainingHours_one": "~{{count}} saat kaldı",
+    "remainingHours_other": "~{{count}} saat kaldı",
+    "remainingDays_one": "~{{count}} gün kaldı",
+    "remainingDays_other": "~{{count}} gün kaldı",
+    "findANetwork": "Ara"
+  },
+
+  "tokens": {
+    "tokens": "Tokenler",
+    "selectToken": "Token seç",
+    "noneFound": "Sonuç bulunamadı",
+    "notBridgeable": "Köprülenemez",
+    "import": "İçe aktar",
+    "customImport": "Özel içe aktarma",
+    "customImportFromList": "{{name}} listesinden",
+    "customImportCheck": "Token adresini kontrol ettiğinizden ve doğru olduğundan emin olun:",
+    "customL1Address": "L1 adresi",
+    "customL2Address": "L2 adresi",
+    "customL3Address": "L3 adresi"
+  },
+
+  "recipient": {
+    "bridgeDestination": "Köprü hedefi",
+    "toAddress": "Alıcı adresi",
+    "invalidAddress": "Geçersiz adres",
+    "yourChainAddress": "Bu sizin {{chain}} adresiniz",
+    "usedBefore": "Daha önce kullanılan hesap",
+    "usedBeforeMultiple": "Hesap daha önce {{count}} kez kullanıldı",
+    "newAddress": "Yeni adres - dikkatli olun!",
+    "checkingAddress": "Adres kontrol ediliyor...",
+    "addRecipientAddress": "Alıcı adresi ekle",
+    "pleaseNote": "Lütfen dikkat edin",
+    "sameAddressRequirement": "{{chain}} üzerinden giden veya gelen köprülerde aynı alıcı adresi olmalıdır.",
+    "checkRecipientAddress": "Alıcı adresini kontrol edin"
+  },
+
+  "buttons": {
+    "start": "Başlat",
+    "finalize": "Sonlandır",
+    "claim": "Talep et",
+    "prove": "Kanıtla",
+    "redeem": "Geri al",
+    "switchChain": "Zinciri değiştir",
+    "mint": "Bas",
+    "get": "Al",
+    "continue": "Devam et",
+    "connect": "Bağlan",
+    "completeCheck": "Kontrolü tamamla",
+    "completeChecks": "Tüm kontrolleri tamamla",
+    "approve": "Onayla",
+    "approved": "Onaylandı",
+    "approving": "Onaylanıyor",
+    "max": "Maks",
+    "bridgingDisabled": "Köprü devre dışı",
+    "bridgingPaused": "Köprü duraklatıldı",
+    "reset": "Sıfırla"
+  },
+
+  "fees": {
+    "fees": "Ağ ücretleri",
+    "networkGas": "{{chain}} gaz",
+    "easyModeFee": "Kolay mod gaz ücreti"
+  },
+
+  "poweredBy": "{{name}} tarafından desteklenmektedir",
+
+  "transaction": {
+    "via": "Üzerinden",
+    "transferTime": "Transfer süresi",
+    "steps": "Adımlar",
+    "bridgeInfo": "Köprü bilgileri",
+
+    "fromChain": "{{from}} zincirinden",
+    "toChain": "{{to}} zincirine",
+
+    "fromAddress": "Gönderen adresi",
+    "toAddress": "Alıcı adresi"
+  },
+
+  "confirmationModal": {
+    "goBack": "Geri dön",
+    "proceedAnyway": "Yine de devam et",
+
+    "noGas": {
+      "youNeedGasOn": "{{to}} üzerinde gaz gerekiyor",
+      "needHelp": "Yardıma mı ihtiyacınız var? SSS'yi görüntüleyin",
+      "cctp": "{{symbol}} köprülemesi için {{to}} üzerinde ek bir işlem gereklidir. Köprüyü tamamlamak için lütfen {{gas}} ekleyin.",
+      "opWithdrawing": "Para çekme işlemi için {{to}} üzerinde 2 ek işlem gereklidir. Lütfen bu işlemi tamamlamak için {{gas}} ekleyin.",
+      "arbWithdrawing": "{{token}} çekimi için {{to}} üzerinde ek bir işlem gereklidir. Lütfen bu işlemi tamamlamak için {{gas}} ekleyin.",
+      "depositing": "{{to}} üzerinde gaz olmadan herhangi bir işlem yapamazsınız. Köprüleme yapmadan önce lütfen {{gas}} ekleyin."
+    },
+
+    "extraTransactions": {
+      "title": "İşlemler ve bekleme süreleri",
+      "checkboxTitle": "Aşağıdakileri anlıyor ve kabul ediyorum:",
+
+      "cctpDescriptionSeconds_one": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} saniye bekleme süresi gerektirir.",
+      "cctpDescriptionSeconds_other": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} saniye bekleme süresi gerektirir.",
+      "cctpDescriptionMinutes_one": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} dakika bekleme süresi gerektirir.",
+      "cctpDescriptionMinutes_other": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} dakika bekleme süresi gerektirir.",
+      "cctpDescriptionHours_one": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} saat bekleme süresi gerektirir.",
+      "cctpDescriptionHours_other": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} saat bekleme süresi gerektirir.",
+      "cctpDescriptionDays_one": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} gün bekleme süresi gerektirir.",
+      "cctpDescriptionDays_other": "CCTP aracılığıyla köprüleme, {{to}} üzerinde ek bir işlem ve yaklaşık {{count}} gün bekleme süresi gerektirir.",
+
+      "checkbox1_one": "{{to}} üzerinde ek bir işlem yapmam gerekiyor",
+      "checkbox1_other": "{{to}} üzerinde 2 ek işlem yapmam gerekiyor",
+      "checkbox2": "Gaz fiyatları bekleme süresi ve işlemler arasında önemli ölçüde değişebilir",
+      "checkbox3": "Bir köprüleme başlatıldıktan sonra hızlandırılamaz veya iptal edilemez"
+    },
+
+    "recipientSupportsNetwork": {
+      "title": "Köprüleme yaptığınız cüzdanın {{to}} ağını desteklediğinden emin olun",
+      "description": "Köprüleme yapmadan önce {{to}} desteğini kontrol edin, aksi takdirde kripto paranızı kaybedebilirsiniz. Bir borsaya köprüleme yapmayın.",
+      "checkboxOwnWallet": "Cüzdanım {{to}} ağını destekliyor",
+      "checkboxNotOwnWallet": "Gönderdiğim adres {{to}} ağını destekliyor"
+    },
+
+    "expensiveGas": {
+      "title": "Yüksek gaz ücretli köprü",
+      "description": "Bu köprü, gaz veya ücretlerde köprülenen tokenin değerinden daha fazla maliyet yaratabilir. Gaz fiyatlarının düşmesini beklemeyi veya farklı bir yol seçmeyi düşünün."
+    },
+
+    "review": "İncele",
+    "gasCosts": "Gaz maliyetleri",
+    "fees": "Ücretler"
+  },
+
+  "walletsDrawer": {
+    "title": "Cüzdanlar",
+    "evmDescription": "{{chain}} veya EVM uyumlu bir cüzdan bağlayın",
+    "svmDescription": "Solana veya SVM uyumlu bir cüzdan bağlayın"
+  },
+
+  "tos": {
+    "welcome": "{{name}}'e hoş geldiniz",
+    "poweredBy": "Superbridge tarafından desteklenmektedir",
+    "superbridge1": "Bu arayüz, resmi Superchain rolluplarının yerel köprü sözleşmeleri üzerine bir katman görevi görmektedir.",
+    "superbridge2": "Superbridge hiçbir zaman fonları elinde bulundurmaz.",
+    "superbridge3": "Köprüleme yardımı için lütfen <0>destek & SSS</0> bölümüne gidin.",
+    "superbridge4": "Bu arayüzü kullanarak <0>Hizmet Şartları ve Gizlilik Politikasını</0> kabul etmiş oluyorsunuz.",
+
+    "dedicated1": "Bu arayüz sadece <0>{{name}}</0>'in yerel köprü sözleşmeleri üzerine bir katmandır.",
+    "agreeAndContinue": "Kabul et ve devam et",
+
+    "forceReadTerms": "Lütfen Hizmet Şartlarını okuyun ve kabul edin",
+    "forceReadPrivacy": "Lütfen Gizlilik Politikasını okuyun ve kabul edin"
+  },
+
+  "legal": {
+    "footerButton": "Şartlar ve Gizlilik",
+    "title": "Şartlar ve Gizlilik",
+    "superbridgeTerms": "Superbridge Hizmet Şartları",
+    "superbridgePrivacy": "Superbridge Gizlilik Politikası",
+    "dedicatedTerms": "{{name}} Hizmet Şartları",
+    "dedicatedPrivacy": "{{name}} Gizlilik Politikası"
+  },
+
+  "feeModal": {
+    "providerFees": "{{provider}} ücretleri",
+    "acrossFeeBreakdownDescription": "<0>Across</0> ve likidite sağlayıcılarına ve yönlendirme yapanlara ödenen ücretler",
+    "hyperlaneFeeBreakdownDescription": "Mesaj iletimi için <0>Hyperlane</0> yönlendirme yapanlarına ödenen ücretler"
+  },
+
+  "gasInfoModal": {
+    "title": "Gaz ücretleri",
+    "description": "Blok zincirlerinde işlem göndermek için bir ücret ödemeniz gerekir. {{from}}'a gönderilen işlemler ağ tarafından onaylanması için bir miktar {{symbol}} gerektirir.",
+
+    "opWithdrawal": "OP Stack rollup'larından çekimler, çözümleme zincirinde çekimi kanıtlamak ve sonlandırmak için iki ek işlem gerektirir.",
+    "arbWithdrawal": "Arbitrum Nitro rollup'larından çekimler, çözümleme zincirinde sonlandırma için ek bir işlem gerektirir.",
+    "cctp": "CCTP aracılığıyla yerel USDC köprüleme, hedef zincirde ek bir işlem gerektirir."
+  },
+
+  "networkSelectorModal": {
+    "title": "Ağ seç"
+  },
+
+  "routeSelectorModal": {
+    "title": "Rota seç"
+  },
+
+  "across": {
+    "transferTimeTitle": "Süper hızlı transfer süresi",
+    "transferTimeDescription": "Köprüleme boyutuna bağlı olarak süper hızlı transfer süreleri değişebilir. Süreler yalnızca tahminidir.",
+    "timeTo": "{{to}}'a süre",
+    "feeBreakdownTitle": "Across ücretleri",
+    "feeBreakdownDescription": "<0>Across</0> ve likidite sağlayıcılarına ve yönlendirme yapanlara ödenen ücretler",
+    "acrossFee": "Across ücreti"
+  },
+
+  "header": {
+    "supportAndFaqs": "Destek & SSS",
+    "legal": "Yasal"
+  }
+}

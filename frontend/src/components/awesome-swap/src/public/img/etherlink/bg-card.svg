@@ -1,0 +1,33 @@
+<svg width="293" height="390" viewBox="0 0 293 390" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_365_1000)">
+<rect width="293" height="390" fill="#171717"/>
+<g clip-path="url(#clip1_365_1000)">
+<g opacity="0.3" filter="url(#filter0_d_365_1000)">
+<path d="M146 679C278.548 679 386 571.548 386 439C386 306.452 278.548 199 146 199C13.4517 199 -94 306.452 -94 439C-94 571.548 13.4517 679 146 679Z" fill="url(#paint0_radial_365_1000)"/>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_365_1000" x="-96" y="199" width="484" height="484" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2"/>
+<feGaussianBlur stdDeviation="1"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_365_1000"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_365_1000" result="shape"/>
+</filter>
+<radialGradient id="paint0_radial_365_1000" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(146 439) rotate(90) scale(240)">
+<stop offset="0.25" stop-color="#38FF9C" stop-opacity="0.3"/>
+<stop offset="0.58" stop-color="#38FF9C" stop-opacity="0.15"/>
+<stop offset="1" stop-color="#38FF9C" stop-opacity="0"/>
+</radialGradient>
+<clipPath id="clip0_365_1000">
+<rect width="293" height="390" fill="white"/>
+</clipPath>
+<clipPath id="clip1_365_1000">
+<rect width="484" height="484" fill="white" transform="translate(-96 199)"/>
+</clipPath>
+</defs>
+</svg>
