@@ -8,6 +8,7 @@ import {IEVault} from "src/interface/Eular/IEVault.sol";
 import {IEulerSwap} from "../interface/Eular/IEulerSwap.sol";
 import {IPoolManager} from "../interface/Eular/IEulerSwap.sol";
 import {IEulerRouter} from "../interface/Eular/IEulerRouter.sol";
+import {IEVC} from "../interface/Eular/IEVC.sol";
 
 contract FlashArbitrageEngine {
     using SafeERC20 for IERC20;
