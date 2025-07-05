@@ -7,7 +7,7 @@ import {
     CctpDomainDto,
     ChainDto,
     DefaultRouteDto,
-    DeploymentDto,
+    // DeploymentDto,
     EcoDomainDto,
     HyperlaneMailboxDto,
     LzDomainDto,
@@ -18,6 +18,39 @@ import {
     SuperbridgeConfigDto,
 } from "../types";
 import { AppConfig } from "../types/app-config";
+import { DeploymentDtoArbitrumNativeToken, DeploymentDtoTos, DeploymentDtoStatus, DeploymentDtoConfig, DeploymentFamily, DeploymentDtoContractAddresses, DeploymentType } from "../hooks/tokens";
+
+
+export interface DeploymentDto {
+  /** @nullable */
+  arbitrumNativeToken: DeploymentDtoArbitrumNativeToken;
+  /** @nullable */
+  conduitId: string | null;
+  config: DeploymentDtoConfig;
+  contractAddresses: DeploymentDtoContractAddresses;
+  createdAt: string;
+  /** @nullable */
+  deletedAt: string | null;
+  depositDuration: number;
+  displayName: string;
+  family: DeploymentFamily;
+  finalizeDuration: number;
+  id: string;
+  l1ChainId: number;
+  l2ChainId: number;
+  name: string;
+  /** @nullable */
+  proveDuration: number | null;
+  /** @nullable */
+  provider: string | null;
+  /** @nullable */
+  rollupNetworkIcon: string | null;
+  status: DeploymentDtoStatus;
+  /** @nullable */
+  tos: DeploymentDtoTos;
+  type: DeploymentType;
+}
+
 
 export type InjectedState = {
   id: string;
