@@ -1,32 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import {IEVault} from "src/interface/Eular/IEVault.sol";
 import {IEulerSwap} from "../interface/Eular/IEulerSwap.sol";
 import {IPoolManager} from "../interface/Eular/IEulerSwap.sol";
-
-interface IWETH is IERC20 {
-    function deposit() external payable;
-
-    // function withdraw(uint256 amount) external;
-
-    // change to a simple wrap function
-}
+import {IEulerRouter} from "../interface/Eular/IEulerRouter.sol";
 
 contract FlashArbitrageEngine {
     using SafeERC20 for IERC20;
 
     IEVault public immutable vault;
     IEulerSwap public immutable eulerSwap;
-    IWETH public immutable weth;
+    IEulerRouter public immutable eulerRouter;
 
     // Supported tokens
-    address public constant WETH = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
-    address public constant USDC = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
+    address public constant WETH = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
+    address public constant USDC = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
 
     // Flash arbitrage position
     struct FlashPosition {
@@ -52,6 +44,7 @@ contract FlashArbitrageEngine {
     uint256 public maxCycles = 10;
     uint256 public maxBorrowAmount = 1000000e6; // 1M USDC
     uint256 public minProfitThreshold = 100e6; // 100 USDC
+    uint256 public maxSlippageBps = 50; // 0.5% max slippage
 
     // Events
     event FlashPositionOpened(
@@ -76,6 +69,13 @@ contract FlashArbitrageEngine {
         uint256 repaidAmount
     );
     event PositionLiquidated(uint256 indexed positionId, address indexed user);
+    event PriceValidated(
+        uint256 indexed positionId,
+        address base,
+        address quote,
+        uint256 expectedAmount,
+        uint256 actualAmount
+    );
 
     // Modifiers
     modifier arbitrageGuard() {
@@ -88,18 +88,20 @@ contract FlashArbitrageEngine {
     error InsufficientProfit();
     error PositionExpired();
     error InvalidTargetAmount();
+    error PriceValidationFailed();
+    error ExcessiveSlippage();
 
     address owner;
 
-    constructor(address _vault, address _eulerSwap, address _weth) {
+    constructor(address _vault, address _eulerSwap, address _eulerRouter) {
         vault = IEVault(_vault);
         eulerSwap = IEulerSwap(_eulerSwap);
-        weth = IWETH(_weth);
+        eulerRouter = IEulerRouter(_eulerRouter);
         owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "FlashArbitrage: not authorized");
+        require(msg.sender == owner, "FlashArbitrageEngine: not owner");
         _;
     }
 
@@ -130,10 +132,10 @@ contract FlashArbitrageEngine {
         require(msg.value > 0, "No ETH sent");
 
         // Wrap ETH to WETH
-        weth.deposit{value: msg.value}();
+        wrapEth();
 
         // Deposit WETH collateral to vault
-        //  IERC20(WETH).safeApprove(address(vault), msg.value);
+        IERC20(WETH).approve(address(vault), msg.value);
         vault.deposit(msg.value, address(this));
 
         // Create flash position
@@ -167,7 +169,7 @@ contract FlashArbitrageEngine {
         uint256 currentBalance = 0;
         uint256 borrowed = 0;
 
-        for (uint256 cycle = 0; cycle < maxCycles; cycle++) {
+        for (uint256 cycle = 0; cycle < _maxCycles; cycle++) {
             // Check if we've reached the target
             currentBalance = IERC20(targetToken).balanceOf(address(this));
             if (currentBalance >= targetAmount) {
@@ -192,7 +194,11 @@ contract FlashArbitrageEngine {
             borrowed += borrowAmount;
 
             // Execute arbitrage cycle
-            uint256 profit = _executeArbitrageCycle(targetToken, borrowAmount);
+            uint256 profit = _executeArbitrageCycle(
+                position.id,
+                targetToken,
+                borrowAmount
+            );
 
             // Update position
             positions[position.id].borrowedAmount = borrowed;
@@ -202,7 +208,7 @@ contract FlashArbitrageEngine {
             emit ArbitrageCycleExecuted(position.id, cycle + 1, profit);
 
             // Repay the borrowed amount
-            //  IERC20(vault.asset()).safeApprove(address(vault), borrowAmount);
+            IERC20(vault.asset()).approve(address(vault), borrowAmount);
             vault.repay(borrowAmount, address(this));
             borrowed -= borrowAmount;
         }
@@ -228,11 +234,47 @@ contract FlashArbitrageEngine {
     }
 
     /**
-     * @dev Execute a single arbitrage cycle
+     * @dev Validate price using Euler Router oracle
+     * @param inAmount Input amount for quote
+     * @param base Base token address
+     * @param quote Quote token address
+     * @return expectedOutAmount Expected output amount from router
+     * @return oracleAddress Address of the oracle used
+     */
+    function _validatePrice(
+        uint256 inAmount,
+        address base,
+        address quote
+    ) internal view returns (uint256 expectedOutAmount, address oracleAddress) {
+        try eulerRouter.getQuote(inAmount, base, quote) returns (
+            uint256 quoteAmount
+        ) {
+            expectedOutAmount = quoteAmount;
+
+            // Resolve oracle to get oracle address
+            try eulerRouter.resolveOracle(inAmount, base, quote) returns (
+                uint256 resolvedAmount,
+                address resolvedOracle,
+                address resolvedBase,
+                address resolvedQuote
+            ) {
+                oracleAddress = resolvedOracle;
+            } catch {
+                oracleAddress = address(0);
+            }
+        } catch {
+            revert PriceValidationFailed();
+        }
+    }
+
+    /**
+     * @dev Execute a single arbitrage cycle with price validation
+     * @param positionId ID of the position for event emission
      * @param targetToken Token we want to accumulate
      * @param borrowAmount Amount borrowed for this cycle
      */
     function _executeArbitrageCycle(
+        uint256 positionId,
         address targetToken,
         uint256 borrowAmount
     ) internal returns (uint256 profit) {
@@ -242,15 +284,37 @@ contract FlashArbitrageEngine {
 
         if (targetToken == USDC) {
             // WETH -> USDC -> WETH arbitrage
-            // IERC20(WETH).safeApprove(address(eulerSwap), borrowAmount);
+            IERC20(WETH).approve(address(eulerSwap), borrowAmount);
 
-            // WETH -> USDC
+            // Validate WETH -> USDC price with Euler Router
+            (uint256 expectedUsdcAmount, ) = _validatePrice(
+                borrowAmount,
+                WETH,
+                USDC
+            );
             uint256 usdcAmount = eulerSwap.computeQuote(
                 WETH,
                 USDC,
                 borrowAmount,
                 true
             );
+
+            // Check slippage tolerance
+            uint256 minUsdcAmount = (expectedUsdcAmount *
+                (10000 - maxSlippageBps)) / 10000;
+            if (usdcAmount < minUsdcAmount) {
+                revert ExcessiveSlippage();
+            }
+
+            // Emit price validation event
+            emit PriceValidated(
+                positionId,
+                WETH,
+                USDC,
+                expectedUsdcAmount,
+                usdcAmount
+            );
+
             bool zeroForOne = asset0 == WETH;
             IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
                 zeroForOne: zeroForOne,
@@ -265,14 +329,38 @@ contract FlashArbitrageEngine {
                 eulerSwap.swap(usdcAmount, 0, address(this), swapData);
             }
 
-            // USDC -> WETH (with some slippage for profit)
+            // USDC -> WETH (with price validation)
             IERC20(USDC).approve(address(eulerSwap), usdcAmount);
+
+            // Validate USDC -> WETH price with Euler Router
+            (uint256 expectedWethAmount, ) = _validatePrice(
+                usdcAmount,
+                USDC,
+                WETH
+            );
             uint256 wethAmount = eulerSwap.computeQuote(
                 USDC,
                 WETH,
                 usdcAmount,
                 true
             );
+
+            // Check slippage tolerance
+            uint256 minWethAmount = (expectedWethAmount *
+                (10000 - maxSlippageBps)) / 10000;
+            if (wethAmount < minWethAmount) {
+                revert ExcessiveSlippage();
+            }
+
+            // Emit price validation event
+            emit PriceValidated(
+                positionId,
+                USDC,
+                WETH,
+                expectedWethAmount,
+                wethAmount
+            );
+
             zeroForOne = asset0 == USDC;
             params = IPoolManager.SwapParams({
                 zeroForOne: zeroForOne,
@@ -295,13 +383,35 @@ contract FlashArbitrageEngine {
             // USDC -> WETH -> USDC arbitrage
             IERC20(USDC).approve(address(eulerSwap), borrowAmount);
 
-            // USDC -> WETH
+            // Validate USDC -> WETH price with Euler Router
+            (uint256 expectedWethAmount, ) = _validatePrice(
+                borrowAmount,
+                USDC,
+                WETH
+            );
             uint256 wethAmount = eulerSwap.computeQuote(
                 USDC,
                 WETH,
                 borrowAmount,
                 true
             );
+
+            // Check slippage tolerance
+            uint256 minWethAmount = (expectedWethAmount *
+                (10000 - maxSlippageBps)) / 10000;
+            if (wethAmount < minWethAmount) {
+                revert ExcessiveSlippage();
+            }
+
+            // Emit price validation event
+            emit PriceValidated(
+                positionId,
+                USDC,
+                WETH,
+                expectedWethAmount,
+                wethAmount
+            );
+
             bool zeroForOne = asset0 == USDC;
             IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
                 zeroForOne: zeroForOne,
@@ -316,14 +426,38 @@ contract FlashArbitrageEngine {
                 eulerSwap.swap(wethAmount, 0, address(this), swapData);
             }
 
-            // WETH -> USDC
-            // IERC20(WETH).safeApprove(address(eulerSwap), wethAmount);
+            // WETH -> USDC (with price validation)
+            IERC20(WETH).approve(address(eulerSwap), wethAmount);
+
+            // Validate WETH -> USDC price with Euler Router
+            (uint256 expectedUsdcAmount, ) = _validatePrice(
+                wethAmount,
+                WETH,
+                USDC
+            );
             uint256 usdcAmount = eulerSwap.computeQuote(
                 WETH,
                 USDC,
                 wethAmount,
                 true
             );
+
+            // Check slippage tolerance
+            uint256 minUsdcAmount = (expectedUsdcAmount *
+                (10000 - maxSlippageBps)) / 10000;
+            if (usdcAmount < minUsdcAmount) {
+                revert ExcessiveSlippage();
+            }
+
+            // Emit price validation event
+            emit PriceValidated(
+                positionId,
+                WETH,
+                USDC,
+                expectedUsdcAmount,
+                usdcAmount
+            );
+
             zeroForOne = asset0 == WETH;
             params = IPoolManager.SwapParams({
                 zeroForOne: zeroForOne,
@@ -373,34 +507,75 @@ contract FlashArbitrageEngine {
     function updateConfig(
         uint256 _maxCycles,
         uint256 _maxBorrowAmount,
-        uint256 _minProfitThreshold
+        uint256 _minProfitThreshold,
+        uint256 _maxSlippageBps
     ) external onlyOwner {
         maxCycles = _maxCycles;
         maxBorrowAmount = _maxBorrowAmount;
         minProfitThreshold = _minProfitThreshold;
+        maxSlippageBps = _maxSlippageBps;
+    }
+
+    /**
+     * @dev Get price quote from Euler Router
+     * @param inAmount Input amount
+     * @param base Base token address
+     * @param quote Quote token address
+     * @return quoteAmount Expected output amount
+     */
+    function getPriceQuote(
+        uint256 inAmount,
+        address base,
+        address quote
+    ) external view returns (uint256 quoteAmount) {
+        return eulerRouter.getQuote(inAmount, base, quote);
+    }
+
+    /**
+     * @dev Get oracle information for a token pair
+     * @param inAmount Input amount
+     * @param base Base token address
+     * @param quote Quote token address
+     * @return resolvedAmount Resolved amount
+     * @return oracleAddress Oracle address
+     * @return resolvedBase Resolved base token
+     * @return resolvedQuote Resolved quote token
+     */
+    function getOracleInfo(
+        uint256 inAmount,
+        address base,
+        address quote
+    )
+        external
+        view
+        returns (
+            uint256 resolvedAmount,
+            address oracleAddress,
+            address resolvedBase,
+            address resolvedQuote
+        )
+    {
+        return eulerRouter.resolveOracle(inAmount, base, quote);
     }
 
     /**
      * @dev Emergency function to rescue stuck tokens
      */
-    function rescueTokens(
-        address token,
-        uint256 amount,
-        address to
-    ) external onlyOwner {
-        IERC20(token).safeTransfer(to, amount);
+    function rescueTokens(address token, uint256 amount) external onlyOwner {
+        IERC20(token).safeTransfer(owner, amount);
     }
 
+    /**
+     * @dev Allow contract to receive ETH
+     */
     receive() external payable {}
 
-    // function setPoolAddress(
-    //     address _EVaultPool,
-    //     address swapPool
-    // ) public onlyOwner {
-    //     vault = IEVault(_EVaultPool);
-    //     eulerSwap = IEulerSwap(swapPool);
-    // }
-
-    // wraps eth to weth to be used in excution
-    function wrapEth() internal {}
+    /**
+     * @dev Wrap ETH to WETH
+     */
+    function wrapEth() internal {
+        // Call WETH contract's deposit function
+        (bool success, ) = WETH.call{value: msg.value}("");
+        require(success, "ETH wrapping failed");
+    }
 }
