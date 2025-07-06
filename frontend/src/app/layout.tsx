@@ -1,25 +1,37 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Outfit } from "next/font/google";
 import Footer from "@/components/footer";
 import { ClientBody } from "./client-body";
 import Header from "@/components/header";
-import AuthInitializer from '@/components/auth-initializer'
+import AuthInitializer from '@/components/auth-initializer';
+// import '@coinbase/onchainkit/styles.css';
+import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import SwapWidget from '@/components/swap-widget';
+import QueryProvider from "@/components/graph-ql/provider";
 
-const inter = Inter({ subsets: ['latin'] })
+const outfit = Outfit({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: "Zero 2.0 - Decentralized Car Auctions",
   description: "Buy and sell cars through decentralized auctions powered by blockchain technology",
   keywords: "supercar auctions, luxury cars, car auctions, supercars, classic cars, ZERO, Supercar Blondie",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: "ZERO - Premium Supercar Auctions",
     description: "Discover your dream supercar at ZERO auction platform",
     type: "website",
   },
-};
 
+};
 export default function RootLayout({
   children,
 }: {
@@ -27,16 +39,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <ClientBody>
-          <Toaster />
-          <AuthInitializer />
-          <Header />
-          <main>
-            {children}
-          </main>
-          <Footer />
-        </ClientBody>
+      <body className={outfit.className}>
+        <QueryProvider>
+
+          <ClientBody>
+            <Toaster />
+            <SwapWidget />
+            <AuthInitializer />
+            <Header />
+            <main>
+              {children}
+            </main>
+            <Footer />
+          </ClientBody>
+        </QueryProvider>
       </body>
     </html>
   );

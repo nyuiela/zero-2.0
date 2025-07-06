@@ -3,24 +3,28 @@ pragma solidity ^0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "forge-std/Script.sol";
-import {IOracleMaster} from "../src/interface/oracle/IOracleMaster.sol";
-import {IReputation} from "../src/interface/IReputation.sol";
-import {IMerkleVerifier} from "../src/interface/IMerkleVerifier.sol";
-import {IProfile} from "../src/interface/IProfile.sol";
-import {IStateManager} from "../src/interface/IStateManager.sol";
-import "../src/interface/IProofSync.sol";
-import {IInitFunction} from "../src/interface/IInitFunction.sol";
-import {ICarRegistry} from "../src/interface/ICarRegistry.sol";
-import {ICarOracle} from "../src/interface/oracle/IcarOracle.sol";
-import {ISync} from "../src/interface/ISync.sol";
-import {IPermissionManager} from "../src/interface/permissions/IPermissionManager.sol";
-import {IAuction} from "../src/interface/IAuction.sol";
+import {IOracleMaster} from "../src/Interface/oracle/IOracleMaster.sol";
+import {IReputation} from "../src/Interface/IReputation.sol";
+import {IMerkleVerifier} from "../src/Interface/IMerkleVerifier.sol";
+import {IProfile} from "../src/Interface/IProfile.sol";
+import {IStateManager} from "../src/Interface/IStateManager.sol";
+import "../src/Interface/IProofSync.sol";
+import {IInitFunction} from "../src/Interface/IInitFunction.sol";
+import {ICarRegistry} from "../src/Interface/ICarRegistry.sol";
+import {ICarOracle} from "../src/Interface/oracle/IcarOracle.sol";
+import {ISync} from "../src/Interface/ISync.sol";
+import {IPermissionManager} from "../src/Interface/Permissions/IPermissionManager.sol";
+import {IAuction} from "../src/Interface/IAuction.sol";
 
 contract ContractConfig is Script {
-    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
-
-    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
     address AUCTION_ADDRESS = vm.envAddress("");
+    address CAR_REGISTRY = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
+
+    address SYNC_ADDRESS = vm.envAddress("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS");
+    address PERMISSION_ADDRESS =
+        vm.envAddress("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS");
+    IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
+    IProfile profile = IProfile(vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS"));
     string constant BRANDNAME = "lesscars";
     address constant PERMISSIONADDRESS =
         0xf0830060f836B8d54bF02049E5905F619487989e;
@@ -48,7 +52,7 @@ contract ContractConfig is Script {
 
     function setInit() internal {
         string[] memory args = new string[](1);
-        args[0] = "http://13.222.216.169:8080/api/sync";
+        args[0] = "http://srv894182.hstgr.cloud/api/sync";
         ICarRegistry(CAR_REGISTRY).setInitFunction(
             0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
         );
@@ -63,13 +67,14 @@ contract ContractConfig is Script {
 }
 
 contract BrandInteraction is Script {
-    address CAR_REGISTRY = vm.envAddress("CAR_REGISTRY_ADDRESS");
+    address CAR_REGISTRY = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
 
-    address SYNC_ADDRESS = vm.envAddress("SYNCFUNCTION_ADDRESS");
-    address PERMISSION_ADDRESS = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
+    address SYNC_ADDRESS = vm.envAddress("NEXT_PUBLIC_SYNCFUNCTION_ADDRESS");
+    address PERMISSION_ADDRESS =
+        vm.envAddress("NEXT_PUBLIC_PERMISSION_MANAGER_ADDRESS");
     IPermissionManager permission = IPermissionManager(PERMISSION_ADDRESS);
-    IProfile profile = IProfile(vm.envAddress("PROFILE_ADDRESS"));
-    string constant BRANDNAME1 = "lesscars12";
+    IProfile profile = IProfile(vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS"));
+    string constant BRANDNAME1 = "lesscars123";
 
     address constant PERMISSIONADDRESS =
         0xccfC47DaC852fa570f2D92D198fD45177B12280b;
@@ -98,7 +103,8 @@ contract BrandInteraction is Script {
 
     function setInit() internal {
         ICarRegistry(CAR_REGISTRY).setInitFunction(
-            0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+            // 0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
+            0xE2766BB943D16671621F98eeb354B5536e95d914
         );
     }
 
@@ -106,7 +112,7 @@ contract BrandInteraction is Script {
         //  address zeronft = vm.envAddress("ZERO_NFT_ADDRESS ");
 
         string[] memory args = new string[](1);
-        args[0] = "http://13.222.216.169:8080/api/sync";
+        args[0] = "http:/srv894182.hstgr.cloud/api/sync";
         ICarRegistry(CAR_REGISTRY).setInitFunction(
             0xfd2E0998d4285E890d8D4C8a76412e71ea2439B5
         );

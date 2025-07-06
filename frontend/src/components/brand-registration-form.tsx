@@ -233,9 +233,9 @@ export function BrandRegistrationForm() {
       maxAnswer: "",
       brandAdminAddr: "",
       subscriptionId: "387",
-      stateUrl: "http://13.222.216.169:8080/api/sync",
-      args: "http://13.222.216.169:8080/api/sync",
-      stake: "0.000005"
+      stateUrl: "http://srv894182.hstgr.cloud/api/sync",
+      args: "http://srv894182.hstgr.cloud/api/sync",
+      stake: "0.0000005"
     },
   })
   const steps = ["register", "stake", "activate"]
@@ -309,15 +309,13 @@ export function BrandRegistrationForm() {
         ],
         account: address
       })
-      toast.success("Brand registered successfully!", {
-        description: "Your brand has been registered and is pending activation.",
-        duration: 5000,
-      })
+      // Toast will be shown after transaction confirmation
     } catch (error) {
       toast.error("Brand registration failed", {
         description: parseError(error),
         duration: 5000,
       })
+      setIsLoading(false)
     }
   }
 
@@ -337,6 +335,13 @@ export function BrandRegistrationForm() {
       setIsLoading(false)
     }
     if (isConfirmed) {
+      // Show success toast after transaction confirmation
+      toast.success("Brand registered successfully!", {
+        description: "Your brand has been registered and is pending activation.",
+        duration: 5000,
+      })
+
+
       setStakeActivateStep((prev) => prev + 1)
       setIsLoading(false)
     }
@@ -375,7 +380,10 @@ export function BrandRegistrationForm() {
         account: address
       })
       // if (isConfirmed) {
-      // setStakeActivateStep(3)
+      //   // Redirect to brands page after a short delay
+      //   setTimeout(() => {
+      //     window.location.href = '/brands'
+      //   }, 2000)
       // }
     } catch (error) {
       setError(parseError(error))
@@ -400,9 +408,9 @@ export function BrandRegistrationForm() {
     form.setValue("maxAnswer", "1000000");
     form.setValue("brandAdminAddr", "0xf0830060f836B8d54bF02049E5905F619487989e");
     form.setValue("subscriptionId", "387");
-    form.setValue("stateUrl", "http://13.222.216.169:8080/api/sync");
-    form.setValue("args", "http://13.222.216.169:8080/api/sync");
-    form.setValue("stake", "0.00005");
+    form.setValue("stateUrl", "http://srv894182.hstgr.cloud/api/sync");
+    form.setValue("args", "http://srv894182.hstgr.cloud/api/sync");
+    form.setValue("stake", "0.0000005");
   }
   console.log("Open ", showStakeActivateModal)
   return (

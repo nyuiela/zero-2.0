@@ -242,7 +242,7 @@ export default function SellYourCarPage() {
         ...formData,
         // Convert images to string array for API submission
         image_url: formData.images
-          ?.filter((img): img is { type: 'url'; url: string; preview: string; id: string } => 
+          ?.filter((img): img is { type: 'url'; url: string; preview: string; id: string } =>
             img.type === 'url' && typeof img.url === 'string' && img.url.length > 0
           )
           .map(img => img.url) || []
@@ -299,7 +299,7 @@ export default function SellYourCarPage() {
         color: "white",
         mileage: 200,
         description: formData.description,
-        imageURI: "http",
+        imageURI: formData.images![0],
         mintTimestamp: date.getUTCMilliseconds(),
         isVerified: true
       }
@@ -313,7 +313,7 @@ export default function SellYourCarPage() {
             address,
             brandName,
             metadata,
-            "http"
+            "https://www.novitecgroup.com/en/news/novitec-ferrari-sf90/"
           ],
           account: address
         })
@@ -384,16 +384,16 @@ export default function SellYourCarPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Progress</h2>
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="transition-all duration-300 ease-in-out transform hover:scale-105"
               >
                 {Math.round(progress)}% Complete
               </Badge>
             </div>
-            <Progress 
-              value={progress} 
-              className="mb-4 transition-all duration-500 ease-in-out h-3 bg-gray-200 [&>div]:bg-[#00296b]" 
+            <Progress
+              value={progress}
+              className="mb-4 transition-all duration-500 ease-in-out h-3 bg-gray-200 [&>div]:bg-[#00296b]"
             />
 
             {/* Step Indicators */}
@@ -403,16 +403,15 @@ export default function SellYourCarPage() {
                 const isCompleted = currentStep > step.id
                 const isCurrent = currentStep === step.id
                 const isUpcoming = currentStep < step.id
-                
+
                 return (
                   <div key={step.id} className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
-                      isCompleted
-                        ? 'bg-green-500 text-white scale-110'
-                        : isCurrent
-                          ? 'bg-primary text-primary-foreground ring-2 ring-primary/20'
-                          : 'bg-muted text-muted-foreground'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${isCompleted
+                      ? 'bg-green-500 text-white scale-110'
+                      : isCurrent
+                        ? 'bg-primary text-primary-foreground ring-2 ring-primary/20'
+                        : 'bg-muted text-muted-foreground'
+                      }`}>
                       {isCompleted ? (
                         <CheckCircle className="w-5 h-5" />
                       ) : (
@@ -420,9 +419,8 @@ export default function SellYourCarPage() {
                       )}
                     </div>
                     <div className="text-center">
-                      <p className={`text-sm font-medium transition-colors duration-300 ${
-                        isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
+                      <p className={`text-sm font-medium transition-colors duration-300 ${isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                        }`}>
                         {step.title}
                       </p>
                       <p className="text-xs text-muted-foreground hidden sm:block">
@@ -465,7 +463,7 @@ export default function SellYourCarPage() {
             variant="outline"
             onClick={prevStep}
             disabled={currentStep === 1}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-[#00296b] text-[#00296b] hover:bg-[#00296b] hover:text-white"
           >
             <ChevronLeft className="w-4 h-4" />
             Previous
@@ -475,7 +473,7 @@ export default function SellYourCarPage() {
             {currentStep < steps.length ? (
               <Button
                 onClick={nextStep}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-[#00296b] text-white border border-[#00296b] hover:bg-[#001b47] hover:border-[#001b47]"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
@@ -484,7 +482,7 @@ export default function SellYourCarPage() {
               <Button
                 onClick={handleSubmit}
                 // disabled={isSubmitting}
-                className="flex items-center gap-2 cursor-pointer shadow "
+                className="flex items-center gap-2 cursor-pointer shadow bg-[#00296b] text-white border border-[#00296b] hover:bg-[#001b47] hover:border-[#001b47]"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Listing'}
               </Button>

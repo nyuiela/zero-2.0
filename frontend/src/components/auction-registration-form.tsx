@@ -33,6 +33,8 @@ import { createAuction } from "@/lib/api/auction"
 import { useAuthStore } from "@/lib/authStore"
 import { toRustCompatibleTimestamp } from "@/lib/utils"
 import { ProofData, ProofModal } from "./proof-modal"
+import { Nftminted, useGraph } from "@/hooks/useGraph"
+import { BrandData, useBrandsData } from "@/hooks/useBrandsData"
 
 // Dynamically import ProofModalTransaction to avoid SSR issues
 const ProofModalTransaction = dynamic(() => import("./proof-transaction").then(mod => ({ default: mod.ProofModalTransaction })), {
@@ -80,21 +82,17 @@ type AuctionRegistrationFormData = z.infer<typeof auctionRegistrationSchema>
 interface AuctionRegistrationFormProps {
   onSubmit: (data: AuctionRegistrationFormData) => void
   isLoading?: boolean
-  availableBrands?: string[]
-  userNFTs?: Array<{
-    tokenId: string
-    brandName: string
-    isLocked: boolean
-  }>
+  availableBrands?: BrandData[] | null
+  // userNFTs?: Array<Nftminted>
 }
 
 export function AuctionRegistrationForm({
   onSubmit,
   // isLoading = false,
-  availableBrands = [],
-  userNFTs = []
+  availableBrands = null,
+  // userNFTs = []
 }: AuctionRegistrationFormProps) {
-  const [selectedNFT, setSelectedNFT] = useState<string>("")
+  const [selectedNFT, setSelectedNFT] = useState<Number>()
   const { address } = useAccount();
   const form = useForm<AuctionRegistrationFormData>({
     resolver: zodResolver(auctionRegistrationSchema),
@@ -124,6 +122,8 @@ export function AuctionRegistrationForm({
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData>()
   const [isLoading, setIsLoading] = useState(false);
+  const { brands } = useBrandsData()
+  availableBrands = brands
   const handleCreate = (formData: AuctionRegistrationFormData) => {
     writeContract({
       abi: auction_abi,
@@ -142,6 +142,10 @@ export function AuctionRegistrationForm({
       account: address
     });
   }
+  const { data } = useGraph();
+  const [userNFTs, setNft] = useState(data.nftminteds)
+  // const userNFTs = data?.nftminteds;
+
   const handleSubmit = async (data: AuctionRegistrationFormData) => {
     if (!address) {
       toast.error("Please connect your wallet first.");
@@ -202,17 +206,25 @@ export function AuctionRegistrationForm({
     }
   }
 
-  const handleNFTSelect = (tokenId: string) => {
+  const handleNFTSelect = (tokenId: Number) => {
     setSelectedNFT(tokenId)
-    const nft = userNFTs.find(nft => nft.tokenId === tokenId)
+    if (userNFTs.length < 0) return
+    const nft = userNFTs.find(nft => nft!.tokenId === tokenId)
     if (nft) {
-      form.setValue("nftTokenId", tokenId)
+      form.setValue("nftTokenId", tokenId.toString())
       form.setValue("brandName", nft.brandName)
     }
   }
 
   // Filter available NFTs (not locked)
-  const availableUserNFTs = userNFTs.filter(nft => !nft.isLocked)
+  // const availableUserNFTs = userNFTs.filter(nft => !nft.isLocked)
+  const availableUserNFTs = userNFTs
+
+  // if (userNFTs.length > 0) return (
+  //   <div>
+  //     User can not create auction unless he has nft
+  //   </div>
+  // )
   return (
     <Card className="w-full max-w-2xl mx-auto border-none shadow-none bg-transparent">
       <CardHeader className="pb-4">
@@ -276,7 +288,7 @@ export function AuctionRegistrationForm({
                       <Input
                         placeholder="Enter NFT Token ID"
                         {...field}
-                        readOnly={selectedNFT !== ""}
+                        readOnly={selectedNFT !== null}
                       />
                     </FormControl>
                     <FormDescription>
@@ -299,15 +311,15 @@ export function AuctionRegistrationForm({
                   <FormItem>
                     <FormLabel>Brand Name</FormLabel>
                     <FormControl>
-                      {availableBrands.length > 0 ? (
+                      {availableBrands && availableBrands.length > 0 ? (
                         <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select brand" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border-none">
                             {availableBrands.map((brand) => (
-                              <SelectItem key={brand} value={brand}>
-                                {brand}
+                              <SelectItem key={brand.blockTimestamp} value={brand.brand}>
+                                {brand.brand}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -316,7 +328,7 @@ export function AuctionRegistrationForm({
                         <Input
                           placeholder="Enter brand name"
                           {...field}
-                          readOnly={selectedNFT !== ""}
+                          readOnly={selectedNFT !== null}
                         />
                       )}
                     </FormControl>
@@ -388,12 +400,13 @@ export function AuctionRegistrationForm({
                   name="initialBid"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Initial Bid (ETH)</FormLabel>
+                      <FormLabel>Initial Bid (USD)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
-                          placeholder="0.1"
+                          step="1"
+                          min={1}
+                          placeholder="1"
                           {...field}
                         />
                       </FormControl>
@@ -414,8 +427,9 @@ export function AuctionRegistrationForm({
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
-                          placeholder="1.0"
+                          step="1"
+                          min={form.getValues("initialBid")}
+                          placeholder="1"
                           {...field}
                         />
                       </FormControl>

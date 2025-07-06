@@ -23,6 +23,7 @@ contract MerkleVerifier {
     // storage
 
     address registryAddress;
+    address messengerAddress;
     bytes32 public root;
     string public brand;
     bytes32[] proof;
@@ -76,6 +77,10 @@ contract MerkleVerifier {
     function setSyncer(address _syncer) public onlyRegistry {
         syncer = _syncer;
         emit ChangedSyncer(_syncer);
+    }
+
+    function setMessenger(address _messenger) public onlyOwner {
+        messengerAddress = _messenger;
     }
 
     function setRegistry(address _registry) public onlyOwner {

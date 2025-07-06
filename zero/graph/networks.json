@@ -1,0 +1,28 @@
+{
+  "base-sepolia": {
+    "CarRegistry": {
+      "address": "0x4bD333f77cc2f583BC237B1095B2aA6942D8d242",
+      "startBlock": 27933428
+    },
+    "Profile": {
+      "address": "0xd910FfFEe925F5504Ab3bC21184D9e544F803979",
+      "startBlock": 27933428
+    },
+    "Auction": {
+      "address": "0xeD97941795956c7C8E208616E6c695A73420979b",
+      "startBlock": 27933428
+    },
+    "ZeroNFT": {
+      "address": "0xF4d2a2245CB595Da6FCfCB882761b9bBDCE74C47",
+      "startBlock": 27933428
+    },
+    "ProofSync": {
+      "address": "0xed1923afba58d0d12836b512FeFdb27Dd627B04c",
+      "startBlock": 27933428
+    },
+    "MerkleVerifier": {
+      "address": "0xb34854192F06d29e0C5Cfbc24b0B23d84b6AE977",
+      "startBlock": 27933428
+    }
+  }
+}

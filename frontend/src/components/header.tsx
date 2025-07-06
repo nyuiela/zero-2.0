@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LogOut, Search, User, Menu, X, Wallet, Network, Gavel, Heart } from 'lucide-react';
+import { LogOut, Search, User, Menu, X, Wallet, Network, Gavel, Heart, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/authStore';
@@ -13,6 +13,7 @@ import { readContract, writeContract } from 'viem/actions';
 import { registry_abi, registry_addr } from '@/lib/abi/abi';
 import Image from 'next/image';
 import ProfileBanner from '@/components/profile-banner';
+import { SWAP_CHAINS } from './swap-tokens-chains';
 
 const contactInfo = [
   { label: 'US', value: '+1 323-407-8523' },
@@ -35,6 +36,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // Add state for profile NFT image
   const [profileNft, setProfileNft] = useState<string | null>(null);
+  const [networkDropdownOpen, setNetworkDropdownOpen] = useState(false);
 
   // Check if user is fully authenticated (wallet connected + auth completed)
   const isAuthenticated = isConnected && user
@@ -178,7 +180,42 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-3 text-black">
-                <div className='max-sm:hidden text-sm'>{chainId}</div>
+                {/* Network Dropdown */}
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium"
+                    onClick={() => setNetworkDropdownOpen((open) => !open)}
+                  >
+                    <span className='max-sm:hidden'>{chainId}</span>
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  </button>
+                  {networkDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-[1000] max-h-80 overflow-y-auto">
+                      {SWAP_CHAINS.map(chain => (
+                        <button
+                          key={chain.id}
+                          onClick={async () => {
+                            setNetworkDropdownOpen(false);
+                            if (chain.id !== chainId) {
+                              try {
+                                await switchChain({ chainId: chain.id });
+                              } catch (err) {
+                                // Optionally show a toast or error message
+                                console.error('Network switch failed:', err);
+                              }
+                            }
+                          }}
+                          className={`flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 ${chain.id === chainId ? 'bg-blue-50 font-bold' : ''}`}
+                        >
+                          <img src={chain.icon} alt={chain.name} className="w-5 h-5 mr-2" />
+                          <span>{chain.name}</span>
+                          <span className="ml-auto text-xs text-gray-400">{chain.id}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* End Network Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-00 hover:text-amber-00 py-3 px-4 border-0 shadow-none">
@@ -234,7 +271,7 @@ export default function Header() {
                 <Link href="/sell" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Sell</Link>
                 <Link href="/verify" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Verify</Link>
                 <Link href="/brands" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
-
+                <Link href="/swap" className="py-2 text-[#202626] hover:text-[#7400b8] font-medium" onClick={() => setMobileMenuOpen(false)}>Swap</Link>
                 <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer bg-gray-100 flex items-center justify-betweens px-5">
                   <input type="text" placeholder="Search" className="w-full outline-none" />
                   <Search className="h-5 w-5 text-[#202626]" />
@@ -249,6 +286,7 @@ export default function Header() {
           <Link href="/sell" className="hover:text-[#7400b8] text-[#202626] font-medium">Sell</Link>
           <Link href="/verify" className="hover:text-[#7400b8] text-[#202626] font-medium">Verify</Link>
           <Link href="/brands" className="hover:text-[#7400b8] text-[#202626] font-medium">Brands</Link>
+          <Link href="/swap" className="hover:text-[#7400b8] text-[#202626] font-medium">Swap</Link>
         </div>
       </nav>
       <LoginModal />

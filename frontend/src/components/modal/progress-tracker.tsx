@@ -40,7 +40,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
           </DialogTitle>
           <DialogDescription className='text-center px-5'>
             {description}
-            Complete the registration process by staking and activating your brand
+            {/* Complete the registration process by staking and activating your brand */}
           </DialogDescription>
         </DialogHeader>
 
@@ -55,7 +55,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
                   ? 'bg-green-500 text-white' : 'bg-[#828487] text-white'
                   }`}>
                   {key + 1}
-                  <span className={`text-xs absolute bottom-[-25] font-medium  ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
+                  <span className={`text-xs absolute mt-4 bottom-[-30] text-nowrap font-medium  ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
                     }`}>
                     {step}
                   </span>
@@ -78,7 +78,7 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
         <div className="space-y-4">
           {message?.[activeStep] && (
             <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-10">
                 <h4 className="text-blue-800 font-semibold text-sm mb-2">{message[activeStep].header}</h4>
                 <p className="text-blue-700 text-sm">
                   {message[activeStep].body}

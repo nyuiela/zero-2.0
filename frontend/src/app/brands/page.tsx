@@ -4,53 +4,35 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { useAccount, useReadContract } from 'wagmi'
-import { Car, TrendingUp, Users, Award, ArrowRight, Lock } from 'lucide-react'
-import { profile } from 'console'
+import { Car, TrendingUp, Users, Award, ArrowRight, Lock, Filter, RefreshCw } from 'lucide-react'
 import { profile_abi, profile_addr, registry_abi, registry_addr } from '@/lib/abi/abi'
 import { useRouter } from 'next/navigation'
 import { BrandStatusBadge } from '@/components/brand-status-badge'
 import { BrandRegistrationForm } from '@/components/brand-registration-form'
-
-interface Brand {
-  brand: string
-  brandPermission: string
-  ccip: string
-  chainFunction: string
-  lastUpdated: bigint | number | string
-  locked: boolean
-  merkleVerifier: string
-  oracle: string
-  state: string
-  syncer: string
-  url: string
-  status: string
-}
+import { useBrandsData, BrandData } from '@/hooks/useBrandsData'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function BrandsPage() {
-  const [brands, setBrands] = useState<Brand[]>([])
-  const [userBrands, setUserBrands] = useState<Brand[]>([])
-  const [loading, setLoading] = useState(true)
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
   const { address } = useAccount()
-  const profile = useReadContract({
-    functionName: "getProfile",
-    abi: profile_abi,
-    address: profile_addr,
-    account: address,
-    args: ["lesscars1"],
-  })
-  const brandStatus = useReadContract({
-    functionName: "getBrandinfo",
-    abi: registry_abi,
-    address: registry_addr,
-    args: ["KALEEL"],
-    account: address
-  })
+  const { brands, hostedBrands, activatedBrands, requestedBrands, isLoading, error, refetch } = useBrandsData()
   const router = useRouter()
-  console.log("Brand Status ", brandStatus)
-  console.log("Profile ", profile)
+
+  // Filter brands based on selected filters
+  const filteredBrands = brands.filter(brand => {
+    const matchesStatus = statusFilter === 'all' || brand.status === statusFilter
+    const matchesType = typeFilter === 'all' || brand.type === typeFilter
+    return matchesStatus && matchesType
+  })
+
+  // Filter user's brands (brands where user is the permission holder)
+  const userBrands = brands.filter(brand =>
+    brand.brandPermission?.toLowerCase() === address?.toLowerCase()
+  )
+
   // Mock data for charts - in real implementation, this would come from API
   const popularBrandsData = [
     { name: 'Toyota', value: 45, color: '#8884d8' },
@@ -70,145 +52,33 @@ export default function BrandsPage() {
   ]
 
   const brandStatsData = [
-    { name: 'Total Brands', value: 156, icon: Award },
-    { name: 'Active Brands', value: 142, icon: TrendingUp },
-    { name: 'Total Cars', value: 2847, icon: Car },
-    { name: 'Total Users', value: 892, icon: Users },
+    { name: 'Total Brands', value: brands.length, icon: Award },
+    { name: 'Activated Brands', value: activatedBrands.length, icon: TrendingUp },
+    { name: 'Requested Brands', value: requestedBrands.length, icon: Car },
+    { name: 'Hosted Brands', value: hostedBrands.length, icon: Users },
   ]
 
-  useEffect(() => {
-    fetchBrands()
-  }, [address])
-
-  const fetchBrands = async () => {
-    try {
-      setLoading(true)
-
-      // Mock brands data - in real implementation, this would come from contract/API
-      const mockBrands: Brand[] = [
-        {
-          brand: "lesscars1",
-          brandPermission: "0x108f8Df99A5edE55ddA08b545db5F6886dc61d74",
-          ccip: "0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925",
-          chainFunction: "0x1b88549cd82C06875766DF1F6c696c089afad628",
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "pending",
-          merkleVerifier: "0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E",
-          oracle: "0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C",
-          state: "",
-          syncer: "0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c",
-          url: "https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1"
-        },
-        {
-          brand: 'BMW',
-          brandPermission: '0x8765ssf49982480130we241234r1831430114321',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "in_progress",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        },
-        {
-          brand: 'Mercedes',
-          brandPermission: '0x1111...2222',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "submitted",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        },
-        {
-          brand: 'Audi',
-          brandPermission: '0x3333...4444',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "in_review",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        },
-        {
-          brand: 'Honda',
-          brandPermission: '0x5555...6666',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: true,
-          status: "failed",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        },
-        {
-          brand: 'Tesla',
-          brandPermission: '0x7777...8888',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "success",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        },
-        {
-          brand: 'Ferrari',
-          brandPermission: '0x9999...aaaa',
-          ccip: '0x0b260D2901eCFf1198851B75ED2e3Fcb98Cd8925',
-          chainFunction: '0x1b88549cd82C06875766DF1F6c696c089afad628',
-          lastUpdated: 1751336196,
-          locked: false,
-          status: "expired",
-          merkleVerifier: '0x70aAE46FE3F253E80E7Af157cC0E9747dA41fb7E',
-          oracle: '0xFE08809ee88B64ecA71dd0A875f32C6B2edf155C',
-          state: '',
-          syncer: '0x37Cb03A1249A8F3304f0dcbda588e78ce5913B3c',
-          url: 'https://www.bing.com/ck/a?!&&p=91faf93b184cfab8e5985150b824ff12ef23785705d6887724dc5f3117220486JmltdHM9MTc1MTE1NTIwMA&ptn=3&ver=2&hsh=4&fclid=015fcb0c-bae6-6d66-038d-de23bb9f6c5b&psq=fwerrari&u=a1aHR0cHM6Ly93d3cuZmVycmFyaS5jb20vZW4tRU4&ntb=1'
-        }
-      ]
-
-      setBrands(mockBrands)
-
-      // Filter user's brands (mock - in real implementation, check against user's address)
-      if (address) {
-        const userBrands = mockBrands.filter(brand =>
-          brand.brandPermission.toLowerCase() === address.toLowerCase()
-        )
-        setUserBrands(userBrands)
-      }
-
-    } catch (error) {
-      console.error('Error fetching brands:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
-          ZERO
-        </p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00296b] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading brands...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error loading brands</p>
+          <Button onClick={() => refetch()} className="bg-[#00296b] text-white">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </div>
       </div>
     )
   }
@@ -247,41 +117,58 @@ export default function BrandsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Brands Grid */}
           <div className="lg:col-span-2">
+            {/* Filters */}
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md">
+              <div className="flex items-center gap-4">
+                <Filter className="h-5 w-5 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">Filters:</span>
+                
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className='bg-white border-none'>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="success">Success</SelectItem>
+                    <SelectItem value="in_review">In Review</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent className='bg-white border-none'>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="hosted">Hosted</SelectItem>
+                    <SelectItem value="activated">Activated</SelectItem>
+                    <SelectItem value="requested">Requested</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    setStatusFilter('all')
+                    setTypeFilter('all')
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </div>
+
             {/* User's Brands Section */}
             {userBrands.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">My Brands</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {userBrands.map((brand) => (
-                    <Card key={brand.brand} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between mb-4 relative">
-                          <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
-                          <div className="flex items-center gap-2">
-                            <BrandStatusBadge status={brand.status} />
-                            {brand.locked && (
-                              <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
-                            )}
-                          </div>
-                        </div>
-                        <div className="space-y-2 text-sm text-gray-600">
-                          <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
-                          <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
-                          <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
-                          <p>
-                            Website:{" "}
-                            <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                              Visit
-                            </a>
-                          </p>
-                        </div>
-                        <Link href={`/brands/${brand.brand.toLowerCase()}`}>
-                          <Button variant="outline" size="sm" className="mt-4 w-full">
-                            View Details<ArrowRight className="ml-0 h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
+                    <BrandCard key={brand.id} brand={brand} />
                   ))}
                 </div>
               </div>
@@ -289,40 +176,38 @@ export default function BrandsPage() {
 
             {/* All Brands Section */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">All Brands</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {brands.map((brand) => (
-                  <Card key={brand.brand} className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
-                    <CardContent className="bg-white p-5 py-0">
-                      <div className="flex items-center justify-between mb-4 relative">
-                        <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
-                        <div className="flex items-center gap-2">
-                          <BrandStatusBadge status={brand.status} />
-                          {brand.locked && (
-                            <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
-                          )}
-                        </div>
-                      </div>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
-                        <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
-                        <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
-                        <p>
-                          Website:{" "}
-                          <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                            Visit
-                          </a>
-                        </p>
-                      </div>
-                    </CardContent>
-                    <Link href={`/brands/${brand.brand.toLowerCase()}`}>
-                      <Button variant="outline" size="sm" className="w-full text-black border-none shadow-none text-md hover:bg-[#00296b]/80 disabled:opacity-50 disabled:cursor-not-allowed py-2 cursor-pointer bg-gray-300 rounded-none text-xs hover:underline">
-                        View Details <ArrowRight className="ml-0 h-4 w-4" />
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  All Brands ({filteredBrands.length})
+                </h2>
+                <Button variant="outline" size="sm" onClick={() => refetch()}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
                       </Button>
-                    </Link>
-                  </Card>
-                ))}
               </div>
+              
+              {filteredBrands.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg border">
+                  <Filter className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600">No brands match your current filters</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => {
+                      setStatusFilter('all')
+                      setTypeFilter('all')
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredBrands.map((brand) => (
+                    <BrandCard key={brand.id} brand={brand} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -415,5 +300,73 @@ export default function BrandsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Brand Card Component
+function BrandCard({ brand }: { brand: BrandData }) {
+  const getBrandTypeLabel = (type: string) => {
+    switch (type) {
+      case 'hosted': return 'Hosted'
+      case 'activated': return 'Activated'
+      case 'requested': return 'Requested'
+      default: return type
+    }
+  }
+
+  const getBrandTypeColor = (type: string) => {
+    switch (type) {
+      case 'hosted': return 'bg-blue-100 text-blue-800'
+      case 'activated': return 'bg-green-100 text-green-800'
+      case 'requested': return 'bg-yellow-100 text-yellow-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  return (
+    <Card className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
+      <CardContent className="bg-white p-5 py-0">
+        <div className="flex items-center justify-between mb-4 relative">
+          <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
+          <div className="flex items-center gap-2">
+            <BrandStatusBadge status={brand.status} />
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBrandTypeColor(brand.type)}`}>
+              {getBrandTypeLabel(brand.type)}
+            </span>
+            {brand.locked && (
+              <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
+            )}
+          </div>
+        </div>
+        
+        <div className="space-y-2 text-sm text-gray-600">
+          {brand.brandPermission && (
+            <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
+          )}
+          {brand.oracle && (
+            <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
+          )}
+          {brand.lastUpdated && (
+            <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
+          )}
+          {brand.blockTimestamp && (
+            <p>Created: {new Date(Number(brand.blockTimestamp) * 1000).toLocaleDateString()}</p>
+          )}
+          {brand.url && (
+            <p>
+              Website:{" "}
+              <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                Visit
+              </a>
+            </p>
+          )}
+        </div>
+      </CardContent>
+      <Link href={`/brands/${brand.brand.toLowerCase()}`}>
+        <Button variant="outline" size="sm" className="w-full text-black border-none shadow-none text-md hover:bg-[#00296b]/80 disabled:opacity-50 disabled:cursor-not-allowed py-2 cursor-pointer bg-gray-300 rounded-none text-xs hover:underline">
+          View Details <ArrowRight className="ml-0 h-4 w-4" />
+        </Button>
+      </Link>
+    </Card>
   )
 } 

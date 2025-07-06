@@ -20,9 +20,9 @@ import {ICarOracle} from "../src/Interface/oracle/IcarOracle.sol";
 import {InitFunction} from "../src/chainlink/init_function.sol";
 import {Sync} from "../src/chainlink/sync_function.sol";
 import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
-import {IZeroNFT} from "../src/interface/IZeronft.sol";
+import {IZeroNFT} from "../src/Interface/IZeronft.sol";
 import {Auction} from "../src/core/auction.sol";
-import {console2} from "forge-std/Console2.sol";
+import {console2} from "forge-std/console2.sol";
 
 contract IntergrationTest is Test {
     CarRegistry registry;

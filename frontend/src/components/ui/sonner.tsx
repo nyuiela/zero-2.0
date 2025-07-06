@@ -3,6 +3,7 @@
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, ToasterProps } from "sonner"
 import { useEffect, useState } from "react"
+import { CheckCircle, XCircle, AlertCircle, Info } from "lucide-react"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -22,23 +23,41 @@ const Toaster = ({ ...props }: ToasterProps) => {
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
-  // Custom animation: ease-in for desktop, drop-down for mobile
-  // Custom background: bg-white, shadow, rounded
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       position={position}
-      className="toaster group [&_.toast]:bg-white [&_.toast]:shadow-lg [&_.toast]:rounded-lg"
+      className="toaster group"
       toastOptions={{
-        className:
-          `relative bg-white shadow-[0_8px_32px_0_rgba(31,38,135,0.12)] rounded-xl border border-gray-200 text-gray-900 px-5 py-4
-          [&_.toast-title]:text-gray-900 [&_.toast-title]:font-semibold [&_.toast-title]:text-base [&_.toast-title]:tracking-tight
-          [&_.toast-description]:text-gray-900 [&_.toast-description]:font-medium [&_.toast-description]:tracking-tight [&_.toast-description]:opacity-100
-          before:content-[''] before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1.5 before:rounded-full before:bg-gradient-to-b before:from-yellow-400 before:to-yellow-300`,
-        style: {
-          background: 'white',
-          color: '#18181b', // even deeper gray
+        className: `
+          group toast group-[.toaster]:bg-white group-[.toaster]:text-gray-900 
+          group-[.toaster]:border group-[.toaster]:border-gray-200 
+          group-[.toaster]:shadow-lg group-[.toaster]:rounded-lg
+          data-[type=success]:border-green-200 data-[type=success]:bg-green-50
+          data-[type=error]:border-red-200 data-[type=error]:bg-red-50
+          data-[type=warning]:border-yellow-200 data-[type=warning]:bg-yellow-50
+          data-[type=info]:border-blue-200 data-[type=info]:bg-blue-50
+        `,
+        classNames: {
+          toast: `
+            bg-white text-gray-900 border border-gray-200 shadow-lg rounded-lg p-4
+            data-[type=success]:bg-green-50 data-[type=success]:border-green-200
+            data-[type=error]:bg-red-50 data-[type=error]:border-red-200  
+            data-[type=warning]:bg-yellow-50 data-[type=warning]:border-yellow-200
+            data-[type=info]:bg-blue-50 data-[type=info]:border-blue-200
+          `,
+          title: 'text-gray-900 font-semibold text-sm',
+          description: 'text-gray-700 text-sm',
+          closeButton: 'text-gray-500 hover:text-gray-700',
+          icon: 'w-5 h-5',
         },
+        duration: 6000,
+      }}
+      icons={{
+        success: <CheckCircle className="w-5 h-5 text-green-600" />,
+        error: <XCircle className="w-5 h-5 text-red-600" />,
+        warning: <AlertCircle className="w-5 h-5 text-yellow-600" />,
+        info: <Info className="w-5 h-5 text-blue-600" />,
       }}
       closeButton
       {...props}

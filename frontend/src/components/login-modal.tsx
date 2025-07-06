@@ -214,24 +214,8 @@ export function LoginModal() {
     }
   }, [authStep, isConnected, address, username, currentNonce, currentMessage, refetchNonce])
 
-  // Check for existing authentication on mount
-  useEffect(() => {
-    const checkExistingAuth = () => {
-      const token = getJwtToken()
-      if (token && isConnected && address) {
-        // User has valid token and wallet connected, restore session
-        setUser({
-          address,
-          username: '', // Will be filled from token if needed
-          jwt: token,
-          verified: true
-        })
-        setOpen(false)
-      }
-    }
-
-    checkExistingAuth()
-  }, [isConnected, address, setUser, setOpen])
+  // AuthInitializer now handles authentication restoration from cookies
+  // No need for duplicate auth checking logic here
 
   // Cleanup on unmount
   useEffect(() => {
@@ -420,7 +404,7 @@ export function LoginModal() {
             text: "Connect Wallet",
             onClick: handleConnectWallet,
             disabled: username.trim().length === 0,
-            className: "bg-[#7400b8] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
           }}
           secondaryButton={{
             text: "cancel",

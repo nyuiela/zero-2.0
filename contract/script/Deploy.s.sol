@@ -200,6 +200,12 @@ contract DeployScript is Script {
         ccip.allowlistDestinationChain(222782988166878823, true); // hedera
         ccip.allowlistDestinationChain(16015286601757825753, true); // eth
         ccip.allowlistDestinationChain(14767482510784806043, true); // avalanche
+        messenger.allowlistDestinationChain(3676871237479449268, true); //sonic
+        messenger.allowlistDestinationChain(222782988166878823, true);
+        messenger.allowlistDestinationChain(16015286601757825753, true);
+        messenger.allowlistDestinationChain(14767482510784806043, true);
+        //messenger.allowlistSender(true);
+        messenger.allowlistSourceChain(10344971235874465080, true);
     }
 
     function grantPermissions(address dep_loyer) internal {
@@ -208,7 +214,7 @@ contract DeployScript is Script {
         // Grant all permissions from PermissionManager
         bytes4[] memory permissions = new bytes4[](20);
         bytes4[] memory registryPermissions = new bytes4[](20);
-        bytes4[] memory statecalls = new bytes4[](2);
+        bytes4[] memory statecalls = new bytes4[](3);
 
         statecalls[0] = profile.updateState.selector;
         statecalls[1] = profile.lockBrand.selector;

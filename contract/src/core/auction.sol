@@ -5,9 +5,9 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ZeroNFT} from "../tokens/ZeroNFT.sol";
 import {CarRegistry} from "./registry.sol";
 import {OracleMaster} from "../oracle/Oracle.sol";
-import {AggregatorV3Interface} from "../../lib/chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
-import {IZeroNFT} from "../interface/IZeronft.sol";
+import {IZeroNFT} from "../Interface/IZeronft.sol";
 
 contract Auction {
     CarRegistry public carRegistry;
@@ -175,6 +175,8 @@ contract Auction {
     }
 
     mapping(uint256 => bool) private requiresStake;
+
+    // usee arbitrage to et more funds
 
     function placeBid(uint256 auctionId, uint256 amount) external payable {
         AuctionItem storage a = auctions[auctionId];

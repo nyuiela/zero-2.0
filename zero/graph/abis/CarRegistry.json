@@ -1,0 +1,613 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      { "name": "_profileAddr", "type": "address", "internalType": "address" },
+      { "name": "_stateAddr", "type": "address", "internalType": "address" },
+      {
+        "name": "_chainFunctionAddr",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "_ccipAddr", "type": "address", "internalType": "address" },
+      {
+        "name": "_merkleVerifierAddr",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_reputationAddr",
+        "type": "address",
+        "internalType": "address payable"
+      },
+      { "name": "_oracle", "type": "address", "internalType": "address" },
+      { "name": "_syncerAddr", "type": "address", "internalType": "address" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  { "type": "receive", "stateMutability": "payable" },
+  {
+    "type": "function",
+    "name": "activate",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "brandPermission",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "ccipAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "chainFunctionAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getBrandinfo",
+    "inputs": [{ "name": "brand", "type": "string", "internalType": "string" }],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct CarRegistry.Registry",
+        "components": [
+          { "name": "brand", "type": "string", "internalType": "string" },
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum CarRegistry.Status"
+          },
+          { "name": "request", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "response", "type": "string", "internalType": "string" },
+          { "name": "stateUrl", "type": "string", "internalType": "string" },
+          {
+            "name": "config",
+            "type": "tuple",
+            "internalType": "struct ICarOracle.OracleConfig",
+            "components": [
+              {
+                "name": "updateInterval",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "deviationThreshold",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "heartbeat",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "minAnswer",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "maxAnswer",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          },
+          {
+            "name": "brandAdminAddr",
+            "type": "address",
+            "internalType": "address"
+          },
+          { "name": "owner", "type": "address", "internalType": "address" }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initFunction",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IInitFunction"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initFunctionAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isActivate",
+    "inputs": [
+      { "name": "brandName", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "merkleVerifierAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "permissionManager",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "profileAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "profileContract",
+    "inputs": [],
+    "outputs": [
+      { "name": "", "type": "address", "internalType": "contract IProfile" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "registerBrand",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" },
+      {
+        "name": "config",
+        "type": "tuple",
+        "internalType": "struct ICarOracle.OracleConfig",
+        "components": [
+          {
+            "name": "updateInterval",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deviationThreshold",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          { "name": "heartbeat", "type": "uint256", "internalType": "uint256" },
+          { "name": "minAnswer", "type": "uint256", "internalType": "uint256" },
+          { "name": "maxAnswer", "type": "uint256", "internalType": "uint256" }
+        ]
+      },
+      {
+        "name": "brandAdminAddr",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "subscriptionId", "type": "uint64", "internalType": "uint64" },
+      { "name": "_stateUrl", "type": "string", "internalType": "string" },
+      { "name": "args", "type": "string[]", "internalType": "string[]" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "registerUndernewOwner",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" },
+      {
+        "name": "config",
+        "type": "tuple",
+        "internalType": "struct ICarOracle.OracleConfig",
+        "components": [
+          {
+            "name": "updateInterval",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deviationThreshold",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          { "name": "heartbeat", "type": "uint256", "internalType": "uint256" },
+          { "name": "minAnswer", "type": "uint256", "internalType": "uint256" },
+          { "name": "maxAnswer", "type": "uint256", "internalType": "uint256" }
+        ]
+      },
+      {
+        "name": "brandAdminAddr",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "subscriptionId", "type": "uint64", "internalType": "uint64" },
+      { "name": "_stateUrl", "type": "string", "internalType": "string" },
+      { "name": "args", "type": "string[]", "internalType": "string[]" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "registry",
+    "inputs": [{ "name": "", "type": "string", "internalType": "string" }],
+    "outputs": [
+      { "name": "brand", "type": "string", "internalType": "string" },
+      {
+        "name": "status",
+        "type": "uint8",
+        "internalType": "enum CarRegistry.Status"
+      },
+      { "name": "request", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "response", "type": "string", "internalType": "string" },
+      { "name": "stateUrl", "type": "string", "internalType": "string" },
+      {
+        "name": "config",
+        "type": "tuple",
+        "internalType": "struct ICarOracle.OracleConfig",
+        "components": [
+          {
+            "name": "updateInterval",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deviationThreshold",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          { "name": "heartbeat", "type": "uint256", "internalType": "uint256" },
+          { "name": "minAnswer", "type": "uint256", "internalType": "uint256" },
+          { "name": "maxAnswer", "type": "uint256", "internalType": "uint256" }
+        ]
+      },
+      {
+        "name": "brandAdminAddr",
+        "type": "address",
+        "internalType": "address"
+      },
+      { "name": "owner", "type": "address", "internalType": "address" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "renounceOwnership",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "reputation",
+    "inputs": [],
+    "outputs": [
+      { "name": "", "type": "address", "internalType": "contract IReputation" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "reputationAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setCCIP",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setChainFunction",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setInitFunction",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setProfile",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setReputatioin",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address payable" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setState",
+    "inputs": [
+      { "name": "_newp", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "stake",
+    "inputs": [
+      { "name": "_brand", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "stateAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "stateContract",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IStateManager"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "syncerAddr",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
+      { "name": "newOwner", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "BrandActivated",
+    "inputs": [
+      {
+        "name": "brand",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "state",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "BrandRegistryRequested",
+    "inputs": [
+      {
+        "name": "brand",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "requestId",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "BrandStaked",
+    "inputs": [
+      {
+        "name": "brand",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "staker",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedCCIP",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedChainFunction",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedInitFunction",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedProfile",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedReputation",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedState",
+    "inputs": [
+      {
+        "name": "newp",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
+      {
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "BrandAlreadyInRegistry",
+    "inputs": [{ "name": "brand", "type": "string", "internalType": "string" }]
+  },
+  { "type": "error", "name": "FailedDeployment", "inputs": [] },
+  {
+    "type": "error",
+    "name": "InsufficientBalance",
+    "inputs": [
+      { "name": "balance", "type": "uint256", "internalType": "uint256" },
+      { "name": "needed", "type": "uint256", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "OwnableInvalidOwner",
+    "inputs": [
+      { "name": "owner", "type": "address", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "OwnableUnauthorizedAccount",
+    "inputs": [
+      { "name": "account", "type": "address", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "StatusNotStaked",
+    "inputs": [{ "name": "brand", "type": "string", "internalType": "string" }]
+  }
+]

@@ -9,7 +9,7 @@ import {Auction} from "../src/core/auction.sol";
 import {Messenger} from "../src/chainlink/messenging.sol";
 import {MerkleVerifier} from "../src/chainlink/merkle_verifier.sol";
 import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
-import {PermissionManager} from "../src/permission/PermissionManager.sol";
+import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 
 contract DeployCCIP is Script {
     CrossToken public ccip;
@@ -44,14 +44,19 @@ contract DeployCCIP is Script {
         console.log("Deployer address:", deployer);
 
         /// min chain deployed address
-        address oraclemaster = vm.envAddress("ORACLE_MASTER_ADDRESS");
-        address reputationContract = vm.envAddress("REPUTATION_ADDRESS");
+        address oraclemaster = vm.envAddress(
+            "NEXT_PUBLIC_ORACLE_MASTER_ADDRESS"
+        );
+        address reputationContract = vm.envAddress(
+            "NEXT_PUBLIC_REPUTATION_ADDRESS"
+        );
         //   address permissionManager = vm.envAddress("PERMISSION_MANAGER_ADDRESS");
         address brandPermissionManager = vm.envAddress(
-            "BRAND_PERMISSION_MANAGER_ADDRESS"
+            "NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS"
         );
-        address carRegistry = vm.envAddress("CAR_REGISTRY_ADDRESS");
-        address profile = vm.envAddress("PROFILE_ADDRESS");
+        address auctionAddress = vm.envAddress("AUCTION_ADDRESS");
+        address carRegistry = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
+        address profile = vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS");
         // uint64 baseSelectorId = vm.env("BASE_SELECTOR_ID");
 
         vm.createSelectFork(vm.rpcUrl("sonicchain"));
@@ -158,3 +163,8 @@ contract DeployCCIP is Script {
         console.log("=== SONIC  NETWORK DEPLOYMENT COMPLETE ===");
     }
 }
+
+// which contracts are going to be cross chain?
+//1. cross token
+//1. messenging
+//1. Zero-NFT

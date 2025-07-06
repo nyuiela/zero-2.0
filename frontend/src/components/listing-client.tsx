@@ -175,7 +175,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 px-4 md:px-8 xl:px-12">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
-          <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, 'USDC')}</div>
+          <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, currency)}</div>
         </div>
       </div>
 
@@ -221,7 +221,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         {/* Left Column - Images and Car Details */}
         <div className="lg:col-span-8 space-y-8">
           {/* Image Gallery */}
-          <div className="space-y-4 -mr-2 lg:-mr-44">
+          <div className="space-y-4">
             {/* Main Image - maximize within column, no overflow */}
             <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card w-full max-w-full">
               <Image
@@ -283,7 +283,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             {listing.report && (
               <div className="">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Condition Report</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 -ml-8 lg:-ml-16 -mt-4 gap-2 lg:gap-24">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-sm text-gray-600 mb-1">Condition</div>
                     <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.condition}</div>
@@ -373,7 +373,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
 
         {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
-        <div className="hidden lg:block space-y-6 lg:col-span-4 -mr-36 ml-44">
+        <div className="hidden lg:block space-y-6 lg:col-span-4">
           {/* Action Buttons */}
           <div className='flex flex-col space-y-4'>
             <div className="bg-gradient-to-br border-none w-full">
@@ -440,7 +440,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
                 <div className="text-lg font-bold flex items-center space-x-2">
                   <span className='text-xl'>
-                    {formatCurrency(bid.amount, "USDC")}
+                    {formatCurrency(bid.amount, currency)}
                   </span>
                 </div>
                 <div className="space-y-3 mt-2">
@@ -470,7 +470,8 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     {displayBids.map((bid, index) => (
                       <div
                         key={`carousel-${bid.id}`}
-                        className="flex-shrink-0 w-48 bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                        className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                        style={{ borderRadius: 'var(--radius)' }}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
@@ -479,7 +480,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                           <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
                         </div>
                         <div className="text-lg font-bold text-green-600 truncate">
-                          {formatCurrency(bid.amount, "USDC")}
+                          {formatCurrency(bid.amount, currency)}
                         </div>
                         <div className="text-xs text-gray-500 mt-1 truncate">
                           {new Date(bid.updated_at).toLocaleDateString()}
@@ -564,7 +565,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
               <div className="text-lg font-bold flex items-center space-x-2">
                 <span className='text-xl'>
-                  {formatCurrency(bid.amount, "USDC")}
+                  {formatCurrency(bid.amount, currency)}
                 </span>
               </div>
               <div className="space-y-3 mt-2">
@@ -594,7 +595,8 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                   {displayBids.map((bid, index) => (
                     <div
                       key={`carousel-${bid.id}`}
-                      className="flex-shrink-0 w-48 bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      style={{ borderRadius: 'var(--radius)' }}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
@@ -603,7 +605,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                         <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
                       </div>
                       <div className="text-lg font-bold text-green-600 truncate">
-                        {formatCurrency(bid.amount, "USDC")}
+                        {formatCurrency(bid.amount, currency)}
                       </div>
                       <div className="text-xs text-gray-500 mt-1 truncate">
                         {new Date(bid.updated_at).toLocaleDateString()}
