@@ -43,25 +43,31 @@ interface AuthState {
 const saveAuthToCookies = (user: User, authState: Partial<AuthState>) => {
   try {
     // Save user data
-    Cookies.set(AUTH_COOKIE_KEYS.USER_DATA, JSON.stringify({
+    const userData = {
       address: user.address,
       username: user.username,
       verified: user.verified
-    }), { expires: 7 })
+    }
+    Cookies.set(AUTH_COOKIE_KEYS.USER_DATA, JSON.stringify(userData), { expires: 7 })
 
     // Save additional auth state
-    Cookies.set(AUTH_COOKIE_KEYS.AUTH_STATE, JSON.stringify({
+    const authStateData = {
       currentUsername: authState.currentUsername || '',
       authStep: authState.authStep || 'username',
       currentNonce: authState.currentNonce,
       currentMessage: authState.currentMessage,
       isConnectingFromModal: authState.isConnectingFromModal || false
-    }), { expires: 7 })
+    }
+    Cookies.set(AUTH_COOKIE_KEYS.AUTH_STATE, JSON.stringify(authStateData), { expires: 7 })
 
     // Save JWT token (already handled by setJwtToken)
     setJwtToken(user.jwt)
     
-    console.log('💾 AuthStore: Complete auth state saved to cookies')
+    console.log('💾 AuthStore: Complete auth state saved to cookies', {
+      userData,
+      authStateData,
+      jwtLength: user.jwt.length
+    })
   } catch (error) {
     console.error('Error saving auth to cookies:', error)
   }

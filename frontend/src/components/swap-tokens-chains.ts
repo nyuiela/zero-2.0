@@ -53,32 +53,51 @@ export const SWAP_CHAINS: SwapChain[] = [
 export const SWAP_TOKENS: SwapToken[] = [
   // Ethereum Mainnet
   { address: '', chainId: 1, decimals: 18, name: 'Ethereum', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },
+  
   { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chainId: 1, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   { address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', chainId: 1, decimals: 6, name: 'Tether USD', symbol: 'USDT', image: 'https://assets.coingecko.com/coins/images/325/large/Tether-logo.png' },
+  
   { address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', chainId: 1, decimals: 18, name: 'Dai Stablecoin', symbol: 'DAI', image: 'https://assets.coingecko.com/coins/images/9956/large/4943.png' },
+  
   { address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', chainId: 1, decimals: 8, name: 'Wrapped Bitcoin', symbol: 'WBTC', image: 'https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png' },
+  
   // Base Mainnet
   { address: '', chainId: 8453, decimals: 18, name: 'Ethereum', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },
-  { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chainId: 8453, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
+  { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', chainId: 8453, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   // Arbitrum Mainnet
   { address: '', chainId: 42161, decimals: 18, name: 'Ethereum', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },
-  { address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', chainId: 42161, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
+  { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', chainId: 42161, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   // Optimism Mainnet
   { address: '', chainId: 10, decimals: 18, name: 'Ethereum', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },
-  { address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', chainId: 10, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
+  { address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85', chainId: 10, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   // Polygon Mainnet
   { address: '', chainId: 137, decimals: 18, name: 'Matic', symbol: 'MATIC', image: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png' },
-  { address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', chainId: 137, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
+  { address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', chainId: 137, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   // BNB Chain Mainnet
   { address: '', chainId: 56, decimals: 18, name: 'BNB', symbol: 'BNB', image: 'https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png' },
+  
   { address: '0x55d398326f99059fF775485246999027B3197955', chainId: 56, decimals: 18, name: 'Tether USD', symbol: 'USDT', image: 'https://assets.coingecko.com/coins/images/325/large/Tether-logo.png' },
+  
   // Avalanche Mainnet
   { address: '', chainId: 43114, decimals: 18, name: 'Avalanche', symbol: 'AVAX', image: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png' },
+  
   { address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', chainId: 43114, decimals: 6, name: 'USD Coin', symbol: 'USDC', image: 'https://dynamic-assets.coinbase.com/3c15df5e2ac7d4abbe9499ed9335041f00c620f28e8de2f93474a9f432058742cdf4674bd43f309e69778a26969372310135be97eb183d91c492154176d455b8/asset_icons/9d67b728b6c8f457717154b3a35f9ddc702eae7e76c4684ee39302c4d7fd0bb8.png' },
+  
   // Fantom Mainnet
   { address: '', chainId: 250, decimals: 18, name: 'Fantom', symbol: 'FTM', image: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png' },
+  
   // Gnosis Mainnet
   { address: '', chainId: 100, decimals: 18, name: 'xDAI', symbol: 'xDAI', image: 'https://assets.coingecko.com/coins/images/11062/large/xdai.png' },
+  
   // Testnet tokens (ETH, USDC, etc. on Sepolia, Base Sepolia, etc.)
   { address: '', chainId: 11155111, decimals: 18, name: 'SepoliaETH', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },
   { address: '', chainId: 84532, decimals: 18, name: 'BaseETH', symbol: 'ETH', image: 'https://dynamic-assets.coinbase.com/dbb4b4983bde81309ddab83eb598358eb44375b930b94687ebe38bc22e52c3b2125258ffb8477a5ef22e33d6bd72e32a506c391caa13af64c00e46613c3e5806/asset_icons/4113b082d21cc5fab17fc8f2d19fb996165bcce635e6900f7fc2d57c4ef33ae9.png' },

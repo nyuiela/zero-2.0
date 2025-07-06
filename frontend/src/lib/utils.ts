@@ -15,6 +15,13 @@ export function setJwtToken(token: string): void {
   expiryDate.setDate(expiryDate.getDate() + JWT_EXPIRY_DAYS)
 
   document.cookie = `${JWT_COOKIE_NAME}=${token}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Strict; Secure`
+  
+  console.log('JWT Token saved:', {
+    name: JWT_COOKIE_NAME,
+    tokenLength: token.length,
+    expiry: expiryDate.toUTCString(),
+    cookieString: document.cookie.includes(JWT_COOKIE_NAME)
+  })
 }
 
 export function getJwtToken(): string | null {
@@ -24,9 +31,16 @@ export function getJwtToken(): string | null {
   const jwtCookie = cookies.find(cookie => cookie.trim().startsWith(`${JWT_COOKIE_NAME}=`))
 
   if (jwtCookie) {
-    return jwtCookie.split('=')[1]
+    const token = jwtCookie.split('=')[1]
+    console.log('JWT Token retrieved:', {
+      name: JWT_COOKIE_NAME,
+      tokenLength: token.length,
+      tokenPreview: token.substring(0, 20) + '...'
+    })
+    return token
   }
 
+  console.log('JWT Token not found in cookies')
   return null
 }
 
@@ -38,22 +52,46 @@ export function clearJwtToken(): void {
 
 export function isJwtTokenValid(): boolean {
   const token = getJwtToken()
-  if (!token) return false
+  if (!token) {
+    console.log('JWT validation: No token found')
+    return false
+  }
 
   try {
     // Basic JWT structure validation (header.payload.signature)
     const parts = token.split('.')
-    if (parts.length !== 3) return false
+    if (parts.length !== 3) {
+      console.log('JWT validation: Invalid token structure')
+      clearJwtToken()
+      return false
+    }
 
     // Check if token is expired (basic check)
     const payload = JSON.parse(atob(parts[1]))
     const currentTime = Math.floor(Date.now() / 1000)
 
+    console.log('JWT validation:', {
+      exp: payload.exp,
+      currentTime,
+      isExpired: payload.exp && payload.exp < currentTime,
+      username: payload.username,
+      address: payload.addr || payload.address
+    })
+
     if (payload.exp && payload.exp < currentTime) {
+      console.log('JWT validation: Token expired')
       clearJwtToken() // Clear expired token
       return false
     }
 
+    // Check if token has required fields
+    if (!payload.username || (!payload.addr && !payload.address)) {
+      console.log('JWT validation: Missing required fields')
+      clearJwtToken()
+      return false
+    }
+
+    console.log('JWT validation: Token is valid')
     return true
   } catch (error) {
     console.error('Error validating JWT token:', error)
