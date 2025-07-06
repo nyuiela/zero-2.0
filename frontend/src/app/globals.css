@@ -416,3 +416,38 @@ button[class*="bg-[#00296b]"]:hover {
   background: #001b47 !important;
   color: white !important;
 }
+
+/* Override any purple colors with dark blue */
+.bg-purple-500, .bg-purple-600, .bg-purple-700 {
+  background-color: #00296b !important;
+}
+
+.text-purple-500, .text-purple-600, .text-purple-700 {
+  color: #00296b !important;
+}
+
+.border-purple-500, .border-purple-600, .border-purple-700 {
+  border-color: #00296b !important;
+}
+
+.bg-violet-500, .bg-violet-600, .bg-violet-700, .bg-violet-800, .bg-violet-900 {
+  background-color: #00296b !important;
+}
+
+.text-violet-500, .text-violet-600, .text-violet-700, .text-violet-800 {
+  color: #00296b !important;
+}
+
+.border-violet-500, .border-violet-600, .border-violet-700 {
+  border-color: #00296b !important;
+}
+
+/* Focus ring overrides */
+.focus\:ring-purple-500:focus, .focus\:ring-violet-500:focus {
+  --tw-ring-color: #00296b !important;
+}
+
+/* Ring colors */
+.ring-purple-500, .ring-violet-500 {
+  --tw-ring-color: #00296b !important;
+}

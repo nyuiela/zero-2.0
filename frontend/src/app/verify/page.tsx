@@ -389,7 +389,7 @@ export default function VerifyPage() {
       case 'completed':
         return <CheckCircle className="h-5 w-5 text-green-500" />
       case 'generating':
-        return <Clock className="h-5 w-5 text-yellow-500" />
+        return <Clock className="h-5 w-5 text-[#00296b]" />
       case 'failed':
         return <AlertCircle className="h-5 w-5 text-red-500" />
       default:
@@ -402,7 +402,7 @@ export default function VerifyPage() {
       case 'completed':
         return <Badge variant="default" className="bg-green-100 text-green-800">Completed</Badge>
       case 'generating':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Generating</Badge>
+        return <Badge variant="secondary" className="bg-blue-100 text-[#00296b]">Generating</Badge>
       case 'failed':
         return <Badge variant="destructive">Failed</Badge>
       default:
@@ -417,7 +417,7 @@ export default function VerifyPage() {
       case 'car_listing':
         return <Car className="h-5 w-5 text-green-500" />
       case 'purchase_verification':
-        return <Wallet className="h-5 w-5 text-purple-500" />
+        return <Wallet className="h-5 w-5 text-[#00296b]" />
       case 'seller_verification':
         return <UserCheck className="h-5 w-5 text-orange-500" />
       case 'bid_verification':
@@ -557,7 +557,7 @@ export default function VerifyPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => openBlockExplorer(proof.transactionHash)}
-                            className="text-amber-400 hover:text-amber-300"
+                            className="text-[#00296b] hover:text-blue-700"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
@@ -619,7 +619,7 @@ export default function VerifyPage() {
                         </div>
                         <div className="bg-white p-3 rounded-lg border">
                           <p className="text-xs text-gray-600">Segments</p>
-                          <p className="font-mono text-sm font-semibold text-purple-700">
+                          <p className="font-mono text-sm font-semibold text-[#00296b]">
                             {proof.proofData.stats.segments}
                           </p>
                         </div>

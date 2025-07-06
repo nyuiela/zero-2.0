@@ -44,7 +44,7 @@ const Header = () => {
   // Get current chain name
   const currentChain = availableChains.find(chain => chain.id === chainId)
 
-  const isSeller = user?.sellerRole || user?.roleRequestStatus === 'approved'
+  const isSeller = false // TODO: Add sellerRole and roleRequestStatus to User interface when needed
 
   const handleDisconnect = () => {
     disconnect()
@@ -82,31 +82,31 @@ const Header = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-8">
-                <Link href="/auctions" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                <Link href="/auctions" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                   Auctions
                 </Link>
                 {isWalletConnected && (
                   <>
-                    <Link href="/verify" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/verify" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                       Verify
                     </Link>
-                    <Link href="/preview" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/preview" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                       Preview
                     </Link>
-                    <Link href="/results" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                    <Link href="/results" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                       Results
                     </Link>
                   </>
                 )}
                 {isSeller && (
-                  <Link href="/sell-your-car" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                  <Link href="/sell-your-car" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                     Sell Your Car
                   </Link>
                 )}
-                <Link href="/faq" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                <Link href="/faq" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                   FAQ
                 </Link>
-                <Link href="/about-us" className="text-[#202626] hover:text-amber-400 font-medium transition-colors">
+                <Link href="/about-us" className="text-[#202626] hover:text-[#00296b] font-medium transition-colors">
                   About
                 </Link>
               </div>
@@ -162,7 +162,7 @@ const Header = () => {
                     {/* Network Dropdown */}
                     {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-amber-400 hover:text-amber-400 py-3 px-4">
+                        <Button variant="outline" size="default" className="text-black border-gray-600 hover:border-[#00296b] hover:text-[#00296b] py-3 px-4">
                           <Network className="h-4 w-4 mr-2" />
                           {currentChain?.name || 'Unknown Network'}
                         </Button>
@@ -172,7 +172,7 @@ const Header = () => {
                           <DropdownMenuItem
                             key={networkChain.id}
                             onClick={() => handleNetworkSwitch(networkChain.id)}
-                            className={`text-black hover:bg-gray-700 ${chainId === networkChain.id ? 'bg-amber-900/20 text-amber-400' : 'text-black'}`}
+                            className={`text-black hover:bg-gray-700 ${chainId === networkChain.id ? 'bg-blue-900/20 text-[#00296b]' : 'text-black'}`}
                           >
                             <Network className="h-4 w-4 mr-2" />
                             {networkChain.name}
@@ -240,43 +240,43 @@ const Header = () => {
 
                       {/* Mobile Navigation Links */}
                       <div className="flex flex-col space-y-3 pt-4">
-                        <Link href="/auctions" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/auctions" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Auctions
                         </Link>
-                        <Link href="/verify" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/verify" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Verify
                         </Link>
                         {isWalletConnected && (
                           <>
-                            <Link href="/preview" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                            <Link href="/preview" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                               Preview
                             </Link>
-                            <Link href="/results" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                            <Link href="/results" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                               Results
                             </Link>
                           </>
                         )}
                         {isSeller && (
-                          <Link href="/sell-your-car" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                          <Link href="/sell-your-car" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                             Sell Your Car
                           </Link>
                         )}
-                        <Link href="/faq" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/faq" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           FAQ
                         </Link>
-                        <Link href="/about-us" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/about-us" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           About Us
                         </Link>
-                        <Link href="/team" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/team" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Team
                         </Link>
-                        <Link href="/press" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/press" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Press
                         </Link>
-                        <Link href="/careers" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/careers" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Careers
                         </Link>
-                        <Link href="/contact-us" className="text-[#202626] hover:text-amber-400 font-medium py-2 transition-colors">
+                        <Link href="/contact-us" className="text-[#202626] hover:text-[#00296b] font-medium py-2 transition-colors">
                           Contact Us
                         </Link>
                       </div>

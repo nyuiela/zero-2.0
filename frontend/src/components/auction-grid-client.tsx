@@ -35,7 +35,7 @@ export default function AuctionGridClient() {
 
   if (isLoading) return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
-      <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
+      <p className="text-4xl text-[#00296b] font-bold animate-pulse text-center">
         ZERO
       </p>
     </div>

@@ -250,13 +250,13 @@ export default function AuctionsPage() {
         {/* Preview Auctions Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            Preview Auctions: <span className="text-white">({upcomingAuctions.length})</span>
+            Preview Auctions: <span className="text-gray-900">({upcomingAuctions.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {upcomingAuctions.map((auction) => (
-              <div key={auction.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34] rounded-xl">
-                <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
+              <div key={auction.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]" style={{ borderRadius: 'var(--radius)' }}>
+                <div className="relative overflow-hidden aspect-[4/3]" style={{ borderRadius: 'var(--radius)' }}>
                   <Image
                     src={auction.image}
                     alt={`${auction.year} ${auction.make} ${auction.model}`}
@@ -295,13 +295,13 @@ export default function AuctionsPage() {
         {/* Available Now Section */}
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            Available Now: <span className="text-white">({availableNowCars.length})</span>
+            Available Now: <span className="text-gray-900">({availableNowCars.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {availableNowCars.map((car) => (
-              <div key={car.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34] rounded-xl">
-                <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
+              <div key={car.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]" style={{ borderRadius: 'var(--radius)' }}>
+                <div className="relative overflow-hidden aspect-[4/3]" style={{ borderRadius: 'var(--radius)' }}>
                   <Image
                     src={car.image}
                     alt={`${car.year} ${car.make} ${car.model}`}

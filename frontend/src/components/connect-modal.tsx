@@ -73,7 +73,7 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
             placeholder={inputPlaceholder}
             value={inputValue}
             onChange={(e) => onInputChange?.(e.target.value)}
-            className="border-gray-700 text-[#202626]"
+            className="border-[#00296b] text-[#202626] focus:ring-[#00296b] focus:border-[#00296b] rounded-md"
           />
         )}
         {/* Info boxes */}

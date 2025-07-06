@@ -31,8 +31,8 @@ const STATUS_CONFIG = {
   submitted: {
     label: "Submitted",
     icon: Send,
-    color: "text-violet-800",
-    bg: "bg-violet-900/60",
+    color: "text-blue-800",
+    bg: "bg-blue-900/60",
   },
   in_review: {
     label: "In review",
