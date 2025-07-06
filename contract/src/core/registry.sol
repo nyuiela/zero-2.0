@@ -9,13 +9,13 @@ import {InitFunction} from "../chainlink/init_function.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IOracleMaster} from "../Interface/oracle/IOracleMaster.sol";
 
-import {IReputation} from "../interface/IReputation.sol";
-import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
+import {IReputation} from "../Interface/IReputation.sol";
+import {IMerkleVerifier} from "../Interface/IMerkleVerifier.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 import {CarOracle} from "../oracle/CarOracle.sol";
-import {IProfile} from "../interface/IProfile.sol";
-import {IStateManager} from "../interface/IStateManager.sol";
-import {IInitFunction} from "../interface/IInitFunction.sol";
+import {IProfile} from "../Interface/IProfile.sol";
+import {IStateManager} from "../Interface/IStateManager.sol";
+import {IInitFunction} from "../Interface/IInitFunction.sol";
 
 //import {BrandPermissionManager} from "../permission/BrandPermissionManager.sol";
 

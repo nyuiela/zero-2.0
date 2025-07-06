@@ -9,7 +9,7 @@ import {Auction} from "../src/core/auction.sol";
 import {Messenger} from "../src/chainlink/messenging.sol";
 import {MerkleVerifier} from "../src/chainlink/merkle_verifier.sol";
 import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
-import {PermissionManager} from "../src/permission/PermissionManager.sol";
+import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 
 contract DeployCCIP is Script {
     CrossToken public ccip;
@@ -54,7 +54,7 @@ contract DeployCCIP is Script {
         address brandPermissionManager = vm.envAddress(
             "NEXT_PUBLIC_BRAND_PERMISSION_MANAGER_ADDRESS"
         );
-        address auction = vm.envAddress("AUCTION_ADDRESS");
+        address auctionAddress = vm.envAddress("AUCTION_ADDRESS");
         address carRegistry = vm.envAddress("NEXT_PUBLIC_CAR_REGISTRY_ADDRESS");
         address profile = vm.envAddress("NEXT_PUBLIC_PROFILE_ADDRESS");
         // uint64 baseSelectorId = vm.env("BASE_SELECTOR_ID");

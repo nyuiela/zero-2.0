@@ -3,18 +3,18 @@ pragma solidity ^0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "forge-std/Script.sol";
-import {IOracleMaster} from "../src/interface/oracle/IOracleMaster.sol";
-import {IReputation} from "../src/interface/IReputation.sol";
-import {IMerkleVerifier} from "../src/interface/IMerkleVerifier.sol";
-import {IProfile} from "../src/interface/IProfile.sol";
-import {IStateManager} from "../src/interface/IStateManager.sol";
-import "../src/interface/IProofSync.sol";
-import {IInitFunction} from "../src/interface/IInitFunction.sol";
-import {ICarRegistry} from "../src/interface/ICarRegistry.sol";
-import {ICarOracle} from "../src/interface/oracle/IcarOracle.sol";
-import {ISync} from "../src/interface/ISync.sol";
-import {IPermissionManager} from "../src/interface/permissions/IPermissionManager.sol";
-import {IAuction} from "../src/interface/IAuction.sol";
+import {IOracleMaster} from "../src/Interface/oracle/IOracleMaster.sol";
+import {IReputation} from "../src/Interface/IReputation.sol";
+import {IMerkleVerifier} from "../src/Interface/IMerkleVerifier.sol";
+import {IProfile} from "../src/Interface/IProfile.sol";
+import {IStateManager} from "../src/Interface/IStateManager.sol";
+import "../src/Interface/IProofSync.sol";
+import {IInitFunction} from "../src/Interface/IInitFunction.sol";
+import {ICarRegistry} from "../src/Interface/ICarRegistry.sol";
+import {ICarOracle} from "../src/Interface/oracle/IcarOracle.sol";
+import {ISync} from "../src/Interface/ISync.sol";
+import {IPermissionManager} from "../src/Interface/Permissions/IPermissionManager.sol";
+import {IAuction} from "../src/Interface/IAuction.sol";
 
 contract ContractConfig is Script {
     address AUCTION_ADDRESS = vm.envAddress("");
