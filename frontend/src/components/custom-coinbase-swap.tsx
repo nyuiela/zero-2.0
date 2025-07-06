@@ -222,7 +222,7 @@ export default function CustomCoinbaseSwap() {
   const [selectedNFTCollateral, setSelectedNFTCollateral] = useState<string[]>([]);
   const [userNFTs, setUserNFTs] = useState<any[]>([]);
   const [collateralAmount, setCollateralAmount] = useState('')
-  
+
   // 3-Step Modal state (similar to brand registration)
   const [showSwapModal, setShowSwapModal] = useState(false)
   const [swapModalStep, setSwapModalStep] = useState(0)
@@ -257,7 +257,7 @@ export default function CustomCoinbaseSwap() {
 
   const fetchUserNFTs = async () => {
     if (!address) return [];
-    
+
     try {
       // This would be replaced with actual smart contract calls
       const mockNFTs = [
@@ -298,7 +298,7 @@ export default function CustomCoinbaseSwap() {
           owner: address
         }
       ];
-      
+
       setUserNFTs(mockNFTs);
       return mockNFTs;
     } catch (error) {
@@ -310,7 +310,7 @@ export default function CustomCoinbaseSwap() {
   // Helper function to get balance for a specific token
   const getTokenBalance = (token: Token) => {
     if (!address) return { balance: '0', loading: false }
-    
+
     switch (token.symbol) {
       case 'ETH':
         return {
@@ -405,11 +405,11 @@ export default function CustomCoinbaseSwap() {
     // Check if user has sufficient balance
     const currentBalance = parseFloat(fromTokenBalance.balance)
     const swapAmount = parseFloat(swapState.fromAmount)
-    
+
     if (swapAmount > currentBalance) {
-      setSwapState(prev => ({ 
-        ...prev, 
-        error: `Insufficient ${swapState.fromToken.symbol} balance. You have ${currentBalance} ${swapState.fromToken.symbol}` 
+      setSwapState(prev => ({
+        ...prev,
+        error: `Insufficient ${swapState.fromToken.symbol} balance. You have ${currentBalance} ${swapState.fromToken.symbol}`
       }))
       return
     }
@@ -426,7 +426,7 @@ export default function CustomCoinbaseSwap() {
       setSwapModalError("Please enter a valid collateral amount")
       return
     }
-    
+
     setSwapModalError(null)
     try {
       // Simulate staking transaction
@@ -443,7 +443,7 @@ export default function CustomCoinbaseSwap() {
       setSwapModalError("Please select at least one NFT for collateral")
       return
     }
-    
+
     setSwapModalError(null)
     try {
       // Simulate collateral request
@@ -460,21 +460,21 @@ export default function CustomCoinbaseSwap() {
     try {
       // Simulate swap transaction
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       // Generate mock transaction hash
       const mockHash = '0x' + Math.random().toString(16).substr(2, 64)
       setSwapModalHash(mockHash)
       setTransactionHash(mockHash)
-      
+
       // Complete the modal flow
       setShowSwapModal(false)
-      
+
       // Show transaction receipt
       setShowTransactionReceipt(true)
 
       // Reset form
-      setSwapState(prev => ({ 
-        ...prev, 
+      setSwapState(prev => ({
+        ...prev,
         fromAmount: '',
         toAmount: ''
       }))
@@ -489,23 +489,23 @@ export default function CustomCoinbaseSwap() {
     if (!isConnected) return 'Connect Wallet'
     if (swapState.loading) return 'Swapping...'
     if (!swapState.fromAmount || parseFloat(swapState.fromAmount) <= 0) return 'Enter an amount'
-    
+
     // Check if user has sufficient balance
     const currentBalance = parseFloat(fromTokenBalance.balance)
     const swapAmount = parseFloat(swapState.fromAmount)
-    
+
     if (swapAmount > currentBalance) {
       return `Insufficient ${swapState.fromToken.symbol} balance`
     }
-    
+
     return `Start Swap Process`
   }
 
   // Check if swap is possible
-  const canSwap = isConnected && 
-    swapState.fromAmount && 
-    parseFloat(swapState.fromAmount) > 0 && 
-    parseFloat(swapState.fromAmount) <= parseFloat(fromTokenBalance.balance) && 
+  const canSwap = isConnected &&
+    swapState.fromAmount &&
+    parseFloat(swapState.fromAmount) > 0 &&
+    parseFloat(swapState.fromAmount) <= parseFloat(fromTokenBalance.balance) &&
     !swapState.loading
 
   // Fix filteredChains error
@@ -684,26 +684,23 @@ export default function CustomCoinbaseSwap() {
                 <div className="flex items-center justify-between mb-8">
                   {['Stake Collateral', 'Request Collateral', 'Execute Swap'].map((step, index) => (
                     <div key={index} className="flex items-center">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        swapModalStep >= index 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-200 text-gray-600'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${swapModalStep >= index
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                        }`}>
                         {swapModalStep > index ? (
                           <CheckCircle className="w-5 h-5" />
                         ) : (
                           index + 1
                         )}
                       </div>
-                      <span className={`ml-2 text-sm font-medium ${
-                        swapModalStep >= index ? 'text-blue-600' : 'text-gray-500'
-                      }`}>
+                      <span className={`ml-2 text-sm font-medium ${swapModalStep >= index ? 'text-blue-600' : 'text-gray-500'
+                        }`}>
                         {step}
                       </span>
                       {index < 2 && (
-                        <div className={`w-16 h-0.5 mx-4 ${
-                          swapModalStep > index ? 'bg-blue-600' : 'bg-gray-200'
-                        }`} />
+                        <div className={`w-16 h-0.5 mx-4 ${swapModalStep > index ? 'bg-blue-600' : 'bg-gray-200'
+                          }`} />
                       )}
                     </div>
                   ))}
@@ -765,8 +762,8 @@ export default function CustomCoinbaseSwap() {
                               </div>
                             </div>
                             {nft.imageUrl && (
-                              <img 
-                                src={nft.imageUrl} 
+                              <img
+                                src={nft.imageUrl}
                                 alt={`${nft.brandName} ${nft.model}`}
                                 className="w-10 h-10 rounded object-cover"
                               />
@@ -789,7 +786,7 @@ export default function CustomCoinbaseSwap() {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-gray-900">Step 3: Execute Swap</h3>
                       <p className="text-gray-600">Review your swap details and execute the final transaction.</p>
-                      
+
                       {/* Swap Summary */}
                       <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                         <div className="flex justify-between">
@@ -875,31 +872,28 @@ export default function CustomCoinbaseSwap() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSwapState(prev => ({ ...prev, slippage: 0.5 }))}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    swapState.slippage === 0.5 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${swapState.slippage === 0.5
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    }`}
                 >
                   0.5%
                 </button>
                 <button
                   onClick={() => setSwapState(prev => ({ ...prev, slippage: 1 }))}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    swapState.slippage === 1 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${swapState.slippage === 1
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    }`}
                 >
                   1%
                 </button>
                 <button
                   onClick={() => setSwapState(prev => ({ ...prev, slippage: 2 }))}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    swapState.slippage === 2 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${swapState.slippage === 2
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    }`}
                 >
                   2%
                 </button>
@@ -930,15 +924,15 @@ export default function CustomCoinbaseSwap() {
                 placeholder="0.0"
                 value={swapState.fromAmount}
                 onChange={(e) => setSwapState(prev => ({ ...prev, fromAmount: e.target.value }))}
-                className="flex-1 text-2xl font-semibold bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
+                className="flex-1 text-2xl font-semibold bg-transparent border-none p-0 focus:ring-0 focus:outline-none px-4"
               />
               <div className="relative">
                 <button
                   onClick={() => setShowFromTokenSelector(!showFromTokenSelector)}
                   className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
                 >
-                  <img 
-                    src={swapState.fromToken.image} 
+                  <img
+                    src={swapState.fromToken.image}
                     alt={swapState.fromToken.symbol}
                     className="w-6 h-6 rounded-full"
                   />
@@ -981,8 +975,8 @@ export default function CustomCoinbaseSwap() {
                               onClick={() => selectToken(token, 'from')}
                               className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                             >
-                              <img 
-                                src={token.image} 
+                              <img
+                                src={token.image}
                                 alt={token.symbol}
                                 className="w-8 h-8 rounded-full"
                               />
@@ -1021,8 +1015,8 @@ export default function CustomCoinbaseSwap() {
                 }}
                 className="flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               >
-                <img 
-                  src={swapState.fromChain.icon} 
+                <img
+                  src={swapState.fromChain.icon}
                   alt={swapState.fromChain.name}
                   className="w-4 h-4 rounded-full"
                 />
@@ -1182,15 +1176,15 @@ export default function CustomCoinbaseSwap() {
                 placeholder="0.0"
                 value={swapState.toAmount}
                 readOnly
-                className="flex-1 text-2xl font-semibold bg-transparent border-none p-0 focus:ring-0 focus:outline-none"
+                className="flex-1 text-2xl font-semibold bg-transparent border-none p-0 focus:ring-0 focus:outline-none px-4"
               />
               <div className="relative">
                 <button
                   onClick={() => setShowToTokenSelector(!showToTokenSelector)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text:bg-white"
                 >
-                  <img 
-                    src={swapState.toToken.image} 
+                  <img
+                    src={swapState.toToken.image}
                     alt={swapState.toToken.symbol}
                     className="w-6 h-6 rounded-full"
                   />
@@ -1233,8 +1227,8 @@ export default function CustomCoinbaseSwap() {
                               onClick={() => selectToken(token, 'to')}
                               className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                             >
-                              <img 
-                                src={token.image} 
+                              <img
+                                src={token.image}
                                 alt={token.symbol}
                                 className="w-8 h-8 rounded-full"
                               />
@@ -1273,8 +1267,8 @@ export default function CustomCoinbaseSwap() {
                 }}
                 className="flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               >
-                <img 
-                  src={swapState.toChain.icon} 
+                <img
+                  src={swapState.toChain.icon}
                   alt={swapState.toChain.name}
                   className="w-4 h-4 rounded-full"
                 />
@@ -1336,11 +1330,10 @@ export default function CustomCoinbaseSwap() {
           <Button
             onClick={executeSwap}
             disabled={!canSwap}
-            className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
-              canSwap
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
+            className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${canSwap
+              ? 'bg-blue-600 hover:bg-blue-700 text-white'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
           >
             {swapState.loading ? (
               <div className="flex items-center gap-2">
@@ -1388,11 +1381,11 @@ export default function CustomCoinbaseSwap() {
 }
 
 // Chain Card Component
-function ChainCard({ 
-  chain, 
-  onSelect, 
-  isSelected 
-}: { 
+function ChainCard({
+  chain,
+  onSelect,
+  isSelected
+}: {
   chain: Chain
   onSelect: () => void
   isSelected: boolean
@@ -1400,10 +1393,10 @@ function ChainCard({
   return (
     <motion.div
       variants={chainCard}
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: 1.03, backgroundColor: '#f3f4f6' }} // bg-gray-100
       whileTap={{ scale: 0.95 }}
       onClick={onSelect}
-      className={`relative w-full aspect-[3.25/4] cursor-pointer overflow-hidden rounded-2xl shadow-sm ${chain.theme.card.className}`}
+      className={`relative w-full aspect-[3.25/4] cursor-pointer overflow-hidden rounded-2xl shadow-sm ${chain.theme.card.className} transition-colors`}
     >
       {/* Background Overlay */}
       {chain.theme.card.overlay?.image ? (
@@ -1430,7 +1423,7 @@ function ChainCard({
         <h3 className={`text-sm text-center font-medium ${chain.theme.title}`}>
           {chain.name}
         </h3>
-        
+
         {isSelected && (
           <div className="absolute top-2 right-2">
             <CheckCircle className="w-5 h-5 text-white bg-blue-600 rounded-full" />
