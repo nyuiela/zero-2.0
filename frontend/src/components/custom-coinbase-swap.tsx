@@ -177,7 +177,7 @@ function EulerBrand() {
   );
 }
 
-export default function CustomCoinbaseSwap() {
+export default function CustomCoinbaseSwap({ className, header }: { className?: string, header?: string }) {
   const { address, isConnected } = useAccount()
   const [swapState, setSwapState] = useState<SwapState>({
     fromToken: SWAP_TOKENS[0],
@@ -527,7 +527,7 @@ export default function CustomCoinbaseSwap() {
   })
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       {/* Network Selector Modal */}
       <AnimatePresence>
         {showNetworkSelector && (
@@ -851,7 +851,7 @@ export default function CustomCoinbaseSwap() {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Swap</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{header ?? "Swap"}</h2>
             <button
               onClick={() => setShowSlippageSettings(!showSlippageSettings)}
               className="p-2 rounded-lg hover:bg-gray-50 transition-colors"

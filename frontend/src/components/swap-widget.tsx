@@ -23,11 +23,11 @@ export default function SwapWidget() {
           <div className="flex justify-between items-center px-6 py-4 border-b flex-shrink-0">
             <span className="font-bold text-lg">Swap Tokens</span>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            <CustomCoinbaseSwap />
-          </div>
+          {/* <div className="flex-1 overflow-y-auto p-4 sm:p-6"> */}
+          <CustomCoinbaseSwap className="border-none shadow-none" header="" />
+          {/* </div> */}
         </DialogContent>
-      </Dialog>
+      </Dialog >
     </>
   );
 } 
