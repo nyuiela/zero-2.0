@@ -370,7 +370,7 @@
   color: var(--foreground) !important;
 }
 
-/* Custom hover colors for consistency */
+/* Custom hover colors for consistency - more specific targeting */
 .btn-dark-blue {
   background-color: #00296b !important;
   color: white !important;
@@ -382,19 +382,18 @@
   color: white !important;
 }
 
-/* Select component hover states */
-.select-trigger:hover {
+/* Override default button hover states */
+button:not(.btn-destructive):not(.btn-secondary):hover {
   background-color: #00296b !important;
   color: white !important;
 }
 
-/* Button hover overrides */
-button:hover {
-  background-color: #00296b !important;
+button[class*="bg-[#00296b]"]:hover {
+  background-color: #001b47 !important;
   color: white !important;
 }
 
-/* Prevent white hover on specific buttons */
+/* Specific button overrides */
 .btn-prevent-white:hover {
   background-color: #001b47 !important;
   color: white !important;
@@ -403,5 +402,17 @@ button:hover {
 /* Tab button hover states */
 .tab-button:hover {
   background-color: #00296b !important;
+  color: white !important;
+}
+
+/* Override gradient buttons */
+.btn-gradient {
+  background: #00296b !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-gradient:hover {
+  background: #001b47 !important;
   color: white !important;
 }

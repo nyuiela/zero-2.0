@@ -465,49 +465,51 @@ export default function VerifyPage() {
           </div>
 
           {/* Search and Filter */}
-          <div className="mb-6 flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
+          <div className="mb-6 space-y-4">
+            {/* Search Input - Full Width */}
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 placeholder="Search by transaction hash, description, or metadata..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-gray-700 text-black"
+                className="pl-10 border-gray-700 text-black w-full"
               />
             </div>
+            {/* Filter Buttons - Flex Below */}
             <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 onClick={() => setFilterType('all')}
-                className={filterType === 'all' ? 'bg-amber-600 text-white' : 'text-black'}
+                className={filterType === 'all' ? 'bg-[#00296b] text-white hover:bg-[#001b47]' : 'text-black border-[#00296b] hover:bg-[#00296b] hover:text-white'}
               >
                 All
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setFilterType('brand_registration')}
-                className={filterType === 'brand_registration' ? 'bg-amber-600 text-white' : 'text-black'}
+                className={filterType === 'brand_registration' ? 'bg-[#00296b] text-white hover:bg-[#001b47]' : 'text-black border-[#00296b] hover:bg-[#00296b] hover:text-white'}
               >
                 Brand Registration
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setFilterType('car_listing')}
-                className={filterType === 'car_listing' ? 'bg-amber-600 text-white' : 'text-black'}
+                className={filterType === 'car_listing' ? 'bg-[#00296b] text-white hover:bg-[#001b47]' : 'text-black border-[#00296b] hover:bg-[#00296b] hover:text-white'}
               >
                 Car Listings
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setFilterType('purchase_verification')}
-                className={filterType === 'purchase_verification' ? 'bg-amber-600 text-white' : 'text-black'}
+                className={filterType === 'purchase_verification' ? 'bg-[#00296b] text-white hover:bg-[#001b47]' : 'text-black border-[#00296b] hover:bg-[#00296b] hover:text-white'}
               >
                 Purchases
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setFilterType('seller_verification')}
-                className={filterType === 'seller_verification' ? 'bg-amber-600 text-white' : 'text-black'}
+                className={filterType === 'seller_verification' ? 'bg-[#00296b] text-white hover:bg-[#001b47]' : 'text-black border-[#00296b] hover:bg-[#00296b] hover:text-white'}
               >
                 Seller Verification
               </Button>
