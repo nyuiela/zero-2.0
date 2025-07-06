@@ -19,11 +19,11 @@ export default function SwapWidget() {
       </button>
       {/* Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md w-full p-0 rounded-2xl overflow-hidden bg-white shadow-2xl">
-          <div className="flex justify-between items-center px-6 py-4 border-b">
+        <DialogContent className="max-w-lg w-[95vw] sm:w-full p-0 rounded-2xl overflow-hidden bg-white shadow-2xl max-h-[90vh] flex flex-col">
+          <div className="flex justify-between items-center px-6 py-4 border-b flex-shrink-0">
             <span className="font-bold text-lg">Swap Tokens</span>
           </div>
-          <div className="p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             <CustomCoinbaseSwap />
           </div>
         </DialogContent>

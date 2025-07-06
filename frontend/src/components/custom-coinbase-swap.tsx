@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { useDebounce } from 'use-debounce'
 import { SWAP_CHAINS, SWAP_TOKENS, SwapChain, SwapToken } from './swap-tokens-chains'
+import TransactionReceiptModal from './transaction-receipt-modal'
 
 // Chain interface
 interface Chain {
@@ -211,11 +212,26 @@ export default function CustomCoinbaseSwap() {
   const [eulerRounds, setEulerRounds] = useState(1)
   const [eulerAccepted, setEulerAccepted] = useState(false)
   const [eulerSubmitted, setEulerSubmitted] = useState(false)
+  const [eulerData, setEulerData] = useState<{
+    increment: string
+    rounds: number
+    totalOutput: string
+  } | null>(null)
 
-  // Add NFT collateral state
-  const [useNFTCollateral, setUseNFTCollateral] = useState(false);
+  // NFT collateral state
   const [selectedNFTCollateral, setSelectedNFTCollateral] = useState<string[]>([]);
   const [userNFTs, setUserNFTs] = useState<any[]>([]);
+  const [collateralAmount, setCollateralAmount] = useState('')
+  
+  // 3-Step Modal state (similar to brand registration)
+  const [showSwapModal, setShowSwapModal] = useState(false)
+  const [swapModalStep, setSwapModalStep] = useState(0)
+  const [swapModalError, setSwapModalError] = useState<string | null>(null)
+  const [swapModalHash, setSwapModalHash] = useState<string | null>(null)
+
+  // Transaction receipt state
+  const [showTransactionReceipt, setShowTransactionReceipt] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
   // Fetch real token balances using wagmi
   const { data: ethBalance, isLoading: ethBalanceLoading } = useBalance({
@@ -398,31 +414,73 @@ export default function CustomCoinbaseSwap() {
       return
     }
 
-    setSwapState(prev => ({ ...prev, loading: true, error: null }))
+    // Start the 3-step modal flow instead of direct execution
+    setShowSwapModal(true)
+    setSwapModalStep(0)
+    setSwapModalError(null)
+  }
 
+  // Step 1: Stake collateral
+  const handleStakeCollateral = async () => {
+    if (!collateralAmount || parseFloat(collateralAmount) <= 0) {
+      setSwapModalError("Please enter a valid collateral amount")
+      return
+    }
+    
+    setSwapModalError(null)
+    try {
+      // Simulate staking transaction
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      setSwapModalStep(1)
+    } catch (error) {
+      setSwapModalError("Failed to stake collateral. Please try again.")
+    }
+  }
+
+  // Step 2: Request collateral
+  const handleRequestCollateral = async () => {
+    if (selectedNFTCollateral.length === 0) {
+      setSwapModalError("Please select at least one NFT for collateral")
+      return
+    }
+    
+    setSwapModalError(null)
+    try {
+      // Simulate collateral request
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      setSwapModalStep(2)
+    } catch (error) {
+      setSwapModalError("Failed to request collateral. Please try again.")
+    }
+  }
+
+  // Step 3: Execute final swap
+  const handleExecuteFinalSwap = async () => {
+    setSwapModalError(null)
     try {
       // Simulate swap transaction
       await new Promise(resolve => setTimeout(resolve, 2000))
       
+      // Generate mock transaction hash
+      const mockHash = '0x' + Math.random().toString(16).substr(2, 64)
+      setSwapModalHash(mockHash)
+      setTransactionHash(mockHash)
+      
+      // Complete the modal flow
+      setShowSwapModal(false)
+      
+      // Show transaction receipt
+      setShowTransactionReceipt(true)
+
+      // Reset form
       setSwapState(prev => ({ 
         ...prev, 
-        loading: false, 
-        success: true,
         fromAmount: '',
         toAmount: ''
       }))
 
-      // Reset success state after 3 seconds
-      setTimeout(() => {
-        setSwapState(prev => ({ ...prev, success: false }))
-      }, 3000)
-
     } catch (error) {
-      setSwapState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: 'Swap failed. Please try again.' 
-      }))
+      setSwapModalError("Swap failed. Please try again.")
     }
   }
 
@@ -440,7 +498,7 @@ export default function CustomCoinbaseSwap() {
       return `Insufficient ${swapState.fromToken.symbol} balance`
     }
     
-    return `Swap ${swapState.fromAmount} ${swapState.fromToken.symbol} for ${swapState.toAmount} ${swapState.toToken.symbol}`
+    return `Start Swap Process`
   }
 
   // Check if swap is possible
@@ -590,8 +648,209 @@ export default function CustomCoinbaseSwap() {
         )}
       </AnimatePresence>
 
+      {/* 3-Step Swap Modal */}
+      <AnimatePresence>
+        {showSwapModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowSwapModal(false)}
+          >
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900">Complete Swap Process</h2>
+                  <button
+                    onClick={() => setShowSwapModal(false)}
+                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Steps */}
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-8">
+                  {['Stake Collateral', 'Request Collateral', 'Execute Swap'].map((step, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        swapModalStep >= index 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {swapModalStep > index ? (
+                          <CheckCircle className="w-5 h-5" />
+                        ) : (
+                          index + 1
+                        )}
+                      </div>
+                      <span className={`ml-2 text-sm font-medium ${
+                        swapModalStep >= index ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
+                        {step}
+                      </span>
+                      {index < 2 && (
+                        <div className={`w-16 h-0.5 mx-4 ${
+                          swapModalStep > index ? 'bg-blue-600' : 'bg-gray-200'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Step Content */}
+                <div className="space-y-6">
+                  {/* Step 1: Stake Collateral */}
+                  {swapModalStep === 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Step 1: Stake Collateral</h3>
+                      <p className="text-gray-600">Enter the amount of ETH you want to stake as collateral for this swap.</p>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">Collateral Amount (ETH)</label>
+                        <Input
+                          type="number"
+                          placeholder="0.0"
+                          value={collateralAmount}
+                          onChange={(e) => setCollateralAmount(e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                      <Button
+                        onClick={handleStakeCollateral}
+                        disabled={!collateralAmount || parseFloat(collateralAmount) <= 0}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        Stake Collateral
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Step 2: Request Collateral */}
+                  {swapModalStep === 1 && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Step 2: Request Collateral</h3>
+                      <p className="text-gray-600">Select the NFTs you want to use as collateral for this swap.</p>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {userNFTs.map((nft) => (
+                          <label key={nft.tokenId} className="flex items-center space-x-3 p-3 bg-gray-50 rounded border hover:bg-gray-100 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedNFTCollateral.includes(nft.tokenId)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedNFTCollateral([...selectedNFTCollateral, nft.tokenId]);
+                                } else {
+                                  setSelectedNFTCollateral(selectedNFTCollateral.filter(id => id !== nft.tokenId));
+                                }
+                              }}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-gray-900 truncate">
+                                {nft.brandName} {nft.model}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {nft.year} • {nft.color} • #{nft.tokenId}
+                              </div>
+                            </div>
+                            {nft.imageUrl && (
+                              <img 
+                                src={nft.imageUrl} 
+                                alt={`${nft.brandName} ${nft.model}`}
+                                className="w-10 h-10 rounded object-cover"
+                              />
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                      <Button
+                        onClick={handleRequestCollateral}
+                        disabled={selectedNFTCollateral.length === 0}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        Request Collateral
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Step 3: Execute Swap */}
+                  {swapModalStep === 2 && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900">Step 3: Execute Swap</h3>
+                      <p className="text-gray-600">Review your swap details and execute the final transaction.</p>
+                      
+                      {/* Swap Summary */}
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">From:</span>
+                          <span className="text-sm font-medium">{swapState.fromAmount} {swapState.fromToken.symbol}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">To:</span>
+                          <span className="text-sm font-medium">{swapState.toAmount} {swapState.toToken.symbol}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Collateral:</span>
+                          <span className="text-sm font-medium">{collateralAmount} ETH</span>
+                        </div>
+                        {eulerData && (
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-600">Euler Increment:</span>
+                            <span className="text-sm font-medium">{eulerData.increment} {swapState.toToken.symbol}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Repay Period:</span>
+                          <span className="text-sm font-medium">30 business days</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={handleExecuteFinalSwap}
+                        className="w-full bg-green-600 hover:bg-green-700"
+                      >
+                        Execute Swap
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Error Message */}
+                {swapModalError && (
+                  <div className="mt-4 flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                    <span className="text-sm text-red-700">{swapModalError}</span>
+                  </div>
+                )}
+
+                {/* Transaction Hash */}
+                {swapModalHash && (
+                  <div className="mt-4 flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <span className="text-sm text-green-700">
+                      Transaction Hash: {swapModalHash}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main Swap Interface */}
-      <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-visible relative">
+      <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-visible relative min-h-[600px]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
@@ -695,7 +954,7 @@ export default function CustomCoinbaseSwap() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 z-[9999] w-80 min-w-[320px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
+                      className="absolute top-full left-0 z-[9999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
                     >
                       <div className="p-3 border-b border-gray-100">
                         <div className="flex items-center justify-between mb-2">
@@ -718,7 +977,7 @@ export default function CustomCoinbaseSwap() {
                           const tokenBalance = getTokenBalance(token)
                           return (
                             <button
-                              key={token.symbol}
+                              key={`${token.symbol}-${token.chainId}`}
                               onClick={() => selectToken(token, 'from')}
                               className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                             >
@@ -784,17 +1043,15 @@ export default function CustomCoinbaseSwap() {
             </button>
           </div>
 
-          {/* Euler Swap Button (centered) */}
-          {!showEulerForm && !eulerSubmitted && (
-            <div className="flex justify-center my-2">
-              <button
-                onClick={() => setShowEulerForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#1a1a2e] text-white rounded-lg shadow hover:bg-[#23234a] transition-all"
-              >
-                <EulerBrand />
-              </button>
-            </div>
-          )}
+          {/* Euler Swap Button (centered) - Always Visible */}
+          <div className="flex justify-center my-2">
+            <button
+              onClick={() => setShowEulerForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#1a1a2e] text-white rounded-lg shadow hover:bg-[#23234a] transition-all"
+            >
+              <EulerBrand />
+            </button>
+          </div>
 
           {/* Euler Swap Form Overlay */}
           {showEulerForm && !eulerSubmitted && (
@@ -860,6 +1117,11 @@ export default function CustomCoinbaseSwap() {
                   <button
                     onClick={() => {
                       if (eulerAccepted) {
+                        setEulerData({
+                          increment: eulerIncrement,
+                          rounds: eulerRounds,
+                          totalOutput: eulerTotalOutput
+                        })
                         setEulerSubmitted(true)
                         setShowEulerForm(false)
                       }
@@ -870,6 +1132,32 @@ export default function CustomCoinbaseSwap() {
                     Confirm Euler Swap
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Euler Data Summary */}
+          {eulerData && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-blue-900">Euler Swap Summary</h3>
+                <button
+                  onClick={() => {
+                    setEulerData(null)
+                    setEulerSubmitted(false)
+                    setEulerIncrement('')
+                    setEulerRounds(1)
+                    setEulerAccepted(false)
+                  }}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="text-sm text-blue-800 space-y-1">
+                <p>Increment: {eulerData.increment} {swapState.toToken.symbol}</p>
+                <p>Rounds: {eulerData.rounds}</p>
+                <p>Total Output: {eulerData.totalOutput} {swapState.toToken.symbol}</p>
               </div>
             </div>
           )}
@@ -918,7 +1206,7 @@ export default function CustomCoinbaseSwap() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 z-[9999] w-80 min-w-[320px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
+                      className="absolute top-full left-0 z-[9999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
                     >
                       <div className="p-3 border-b border-gray-100">
                         <div className="flex items-center justify-between mb-2">
@@ -941,7 +1229,7 @@ export default function CustomCoinbaseSwap() {
                           const tokenBalance = getTokenBalance(token)
                           return (
                             <button
-                              key={token.symbol}
+                              key={`${token.symbol}-${token.chainId}`}
                               onClick={() => selectToken(token, 'to')}
                               className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                             >
@@ -1028,63 +1316,20 @@ export default function CustomCoinbaseSwap() {
             </div>
           )}
 
-          {/* NFT Collateral Option */}
+          {/* NFT Collateral Info */}
           <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-700">Use NFT as Collateral (Optional)</label>
-              <input
-                type="checkbox"
-                checked={useNFTCollateral}
-                onChange={(e) => setUseNFTCollateral(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
+              <label className="text-sm font-medium text-gray-700">NFT Collateral Available</label>
+              <Badge variant="outline" className="text-xs">
+                {userNFTs.length} NFTs
+              </Badge>
             </div>
-            
-            {useNFTCollateral && (
-              <div className="mt-3">
-                <p className="text-xs text-gray-600 mb-3">
-                  Select your car NFTs to use as collateral for this swap:
-                </p>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {userNFTs.map((nft) => (
-                    <label key={nft.tokenId} className="flex items-center space-x-3 p-2 bg-white rounded border hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedNFTCollateral.includes(nft.tokenId)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedNFTCollateral([...selectedNFTCollateral, nft.tokenId]);
-                          } else {
-                            setSelectedNFTCollateral(selectedNFTCollateral.filter(id => id !== nft.tokenId));
-                          }
-                        }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">
-                          {nft.brandName} {nft.model}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {nft.year} • {nft.color} • #{nft.tokenId}
-                        </div>
-                      </div>
-                      {nft.imageUrl && (
-                        <img 
-                          src={nft.imageUrl} 
-                          alt={`${nft.brandName} ${nft.model}`}
-                          className="w-8 h-8 rounded object-cover"
-                        />
-                      )}
-                    </label>
-                  ))}
-                  {userNFTs.length === 0 && (
-                    <p className="text-xs text-gray-500 text-center py-2">
-                      No NFTs found. Visit your profile to mint car NFTs.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+            <p className="text-xs text-gray-600 mb-3">
+              Your car NFTs can be used as collateral for this swap. The 3-step process will be shown when you click "Swap".
+            </p>
+            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              💡 Using NFT collateral allows you to borrow additional tokens and increases your swap output!
+            </div>
           </div>
 
           {/* Swap Button */}
@@ -1116,6 +1361,28 @@ export default function CustomCoinbaseSwap() {
           </div>
         </div>
       </div>
+
+      {/* Transaction Receipt Modal */}
+      <TransactionReceiptModal
+        open={showTransactionReceipt}
+        onOpenChange={setShowTransactionReceipt}
+        receipt={transactionHash ? {
+          transactionHash: transactionHash,
+          timestamp: new Date().toLocaleString(),
+          fromToken: swapState.fromToken.symbol,
+          toToken: swapState.toToken.symbol,
+          fromAmount: swapState.fromAmount,
+          toAmount: swapState.toAmount,
+          eulerIncrement: eulerData?.increment,
+          collateralAmount: collateralAmount || undefined,
+          selectedNFTs: selectedNFTCollateral.length > 0 ? selectedNFTCollateral : undefined,
+          repayPeriod: "30 business days",
+          gasUsed: "150,000",
+          gasPrice: "20",
+          totalCost: "0.003",
+          status: 'success' as const
+        } : null}
+      />
     </div>
   )
 }

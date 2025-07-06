@@ -398,7 +398,7 @@ export default function SwapPage() {
           {/* Swap Tab Content */}
           {tab === "swap" && (
             <div className="mb-8">
-              <Card className="p-6 rounded-xl shadow-xl bg-white max-w-2xl mx-auto">
+              <Card className="p-6 rounded-xl shadow-xl bg-white max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-4">Swap Tokens</h2>
                 <div className="mb-4">
                   <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
