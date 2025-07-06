@@ -5,7 +5,8 @@ import { useAccount } from "wagmi"
 import { useAuthStore } from "@/lib/authStore"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { apiRequest } from "@/lib/utils"
+import { apiRequest, toRustCompatibleTimestamp } from "@/lib/utils"
+import { useBrandsData } from "@/hooks/useBrandsData"
 
 type AuctionData = {
   brandName: string
@@ -46,11 +47,28 @@ export default function CreateAuctionPage() {
   const { user } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [submittedData, setSubmittedData] = useState<AuctionData | null>(null)
+  const { address } = useAccount()
   const router = useRouter()
+  const { brands, hostedBrands, activatedBrands, requestedBrands, isLoading: brandsLoading, error, refetch, } = useBrandsData()
+  // const [statusFilter, setStatusFilter] = useState<string>('all')
+  // const [typeFilter, setTypeFilter] = useState<string>('all')
+
+  // // Filter brands based on selected filters
+  // const filteredBrands = brands.filter(brand => {
+  //   const matchesStatus = statusFilter === 'all' || brand.status === statusFilter
+  //   const matchesType = typeFilter === 'all' || brand.type === typeFilter
+  //   return matchesStatus && matchesType
+  // })
+
+  // // Filter user's brands (brands where user is the permission holder)
+  // const userBrands = brands.filter(brand =>
+  //   brand.brandPermission?.toLowerCase() === address?.toLowerCase()
+  // )
 
   // Demo data - in real app, these would come from your smart contract/API
-  const availableBrands = ["Toyota", "BMW", "Mercedes", "Audi", "Tesla", "Ferrari"]
-  
+  const availableBrands = ["kal", "BMW", "Mercedes", "Audi", "Tesla", "Ferrari"]
+  // const availableBrands = brands
+
   const handleSubmit = async (data: AuctionData) => {
     setIsLoading(true)
 
@@ -80,6 +98,35 @@ export default function CreateAuctionPage() {
           nftTokenId: BigInt(data.nftTokenId),
         }
       }
+      const auc = {
+        id: 1,
+        car_id: auctionData.nftTokenId,
+        start_time: toRustCompatibleTimestamp(data.startTime),
+        end_time: toRustCompatibleTimestamp(data.endTime),
+        current_bid: data.initialBid,
+        bid_count: 0,
+        seller: "Texan",
+        status: "Active",
+        created_at: "2025-06-15T18:42:57.530698",
+        updated_at: "2025-06-15T18:42:57.530698"
+      }
+      console.log("Auctions Proxy body ", auc)
+      // export interface Auction {
+      //   id: number
+      //   year: string
+      //   make: string
+      //   model: string
+      //   location: string
+      //   image: string
+      //   currentBid: string
+      //   timeLeft: string
+      //   bidCount: number
+      //   reserve?: string
+      //   country: string
+      // }
+
+
+
 
       console.log("Contract data structure:", auctionData.contractData)
 
@@ -88,7 +135,7 @@ export default function CreateAuctionPage() {
       try {
         const response = await apiRequest('/api/auctions-proxy', {
           method: 'POST',
-          body: JSON.stringify(auctionData)
+          body: JSON.stringify(auc)
         })
 
         if (response.ok) {
@@ -111,8 +158,8 @@ export default function CreateAuctionPage() {
 
       // Show success message
       toast.success("Auction created successfully!", {
-        description: apiSuccess 
-          ? "Your auction has been created and saved to the server." 
+        description: apiSuccess
+          ? "Your auction has been created and saved to the server."
           : "Your auction has been created and saved locally.",
         duration: 5000,
       })
@@ -160,7 +207,7 @@ export default function CreateAuctionPage() {
         <AuctionRegistrationForm
           onSubmit={handleSubmit}
           isLoading={isLoading}
-          availableBrands={availableBrands}
+        // availableBrands={availableBrands}
         // userNFTs={data?.nftminteds || []}
         />
 

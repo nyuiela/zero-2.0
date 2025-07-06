@@ -34,6 +34,7 @@ import { useAuthStore } from "@/lib/authStore"
 import { toRustCompatibleTimestamp } from "@/lib/utils"
 import { ProofData, ProofModal } from "./proof-modal"
 import { Nftminted, useGraph } from "@/hooks/useGraph"
+import { BrandData, useBrandsData } from "@/hooks/useBrandsData"
 
 // Dynamically import ProofModalTransaction to avoid SSR issues
 const ProofModalTransaction = dynamic(() => import("./proof-transaction").then(mod => ({ default: mod.ProofModalTransaction })), {
@@ -81,14 +82,14 @@ type AuctionRegistrationFormData = z.infer<typeof auctionRegistrationSchema>
 interface AuctionRegistrationFormProps {
   onSubmit: (data: AuctionRegistrationFormData) => void
   isLoading?: boolean
-  availableBrands?: string[]
+  availableBrands?: BrandData[] | null
   // userNFTs?: Array<Nftminted>
 }
 
 export function AuctionRegistrationForm({
   onSubmit,
   // isLoading = false,
-  availableBrands = [],
+  availableBrands = null,
   // userNFTs = []
 }: AuctionRegistrationFormProps) {
   const [selectedNFT, setSelectedNFT] = useState<Number>()
@@ -121,6 +122,8 @@ export function AuctionRegistrationForm({
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [formArgs, setFormArgs] = useState<AuctionRegistrationFormData>()
   const [isLoading, setIsLoading] = useState(false);
+  const { brands } = useBrandsData()
+  availableBrands = brands
   const handleCreate = (formData: AuctionRegistrationFormData) => {
     writeContract({
       abi: auction_abi,
@@ -308,15 +311,15 @@ export function AuctionRegistrationForm({
                   <FormItem>
                     <FormLabel>Brand Name</FormLabel>
                     <FormControl>
-                      {availableBrands.length > 0 ? (
+                      {availableBrands && availableBrands.length > 0 ? (
                         <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select brand" />
                           </SelectTrigger>
                           <SelectContent className="bg-white border-none">
                             {availableBrands.map((brand) => (
-                              <SelectItem key={brand} value={brand}>
-                                {brand}
+                              <SelectItem key={brand.blockTimestamp} value={brand.brand}>
+                                {brand.brand}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -397,12 +400,13 @@ export function AuctionRegistrationForm({
                   name="initialBid"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Initial Bid (ETH)</FormLabel>
+                      <FormLabel>Initial Bid (USD)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
-                          placeholder="0.1"
+                          step="1"
+                          min={1}
+                          placeholder="1"
                           {...field}
                         />
                       </FormControl>
@@ -423,8 +427,9 @@ export function AuctionRegistrationForm({
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
-                          placeholder="1.0"
+                          step="1"
+                          min={form.getValues("initialBid")}
+                          placeholder="1"
                           {...field}
                         />
                       </FormControl>
