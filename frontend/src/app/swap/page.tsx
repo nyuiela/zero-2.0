@@ -299,17 +299,20 @@ export default function SwapPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
             <span className="text-xs text-gray-500 mb-1">Total Lent</span>
-            <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalLent.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalLent.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span> */}
             <span className="text-xs text-gray-400 mt-1">Across all vaults</span>
           </div>
           <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
             <span className="text-xs text-gray-500 mb-1">Total Borrowed</span>
-            <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalBorrowed.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalBorrowed.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span> */}
             <span className="text-xs text-gray-400 mt-1">Across all vaults</span>
           </div>
           <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
             <span className="text-xs text-gray-500 mb-1">Vaults Invested</span>
-            <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : vaultsInvested}</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : vaultsInvested}</span> */}
             <span className="text-xs text-gray-400 mt-1">You have deposits in</span>
           </div>
           <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
@@ -388,7 +391,8 @@ export default function SwapPage() {
           <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
             <h3 className="text-xs text-gray-500 font-normal mb-1">Collateral in EulerSwap</h3>
             <div className="text-3xl font-bold text-gray-900 mb-2">
-              {positionsLoading ? '...' : accountPositions ? accountPositions.deposits.reduce((sum, d) => sum + (parseFloat(d.amount || '0') || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'}
+              {/* {positionsLoading ? '...' : accountPositions ? accountPositions.deposits.reduce((sum, d) => sum + (parseFloat(d.amount || '0') || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'} */}
+              0
             </div>
             <div className="text-xs text-gray-400">Total value of your collateral</div>
           </Card>
@@ -400,7 +404,7 @@ export default function SwapPage() {
             {(() => {
               const profit = totalLent - totalBorrowed;
               return (
-                <div className={`text-3xl font-bold mb-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>{positionsLoading ? '...' : profit.toLocaleString(undefined, { maximumFractionDigits: 4 })}</div>
+                <div className={`text-3xl font-bold mb-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>{/* {positionsLoading ? '...' : profit.toLocaleString(undefined, { maximumFractionDigits: 4 })} */}0</div>
               );
             })()}
             <div className="text-xs text-gray-400">(Lent - Borrowed)</div>

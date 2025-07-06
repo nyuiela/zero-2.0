@@ -149,13 +149,16 @@ export default function Header() {
       <nav className="w-full bg-white border-b border-gray-200 pt-5">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-6 relative">
           {/* Hamburger Menu - Mobile Only */}
-          <button
-            className="sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#7400b8]"
+          <Button
+            className="sm:hidden p-4 rounded hover:bg-gray-400 hover:text-white"
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setMobileMenuOpen((open) => !open)}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6 text-[#202626]" /> : <Menu className="h-6 w-6 text-[#202626]" />}
-          </button>
+            {mobileMenuOpen ? 
+            <X className="h-10 w-10 ring-0 hover:text-white text-[#202626]" /> 
+            : 
+            <Menu className="h-10 w-10 ring-0 hover:bg-gray-100 text-[#202626]" />}
+          </Button>
 
           {/* Logo - Always Centered */}
           <div className="flex-1 flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:static sm:translate-x-0 sm:translate-y-0">
