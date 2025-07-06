@@ -64,12 +64,9 @@ export default function AuthInitializer() {
         console.log('AuthInitializer: Auto-login successful from cookies')
         return
       }
-
-      // Step 4: Fallback - if we have JWT but incomplete state, try to restore basic user
       if (jwtToken && isConnected && address) {
         console.log('AuthInitializer: JWT valid but incomplete state, restoring basic user')
         
-        // Try to extract user data from JWT payload
         try {
           const payload = JSON.parse(atob(jwtToken.split('.')[1]))
           const username = payload.username || userData?.username || ''
@@ -95,22 +92,17 @@ export default function AuthInitializer() {
 
       console.log('AuthInitializer: No valid authentication state found')
     }
-
-    // Run immediately, don't wait for wallet connection
     initializeAuth()
-  }, []) // Remove dependencies to run only once on mount
+  }, [])
 
-  // Separate effect to handle wallet connection changes
   useEffect(() => {
     if (isConnected && address) {
       console.log('AuthInitializer: Wallet connected, checking auth state...')
       
-      // If wallet connects after initial auth check, verify the address matches
       const userData = getCookieData(AUTH_COOKIE_KEYS.USER_DATA)
       const jwtToken = getJwtToken()
       
       if (userData && jwtToken && isJwtTokenValid()) {
-        // Check if the connected wallet matches the stored user
         if (userData.address === address) {
           console.log('AuthInitializer: Wallet matches stored user')
         } else {
@@ -142,7 +134,5 @@ export default function AuthInitializer() {
       console.error('Error clearing auth cookies:', error)
     }
   }
-
-  // This component doesn't render anything
   return null
 } 
