@@ -3,6 +3,9 @@
 ## structure
 
 a smart contract that executes flash loan arbitrage to help users reach a target amount of tokens (WETH or USDC) for auction bidding
+
+additional feature -- when brands stake -- funds will be deposited into yield vaults to generate yield
+
 // Example: WETH → USDC → WETH arbitrage
 
 1. Borrow WETH from vault
