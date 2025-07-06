@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Messenger} from "./messenging.sol";
-import {IMerkleVerifier} from "../interface/IMerkleVerifier.sol";
+import {IMerkleVerifier} from "../Interface/IMerkleVerifier.sol";
 
 contract ProofSync {
     // Errors

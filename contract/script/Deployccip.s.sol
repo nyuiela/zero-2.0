@@ -9,7 +9,7 @@ import {Messenger} from "../src/chainlink/messenging.sol";
 import {Auction} from "../src/core/auction.sol";
 import {MerkleVerifier} from "../src/chainlink/merkle_verifier.sol";
 import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
-import {PermissionManager} from "../src/permission/PermissionManager.sol";
+import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 
 contract DeployCCIP is Script {
     CrossToken public ccip;

@@ -7,7 +7,7 @@ import {CarRegistry} from "./registry.sol";
 import {OracleMaster} from "../oracle/Oracle.sol";
 import {AggregatorV3Interface} from "chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
-import {IZeroNFT} from "../interface/IZeronft.sol";
+import {IZeroNFT} from "../Interface/IZeronft.sol";
 
 contract Auction {
     CarRegistry public carRegistry;

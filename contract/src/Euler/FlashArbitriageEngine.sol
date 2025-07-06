@@ -3,25 +3,26 @@ pragma solidity ^0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import {IEVault} from "src/interface/Eular/IEVault.sol";
-import {IEulerSwap} from "../interface/Eular/IEulerSwap.sol";
-import {IPoolManager} from "../interface/Eular/IEulerSwap.sol";
-import {IEulerRouter} from "../interface/Eular/IEulerRouter.sol";
-import {IEVC} from "../interface/Eular/IEVC.sol";
+import {IEVC, IEthereumVaultConnector} from "../Interface/Eular/IEVC.sol";
+import {IEVault} from "../Interface/Eular/IEVault.sol";
+import {IEulerSwap} from "../Interface/Eular/IEulerSwap.sol";
+import {IPoolManager} from "../Interface/Eular/IEulerSwap.sol";
+import {IEulerRouter} from "../Interface/Eular/IEulerRouter.sol";
 
-contract FlashArbitrageEngine {
+contract FlashArbitrageEngine is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    IEVault public immutable vault;
+    IEthereumVaultConnector public immutable evc;
     IEulerSwap public immutable eulerSwap;
     IEulerRouter public immutable eulerRouter;
 
     // Supported tokens
-    address public constant WETH = 0x7e860098F58bBFC8648a4311b374B1D669a2bc6B;
-    address public constant USDC = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70;
+    address public constant WETH = 0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70; // Base WETH
+    address public constant USDC = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913; // Base USDC
 
-    // Flash arbitrage position
+    // Flash arbitrage position with enhanced tracking
     struct FlashPosition {
         uint256 id;
         address user;
@@ -32,37 +33,60 @@ contract FlashArbitrageEngine {
         uint256 cyclesExecuted;
         bool isActive;
         uint256 createdAt;
+        uint256 lastArbitrageTime;
+        uint256 totalGasUsed;
+        uint256 totalFeesPaid;
+    }
+
+    // Enhanced arbitrage cycle tracking
+    struct ArbitrageCycle {
+        uint256 positionId;
+        uint256 cycleNumber;
+        uint256 borrowAmount;
+        uint256 profit;
+        uint256 gasUsed;
+        uint256 timestamp;
+        bool success;
+        string failureReason;
     }
 
     mapping(uint256 => FlashPosition) public positions;
     mapping(address => uint256[]) public userPositions;
+    mapping(uint256 => ArbitrageCycle[]) public positionCycles;
     uint256 public nextPositionId;
-
-    // Reentrancy protection
-    bool private _arbitrageInProgress;
 
     // Configuration
     uint256 public maxCycles = 10;
     uint256 public maxBorrowAmount = 1000000e6; // 1M USDC
     uint256 public minProfitThreshold = 100e6; // 100 USDC
     uint256 public maxSlippageBps = 50; // 0.5% max slippage
+    uint256 public gasPriceLimit = 50 gwei; // Gas price limit for arbitrage
+    uint256 public maxGasPerCycle = 500000; // Max gas per arbitrage cycle
+
+    // EVC Configuration
+    bool public useEVC = true; // Whether to use EVC for vault operations
+    mapping(address => bool) public authorizedVaults; // Vaults authorized for EVC operations
 
     // Events
     event FlashPositionOpened(
         uint256 indexed positionId,
         address indexed user,
         address targetToken,
-        uint256 targetAmount
+        uint256 targetAmount,
+        uint256 initialBorrowAmount
     );
     event ArbitrageCycleExecuted(
         uint256 indexed positionId,
         uint256 cycle,
-        uint256 profit
+        uint256 profit,
+        uint256 gasUsed,
+        bool success
     );
     event TargetReached(
         uint256 indexed positionId,
         address indexed user,
-        uint256 targetAmount
+        uint256 targetAmount,
+        uint256 totalProfit
     );
     event PositionRepaid(
         uint256 indexed positionId,
@@ -77,12 +101,18 @@ contract FlashArbitrageEngine {
         uint256 expectedAmount,
         uint256 actualAmount
     );
-
-    // Modifiers
-    modifier arbitrageGuard() {
-        require(!_arbitrageInProgress, "Arbitrage in progress");
-        _;
-    }
+    event EVCOperationExecuted(
+        uint256 indexed positionId,
+        address vault,
+        string operation,
+        bool success
+    );
+    event ConfigurationUpdated(
+        uint256 maxCycles,
+        uint256 maxBorrowAmount,
+        uint256 minProfitThreshold,
+        uint256 maxSlippageBps
+    );
 
     // Errors
     error TargetNotReached();
@@ -91,11 +121,20 @@ contract FlashArbitrageEngine {
     error InvalidTargetAmount();
     error PriceValidationFailed();
     error ExcessiveSlippage();
+    error GasPriceTooHigh();
+    error GasLimitExceeded();
+    error VaultNotAuthorized();
+    error EVCOperationFailed();
+    error InvalidVaultAddress();
 
-    address owner;
+    address public owner;
 
-    constructor(address _vault, address _eulerSwap, address _eulerRouter) {
-        vault = IEVault(_vault);
+    constructor(
+        address payable _evc,
+        address _eulerSwap,
+        address _eulerRouter
+    ) {
+        evc = IEthereumVaultConnector(_evc);
         eulerSwap = IEulerSwap(_eulerSwap);
         eulerRouter = IEulerRouter(_eulerRouter);
         owner = msg.sender;
@@ -106,19 +145,28 @@ contract FlashArbitrageEngine {
         _;
     }
 
+    modifier onlyAuthorizedVault(address vault) {
+        if (useEVC && !authorizedVaults[vault]) {
+            revert VaultNotAuthorized();
+        }
+        _;
+    }
+
     /**
-     * @dev Execute flash arbitrage to reach target amount
+     * @dev Execute flash arbitrage using EVC batch operations
      * @param targetToken Token user wants (WETH or USDC)
      * @param targetAmount Amount user needs
      * @param initialBorrowAmount Initial amount to borrow for arbitrage
      * @param _maxCycles Maximum arbitrage cycles to execute
+     * @param vaultAddress Address of the vault to borrow from
      */
-    function executeFlashArbitrage(
+    function executeFlashArbitrageWithEVC(
         address targetToken,
         uint256 targetAmount,
         uint256 initialBorrowAmount,
-        uint256 _maxCycles
-    ) external payable arbitrageGuard {
+        uint256 _maxCycles,
+        address vaultAddress
+    ) external payable nonReentrant onlyAuthorizedVault(vaultAddress) {
         require(targetAmount > 0, "Invalid target amount");
         require(
             initialBorrowAmount <= maxBorrowAmount,
@@ -129,13 +177,281 @@ contract FlashArbitrageEngine {
             targetToken == WETH || targetToken == USDC,
             "Unsupported target token"
         );
-        require(vault.asset() == targetToken, "Vault asset mismatch");
+     
+        require(tx.gasprice <= gasPriceLimit, "Gas price too high");
+      require(msg.value >= tx.gasprice, "ETH sent not enough");
+        // Create flash position
+        FlashPosition memory position = FlashPosition({
+            id: nextPositionId,
+            user: msg.sender,
+            targetToken: targetToken,
+            targetAmount: targetAmount,
+            borrowedAmount: 0,
+            arbitrageProfit: 0,
+            cyclesExecuted: 0,
+            isActive: true,
+            createdAt: block.timestamp,
+            lastArbitrageTime: 0,
+            totalGasUsed: 0,
+            totalFeesPaid: 0
+        });
+
+        positions[nextPositionId] = position;
+        userPositions[msg.sender].push(nextPositionId);
+        nextPositionId++;
+
+        emit FlashPositionOpened(
+            position.id,
+            msg.sender,
+            targetToken,
+            targetAmount,
+            initialBorrowAmount
+        );
+
+        // Execute arbitrage cycles using EVC
+        uint256 currentBalance = 0;
+        uint256 borrowed = 0;
+        uint256 totalGasUsed = 0;
+
+        for (uint256 cycle = 0; cycle < _maxCycles; cycle++) {
+            uint256 gasStart = gasleft();
+
+            // Check if we've reached the target
+            currentBalance = IERC20(targetToken).balanceOf(address(this));
+            if (currentBalance >= targetAmount) {
+                break;
+            }
+
+            // Calculate how much more we need
+            uint256 needed = targetAmount - currentBalance;
+
+            // Borrow for this cycle
+            uint256 borrowAmount = cycle == 0
+                ? initialBorrowAmount
+                : (needed * 2); // 2x for arbitrage
+            if (borrowAmount > maxBorrowAmount - borrowed) {
+                borrowAmount = maxBorrowAmount - borrowed;
+            }
+
+            if (borrowAmount == 0) break;
+
+            // Execute arbitrage cycle with EVC
+            uint256 profit = _executeArbitrageCycleWithEVC(
+                position.id,
+                targetToken,
+                borrowAmount,
+                vaultAddress
+            );
+
+            // Update position
+            positions[position.id].borrowedAmount = borrowed + borrowAmount;
+            positions[position.id].arbitrageProfit += profit;
+            positions[position.id].cyclesExecuted = cycle + 1;
+            positions[position.id].lastArbitrageTime = block.timestamp;
+
+            // Calculate gas used
+            uint256 gasUsed = gasStart - gasleft();
+            totalGasUsed += gasUsed;
+
+            if (gasUsed > maxGasPerCycle) {
+                revert GasLimitExceeded();
+            }
+
+            // Record cycle
+            ArbitrageCycle memory cycleRecord = ArbitrageCycle({
+                positionId: position.id,
+                cycleNumber: cycle + 1,
+                borrowAmount: borrowAmount,
+                profit: profit,
+                gasUsed: gasUsed,
+                timestamp: block.timestamp,
+                success: true,
+                failureReason: ""
+            });
+            positionCycles[position.id].push(cycleRecord);
+
+            emit ArbitrageCycleExecuted(
+                position.id,
+                cycle + 1,
+                profit,
+                gasUsed,
+                true
+            );
+
+            borrowed += borrowAmount;
+        }
+
+        // Update total gas used
+        positions[position.id].totalGasUsed = totalGasUsed;
+
+        // Check if target was reached
+        currentBalance = IERC20(targetToken).balanceOf(address(this));
+        if (currentBalance >= targetAmount) {
+            // Transfer target amount to user
+            IERC20(targetToken).safeTransfer(msg.sender, targetAmount);
+
+            // Update position
+            positions[position.id].targetAmount = targetAmount;
+
+            emit TargetReached(
+                position.id,
+                msg.sender,
+                targetAmount,
+                positions[position.id].arbitrageProfit
+            );
+        } else {
+            // Target not reached, revert
+            revert TargetNotReached();
+        }
+    }
+
+    /**
+     * @dev Execute a single arbitrage cycle using EVC batch operations
+     * @param positionId ID of the position for event emission
+     * @param targetToken Token we want to accumulate
+     * @param borrowAmount Amount borrowed for this cycle
+     * @param vaultAddress Address of the vault to borrow from
+     */
+    function _executeArbitrageCycleWithEVC(
+        uint256 positionId,
+        address targetToken,
+        uint256 borrowAmount,
+        address vaultAddress
+    ) internal returns (uint256 profit) {
+        uint256 initialBalance = IERC20(targetToken).balanceOf(address(this));
+
+        // Create EVC batch for this arbitrage cycle
+        IEVC.BatchItem[] memory batchItems = new IEVC.BatchItem[](4);
+
+        // Step 1: Borrow from vault
+        batchItems[0] = IEVC.BatchItem({
+            targetContract: vaultAddress,
+            onBehalfOfAccount: address(this),
+            value: 0,
+            data: abi.encodeWithSelector(
+                IEVault.borrow.selector,
+                borrowAmount,
+                address(this)
+            )
+        });
+
+        // Step 2: Execute first swap
+        (address asset0, address asset1) = eulerSwap.getAssets();
+        bool zeroForOne = asset0 == (targetToken == USDC ? WETH : USDC);
+        
+        uint256 swapAmount = eulerSwap.computeQuote(
+            targetToken == USDC ? WETH : USDC,
+            targetToken,
+            borrowAmount,
+            true
+        );
+
+        IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
+            zeroForOne: zeroForOne,
+            amountSpecified: int256(borrowAmount),
+            sqrtPriceLimitX96: 0
+        });
+
+        batchItems[1] = IEVC.BatchItem({
+            targetContract: address(eulerSwap),
+            onBehalfOfAccount: address(this),
+            value: 0,
+            data: abi.encodeWithSelector(
+                IEulerSwap.swap.selector,
+                zeroForOne ? 0 : swapAmount,
+                zeroForOne ? swapAmount : 0,
+                address(this),
+                abi.encode(params)
+            )
+        });
+
+        // Step 3: Execute reverse swap
+        uint256 reverseAmount = eulerSwap.computeQuote(
+            targetToken,
+            targetToken == USDC ? WETH : USDC,
+            swapAmount,
+            true
+        );
+
+        params = IPoolManager.SwapParams({
+            zeroForOne: !zeroForOne,
+            amountSpecified: int256(swapAmount),
+            sqrtPriceLimitX96: 0
+        });
+
+        batchItems[2] = IEVC.BatchItem({
+            targetContract: address(eulerSwap),
+            onBehalfOfAccount: address(this),
+            value: 0,
+            data: abi.encodeWithSelector(
+                IEulerSwap.swap.selector,
+                !zeroForOne ? 0 : reverseAmount,
+                !zeroForOne ? reverseAmount : 0,
+                address(this),
+                abi.encode(params)
+            )
+        });
+
+        // Step 4: Repay vault
+        batchItems[3] = IEVC.BatchItem({
+            targetContract: vaultAddress,
+            onBehalfOfAccount: address(this),
+            value: 0,
+            data: abi.encodeWithSelector(
+                IEVault.repay.selector,
+                borrowAmount,
+                address(this)
+            )
+        });
+
+        // Execute EVC batch
+        try evc.batch(batchItems) {
+            emit EVCOperationExecuted(positionId, vaultAddress, "arbitrage_cycle", true);
+        } catch {
+            emit EVCOperationExecuted(positionId, vaultAddress, "arbitrage_cycle", false);
+            revert EVCOperationFailed();
+        }
+
+        uint256 finalBalance = IERC20(targetToken).balanceOf(address(this));
+        profit = finalBalance > initialBalance
+            ? finalBalance - initialBalance
+            : 0;
+
+        return profit;
+    }
+
+    /**
+     * @dev Execute flash arbitrage with traditional vault operations (fallback)
+     * @param targetToken Token user wants (WETH or USDC)
+     * @param targetAmount Amount user needs
+     * @param initialBorrowAmount Initial amount to borrow for arbitrage
+     * @param _maxCycles Maximum arbitrage cycles to execute
+     * @param vaultAddress Address of the vault to borrow from
+     */
+    function executeFlashArbitrageTraditional(
+        address targetToken,
+        uint256 targetAmount,
+        uint256 initialBorrowAmount,
+        uint256 _maxCycles,
+        address vaultAddress
+    ) external payable nonReentrant {
+        require(targetAmount > 0, "Invalid target amount");
+        require(
+            initialBorrowAmount <= maxBorrowAmount,
+            "Borrow amount too high"
+        );
+        require(_maxCycles <= maxCycles, "Too many cycles");
+        require(
+            targetToken == WETH || targetToken == USDC,
+            "Unsupported target token"
+        );
         require(msg.value > 0, "No ETH sent");
 
         // Wrap ETH to WETH
         wrapEth();
 
         // Deposit WETH collateral to vault
+        IEVault vault = IEVault(vaultAddress);
         IERC20(WETH).approve(address(vault), msg.value);
         vault.deposit(msg.value, address(this));
 
@@ -149,7 +465,10 @@ contract FlashArbitrageEngine {
             arbitrageProfit: 0,
             cyclesExecuted: 0,
             isActive: true,
-            createdAt: block.timestamp
+            createdAt: block.timestamp,
+            lastArbitrageTime: 0,
+            totalGasUsed: 0,
+            totalFeesPaid: 0
         });
 
         positions[nextPositionId] = position;
@@ -160,11 +479,9 @@ contract FlashArbitrageEngine {
             position.id,
             msg.sender,
             targetToken,
-            targetAmount
+            targetAmount,
+            initialBorrowAmount
         );
-
-        // Set reentrancy flag
-        _arbitrageInProgress = true;
 
         // Execute arbitrage cycles
         uint256 currentBalance = 0;
@@ -206,7 +523,7 @@ contract FlashArbitrageEngine {
             positions[position.id].arbitrageProfit += profit;
             positions[position.id].cyclesExecuted = cycle + 1;
 
-            emit ArbitrageCycleExecuted(position.id, cycle + 1, profit);
+            emit ArbitrageCycleExecuted(position.id, cycle + 1, profit, 0, true);
 
             // Repay the borrowed amount
             IERC20(vault.asset()).approve(address(vault), borrowAmount);
@@ -223,53 +540,20 @@ contract FlashArbitrageEngine {
             // Update position
             positions[position.id].targetAmount = targetAmount;
 
-            emit TargetReached(position.id, msg.sender, targetAmount);
+            emit TargetReached(
+                position.id,
+                msg.sender,
+                targetAmount,
+                positions[position.id].arbitrageProfit
+            );
         } else {
             // Target not reached, revert
-            _arbitrageInProgress = false;
             revert TargetNotReached();
         }
-
-        // Clear reentrancy flag
-        _arbitrageInProgress = false;
     }
 
     /**
-     * @dev Validate price using Euler Router oracle
-     * @param inAmount Input amount for quote
-     * @param base Base token address
-     * @param quote Quote token address
-     * @return expectedOutAmount Expected output amount from router
-     * @return oracleAddress Address of the oracle used
-     */
-    function _validatePrice(
-        uint256 inAmount,
-        address base,
-        address quote
-    ) internal view returns (uint256 expectedOutAmount, address oracleAddress) {
-        try eulerRouter.getQuote(inAmount, base, quote) returns (
-            uint256 quoteAmount
-        ) {
-            expectedOutAmount = quoteAmount;
-
-            // Resolve oracle to get oracle address
-            try eulerRouter.resolveOracle(inAmount, base, quote) returns (
-                uint256 resolvedAmount,
-                address resolvedOracle,
-                address resolvedBase,
-                address resolvedQuote
-            ) {
-                oracleAddress = resolvedOracle;
-            } catch {
-                oracleAddress = address(0);
-            }
-        } catch {
-            revert PriceValidationFailed();
-        }
-    }
-
-    /**
-     * @dev Execute a single arbitrage cycle with price validation
+     * @dev Execute a single arbitrage cycle with price validation (traditional method)
      * @param positionId ID of the position for event emission
      * @param targetToken Token we want to accumulate
      * @param borrowAmount Amount borrowed for this cycle
@@ -483,6 +767,40 @@ contract FlashArbitrageEngine {
     }
 
     /**
+     * @dev Validate price using Euler Router oracle
+     * @param inAmount Input amount for quote
+     * @param base Base token address
+     * @param quote Quote token address
+     * @return expectedOutAmount Expected output amount from router
+     * @return oracleAddress Address of the oracle used
+     */
+    function _validatePrice(
+        uint256 inAmount,
+        address base,
+        address quote
+    ) internal view returns (uint256 expectedOutAmount, address oracleAddress) {
+        try eulerRouter.getQuote(inAmount, base, quote) returns (
+            uint256 quoteAmount
+        ) {
+            expectedOutAmount = quoteAmount;
+
+            // Resolve oracle to get oracle address
+            try eulerRouter.resolveOracle(inAmount, base, quote) returns (
+                uint256 resolvedAmount,
+                address resolvedOracle,
+                address resolvedBase,
+                address resolvedQuote
+            ) {
+                oracleAddress = resolvedOracle;
+            } catch {
+                oracleAddress = address(0);
+            }
+        } catch {
+            revert PriceValidationFailed();
+        }
+    }
+
+    /**
      * @dev Get user's flash positions
      * @param user Address of the user
      */
@@ -503,6 +821,16 @@ contract FlashArbitrageEngine {
     }
 
     /**
+     * @dev Get arbitrage cycles for a position
+     * @param positionId ID of the position
+     */
+    function getPositionCycles(
+        uint256 positionId
+    ) external view returns (ArbitrageCycle[] memory) {
+        return positionCycles[positionId];
+    }
+
+    /**
      * @dev Update configuration
      */
     function updateConfig(
@@ -515,6 +843,41 @@ contract FlashArbitrageEngine {
         maxBorrowAmount = _maxBorrowAmount;
         minProfitThreshold = _minProfitThreshold;
         maxSlippageBps = _maxSlippageBps;
+
+        emit ConfigurationUpdated(
+            _maxCycles,
+            _maxBorrowAmount,
+            _minProfitThreshold,
+            _maxSlippageBps
+        );
+    }
+
+    /**
+     * @dev Update gas configuration
+     */
+    function updateGasConfig(
+        uint256 _gasPriceLimit,
+        uint256 _maxGasPerCycle
+    ) external onlyOwner {
+        gasPriceLimit = _gasPriceLimit;
+        maxGasPerCycle = _maxGasPerCycle;
+    }
+
+    /**
+     * @dev Toggle EVC usage
+     */
+    function toggleEVC(bool _useEVC) external onlyOwner {
+        useEVC = _useEVC;
+    }
+
+    /**
+     * @dev Authorize a vault for EVC operations
+     */
+    function authorizeVault(address vault, bool authorized) external onlyOwner {
+        if (vault == address(0)) {
+            revert InvalidVaultAddress();
+        }
+        authorizedVaults[vault] = authorized;
     }
 
     /**
@@ -579,4 +942,4 @@ contract FlashArbitrageEngine {
         (bool success, ) = WETH.call{value: msg.value}("");
         require(success, "ETH wrapping failed");
     }
-}
+} 

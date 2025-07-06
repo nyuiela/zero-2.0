@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
-import {ICarOracle} from "../interface/oracle/IcarOracle.sol";
+import {ICarOracle} from "../Interface/oracle/IcarOracle.sol";
 
 /*
  * @dev Library for creating and managing clones of car oracle contracts

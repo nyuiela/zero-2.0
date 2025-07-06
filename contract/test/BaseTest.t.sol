@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
-import {console2} from "forge-std/Console2.sol";
+import {console2} from "forge-std/console2.sol";
 
 import {CarRegistry} from "../src/core/registry.sol";
 import {StateManager} from "../src/core/State.sol";
@@ -14,7 +14,7 @@ import {BrandPermissionManager} from "../src/Permission/BrandPermissionManager.s
 import {PermissionManager} from "../src/Permission/PermissionManager.sol";
 
 import {ZeroNFT} from "../src/tokens/ZeroNFT.sol";
-import {IZeroNFT} from "../src/interface/IZeronft.sol";
+import {IZeroNFT} from "../src/Interface/IZeronft.sol";
 
 import {OracleMaster} from "../src/oracle/Oracle.sol";
 import {CarOracle} from "../src/oracle/CarOracle.sol";
