@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, Repeat2 } from "lucide-react";
+import { Repeat2 } from "lucide-react";
 import {
   Swap,
   SwapAmountInput,
@@ -48,35 +48,33 @@ export default function SwapWidget() {
       </button>
       {/* Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md w-full p-0 rounded-2xl overflow-hidden bg-white shadow-2xl ml-48 scale-[0.9] lg:scale-75 lg:ml-[640px] mt-10">
-          <div className="flex justify-between items-center px-6 py-4 border-b -mb-16">
+        <DialogContent className="max-w-md w-full p-0 rounded-2xl overflow-hidden bg-white shadow-2xl">
+          <div className="flex justify-between items-center px-6 py-4 border-b">
             <span className="font-bold text-lg">Swap Tokens</span>
           </div>
           <div className="p-6">
             {/* OnchainKit Swap UI */}
             {address ? (
-              <Swap className="bg-white">
+              <Swap>
                 <SwapAmountInput
                   label="Sell"
                   swappableTokens={swappableTokens}
                   token={ETH}
                   type="from"
-                  className="mt-4 bg-white"
                 />
-                <SwapToggleButton className="scale-[1.3] mt-2" />
+                <SwapToggleButton />
                 <SwapAmountInput
                   label="Buy"
                   swappableTokens={swappableTokens}
                   token={USDC}
                   type="to"
-                  className="mt-4 bg-white"
                 />
                 <SwapButton />
                 <SwapMessage />
                 <SwapToast />
               </Swap>
             ) : (
-              <div className="text-center text-gray-400">Connect your wallet to start swapping.</div>
+              <div className="text-center text-[#00296b] font-medium">Connect your wallet to start swapping.</div>
             )}
           </div>
         </DialogContent>

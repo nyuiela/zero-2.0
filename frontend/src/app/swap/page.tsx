@@ -192,7 +192,7 @@ export default function SwapPage() {
   const [escapeHatch, setEscapeHatch] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-2 sm:px-0">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
         {/* Header with Euler Brand */}
         <div className="flex justify-center mb-8">
@@ -201,15 +201,109 @@ export default function SwapPage() {
 
         {/* Tabs */}
         <Tabs value={tab} onValueChange={setTab} className="w-full mb-8">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-4">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="bridge">Bridge</TabsTrigger>
             <TabsTrigger value="swap">Swap</TabsTrigger>
             <TabsTrigger value="yield">Yield</TabsTrigger>
             <TabsTrigger value="vault">Vault</TabsTrigger>
           </TabsList>
+        </Tabs>
 
+        {/* Main Cards - Below Tabs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Swap Tokens Card */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white">
+            <h2 className="text-2xl font-bold mb-4">Swap Tokens</h2>
+            <div className="mb-4">
+              <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
+            </div>
+            {address ? (
+              <Swap>
+                <SwapAmountInput
+                  label="Sell"
+                  swappableTokens={TOKENS}
+                  token={TOKENS[0]}
+                  type="from"
+                />
+                <SwapToggleButton />
+                <SwapAmountInput
+                  label="Buy"
+                  swappableTokens={TOKENS}
+                  token={TOKENS[1]}
+                  type="to"
+                />
+                <SwapButton />
+                <SwapMessage />
+                <SwapToast />
+              </Swap>
+            ) : (
+              <div className="text-center text-gray-400">Connect your wallet to start swapping.</div>
+            )}
+          </Card>
+
+          {/* Yield Farming Card */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white">
+            <h2 className="text-2xl font-bold mb-4">Yield Farming</h2>
+            <div className="mb-4">
+              <p className="text-gray-500">Earn yield on your assets through various DeFi strategies.</p>
+            </div>
+            {address ? (
+              <div className="space-y-4">
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <label className="block text-sm font-medium mb-2">Amount to Stake</label>
+                  <input
+                    type="number"
+                    placeholder="0.0"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
+                  Start Earning Yield
+                </button>
+              </div>
+            ) : (
+              <div className="text-center text-gray-400">Connect your wallet to start yield farming.</div>
+            )}
+          </Card>
+
+          {/* Vault Investment Card */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white">
+            <h2 className="text-2xl font-bold mb-4">Vault Investment</h2>
+            <div className="mb-4">
+              <p className="text-gray-500">Invest in automated yield strategies with different risk profiles.</p>
+            </div>
+            {address ? (
+              <div className="space-y-4">
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <label className="block text-sm font-medium mb-2">Select Strategy</label>
+                  <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <option>Conservative Vault</option>
+                    <option>Balanced Vault</option>
+                    <option>Aggressive Vault</option>
+                  </select>
+                </div>
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <label className="block text-sm font-medium mb-2">Investment Amount</label>
+                  <input
+                    type="number"
+                    placeholder="0.0"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
+                  Invest in Vault
+                </button>
+              </div>
+            ) : (
+              <div className="text-center text-gray-400">Connect your wallet to invest in vaults.</div>
+            )}
+          </Card>
+        </div>
+
+        {/* Tab Content */}
+        <div className="w-full mb-8">
           {/* Bridge Tab Content */}
-          <TabsContent value="bridge" className="mt-6">
+          {tab === "bridge" && (
             <div className="min-h-[80vh] flex flex-col items-center justify-center bg-gradient-to-b from-[#b993f4] to-[#8ca6db] rounded-3xl py-20">
               <div className="w-full max-w-md mx-auto rounded-2xl bg-white/80 shadow-2xl p-0 flex flex-col items-center" style={{ fontFamily: 'Geist, Space Grotesk, Arial, sans-serif' }}>
                 {/* Bridge/Buy Tabs */}
@@ -327,12 +421,13 @@ export default function SwapPage() {
                 </DialogContent>
               </Dialog>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="swap" className="mt-0">
-            <div className="flex flex-col md:flex-row gap-0 md:gap-0">
-              {/* Left Column: Token List & History */}
-              <div className="flex-1 md:max-w-[78%] min-w-[320px] md:pl-8 md:pr-8 md:py-4 md:rounded-l-2xl md:rounded-r-none bg-white shadow-lg border-r border-gray-100 flex flex-col md:sticky md:top-8 h-fit">
+          {/* Swap Tab Content */}
+          {tab === "swap" && (
+            <div className="flex flex-col gap-6">
+              {/* Token List & History */}
+              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
                 <div className="mb-4">
                   <input
                     type="text"
@@ -354,7 +449,7 @@ export default function SwapPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="mt-auto">
+                <div>
                   <h3 className="font-semibold text-lg mb-2">Transaction History</h3>
                   <ul className="divide-y divide-gray-100">
                     {MOCK_HISTORY.map(tx => (
@@ -367,47 +462,14 @@ export default function SwapPage() {
                   </ul>
                 </div>
               </div>
-              {/* Right Column: Swap Form */}
-              <div className="flex-1 md:max-w-[38%] md:ml-auto md:mr-12 md:py-4 md:rounded-r-2xl md:rounded-l-none flex flex-col items-end">
-                <div className="w-full md:w-[420px] sticky top-24 self-end">
-                  <Card className="p-6 rounded-xl shadow-xl bg-white">
-                    <h2 className="text-2xl font-bold mb-4">Swap Tokens</h2>
-                    <div className="mb-4">
-                      <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
-                    </div>
-                    {/* OnchainKit Swap UI */}
-                    {address ? (
-                      <Swap>
-                        <SwapAmountInput
-                          label="Sell"
-                          swappableTokens={TOKENS}
-                          token={TOKENS[0]}
-                          type="from"
-                        />
-                        <SwapToggleButton />
-                        <SwapAmountInput
-                          label="Buy"
-                          swappableTokens={TOKENS}
-                          token={TOKENS[1]}
-                          type="to"
-                        />
-                        <SwapButton />
-                        <SwapMessage />
-                        <SwapToast />
-                      </Swap>
-                    ) : (
-                      <div className="text-center text-gray-400">Connect your wallet to start swapping.</div>
-                    )}
-                  </Card>
-                </div>
-              </div>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="yield" className="mt-0">
-            <div className="flex flex-col md:flex-row gap-0 md:gap-0">
-              {/* Left Column: Yield Strategies */}
-              <div className="flex-1 md:max-w-[48%] min-w-[320px] md:pl-8 md:pr-8 md:py-4 md:rounded-l-2xl md:rounded-r-none bg-white shadow-lg border-r border-gray-100 flex flex-col md:sticky md:top-8 h-fit">
+          {/* Yield Tab Content */}
+          {tab === "yield" && (
+            <div className="flex flex-col gap-6">
+              {/* Yield Strategies */}
+              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-4">Yield Strategies</h3>
                   <div className="space-y-4">
@@ -435,41 +497,14 @@ export default function SwapPage() {
                   </div>
                 </div>
               </div>
-              {/* Right Column: Yield Form */}
-              <div className="flex-1 md:max-w-[38%] md:ml-auto md:mr-12 md:py-4 md:rounded-r-2xl md:rounded-l-none flex flex-col items-end">
-                <div className="w-full md:w-[420px] sticky top-24 self-end">
-                  <Card className="p-6 rounded-xl shadow-xl bg-white">
-                    <h2 className="text-2xl font-bold mb-4">Yield Farming</h2>
-                    <div className="mb-4">
-                      <p className="text-gray-500">Earn yield on your assets through various DeFi strategies.</p>
-                    </div>
-                    {address ? (
-                      <div className="space-y-4">
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <label className="block text-sm font-medium mb-2">Amount to Stake</label>
-                          <input
-                            type="number"
-                            placeholder="0.0"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                          />
-                        </div>
-                        <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
-                          Start Earning Yield
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-center text-gray-400">Connect your wallet to start yield farming.</div>
-                    )}
-                  </Card>
-                </div>
-              </div>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="vault" className="mt-0">
-            <div className="flex flex-col md:flex-row gap-0 md:gap-0">
-              {/* Left Column: Vault Strategies */}
-              <div className="flex-1 md:max-w-[48%] min-w-[320px] md:pl-8 md:pr-8 md:py-4 md:rounded-l-2xl md:rounded-r-none bg-white shadow-lg border-r border-gray-100 flex flex-col md:sticky md:top-8 h-fit">
+          {/* Vault Tab Content */}
+          {tab === "vault" && (
+            <div className="flex flex-col gap-6">
+              {/* Vault Strategies */}
+              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-4">Vault Strategies</h3>
                   <div className="space-y-4">
@@ -497,45 +532,9 @@ export default function SwapPage() {
                   </div>
                 </div>
               </div>
-              {/* Right Column: Vault Form */}
-              <div className="flex-1 md:max-w-[38%] md:ml-auto md:mr-12 md:py-4 md:rounded-r-2xl md:rounded-l-none flex flex-col items-end">
-                <div className="w-full md:w-[420px] sticky top-24 self-end">
-                  <Card className="p-6 rounded-xl shadow-xl bg-white">
-                    <h2 className="text-2xl font-bold mb-4">Vault Investment</h2>
-                    <div className="mb-4">
-                      <p className="text-gray-500">Invest in automated yield strategies with different risk profiles.</p>
-                    </div>
-                    {address ? (
-                      <div className="space-y-4">
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <label className="block text-sm font-medium mb-2">Select Strategy</label>
-                          <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <option>Conservative Vault</option>
-                            <option>Balanced Vault</option>
-                            <option>Aggressive Vault</option>
-                          </select>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <label className="block text-sm font-medium mb-2">Investment Amount</label>
-                          <input
-                            type="number"
-                            placeholder="0.0"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                          />
-                        </div>
-                        <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
-                          Invest in Vault
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-center text-gray-400">Connect your wallet to invest in vaults.</div>
-                    )}
-                  </Card>
-                </div>
-              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </div>
   );

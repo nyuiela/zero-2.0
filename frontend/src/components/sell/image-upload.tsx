@@ -162,7 +162,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                 </p>
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-[#00296b] text-white"
+                  className="bg-[#00296b] text-white hover:bg-[#001b47] hover:text-white transition-colors"
                 >
                   Choose Files
                 </Button>

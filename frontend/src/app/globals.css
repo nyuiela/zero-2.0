@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Outfit', system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -45,8 +45,8 @@
 }
 
 :root {
-  --font-sans: 'Geist', 'Inter', 'Space Grotesk', Arial, sans-serif;
-  --font-heading: 'Space Grotesk', 'Geist', Arial, sans-serif;
+  --font-sans: 'Outfit', 'Space Grotesk', Arial, sans-serif;
+  --font-heading: 'Space Grotesk', 'Outfit', Arial, sans-serif;
   --font-mono: 'Geist Mono', 'Fira Mono', monospace;
   --radius: 1.2rem;
   --background: #f7f7fa;
@@ -203,6 +203,43 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
   }
+  
+  /* Fix select dropdown transparency */
+  [data-radix-select-content] {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-lg) !important;
+    z-index: 9999 !important;
+  }
+  
+  [data-radix-select-item] {
+    background-color: var(--card) !important;
+    color: var(--foreground) !important;
+  }
+  
+  [data-radix-select-item]:hover {
+    background-color: var(--accent) !important;
+  }
+  
+  /* Additional select component fixes */
+  .select-content,
+  [role="listbox"] {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+  
+  .select-item,
+  [role="option"] {
+    background-color: transparent !important;
+    color: var(--foreground) !important;
+  }
+  
+  .select-item:hover,
+  [role="option"]:hover {
+    background-color: var(--secondary) !important;
+  }
 }
 
 
@@ -331,4 +368,40 @@
 
 .ock-identity-balance {
   color: var(--foreground) !important;
+}
+
+/* Custom hover colors for consistency */
+.btn-dark-blue {
+  background-color: #00296b !important;
+  color: white !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.btn-dark-blue:hover {
+  background-color: #001b47 !important;
+  color: white !important;
+}
+
+/* Select component hover states */
+.select-trigger:hover {
+  background-color: #00296b !important;
+  color: white !important;
+}
+
+/* Button hover overrides */
+button:hover {
+  background-color: #00296b !important;
+  color: white !important;
+}
+
+/* Prevent white hover on specific buttons */
+.btn-prevent-white:hover {
+  background-color: #001b47 !important;
+  color: white !important;
+}
+
+/* Tab button hover states */
+.tab-button:hover {
+  background-color: #00296b !important;
+  color: white !important;
 }
