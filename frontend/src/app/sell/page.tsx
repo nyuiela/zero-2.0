@@ -313,7 +313,7 @@ export default function SellYourCarPage() {
             address,
             brandName,
             metadata,
-            "http"
+            "https://www.novitecgroup.com/en/news/novitec-ferrari-sf90/"
           ],
           account: address
         })
