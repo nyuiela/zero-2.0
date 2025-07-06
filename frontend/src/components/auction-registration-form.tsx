@@ -313,7 +313,7 @@ export function AuctionRegistrationForm({
                           <SelectTrigger>
                             <SelectValue placeholder="Select brand" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border-none">
                             {availableBrands.map((brand) => (
                               <SelectItem key={brand} value={brand}>
                                 {brand}
