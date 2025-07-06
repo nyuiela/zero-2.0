@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogContent } from '../ui/dialog'
 import { Button } from '../ui/button'
+import { Check } from 'lucide-react'
 
 interface ProgressModalProps {
   steps: Array<string>,
@@ -52,10 +53,23 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
 
               <div key={key} className="flex items-center space-x-2 bg-red-00">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold relative ${activeStep > key
-                  ? 'bg-green-500 text-white' : 'bg-[#828487] text-white'
+                  ? 'bg-green-500 text-white' 
+                  : activeStep === key && isLoading
+                  ? 'bg-blue-500 text-white animate-pulse'
+                  : 'bg-[#828487] text-white'
                   }`}>
-                  {key + 1}
-                  <span className={`text-xs absolute mt-4 bottom-[-30] text-nowrap font-medium  ${activeStep > key ? 'text-green-600' : 'text-[#00296b]'
+                  {activeStep > key ? (
+                    <Check className="w-4 h-4" />
+                  ) : activeStep === key && isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    key + 1
+                  )}
+                  <span className={`text-xs absolute mt-4 bottom-[-30] text-nowrap font-medium  ${activeStep > key 
+                    ? 'text-green-600' 
+                    : activeStep === key && isLoading
+                    ? 'text-blue-600'
+                    : 'text-[#00296b]'
                     }`}>
                     {step}
                   </span>
@@ -82,8 +96,18 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
                 <h4 className="text-blue-800 font-semibold text-sm mb-2">{message[activeStep].header}</h4>
                 <p className="text-blue-700 text-sm">
                   {message[activeStep].body}
-
                 </p>
+                {isLoading && (
+                  <div className="mt-3 p-3 bg-blue-100 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-700 text-sm">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      <span>Transaction is being processed on the blockchain...</span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Please wait and do not close this window
+                    </p>
+                  </div>
+                )}
               </div>
               {
                 activeStep < steps.length &&
@@ -92,7 +116,14 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
                   disabled={isLoading}
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer text-sm"
                 >
-                  {isLoading ? "Loading..." : button[activeStep]}
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Processing Transaction...
+                    </div>
+                  ) : (
+                    button[activeStep]
+                  )}
                 </Button>
               }
             </div>)
@@ -111,14 +142,18 @@ const ProgressTracker = ({ steps, open, onOpenChange, error, modalHash, message,
         {/* Transaction Hash */}
         {modalHash && (
           <div className="text-center mt-4">
-            <a
-              href={`https://sepolia.basescan.org/tx/${modalHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline text-sm"
-            >
-              View Transaction: {modalHash.slice(0, 10)}...{modalHash.slice(-8)}
-            </a>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <p className="text-xs text-gray-600 mb-1">Transaction Hash:</p>
+              <a
+                href={`https://sepolia.basescan.org/tx/${modalHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline text-sm font-mono"
+              >
+                {modalHash.slice(0, 10)}...{modalHash.slice(-8)}
+              </a>
+              <p className="text-xs text-gray-500 mt-1">Click to view on BaseScan</p>
+            </div>
           </div>
         )}
 

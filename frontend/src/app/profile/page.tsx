@@ -470,6 +470,20 @@ export default function ProfilePage() {
       hash: auctionVerificationModalHash,
     })
 
+  // Function to determine current loading state based on active step
+  const getCurrentLoadingState = () => {
+    switch (auctionVerificationStep) {
+      case 0:
+        return false // NFT check is instant
+      case 1:
+        return false // Brand seller check is instant
+      case 2:
+        return isAuctionVerificationPending || isAuctionStakeConfirming
+      default:
+        return false
+    }
+  }
+
   useEffect(() => {
     if (isAuctionStakeConfirmed) {
       // Stake transaction confirmed, complete verification
@@ -541,7 +555,7 @@ export default function ProfilePage() {
         description="Complete verification steps to create auctions."
         handleSubmit={[verifyAuctionCreation, verifyAuctionCreation, handleAuctionStake]} 
         step={auctionVerificationStep} 
-        isLoading={isAuctionVerificationPending} 
+        isLoading={getCurrentLoadingState()} 
         button={["Verify", "Check", "Stake"]} 
         message={[
           {

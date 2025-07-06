@@ -209,6 +209,24 @@ export function BrandRegistrationForm() {
     isError: isModalError
   } = useWriteContract()
 
+  // Separate writeContract for stake transaction
+  const {
+    data: stakeHash,
+    isPending: isStakePending,
+    writeContract: writeStakeContract,
+    error: stakeContractError,
+    isError: isStakeError
+  } = useWriteContract()
+
+  // Separate writeContract for activate transaction
+  const {
+    data: activateHash,
+    isPending: isActivatePending,
+    writeContract: writeActivateContract,
+    error: activateContractError,
+    isError: isActivateError
+  } = useWriteContract()
+
 
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
@@ -221,6 +239,19 @@ export function BrandRegistrationForm() {
     useWaitForTransactionReceipt({
       confirmations: 3,
       hash,
+    })
+
+  // Transaction receipt hooks for stake and activate
+  const { isLoading: isStakeConfirming, isSuccess: isStakeConfirmed } =
+    useWaitForTransactionReceipt({
+      confirmations: 3,
+      hash: stakeHash,
+    })
+
+  const { isLoading: isActivateConfirming, isSuccess: isActivateConfirmed } =
+    useWaitForTransactionReceipt({
+      confirmations: 3,
+      hash: activateHash,
     })
   const form = useForm<BrandRegistrationFormData>({
     resolver: zodResolver(brandRegistrationSchema),
@@ -341,18 +372,43 @@ export function BrandRegistrationForm() {
         duration: 5000,
       })
 
-
       setStakeActivateStep((prev) => prev + 1)
       setIsLoading(false)
     }
   }, [isError, contractError, isConfirmed])
+
+  // Handle stake transaction success
+  useEffect(() => {
+    if (isStakeConfirmed) {
+      toast.success("Stake transaction confirmed!", {
+        description: "Your stake has been successfully placed.",
+        duration: 5000,
+      })
+      setStakeActivateStep((prev) => prev + 1)
+    }
+  }, [isStakeConfirmed])
+
+  // Handle activate transaction success
+  useEffect(() => {
+    if (isActivateConfirmed) {
+      toast.success("Brand activated successfully!", {
+        description: "Your brand is now live on the platform.",
+        duration: 5000,
+      })
+      // Close modal and redirect to brands page
+      setShowStakeActivateModal(false)
+      setTimeout(() => {
+        window.location.href = '/brands'
+      }, 2000)
+    }
+  }, [isActivateConfirmed])
 
   // Stake function
   const handleStake = async () => {
     if (!form.getValues("brand")) return
     setError(null)
     try {
-      await writeContract({
+      writeStakeContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'stake',
@@ -360,8 +416,6 @@ export function BrandRegistrationForm() {
         value: parseEther(form.getValues("stake") || "0.000000000001"),
         account: address
       })
-      // isConfirmed && 
-      // setStakeActivateStep(2)
     } catch (error) {
       setError(parseError(error))
     }
@@ -372,19 +426,13 @@ export function BrandRegistrationForm() {
     if (!form.getValues("brand")) return
     setError(null)
     try {
-      writeContract({
+      writeActivateContract({
         address: registry_addr,
         abi: registry_abi,
         functionName: 'activate',
         args: [form.getValues("brand")],
         account: address
       })
-      // if (isConfirmed) {
-      //   // Redirect to brands page after a short delay
-      //   setTimeout(() => {
-      //     window.location.href = '/brands'
-      //   }, 2000)
-      // }
     } catch (error) {
       setError(parseError(error))
     }
@@ -399,6 +447,22 @@ export function BrandRegistrationForm() {
     }
   }, [isModalError, modalContractError])
 
+  // Handle stake transaction errors
+  useEffect(() => {
+    if (isStakeError && stakeContractError) {
+      const errorMessage = parseError(stakeContractError)
+      setError(errorMessage)
+    }
+  }, [isStakeError, stakeContractError])
+
+  // Handle activate transaction errors
+  useEffect(() => {
+    if (isActivateError && activateContractError) {
+      const errorMessage = parseError(activateContractError)
+      setError(errorMessage)
+    }
+  }, [isActivateError, activateContractError])
+
   const fillSample = () => {
     form.setValue("brand", "lesscars21");
     form.setValue("updateInterval", "3600");
@@ -412,10 +476,38 @@ export function BrandRegistrationForm() {
     form.setValue("args", "http://srv894182.hstgr.cloud/api/sync");
     form.setValue("stake", "0.0000005");
   }
+  // Function to determine current loading state based on active step
+  const getCurrentLoadingState = () => {
+    switch (stakeActivateStep) {
+      case 0:
+        return isPending || isConfirming
+      case 1:
+        return isStakePending || isStakeConfirming
+      case 2:
+        return isActivatePending || isActivateConfirming
+      default:
+        return false
+    }
+  }
+
+  // Function to get current transaction hash based on active step
+  const getCurrentTransactionHash = () => {
+    switch (stakeActivateStep) {
+      case 0:
+        return hash
+      case 1:
+        return stakeHash
+      case 2:
+        return activateHash
+      default:
+        return undefined
+    }
+  }
+
   console.log("Open ", showStakeActivateModal)
   return (
     <>
-      <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={hash} title={"Complete Brand Registration"} description={""} handleSubmit={[() => onSubmit(form.getValues()), handleStake, handleActivate]} step={stakeActivateStep} isLoading={isPending} button={["Register", "Stake", "Activate"]} message={[
+      <ProgressTracker steps={steps} open={showStakeActivateModal} onOpenChange={setShowStakeActivateModal} error={error} modalHash={getCurrentTransactionHash()} title={"Complete Brand Registration"} description={""} handleSubmit={[() => onSubmit(form.getValues()), handleStake, handleActivate]} step={stakeActivateStep} isLoading={getCurrentLoadingState()} button={["Register", "Stake", "Activate"]} message={[
         {
           header: 'Step 1: Register',
           body: `Register "${form.getValues("brand")}" on ZE | RO to drive your customers insane`

@@ -305,6 +305,14 @@ export default function BrandsPage() {
 
 // Brand Card Component
 function BrandCard({ brand }: { brand: BrandData }) {
+  // Debug logging to see what status values we're getting
+  console.log('Brand card data:', {
+    id: brand.id,
+    brand: brand.brand,
+    type: brand.type,
+    status: brand.status
+  })
+
   const getBrandTypeLabel = (type: string) => {
     switch (type) {
       case 'hosted': return 'Hosted'
@@ -327,7 +335,11 @@ function BrandCard({ brand }: { brand: BrandData }) {
     <Card className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
       <CardContent className="bg-white p-5 py-0">
         <div className="flex items-center justify-between mb-4 relative">
-          <h3 className="text-lg font-semibold text-gray-900">{brand.brand}</h3>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold text-gray-900 truncate">{brand.brand}</h3>
+            <p className="text-sm text-gray-500 mt-1">Brand ID:</p>
+            <p className="text-sm text-gray-500 mt-1 break-all font-mono">{brand.id}</p>
+          </div>
           <div className="flex items-center gap-2">
             <BrandStatusBadge status={brand.status} />
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBrandTypeColor(brand.type)}`}>
@@ -340,19 +352,32 @@ function BrandCard({ brand }: { brand: BrandData }) {
         </div>
         
         <div className="space-y-2 text-sm text-gray-600">
-          {brand.brandPermission && (
-            <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
-          )}
-          {brand.oracle && (
-            <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
-          )}
-          {brand.lastUpdated && (
-            <p>Last Updated: {typeof brand.lastUpdated === "bigint" ? Number(brand.lastUpdated) : brand.lastUpdated}</p>
+          {brand.blockNumber && (
+            <p>Block: <span className="font-mono text-xs">{brand.blockNumber}</span></p>
           )}
           {brand.blockTimestamp && (
             <p>Created: {new Date(Number(brand.blockTimestamp) * 1000).toLocaleDateString()}</p>
           )}
-          {brand.url && (
+          {brand.transactionHash && (
+            <p>
+              <a 
+                href={`https://sepolia.basescan.org/tx/${brand.transactionHash}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-blue-600 underline text-xs"
+              >
+                View Transaction
+              </a>
+            </p>
+          )}
+          {/* Show additional fields for hosted brands */}
+          {brand.type === 'hosted' && brand.brandPermission && (
+            <p>Permission: <span className="break-all">{brand.brandPermission}</span></p>
+          )}
+          {brand.type === 'hosted' && brand.oracle && (
+            <p>Oracle: <span className="break-all">{brand.oracle}</span></p>
+          )}
+          {brand.type === 'hosted' && brand.url && (
             <p>
               Website:{" "}
               <a href={brand.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
@@ -362,7 +387,7 @@ function BrandCard({ brand }: { brand: BrandData }) {
           )}
         </div>
       </CardContent>
-      <Link href={`/brands/${brand.brand.toLowerCase()}`}>
+      <Link href={`/brands/${brand.id}`}>
         <Button variant="outline" size="sm" className="w-full text-black border-none shadow-none text-md hover:bg-[#00296b]/80 disabled:opacity-50 disabled:cursor-not-allowed py-2 cursor-pointer bg-gray-300 rounded-none text-xs hover:underline">
           View Details <ArrowRight className="ml-0 h-4 w-4" />
         </Button>

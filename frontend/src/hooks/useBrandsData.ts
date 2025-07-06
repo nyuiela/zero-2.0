@@ -119,7 +119,7 @@ export function useBrandsData(): UseBrandsDataReturn {
   ]
 
   // Transform activated brands from GraphQL data
-  const activatedBrands: BrandData[] = data?.brandActivateds?.map((item: any) => ({
+  const activatedBrands: BrandData[] = (data as any)?.brandActivateds?.map((item: any) => ({
     id: item.id,
     brand: item.brand,
     type: 'activated' as const,
@@ -131,7 +131,7 @@ export function useBrandsData(): UseBrandsDataReturn {
   })) || []
 
   // Transform requested brands from GraphQL data
-  const requestedBrands: BrandData[] = data?.brandRegistryRequesteds?.map((item: any) => ({
+  const requestedBrands: BrandData[] = (data as any)?.brandRegistryRequesteds?.map((item: any) => ({
     id: item.id,
     brand: item.brand,
     type: 'requested' as const,
@@ -141,6 +141,14 @@ export function useBrandsData(): UseBrandsDataReturn {
     transactionHash: item.transactionHash,
     requestId: item.requestId
   })) || []
+
+  // Debug logging
+  console.log('useBrandsData debug:', {
+    activatedBrandsCount: activatedBrands.length,
+    requestedBrandsCount: requestedBrands.length,
+    activatedBrandsSample: activatedBrands.slice(0, 2),
+    requestedBrandsSample: requestedBrands.slice(0, 2)
+  })
 
   // Combine all brands
   const allBrands = [...hostedBrands, ...activatedBrands, ...requestedBrands]
