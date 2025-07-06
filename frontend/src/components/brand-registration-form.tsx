@@ -340,12 +340,7 @@ export function BrandRegistrationForm() {
         description: "Your brand has been registered and is pending activation.",
         duration: 5000,
       })
-      
-      // Redirect to brands page after a short delay
-      setTimeout(() => {
-        window.location.href = '/brands'
-      }, 2000)
-      
+
       setStakeActivateStep((prev) => prev + 1)
       setIsLoading(false)
     }
