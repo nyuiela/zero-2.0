@@ -518,7 +518,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <span className={`font-bold ${timerColor}`}>Time Left: {timer}s</span>
                   </div>
                   <div className="w-full h-2 bg-gray-200 overflow-hidden">
-                    <div className="h-2 bg-amber-400 transition-all" style={{ width: progressWidth }} />
+                    <div className="h-2 bg-green-500 transition-all" style={{ width: progressWidth }} />
                   </div>
                   {timer === 0 && (
                     <div className="text-red-600 font-bold mt-2 animate-bounce">Bidding round ended!</div>
@@ -684,7 +684,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                   <Button
                     type="submit"
                     disabled={isSubmitting || timer === 0 || (bidAmount && parseFloat(bidAmount) > 0 && needsSwap(bidAmount, currency))}
-                    className="w-full bg-gradient-to-r from-blue-900 to-purple-800 text-black font-bold py-3"
+                    className="w-full bg-[#00296b] text-white font-bold py-3 hover:bg-[#001b47] transition-colors"
                   >
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
                   </Button>
@@ -699,7 +699,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                         <Button
                           key={amt}
                           variant="outline"
-                          className="border-amber-400 text-amber-600 font-bold hover:bg-amber-400 hover:text-white"
+                          className="border-[#00296b] text-[#00296b] font-bold hover:bg-[#00296b] hover:text-white transition-colors"
                           onClick={() => handleBid(amt)}
                         >
                           {formatCurrency(amt, currency)}

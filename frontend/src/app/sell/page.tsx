@@ -463,7 +463,7 @@ export default function SellYourCarPage() {
             variant="outline"
             onClick={prevStep}
             disabled={currentStep === 1}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-[#00296b] text-[#00296b] hover:bg-[#00296b] hover:text-white"
           >
             <ChevronLeft className="w-4 h-4" />
             Previous
@@ -473,7 +473,7 @@ export default function SellYourCarPage() {
             {currentStep < steps.length ? (
               <Button
                 onClick={nextStep}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-[#00296b] text-white border border-[#00296b] hover:bg-[#001b47] hover:border-[#001b47]"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
@@ -482,7 +482,7 @@ export default function SellYourCarPage() {
               <Button
                 onClick={handleSubmit}
                 // disabled={isSubmitting}
-                className="flex items-center gap-2 cursor-pointer shadow "
+                className="flex items-center gap-2 cursor-pointer shadow bg-[#00296b] text-white border border-[#00296b] hover:bg-[#001b47] hover:border-[#001b47]"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Listing'}
               </Button>

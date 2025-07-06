@@ -125,7 +125,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'gallery' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('gallery')}
-          className={activeTab === "gallery" ? "flex-1 bg-white" : "flex-1 bg-none"}
+          className={activeTab === "gallery" ? "flex-1 bg-white" : "flex-1 bg-none hover:bg-[#00296b] hover:text-white"}
         >
           <Upload className="w-4 h-4 mr-2" />
           Gallery
@@ -134,7 +134,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'url' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('url')}
-          className={activeTab === "url" ? "flex-1 bg-white" : "flex-1 bg-none"}
+          className={activeTab === "url" ? "flex-1 bg-white" : "flex-1 bg-none hover:bg-[#00296b] hover:text-white"}
         >
           <Link className="w-4 h-4 mr-2" />
           URL
@@ -143,7 +143,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
           variant={activeTab === 'capture' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setActiveTab('capture')}
-          className={activeTab === "capture" ? "flex-1 bg-white" : "flex-1 bg-none"}
+          className={activeTab === "capture" ? "flex-1 bg-white" : "flex-1 bg-none hover:bg-[#00296b] hover:text-white"}
         >
           <Camera className="w-4 h-4 mr-2" />
           Camera
@@ -193,7 +193,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                   <Button
                     onClick={handleUrlAdd}
                     disabled={isLoading || !urlInput.trim()}
-                    className="bg-[#00296b] text-white"
+                    className="bg-[#00296b] text-white hover:bg-[#001b47] hover:text-white transition-colors"
                   >
                     Add
                   </Button>
@@ -217,7 +217,7 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                   </p>
                   <Button
                     onClick={startCamera}
-                    className="bg-[#00296b] text-white"
+                    className="bg-[#00296b] text-white hover:bg-[#001b47] hover:text-white transition-colors"
                   >
                     Start Camera
                   </Button>
@@ -236,13 +236,14 @@ export default function ImageUpload({ images, onImagesChange, errors }: ImageUpl
                   <div className="flex space-x-2">
                     <Button
                       onClick={capturePhoto}
-                      className="btn-gradient flex-1"
+                      className="btn-gradient flex-1 bg-[#00296b] text-white hover:bg-[#001b47] hover:text-white transition-colors"
                     >
                       Capture Photo
                     </Button>
                     <Button
                       onClick={stopCamera}
                       variant="outline"
+                      className="border-[#00296b] text-[#00296b] hover:bg-[#00296b] hover:text-white"
                     >
                       Cancel
                     </Button>
