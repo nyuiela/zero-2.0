@@ -40,7 +40,7 @@ export default function SampleDataButton({ onFillForm, disabled = false }: Sampl
           <ChevronDown className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent align="end" className="w-64 bg-white border-none shadow-md">
         <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
           Choose a sample vehicle:
         </div>

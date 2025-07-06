@@ -73,7 +73,7 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
             placeholder={inputPlaceholder}
             value={inputValue}
             onChange={(e) => onInputChange?.(e.target.value)}
-            className="border-[#00296b] text-[#202626] focus:ring-[#00296b] focus:border-[#00296b] rounded-md"
+            className="border-[#00296b] text-[#202626] focus:ring-[#00296b] focus:border-[#00296b] rounded-sm"
           />
         )}
         {/* Info boxes */}
@@ -91,7 +91,7 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
           <Button
             onClick={primaryButton.onClick}
             disabled={primaryButton.disabled}
-            className={`w-full ${primaryButton.className} py-6`}
+            className={`w-full ${primaryButton.className} py-6 rounded-sm`}
           >
             {primaryButton.text}
           </Button>

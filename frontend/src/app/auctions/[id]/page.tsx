@@ -390,7 +390,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
 
             {/* Comments Section */}
             {comments.length > 0 && (
-              <Card className="border-gray-200 shadow-none">
+              <Card className="border-none shadow-none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5" />
@@ -400,7 +400,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 <CardContent>
                   <div className="space-y-3">
                     {comments.map((comment: any, index: number) => (
-                      <div key={index} className="bg-gray-50 border border-gray-200 p-3 rounded">
+                      <div key={index} className="bg-gray-50 border border-gray-200 p-3 rounded-sm">
                         <div className="flex items-center gap-2 mb-2">
                           <User className="h-4 w-4 text-gray-500" />
                           <span className="font-medium text-sm">{comment.user || 'Anonymous'}</span>
@@ -418,7 +418,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
 
             {/* Reports Section */}
             {reports.length > 0 && (
-              <Card className="border-gray-200 shadow-none">
+              <Card className="border-none shadow-none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5" />
@@ -428,7 +428,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 <CardContent>
                   <div className="space-y-3">
                     {reports.map((report: any, index: number) => (
-                      <div key={index} className="bg-red-50 border border-red-200 p-3 rounded">
+                      <div key={index} className="bg-red-50 border border-red-200 p-3 rounded-sm">
                         <div className="flex items-center gap-2 mb-2">
                           <AlertTriangle className="h-4 w-4 text-red-500" />
                           <span className="font-medium text-sm text-red-700">{report.type || 'Issue Reported'}</span>
@@ -445,7 +445,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
             )}
 
             {/* All Bidders Section */}
-            <Card className="border-gray-200 shadow-none">
+            <Card className="border-none shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -456,9 +456,9 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                 {bids.length > 0 ? (
                   <div className="space-y-3">
                     {bids.map((bid, index) => (
-                      <div key={bid.address + bid.amount} className={`flex items-center justify-between p-3 ${index === 0 ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'}`}>
+                      <div key={bid.address + bid.amount} className={`flex items-center justify-between p-3 rounded-sm ${index === 0 ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 flex items-center justify-center text-white font-bold ${index === 0 ? 'bg-green-500' : 'bg-gray-500'}`}>
+                          <div className={`w-8 h-8 flex items-center justify-center text-white font-bold rounded-sm ${index === 0 ? 'bg-green-500' : 'bg-gray-500'}`}>
                             {index + 1}
                           </div>
                           <div>
@@ -555,8 +555,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                     <Button variant={currency === 'ETH' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('ETH')}>ETH</Button>
                     <Button variant={currency === 'USDC' ? 'default' : 'outline'} size="sm" onClick={() => setCurrency('USDC')}>USDC</Button>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                ) : (                    <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-sm">
                     <span className="text-sm font-medium text-amber-800">Don't have {currency}?</span>
                     <Button 
                       variant="outline" 
@@ -572,7 +571,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
 
                 {/* Swap Form - Dropdown */}
                 {showSwapForm && (
-                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-4">
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-sm space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-gray-900">Swap Options</h4>
                       <div className="flex gap-2">
@@ -620,7 +619,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                       </div>
 
                       {borrowPercentage[0] > 0 && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-sm">
                           <div className="text-sm text-blue-800">
                             <div className="font-medium">Borrowing Summary:</div>
                             <div>Base amount: {formatCurrency(swapAmount || '0', currency)}</div>
@@ -662,7 +661,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                       value={bidAmount}
                       onChange={e => setBidAmount(e.target.value)}
                       placeholder={bids[0]?.amount ? `Bid more than ${formatCurrency(bids[0].amount, currency)}` : 'Enter your bid'}
-                      className="w-full rounded-xs"
+                      className="w-full rounded-sm"
                       required
                     />
                   </div>
@@ -676,7 +675,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
 
                   {/* Insufficient Balance Warning */}
                   {bidAmount && parseFloat(bidAmount) > 0 && needsSwap(bidAmount, currency) && (
-                    <div className="text-sm text-red-700 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="text-sm text-red-700 p-3 bg-red-50 border border-red-200 rounded-sm">
                       <span className="font-semibold">Insufficient Balance:</span> You need {formatCurrency(getRequiredAmount(bidAmount), currency)} but have {formatCurrency(userBalance[currency], currency)}
                     </div>
                   )}

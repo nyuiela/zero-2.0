@@ -11,9 +11,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
     return (
         <div className="min-h-screen bg-background">
-            <main className="container px-4 py-8">
-                <ListingClientRtk id={`${id}`} />
-            </main>
+            <ListingClientRtk id={`${id}`} />
         </div>
     )
 }

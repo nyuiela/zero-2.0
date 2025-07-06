@@ -162,22 +162,27 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   return (
     <>
       <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={handleSubmitBid} name="Create Auction onchain & submit proof" />
-      {/* Breadcrumb */}
-      <nav className="text-sm text-muted-foreground mb-6 px-4 md:px-8 xl:px-12">
-        <Link href="/" className="hover:text-brand">Home</Link>
-        <span className="mx-2">/</span>
-        <Link href="/auctions" className="hover:text-brand">Auctions</Link>
-        <span className="mx-2">/</span>
-        <span className="text-foreground">{listing.year} {listing.make} {listing.model}</span>
-      </nav>
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-muted-foreground mb-6">
+          <Link href="/" className="hover:text-brand">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/auctions" className="hover:text-brand">Auctions</Link>
+          <span className="mx-2">/</span>
+          <span className="text-foreground">{listing.year} {listing.make} {listing.model}</span>
+        </nav>
+      </div>
 
-      {/* Current Bid Display */}
-      <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-xs bg-[#00296b]/90 py-8 px-4 md:px-8 xl:px-12">
+      {/* Current Bid Display - Full Width */}
+      <div className="mb-6 bg-gradient-to-r border border-amber-800 rounded-none bg-[#00296b]/90 py-8 w-full">
         <div className="text-center">
           <div className="text-sm text-white mb-1">Current Highest Bid</div>
           <div className="text-3xl font-bold text-white">{formatCurrency(listing.current_price, currency)}</div>
         </div>
       </div>
+
+      <div className="container mx-auto px-4">{/* Main Content Container */}
 
       {/* Bid Modal */}
       {isBidModalOpen && (
@@ -217,7 +222,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       )}
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 px-2 sm:px-2 md:px-4 xl:px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
         {/* Left Column - Images and Car Details */}
         <div className="lg:col-span-8 space-y-8">
           {/* Image Gallery */}
@@ -233,7 +238,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               />
             </div>
             {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-6 gap-2 px-2 sm:px-2 md:px-4 xl:px-4">
+            <div className="grid grid-cols-6 gap-2">
               {listing.image_url.map((image, index) => (
                 <button
                   key={image}
@@ -284,17 +289,17 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
               <div className="">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Condition Report</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-center p-4 bg-white rounded-[5px]">
                     <div className="text-sm text-gray-600 mb-1">Condition</div>
                     <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.condition}</div>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-center p-4 bg-white rounded-[5px]">
                     <div className="text-sm text-gray-600 mb-1">Inspection</div>
                     <div className="text-lg font-semibold text-green-600 capitalize">{listing.report.inspection}</div>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-center p-4 bg-white rounded-[5px]">
                     <div className="text-sm text-gray-600 mb-1">Notes</div>
-                    <div className="text-sm text-gray-900">{listing.report.notes}</div>
+                    <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.notes}</div>
                   </div>
                 </div>
               </div>
@@ -470,8 +475,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     {displayBids.map((bid, index) => (
                       <div
                         key={`carousel-${bid.id}`}
-                        className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                        style={{ borderRadius: 'var(--radius)' }}
+                        className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-[5px]"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
@@ -498,7 +502,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
       </div>
 
       {/* Mobile Bidding Panel - Below Car Details */}
-      <div className="lg:hidden space-y-6 mb-8 px-4">
+      <div className="lg:hidden space-y-6 mb-8">
         {/* Action Buttons */}
         <div className='flex flex-col space-y-4'>
           <div className="bg-gradient-to-br border-none w-full">
@@ -595,8 +599,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                   {displayBids.map((bid, index) => (
                     <div
                       key={`carousel-${bid.id}`}
-                      className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                      style={{ borderRadius: 'var(--radius)' }}
+                      className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-sm"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
@@ -621,8 +624,10 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
         </div>
       </div>
 
+      </div> {/* Close main content container */}
+
       {/* Related Auctions */}
-      <div className="mt-16 pt-8 border-t border-border">
+      <div className="container mx-auto px-4 mt-16 pt-8 border-t border-border">
         <h2 className="text-2xl font-bold text-foreground mb-8">Related Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {/* {relatedAuctions.map((auction) => (

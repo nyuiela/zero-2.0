@@ -255,8 +255,8 @@ export default function AuctionsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {upcomingAuctions.map((auction) => (
-              <div key={auction.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]" style={{ borderRadius: 'var(--radius)' }}>
-                <div className="relative overflow-hidden aspect-[4/3]" style={{ borderRadius: 'var(--radius)' }}>
+              <div key={auction.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]">
+                <div className="relative overflow-hidden aspect-[4/3]">
                   <Image
                     src={auction.image}
                     alt={`${auction.year} ${auction.make} ${auction.model}`}
@@ -300,8 +300,8 @@ export default function AuctionsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {availableNowCars.map((car) => (
-              <div key={car.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]" style={{ borderRadius: 'var(--radius)' }}>
-                <div className="relative overflow-hidden aspect-[4/3]" style={{ borderRadius: 'var(--radius)' }}>
+              <div key={car.id} className="auction-card group bg-gradient-to-br from-[#3f8aaf] to-[#252c34]">
+                <div className="relative overflow-hidden aspect-[4/3]">
                   <Image
                     src={car.image}
                     alt={`${car.year} ${car.make} ${car.model}`}

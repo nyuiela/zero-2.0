@@ -12,7 +12,7 @@ export default function SwapWidget() {
     <>
       {/* Floating Button */}
       <Button
-        className="fixed z-50 bottom-8 right-8 w-16 h-16 rounded-full bg-blue-700 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed z-50 bottom-8 right-8 w-16 h-16 rounded-full bg-black shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
         onClick={() => setOpen((v) => !v)}
         aria-label="Open Swap"
       >
