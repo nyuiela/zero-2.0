@@ -559,22 +559,22 @@ export default function ProfilePage() {
         ]} 
       />
 
-      <div className="min-h-screen bg-gray-50 py-10">
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
-          <div className="w-full flex justify-center mb-6">
-            <ProfileBanner image={profileNft} height="h-32" />
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <div className="w-full flex justify-center mb-6">
+          <ProfileBanner image={profileNft} height="h-32" />
             {isLoadingNFT && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-lg">
                 <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
               </div>
             )}
-          </div>
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Profile</h1>
+        </div>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Profile</h1>
               <p className="text-muted-foreground">Manage your account and create auctions</p>
               {/* Seller Actions Section */}
-              <div className="mt-4">
+            <div className="mt-4">
                 <Badge className="bg-green-100 text-green-800 mr-2">Seller</Badge>
                 <Button
                   className='rounded-[5px] border-none shadow-none bg-blue-900 hover:bg-blue-800 text-white font-bold cursor-pointer'
@@ -582,89 +582,89 @@ export default function ProfilePage() {
                   Create Auction
                 </Button>
               </div>
+          </div>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="overflow-x-auto w-full sm:overflow-x-visible">
+                <TabsList className="flex min-w-[320px] w-max gap-2 sm:grid sm:w-full sm:grid-cols-4 sm:min-w-0 bg-gray-200">
+                <TabsTrigger value="profile" className="text-black whitespace-nowrap sm:whitespace-normal">Profile</TabsTrigger>
+                <TabsTrigger value="activity" className="text-black whitespace-nowrap sm:whitespace-normal">Activity</TabsTrigger>
+                <TabsTrigger value="nfts" className="text-black whitespace-nowrap sm:whitespace-normal">My NFTs</TabsTrigger>
+                  <TabsTrigger value="auctions" className="text-black whitespace-nowrap sm:whitespace-normal">My Auctions</TabsTrigger>
+              </TabsList>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="overflow-x-auto w-full sm:overflow-x-visible">
-                <TabsList className="flex min-w-[320px] w-max gap-2 sm:grid sm:w-full sm:grid-cols-4 sm:min-w-0 bg-gray-200">
-                  <TabsTrigger value="profile" className="text-black whitespace-nowrap sm:whitespace-normal">Profile</TabsTrigger>
-                  <TabsTrigger value="activity" className="text-black whitespace-nowrap sm:whitespace-normal">Activity</TabsTrigger>
-                  <TabsTrigger value="nfts" className="text-black whitespace-nowrap sm:whitespace-normal">My NFTs</TabsTrigger>
-                  <TabsTrigger value="auctions" className="text-black whitespace-nowrap sm:whitespace-normal">My Auctions</TabsTrigger>
-                </TabsList>
-              </div>
+            <TabsContent value="profile" className="mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Account Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Account Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Wallet Address</label>
+                      <p className="text-foreground font-mono bg-muted px-3 py-2 rounded mt-1 text-sm break-all">
+                        {displayAddress}
+                      </p>
+                    </div>
 
-              <TabsContent value="profile" className="mt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Account Information */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <User className="h-5 w-5" />
-                        Account Information
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Wallet Address</label>
-                        <p className="text-foreground font-mono bg-muted px-3 py-2 rounded mt-1 text-sm break-all">
-                          {displayAddress}
-                        </p>
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Username</label>
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
+                        {displayUsername}
+                      </p>
+                    </div>
 
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Username</label>
-                        <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
-                          {displayUsername}
-                        </p>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Verification Status</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        {isVerified ? (
+                          <>
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <Badge className="bg-green-100 text-green-800">Verified</Badge>
+                          </>
+                        ) : user ? (
+                          <>
+                            <Clock className="h-4 w-4 text-yellow-500" />
+                            <Badge className="bg-yellow-100 text-yellow-800">Pending Verification</Badge>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="h-4 w-4 text-gray-500" />
+                            <Badge className="bg-gray-100 text-gray-800">Not Logged In</Badge>
+                          </>
+                        )}
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Verification Status</label>
-                        <div className="flex items-center gap-2 mt-1">
-                          {isVerified ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                              <Badge className="bg-green-100 text-green-800">Verified</Badge>
-                            </>
-                          ) : user ? (
-                            <>
-                              <Clock className="h-4 w-4 text-yellow-500" />
-                              <Badge className="bg-yellow-100 text-yellow-800">Pending Verification</Badge>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="h-4 w-4 text-gray-500" />
-                              <Badge className="bg-gray-100 text-gray-800">Not Logged In</Badge>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Security & Verification */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5" />
+                      Security & Verification
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Authentication Method</label>
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
+                        Wallet Signature + Zero-Knowledge Proof
+                      </p>
+                    </div>
 
-                  {/* Security & Verification */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Shield className="h-5 w-5" />
-                        Security & Verification
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Authentication Method</label>
-                        <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
-                          Wallet Signature + Zero-Knowledge Proof
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Last Login</label>
-                        <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
-                          {new Date().toLocaleString()}
-                        </p>
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Last Login</label>
+                      <p className="text-foreground bg-muted px-3 py-2 rounded mt-1 break-words">
+                        {new Date().toLocaleString()}
+                      </p>
+                    </div>
 
                       {/* Graph Data Status */}
                       <div>
@@ -694,72 +694,72 @@ export default function ProfilePage() {
                         )}
                       </div>
 
-                      {!isVerified && user && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <AlertCircle className="h-4 w-4 text-yellow-600" />
-                            <span className="text-sm font-medium text-yellow-800">Verification in Progress</span>
-                          </div>
-                          <p className="text-sm text-yellow-700 break-words">
-                            Your identity verification is being processed. This usually takes 2-5 minutes.
-                          </p>
+                    {!isVerified && user && (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertCircle className="h-4 w-4 text-yellow-600" />
+                          <span className="text-sm font-medium text-yellow-800">Verification in Progress</span>
                         </div>
-                      )}
-
-                      {!user && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <AlertCircle className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm font-medium text-blue-800">Complete Your Login</span>
-                          </div>
-                          <p className="text-sm text-blue-700 break-words">
-                            You&apos;re connected with your wallet but haven&apos;t completed the login process.
-                            Click the Login button in the header to complete your account setup.
-                          </p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="activity" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      Recent Activity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="text-center py-8 text-muted-foreground">
-                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No recent activity to display</p>
-                        <p className="text-sm">Your bidding and auction activity will appear here</p>
+                        <p className="text-sm text-yellow-700 break-words">
+                          Your identity verification is being processed. This usually takes 2-5 minutes.
+                        </p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                    )}
 
-              {/* NFT Collection Tab */}
-              <TabsContent value="nfts" className="mt-6">
-                <Card className='border-none shadow-none bg-white'>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="h-5 w-5" />
-                      My Car NFTs
-                    </CardTitle>
-                    <p className="text-muted-foreground">
-                      Your collection of car NFTs from the blockchain
-                    </p>
-                  </CardHeader>
-                  <CardContent className='bg-white'>
-                    <CarNFTCollection address={address} />
+                    {!user && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertCircle className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-800">Complete Your Login</span>
+                        </div>
+                        <p className="text-sm text-blue-700 break-words">
+                          You&apos;re connected with your wallet but haven&apos;t completed the login process.
+                          Click the Login button in the header to complete your account setup.
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="activity" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Recent Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-center py-8 text-muted-foreground">
+                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No recent activity to display</p>
+                      <p className="text-sm">Your bidding and auction activity will appear here</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* NFT Collection Tab */}
+            <TabsContent value="nfts" className="mt-6">
+                <Card className='border-none shadow-none bg-white'>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    My Car NFTs
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    Your collection of car NFTs from the blockchain
+                  </p>
+                </CardHeader>
+                  <CardContent className='bg-white'>
+                  <CarNFTCollection address={address} />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
               {/* Auctions Tab */}
               <TabsContent value="auctions" className="mt-6">
@@ -778,11 +778,11 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-            </Tabs>
-          </div>
-
+          </Tabs>
         </div>
+
       </div>
+    </div>
     </>
   )
 }

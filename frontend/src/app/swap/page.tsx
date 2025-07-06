@@ -5,19 +5,12 @@ import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import {
-  Swap,
-  SwapAmountInput,
-  SwapToggleButton,
-  SwapButton,
-  SwapMessage,
-  SwapToast,
-} from '@coinbase/onchainkit/swap';
 import type { Token } from '@coinbase/onchainkit/token';
 import { useAccount } from 'wagmi';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { ChevronDown, Settings } from "lucide-react";
+import CustomCoinbaseSwap from '@/components/custom-coinbase-swap';
 
 const EULER_LOGO = "https://docs.euler.finance/img/logo.svg";
 
@@ -217,28 +210,7 @@ export default function SwapPage() {
             <div className="mb-4">
               <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
             </div>
-            {address ? (
-              <Swap>
-                <SwapAmountInput
-                  label="Sell"
-                  swappableTokens={TOKENS}
-                  token={TOKENS[0]}
-                  type="from"
-                />
-                <SwapToggleButton />
-                <SwapAmountInput
-                  label="Buy"
-                  swappableTokens={TOKENS}
-                  token={TOKENS[1]}
-                  type="to"
-                />
-                <SwapButton />
-                <SwapMessage />
-                <SwapToast />
-              </Swap>
-            ) : (
-              <div className="text-center text-gray-400">Connect your wallet to start swapping.</div>
-            )}
+            <CustomCoinbaseSwap />
           </Card>
 
           {/* Yield Farming Card */}

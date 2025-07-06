@@ -183,7 +183,7 @@ export default function BrandsPage() {
                 <Button variant="outline" size="sm" onClick={() => refetch()}>
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Refresh
-                </Button>
+                      </Button>
               </div>
               
               {filteredBrands.length === 0 ? (
