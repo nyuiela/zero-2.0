@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Repeat2 } from "lucide-react";
 import CustomCoinbaseSwap from './custom-coinbase-swap';
+import { Button } from "./ui/button";
 
 export default function SwapWidget() {
   const [open, setOpen] = useState(false);
@@ -10,13 +11,13 @@ export default function SwapWidget() {
   return (
     <>
       {/* Floating Button */}
-      <button
-        className="fixed z-50 bottom-8 right-8 w-16 h-16 rounded-full bg-black shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+      <Button
+        className="fixed z-50 bottom-8 right-8 w-16 h-16 rounded-full bg-blue-700 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
         onClick={() => setOpen((v) => !v)}
         aria-label="Open Swap"
       >
         <Repeat2 className="w-8 h-8 text-white" />
-      </button>
+      </Button>
       {/* Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg w-[95vw] sm:w-full p-0 rounded-2xl overflow-hidden bg-white shadow-2xl max-h-[90vh] flex flex-col">
