@@ -334,21 +334,22 @@ function BrandCard({ brand }: { brand: BrandData }) {
   return (
     <Card className="hover:shadow-lg border-none bg-white transition-shadow pb-0 overflow-hidden">
       <CardContent className="bg-white p-5 py-0">
-        <div className="flex items-center justify-between mb-4 relative">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 truncate">{brand.brand}</h3>
-            <p className="text-sm text-gray-500 mt-1">Brand ID:</p>
-            <p className="text-sm text-gray-500 mt-1 break-all font-mono">{brand.id}</p>
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 truncate">{brand.brand}</h3>
           <div className="flex items-center gap-2">
             <BrandStatusBadge status={brand.status} />
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBrandTypeColor(brand.type)}`}>
+            <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getBrandTypeColor(brand.type)}`}>
               {getBrandTypeLabel(brand.type)}
             </span>
             {brand.locked && (
               <Lock className="w-5 h-5 text-gray-400 absolute -top-2 -right-2 bg-white rounded-full p-1 shadow" />
             )}
           </div>
+        </div>
+        
+        <div className="mb-4">
+          <p className="text-sm text-gray-500">Brand ID:</p>
+          <p className="text-sm text-gray-500 mt-1 break-all font-mono">{brand.id}</p>
         </div>
         
         <div className="space-y-2 text-sm text-gray-600">

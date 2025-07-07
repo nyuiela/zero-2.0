@@ -83,7 +83,7 @@ export function BrandStatusBadge({ status }: { status: string }) {
     return (
       <span
         className={clsx(
-          "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-[15px]",
+          "inline-flex items-center gap-2 px-3 py-1 rounded-lg font-medium text-[15px]",
           config.bg,
           config.color
         )}
@@ -102,7 +102,7 @@ export function BrandStatusBadge({ status }: { status: string }) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-2 px-3 py-1 rounded font-medium text-[15px]",
+        "inline-flex items-center gap-2 px-3 py-1 rounded-lg font-medium text-[15px]",
         config.bg,
         config.color
       )}

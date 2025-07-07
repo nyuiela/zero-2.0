@@ -48,7 +48,7 @@ export default function SampleDataButton({ onFillForm, disabled = false }: Sampl
           <DropdownMenuItem
             key={key}
             onClick={() => handleSampleDataSelect(key)}
-            className="cursor-pointer"
+            className="cursor-pointer hover:bg-gray-100"
           >
             <div className="flex flex-col">
               <span className="font-medium">{getDisplayName(key)}</span>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, ArrowUpDown, AlertCircle, CheckCircle, Loader2, Search, X, SortAsc } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -198,6 +199,12 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
   const [showSlippageSettings, setShowSlippageSettings] = useState(false)
   const [showNetworkSelector, setShowNetworkSelector] = useState(false)
   const [networkSelectorDirection, setNetworkSelectorDirection] = useState<'from' | 'to'>('from')
+
+  // Refs for dropdown positioning
+  const fromTokenButtonRef = useRef<HTMLButtonElement>(null)
+  const toTokenButtonRef = useRef<HTMLButtonElement>(null)
+  const [fromTokenDropdownPosition, setFromTokenDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const [toTokenDropdownPosition, setToTokenDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
 
   // Network selector states
   const [isSearching, setIsSearching] = useState(false)
@@ -929,15 +936,15 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
               <div className="relative">
                 <button
                   onClick={() => setShowFromTokenSelector(!showFromTokenSelector)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-[#00296b] hover:text-white transition-colors group"
                 >
                   <img
                     src={swapState.fromToken.image}
                     alt={swapState.fromToken.symbol}
                     className="w-6 h-6 rounded-full"
                   />
-                  <span className="font-medium text-gray-900">{swapState.fromToken.symbol}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                  <span className="font-medium text-gray-900 group-hover:text-white">{swapState.fromToken.symbol}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-white" />
                 </button>
 
                 {/* Token Selector Dropdown - From */}
@@ -948,7 +955,11 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 z-[9999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
+                      className="absolute top-full left-0 z-[99999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-xl overflow-auto mt-2"
+                      style={{ 
+                        maxHeight: '300px',
+                        zIndex: 99999
+                      }}
                     >
                       <div className="p-3 border-b border-gray-100">
                         <div className="flex items-center justify-between mb-2">
@@ -973,7 +984,7 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                             <button
                               key={`${token.symbol}-${token.chainId}`}
                               onClick={() => selectToken(token, 'from')}
-                              className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
+                              className="w-full flex items-center gap-3 p-4 hover:bg-[#00296b] hover:text-white transition-colors group"
                             >
                               <img
                                 src={token.image}
@@ -981,20 +992,20 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                                 className="w-8 h-8 rounded-full"
                               />
                               <div className="flex-1 text-left">
-                                <div className="font-medium text-gray-900">{token.symbol}</div>
-                                <div className="text-sm text-gray-500">{token.name}</div>
+                                <div className="font-medium text-gray-900 group-hover:text-white">{token.symbol}</div>
+                                <div className="text-sm text-gray-500 group-hover:text-gray-200">{token.name}</div>
                               </div>
                               <div className="text-right">
-                                <div className="font-medium text-gray-900">
+                                <div className="font-medium text-gray-900 group-hover:text-white">
                                   {tokenBalance.loading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                                    <Loader2 className="w-4 h-4 animate-spin text-gray-500 group-hover:text-gray-200" />
                                   ) : (
                                     `${tokenBalance.balance} ${token.symbol}`
                                   )}
                                 </div>
                               </div>
                               {swapState.fromToken.symbol === token.symbol && (
-                                <CheckCircle className="w-5 h-5 text-blue-600" />
+                                <CheckCircle className="w-5 h-5 text-blue-600 group-hover:text-white" />
                               )}
                             </button>
                           )
@@ -1181,15 +1192,15 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
               <div className="relative">
                 <button
                   onClick={() => setShowToTokenSelector(!showToTokenSelector)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text:bg-white"
+                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 hover:bg-[#00296b] hover:text-white transition-colors group"
                 >
                   <img
                     src={swapState.toToken.image}
                     alt={swapState.toToken.symbol}
                     className="w-6 h-6 rounded-full"
                   />
-                  <span className="font-medium text-gray-900">{swapState.toToken.symbol}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                  <span className="font-medium text-gray-900 group-hover:text-white">{swapState.toToken.symbol}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-white" />
                 </button>
 
                 {/* Token Selector Dropdown - To */}
@@ -1200,7 +1211,11 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 z-[9999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-lg overflow-auto"
+                      className="absolute top-full left-0 z-[99999] w-full min-w-[280px] max-w-[400px] bg-white rounded-xl border border-gray-200 shadow-xl overflow-auto mt-2"
+                      style={{ 
+                        maxHeight: '300px',
+                        zIndex: 99999
+                      }}
                     >
                       <div className="p-3 border-b border-gray-100">
                         <div className="flex items-center justify-between mb-2">
@@ -1225,7 +1240,7 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                             <button
                               key={`${token.symbol}-${token.chainId}`}
                               onClick={() => selectToken(token, 'to')}
-                              className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
+                              className="w-full flex items-center gap-3 p-4 hover:bg-[#00296b] hover:text-white transition-colors group"
                             >
                               <img
                                 src={token.image}
@@ -1233,20 +1248,20 @@ export default function CustomCoinbaseSwap({ className, header }: { className?: 
                                 className="w-8 h-8 rounded-full"
                               />
                               <div className="flex-1 text-left">
-                                <div className="font-medium text-gray-900">{token.symbol}</div>
-                                <div className="text-sm text-gray-500">{token.name}</div>
+                                <div className="font-medium text-gray-900 group-hover:text-white">{token.symbol}</div>
+                                <div className="text-sm text-gray-500 group-hover:text-gray-200">{token.name}</div>
                               </div>
                               <div className="text-right">
-                                <div className="font-medium text-gray-900">
+                                <div className="font-medium text-gray-900 group-hover:text-white">
                                   {tokenBalance.loading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                                    <Loader2 className="w-4 h-4 animate-spin text-gray-500 group-hover:text-gray-200" />
                                   ) : (
                                     `${tokenBalance.balance} ${token.symbol}`
                                   )}
                                 </div>
                               </div>
                               {swapState.toToken.symbol === token.symbol && (
-                                <CheckCircle className="w-5 h-5 text-blue-600" />
+                                <CheckCircle className="w-5 h-5 text-blue-600 group-hover:text-white" />
                               )}
                             </button>
                           )
