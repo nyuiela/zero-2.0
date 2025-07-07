@@ -933,27 +933,27 @@ contract FlashArbitrageEngine is EularLib {
     ////////////////////////////////////////////
     /////////////// Zero collateral system and logic
 
-    /**
-     * @dev Get all pending zero collateral requests
-     */
-    function getPendingZeroRequests() external view returns (uint256[] memory) {
-        uint256[] memory pendingRequests = new uint256[](_requestIdCounter);
-        uint256 count = 0;
+    // /**
+    //  * @dev Get all pending zero collateral requests
+    //  */
+    // function getPendingZeroRequests() external view returns (uint256[] memory) {
+    //     uint256[] memory pendingRequests = new uint256[](_requestIdCounter);
+    //     uint256 count = 0;
         
-        for (uint256 i = 0; i < _requestIdCounter; i++) {
-            if (requests[i].status == RequestStatus.Pending) {
-                pendingRequests[count] = i;
-                count++;
-            }
-        }
+    //     for (uint256 i = 0; i < _requestIdCounter; i++) {
+    //         if (requests[i].status == RequestStatus.Pending) {
+    //             pendingRequests[count] = i;
+    //             count++;
+    //         }
+    //     }
         
-        // Resize array to actual count
-        assembly {
-            mstore(pendingRequests, count)
-        }
+    //     // Resize array to actual count
+    //     assembly {
+    //         mstore(pendingRequests, count)
+    //     }
         
-        return pendingRequests;
-    }
+    //     return pendingRequests;
+    // }
 
     /**
      * @dev Add a vault for a token (only owner)
@@ -1150,42 +1150,6 @@ contract FlashArbitrageEngine is EularLib {
         }
     }
 
-    // function borrowFromEular(
-    //     uint256 _requestId
-    // ) public nonReentrant onlyRequester(_requestId) {
-    //     RequestConfig storage request = requests[_requestId];
-    //     require(request.status == RequestStatus.Approved, "EularLib: request not approved");
-    //     address _eulerVault = tokenToBestVault[request.borrowToken];
-    //     require(_eulerVault != address(0), "EularLib: vault not set for token");
-
-    //     request.status = RequestStatus.Borrowed;
-    //     request.borrowTime = block.timestamp;
-    //     request.eulerVault = _eulerVault;
-    //     request.eulerCollateralAmount = request.requestedAmount;
-    //     request.eulerDebtAmount = request.borrowAmount;
-
-    //     // Transfer collateral from treasury to this contract
-    //     IERC20(request.requestedToken).safeTransferFrom(
-    //         treasury,
-    //         address(this),
-    //         request.requestedAmount
-    //     );
-
-    //     // Deposit collateral to Euler vault
-    //     IEVault vault = IEVault(_eulerVault);
-    //     IERC20(request.requestedToken).approve(_eulerVault, request.requestedAmount);
-    //     vault.deposit(request.requestedAmount, address(this));
-
-    //     // Borrow from Euler vault
-    //     vault.borrow(request.borrowAmount, request.requesterUser);
-
-    //     emit EulerBorrowExecuted(
-    //         _requestId,
-    //         request.requesterUser,
-    //         request.borrowAmount,
-    //         request.borrowToken,
-    //         request.requestedAmount
-    //     );
-    // }
+   
 
 } 
