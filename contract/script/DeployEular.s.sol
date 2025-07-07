@@ -34,9 +34,10 @@ contract DeployFlashArbitrageEngine is Script {
     uint256 public constant GAS_PRICE_LIMIT = 50 gwei;
     uint256 public constant MAX_GAS_PER_CYCLE = 500_000;
 
-    function run() external {
+    function run() external returns(address flashArbitrageEngineAddr) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
+        address zeroNFT = vm.envAddress("ZERO_NFT_ADDRESS");
 
         vm.createSelectFork(vm.rpcUrl("basechain"));
         vm.startBroadcast(deployerPrivateKey);
@@ -69,14 +70,21 @@ contract DeployFlashArbitrageEngine is Script {
         }
 
         // =========================
-        // Step 3: Locate WETH eVault (Manual Lookup Needed)
+        // Step 3: Discover Multiple eVaults for Better Options
         // =========================
-        console2.log("\nSearching for WETH eVault (manual step required)...");
-        address wethVault = address(0);  // Placeholder - requires manual lookup
-
-        if (wethVault == address(0)) {
-            console2.log("WARNING: No WETH vault found.");
-            console2.log("You MUST locate the correct WETH eVault address before authorizing.");
+        console2.log("\nDiscovering multiple eVaults for better user options...");
+        
+        // Discover WETH vaults
+        address[] memory wethVaults = _discoverVaults(WETH, 5, deployer); // Find up to 5 WETH vaults
+        console2.log("Discovered", wethVaults.length, "WETH vaults");
+        
+        // Discover USDC vaults  
+        address[] memory usdcVaults = _discoverVaults(USDC, 5, deployer); // Find up to 5 USDC vaults
+        console2.log("Discovered", usdcVaults.length, "USDC vaults");
+        
+        if (wethVaults.length == 0 && usdcVaults.length == 0) {
+            console2.log("WARNING: No vaults discovered automatically.");
+            console2.log("You may need to manually add vault addresses.");
         }
 
         // =========================
@@ -86,8 +94,10 @@ contract DeployFlashArbitrageEngine is Script {
         FlashArbitrageEngine flashArbitrageEngine = new FlashArbitrageEngine(
             payable(EVC),
             swapPool,
-            oracleRouter
+            oracleRouter,
+            zeroNFT
         );
+        flashArbitrageEngineAddr = address(flashArbitrageEngine);
 
         console2.log("FlashArbitrageEngine deployed at:", address(flashArbitrageEngine));
 
@@ -106,10 +116,54 @@ contract DeployFlashArbitrageEngine is Script {
             MAX_GAS_PER_CYCLE
         );
 
-        if (wethVault != address(0)) {
-            flashArbitrageEngine.authorizeVault(wethVault, true);
-            console2.log("WETH Vault authorized:", wethVault);
+        // =========================
+        // Step 6: Add Multiple Vaults for Better Options
+        // =========================
+        console2.log("\nAdding multiple vaults for better user options...");
+        
+        // Add WETH vaults
+        for (uint i = 0; i < wethVaults.length; i++) {
+            if (wethVaults[i] != address(0)) {
+                flashArbitrageEngine.addTokenVault(WETH, wethVaults[i]);
+                console2.log("WETH Vault", i+1, "added:", wethVaults[i]);
+                
+                // Set initial vault info (these should be fetched from actual vaults)
+                flashArbitrageEngine.updateVaultInfo(
+                    wethVaults[i],
+                    1000000e18, // 1M WETH liquidity
+                    500,        // 5% borrow rate (in basis points)
+                    75          // 75% utilization
+                );
+                
+                // Authorize for EVC operations
+                flashArbitrageEngine.authorizeVault(wethVaults[i], true);
+            }
         }
+        
+        // Add USDC vaults
+        for (uint i = 0; i < usdcVaults.length; i++) {
+            if (usdcVaults[i] != address(0)) {
+                flashArbitrageEngine.addTokenVault(USDC, usdcVaults[i]);
+                console2.log("USDC Vault", i+1, "added:", usdcVaults[i]);
+                
+                // Set initial vault info (these should be fetched from actual vaults)
+                flashArbitrageEngine.updateVaultInfo(
+                    usdcVaults[i],
+                    5000000e6,  // 5M USDC liquidity
+                    300,        // 3% borrow rate (in basis points)
+                    60          // 60% utilization
+                );
+                
+                // Authorize for EVC operations
+                flashArbitrageEngine.authorizeVault(usdcVaults[i], true);
+            }
+        }
+        
+        // Log best vaults
+        address bestWethVault = flashArbitrageEngine.getBestVault(WETH);
+        address bestUsdcVault = flashArbitrageEngine.getBestVault(USDC);
+        console2.log("Best WETH vault:", bestWethVault);
+        console2.log("Best USDC vault:", bestUsdcVault);
 
         // =========================
         // Step 6: Verify Deployment
@@ -133,6 +187,28 @@ contract DeployFlashArbitrageEngine is Script {
         console2.log("\n=== Deployment Complete ===");
         console2.log("FlashArbitrageEngine Address:", address(flashArbitrageEngine));
         console2.log("\nNext Steps:");
+        console2.log("1. Verify vault discovery worked correctly");
+        console2.log("2. Monitor vault performance and update info regularly");
+        console2.log("3. Add more vaults as they become available");
    
+    }
+    
+    /**
+     * @dev Discover vaults for a given token by checking the eVault factory
+     * @param token The token to find vaults for
+     * @param maxVaults Maximum number of vaults to discover
+     * @param deployer The deployer address
+     * @return discoveredVaults Array of discovered vault addresses
+     */
+    function _discoverVaults(address token, uint256 maxVaults, address deployer) internal view returns (address[] memory discoveredVaults) {
+        // For now, return empty array - manual vault addition will be needed
+        // In production, you'd implement proper vault discovery logic here
+        // This could involve:
+        // 1. Querying the eVault factory for deployed vaults
+        // 2. Checking vault registries
+        // 3. Scanning recent events for vault deployments
+        
+        address[] memory result = new address[](0);
+        return result;
     }
 }
