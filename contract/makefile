@@ -93,6 +93,6 @@ deploy-setStake:
 register-brand:
 	@forge script script/interaction.s.sol:BrandInteraction  --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvvv
 
-deploy-eular:
+deploy-euler:
 	@forge script script/DeployEular.s.sol:DeployFlashArbitrageEngine  --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast --verify -vvvv
 
