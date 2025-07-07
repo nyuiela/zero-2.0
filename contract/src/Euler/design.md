@@ -16,7 +16,7 @@
  - repay - user repays fulfiler  ---> we use the collateral on eular to repay most of the debt we can , probabity that it wont be enough will be high due to interest. meaning the user will have to pay all!
 
 
-
+   
 additional feature -- when brands stake -- funds will be deposited into yield vaults to generate yield
 
 // Example: WETH → USDC → WETH arbitrage
