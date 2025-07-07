@@ -692,7 +692,7 @@ export default function ProfilePage() {
                             Data will display as soon as it's available
                           </p>
                         )}
-                      </div>
+                    </div>
 
                     {!isVerified && user && (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -775,9 +775,9 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent className='bg-white'>
                     <UserAuctions address={address} userAuctions={userAuctions} setUserAuctions={setUserAuctions} />
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
 

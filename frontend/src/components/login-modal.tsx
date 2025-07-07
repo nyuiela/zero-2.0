@@ -404,7 +404,7 @@ export function LoginModal() {
             text: "Connect Wallet",
             onClick: handleConnectWallet,
             disabled: username.trim().length === 0,
-            className: "bg-[#7400b8] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
           }}
           secondaryButton={{
             text: "cancel",

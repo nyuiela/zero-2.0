@@ -17,7 +17,13 @@ export const metadata: Metadata = {
   description: "Buy and sell cars through decentralized auctions powered by blockchain technology",
   keywords: "supercar auctions, luxury cars, car auctions, supercars, classic cars, ZERO, Supercar Blondie",
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
   },
   openGraph: {
     title: "ZERO - Premium Supercar Auctions",

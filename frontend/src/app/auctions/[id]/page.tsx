@@ -182,8 +182,8 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   if (carsLoading || !auctionId) {
     return (
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
-        {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div> */}
-        <p className="text-4xl text-amber-400 font-bold animate-pulse text-center">
+        {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00296b] mx-auto mb-4"></div> */}
+        <p className="text-4xl text-[#00296b] font-bold animate-pulse text-center">
           ZERO
         </p>
       </div>
@@ -301,7 +301,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
   }
 
   // Timer urgency color
-  const timerColor = timer > 20 ? 'text-green-600' : timer > 10 ? 'text-yellow-500 animate-pulse' : 'text-red-600 animate-bounce'
+  const timerColor = timer > 20 ? 'text-green-600' : timer > 10 ? 'text-[#00296b] animate-pulse' : 'text-red-600 animate-bounce'
   // Progress bar width
   const progressWidth = `${(timer / 60) * 100}%`
 
@@ -319,14 +319,14 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
       )}
 
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black py-8">
+      <div className="bg-[#00296b] text-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">{year} {make} {model}</h1>
-              <p className="text-amber-900">Auction #{auctionId}</p>
+              <p className="text-blue-200">Auction #{auctionId}</p>
             </div>
-            <Badge className="bg-white text-amber-600 border-amber-400 text-lg px-4 py-2">LIVE AUCTION</Badge>
+            <Badge className="bg-white text-[#00296b] border-[#00296b] text-lg px-4 py-2">LIVE AUCTION</Badge>
           </div>
         </div>
       </div>
@@ -501,12 +501,12 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
               <CardContent className="p-6">
                 {currentBid > startingPrice ? (
                   <div className="text-center mb-4">
-                    <div className="text-3xl font-bold text-green-700 mb-2">{formatCurrency(currentBid, currency)}</div>
+                    <div className="text-3xl font-bold text-gray-800 mb-2">{formatCurrency(currentBid, currency)}</div>
                     <div className="text-sm text-gray-600">Current Highest Bid</div>
                   </div>
                 ) : (
                   <div className="text-center mb-4">
-                    <div className="text-3xl font-bold text-gray-400">{formatCurrency(startingPrice, currency)}</div>
+                    <div className="text-3xl font-bold text-gray-800">{formatCurrency(startingPrice, currency)}</div>
                     <div className="text-sm text-gray-500">Starting Price</div>
                   </div>
                 )}
@@ -634,7 +634,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
                         <Button
                           type="submit"
                           disabled={isSwapSubmitting}
-                          className="flex-1 bg-gradient-to-r from-blue-800 to-purple-400 text-whitefont-bold"
+                          className="flex-1 bg-[#00296b] text-white font-bold"
                         >
                           {isSwapSubmitting ? 'Processing...' : 'Execute Swap'}
                         </Button>
@@ -683,7 +683,7 @@ export default function AuctionPage({ params }: { params: Promise<{ id: string }
 
                   <Button
                     type="submit"
-                    disabled={isSubmitting || timer === 0 || (bidAmount && parseFloat(bidAmount) > 0 && needsSwap(bidAmount, currency))}
+                    disabled={isSubmitting || timer === 0 || (!!bidAmount && parseFloat(bidAmount.toString()) > 0 && needsSwap(bidAmount, currency))}
                     className="w-full bg-[#00296b] text-white font-bold py-3 hover:bg-[#001b47] transition-colors"
                   >
                     {isSubmitting ? 'Placing Bid...' : 'Place Bid'}

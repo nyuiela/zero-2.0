@@ -341,6 +341,7 @@ export function BrandRegistrationForm() {
         duration: 5000,
       })
 
+
       setStakeActivateStep((prev) => prev + 1)
       setIsLoading(false)
     }
@@ -379,7 +380,10 @@ export function BrandRegistrationForm() {
         account: address
       })
       // if (isConfirmed) {
-      // setStakeActivateStep(3)
+      //   // Redirect to brands page after a short delay
+      //   setTimeout(() => {
+      //     window.location.href = '/brands'
+      //   }, 2000)
       // }
     } catch (error) {
       setError(parseError(error))

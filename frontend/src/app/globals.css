@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -45,9 +45,9 @@
 }
 
 :root {
-  --font-sans: 'Outfit', 'Space Grotesk', Arial, sans-serif;
-  --font-heading: 'Space Grotesk', 'Outfit', Arial, sans-serif;
-  --font-mono: 'Geist Mono', 'Fira Mono', monospace;
+  --font-sans: "Outfit", "Space Grotesk", Arial, sans-serif;
+  --font-heading: "Space Grotesk", "Outfit", Arial, sans-serif;
+  --font-mono: "Geist Mono", "Fira Mono", monospace;
   --radius: 1.2rem;
   --background: #f7f7fa;
   --foreground: #181c24;
@@ -63,11 +63,11 @@
   --muted-foreground: #6b7280;
   --border: #e5e7eb;
   --input: #e5e7eb;
-  --ring: #4b1691;
-  --glass: rgba(255,255,255,0.7);
+  --ring: #3d9116;
+  --glass: rgba(255, 255, 255, 0.7);
   --glass-blur: blur(12px);
-  --shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
-  --shadow-card: 0 4px 24px 0 rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --shadow-card: 0 4px 24px 0 rgba(0, 0, 0, 0.06);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -110,7 +110,12 @@
     background: var(--background);
     color: var(--foreground);
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -168,24 +173,24 @@
     /* Prevent horizontal scrolling */
     max-width: calc(100vw - 2rem);
   }
-  
+
   /* Keyboard avoidance for mobile inputs */
   @media (max-width: 640px) {
     [data-slot="dialog-content"] {
       top: 1rem !important;
     }
-    
+
     /* Ensure inputs are visible when keyboard appears */
     [data-slot="dialog-content"] input {
       font-size: 16px; /* Prevents zoom on iOS */
     }
   }
-  
+
   /* RainbowKit modal centering fix */
   [data-rk] {
     z-index: 9999 !important;
   }
-  
+
   /* Ensure modal overlay covers the entire screen */
   [data-slot="dialog-overlay"] {
     position: fixed !important;
@@ -194,16 +199,16 @@
     right: 0 !important;
     bottom: 0 !important;
   }
-  
+
   /* Hide scrollbar for horizontal scroll */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
   }
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
+    display: none; /* Safari and Chrome */
   }
-  
+
   /* Fix select dropdown transparency */
   [data-radix-select-content] {
     background-color: var(--card) !important;
@@ -211,16 +216,16 @@
     box-shadow: var(--shadow-lg) !important;
     z-index: 9999 !important;
   }
-  
+
   [data-radix-select-item] {
     background-color: var(--card) !important;
     color: var(--foreground) !important;
   }
-  
+
   [data-radix-select-item]:hover {
     background-color: var(--accent) !important;
   }
-  
+
   /* Additional select component fixes */
   .select-content,
   [role="listbox"] {
@@ -229,22 +234,18 @@
     border-radius: var(--radius-md) !important;
     box-shadow: var(--shadow-lg) !important;
   }
-  
+
   .select-item,
   [role="option"] {
     background-color: transparent !important;
     color: var(--foreground) !important;
   }
-  
+
   .select-item:hover,
   [role="option"]:hover {
     background-color: var(--secondary) !important;
   }
 }
-
-
-
-
 
 /* Modal background */
 .ock-modal-overlay {
@@ -330,7 +331,8 @@
   background-color: var(--background) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius) !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
   min-width: 240px !important;
   z-index: 100 !important;
 }
@@ -415,4 +417,56 @@ button[class*="bg-[#00296b]"]:hover {
 .btn-gradient:hover {
   background: #001b47 !important;
   color: white !important;
+}
+
+/* Override any purple colors with dark blue */
+.bg-purple-500,
+.bg-purple-600,
+.bg-purple-700 {
+  background-color: #00296b !important;
+}
+
+.text-purple-500,
+.text-purple-600,
+.text-purple-700 {
+  color: #00296b !important;
+}
+
+.border-purple-500,
+.border-purple-600,
+.border-purple-700 {
+  border-color: #00296b !important;
+}
+
+.bg-violet-500,
+.bg-violet-600,
+.bg-violet-700,
+.bg-violet-800,
+.bg-violet-900 {
+  background-color: #00296b !important;
+}
+
+.text-violet-500,
+.text-violet-600,
+.text-violet-700,
+.text-violet-800 {
+  color: #00296b !important;
+}
+
+.border-violet-500,
+.border-violet-600,
+.border-violet-700 {
+  border-color: #00296b !important;
+}
+
+/* Focus ring overrides */
+.focus\:ring-purple-500:focus,
+.focus\:ring-violet-500:focus {
+  --tw-ring-color: #00296b !important;
+}
+
+/* Ring colors */
+.ring-purple-500,
+.ring-violet-500 {
+  --tw-ring-color: #00296b !important;
 }

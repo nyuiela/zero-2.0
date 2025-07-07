@@ -1,16 +1,22 @@
 "use client"
 
 // import '@coinbase/onchainkit/styles.css';
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import type { Token } from '@coinbase/onchainkit/token';
-import { useAccount } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { ChevronDown, Settings } from "lucide-react";
 import CustomCoinbaseSwap from '@/components/custom-coinbase-swap';
+import { registry_abi, registry_addr } from '@/lib/abi/abi';
+import { parseEther } from 'viem';
+import { toast } from 'sonner';
+import { useEulerVaults } from '@/hooks/useEulerVaults';
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 const EULER_LOGO = "https://docs.euler.finance/img/logo.svg";
 
@@ -146,11 +152,103 @@ function EulerBrand() {
   );
 }
 
+// Stake Button Component
+function StakeButton({ onStake }: { onStake: () => void }) {
+  const { address } = useAccount();
+  const {
+    data: hash,
+    isPending,
+    writeContract,
+    error: contractError,
+    isError
+  } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      confirmations: 3,
+      hash,
+    });
+
+  const handleStake = async () => {
+    if (!address) return;
+
+    try {
+      writeContract({
+        address: registry_addr,
+        abi: registry_abi,
+        functionName: 'stake',
+        args: ['swap_user'],
+        value: parseEther("0.0000005"),
+        account: address
+      });
+    } catch (error) {
+      console.error('Stake error:', error);
+      toast.error("Stake transaction failed");
+    }
+  };
+
+  // Handle stake completion
+  if (isConfirmed) {
+    toast.success("Stake transaction confirmed!");
+    onStake();
+  }
+
+  return (
+    <button
+      onClick={handleStake}
+      disabled={isPending || isConfirming}
+      className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
+    >
+      {isPending || isConfirming ? "Staking..." : "Stake to Enable"}
+    </button>
+  );
+}
+
 export default function SwapPage() {
   const [tab, setTab] = useState("swap");
   const [search, setSearch] = useState("");
   const filteredTokens = TOKENS.filter(t => t.symbol.toLowerCase().includes(search.toLowerCase()) || t.name.toLowerCase().includes(search.toLowerCase()));
   const { address } = useAccount();
+  // Use default chain ID since useNetwork doesn't exist in wagmi v2
+  const { vaults, earnVaults, loading: vaultsLoading, error: vaultsError, fetchAccountPositions } = useEulerVaults(1); // Default to Ethereum mainnet
+
+  // Dashboard state
+  const [accountPositions, setAccountPositions] = useState<{ deposits: any[]; borrows: any[] } | null>(null);
+  const [positionsLoading, setPositionsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!address) {
+      setAccountPositions(null);
+      return;
+    }
+    setPositionsLoading(true);
+    fetchAccountPositions(address)
+      .then((data) => {
+        setAccountPositions(data ? { deposits: data.deposits || [], borrows: data.borrows || [] } : { deposits: [], borrows: [] });
+      })
+      .finally(() => setPositionsLoading(false));
+  }, [address, fetchAccountPositions]);
+
+  // Calculate dashboard stats
+  const totalLent = useMemo(() => {
+    if (!accountPositions) return 0;
+    // Assume deposits is an array of objects with an 'amount' property (string or number)
+    return accountPositions.deposits.reduce((sum, d) => sum + (parseFloat(d.amount || "0") || 0), 0);
+  }, [accountPositions]);
+
+  const totalBorrowed = useMemo(() => {
+    if (!accountPositions) return 0;
+    return accountPositions.borrows.reduce((sum, b) => sum + (parseFloat(b.amount || "0") || 0), 0);
+  }, [accountPositions]);
+
+  const vaultsInvested = useMemo(() => {
+    if (!accountPositions) return 0;
+    // Count unique vaults with a deposit > 0
+    const vaultIds = new Set((accountPositions.deposits || []).map((d) => d.vaultId || d.vault || d.id));
+    return vaultIds.size;
+  }, [accountPositions]);
+
+  const availableVaults = vaults.length;
 
   // Bridge state
   const [bridgeAmount, setBridgeAmount] = useState("");
@@ -158,6 +256,16 @@ export default function SwapPage() {
   const [bridgeStep, setBridgeStep] = useState(0); // 0: not started, 1: bridging, 2: waiting, 3: done
   const [bridgeTab, setBridgeTab] = useState("steps");
   const [bridgeStatus, setBridgeStatus] = useState("idle"); // idle, bridging, waiting, done
+
+  // Yield farming state
+  const [yieldAmount, setYieldAmount] = useState("");
+  const [selectedYieldToken, setSelectedYieldToken] = useState(USDC);
+  const [useNFTTokenization, setUseNFTTokenization] = useState(false);
+  const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
+
+  // Vault investment state
+  const [vaultAmount, setVaultAmount] = useState("");
+  const [selectedVaultStrategy, setSelectedVaultStrategy] = useState("Conservative Vault");
 
   // Simulate bridge process
   const startBridge = () => {
@@ -185,92 +293,160 @@ export default function SwapPage() {
   const [escapeHatch, setEscapeHatch] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-[10rem] xl:px-[20rem]">
       <div className="max-w-[1600px] mx-auto">
-        {/* Header with Euler Brand */}
-        <div className="flex justify-center mb-8">
-          <EulerBrand />
+        {/* Dashboard Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+          <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
+            <span className="text-xs text-gray-500 mb-1">Total Lent</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalLent.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span> */}
+            <span className="text-xs text-gray-400 mt-1">Across all vaults</span>
+          </div>
+          <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
+            <span className="text-xs text-gray-500 mb-1">Total Borrowed</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : totalBorrowed.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span> */}
+            <span className="text-xs text-gray-400 mt-1">Across all vaults</span>
+          </div>
+          <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
+            <span className="text-xs text-gray-500 mb-1">Vaults Invested</span>
+            <span className="text-2xl font-bold text-gray-900">0</span>
+            {/* <span className="text-2xl font-bold text-gray-900">{positionsLoading ? '...' : vaultsInvested}</span> */}
+            <span className="text-xs text-gray-400 mt-1">You have deposits in</span>
+          </div>
+          <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col items-start">
+            <span className="text-xs text-gray-500 mb-1">Available Vaults</span>
+            <span className="text-2xl font-bold text-gray-900">{vaultsLoading ? '...' : availableVaults}</span>
+            <span className="text-xs text-gray-400 mt-1">Total vaults</span>
+          </div>
         </div>
 
+        {/* --- Additional Dashboard Sections --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {/* Swaps Transactions */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+            <h3 className="text-xs text-gray-500 font-normal mb-1">Recent Swaps</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b border-gray-500">
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">From</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">To</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Amount</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Status</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Explorer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {MOCK_HISTORY.map((tx) => (
+                    <tr key={tx.hash} className="border-b border-gray-300 hover:bg-gray-50">
+                      <td className="py-2 px-2 text-gray-900 font-bold">{tx.from}</td>
+                      <td className="py-2 px-2 text-gray-900 font-bold">{tx.to}</td>
+                      <td className="py-2 px-2 text-gray-900 font-bold">{tx.amount}</td>
+                      <td className="py-2 px-2">
+                        <Badge className={tx.status === 'Success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>{tx.status}</Badge>
+                      </td>
+                      <td className="py-2 px-2">
+                        <a href={tx.explorer} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-bold">View</a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Requests Made to Borrow (P2P) - Mocked */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+            <h3 className="text-xs text-gray-500 font-normal mb-1">P2P Borrow Requests</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b border-gray-500">
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Token</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Amount</th>
+                    <th className="py-2 px-2 text-xs text-gray-500 font-normal">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { token: 'USDC', amount: 500, status: 'Pending' },
+                    { token: 'ETH', amount: 0.2, status: 'Matched' },
+                  ].map((req, i) => (
+                    <tr key={i} className="border-b hover:bg-gray-50 border-gray-300">
+                      <td className="py-2 px-2 text-gray-900 font-bold">{req.token}</td>
+                      <td className="py-2 px-2 text-gray-900 font-bold">{req.amount}</td>
+                      <td className="py-2 px-2">
+                        <Badge className={req.status === 'Matched' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>{req.status}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Collateral in EulerSwap */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+            <h3 className="text-xs text-gray-500 font-normal mb-1">Collateral in EulerSwap</h3>
+            <div className="text-3xl font-bold text-gray-900 mb-2">
+              {/* {positionsLoading ? '...' : accountPositions ? accountPositions.deposits.reduce((sum, d) => sum + (parseFloat(d.amount || '0') || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'} */}
+              0
+            </div>
+            <div className="text-xs text-gray-400">Total value of your collateral</div>
+          </Card>
+
+          {/* Estimated Returns or Profit/Loss - Mocked */}
+          <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+            <h3 className="text-xs text-gray-500 font-normal mb-1">Estimated Returns</h3>
+            {/* Mock calculation: profit if lent > borrowed, loss otherwise */}
+            {(() => {
+              const profit = totalLent - totalBorrowed;
+              return (
+                <div className={`text-3xl font-bold mb-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>{/* {positionsLoading ? '...' : profit.toLocaleString(undefined, { maximumFractionDigits: 4 })} */}0</div>
+              );
+            })()}
+            <div className="text-xs text-gray-400">(Lent - Borrowed)</div>
+          </Card>
+        </div>
+
+        {/* NFT Collateral/Locked Section */}
+        <div className="mb-12">
+          <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+            <h3 className="text-xs text-gray-500 font-normal mb-1">NFTs (Collateralizable or Locked)</h3>
+            <div className="flex flex-wrap gap-4">
+              {/* Use the same mock NFTs as in yield farming */}
+              {[
+                { id: "1", name: "Ferrari 488 GTB", year: 2019, image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", status: 'collateralizable' },
+                { id: "2", name: "Tesla Model S", year: 2022, image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", status: 'locked' }
+              ].map((nft) => (
+                <div key={nft.id} className="flex flex-col items-center bg-gray-50 rounded-lg p-4 w-40">
+                  <img src={nft.image} alt={nft.name} className="w-20 h-20 rounded object-cover mb-2" />
+                  <div className="font-bold text-sm text-gray-900 truncate">{nft.name}</div>
+                  <div className="text-xs text-gray-500 mb-1">{nft.year}</div>
+                  <Badge className={nft.status === 'collateralizable' ? 'bg-blue-100 text-blue-800' : 'bg-gray-300 text-gray-700'}>
+                    {nft.status.charAt(0).toUpperCase() + nft.status.slice(1)}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+        {/* Header with Euler Brand */}
+        {/* <div className="flex justify-center mb-8">
+          <EulerBrand />
+        </div> */}
+
         {/* Tabs */}
-        <Tabs value={tab} onValueChange={setTab} className="w-full mb-8">
+        <Tabs value={tab} onValueChange={setTab} className="mb-8 w-[20rem]">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="bridge">Bridge</TabsTrigger>
+            <TabsTrigger value="bridge" className="hover:bg-gray-50">Bridge</TabsTrigger>
             <TabsTrigger value="swap">Swap</TabsTrigger>
             <TabsTrigger value="yield">Yield</TabsTrigger>
             <TabsTrigger value="vault">Vault</TabsTrigger>
           </TabsList>
         </Tabs>
-
-        {/* Main Cards - Below Tabs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Swap Tokens Card */}
-          <Card className="p-6 rounded-xl shadow-xl bg-white">
-            <h2 className="text-2xl font-bold mb-4">Swap Tokens</h2>
-            <div className="mb-4">
-              <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
-            </div>
-            <CustomCoinbaseSwap />
-          </Card>
-
-          {/* Yield Farming Card */}
-          <Card className="p-6 rounded-xl shadow-xl bg-white">
-            <h2 className="text-2xl font-bold mb-4">Yield Farming</h2>
-            <div className="mb-4">
-              <p className="text-gray-500">Earn yield on your assets through various DeFi strategies.</p>
-            </div>
-            {address ? (
-              <div className="space-y-4">
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <label className="block text-sm font-medium mb-2">Amount to Stake</label>
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
-                  Start Earning Yield
-                </button>
-              </div>
-            ) : (
-              <div className="text-center text-gray-400">Connect your wallet to start yield farming.</div>
-            )}
-          </Card>
-
-          {/* Vault Investment Card */}
-          <Card className="p-6 rounded-xl shadow-xl bg-white">
-            <h2 className="text-2xl font-bold mb-4">Vault Investment</h2>
-            <div className="mb-4">
-              <p className="text-gray-500">Invest in automated yield strategies with different risk profiles.</p>
-            </div>
-            {address ? (
-              <div className="space-y-4">
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <label className="block text-sm font-medium mb-2">Select Strategy</label>
-                  <select className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <option>Conservative Vault</option>
-                    <option>Balanced Vault</option>
-                    <option>Aggressive Vault</option>
-                  </select>
-                </div>
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <label className="block text-sm font-medium mb-2">Investment Amount</label>
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <button className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold hover:bg-amber-600 transition-colors">
-                  Invest in Vault
-                </button>
-              </div>
-            ) : (
-              <div className="text-center text-gray-400">Connect your wallet to invest in vaults.</div>
-            )}
-          </Card>
-        </div>
 
         {/* Tab Content */}
         <div className="w-full mb-8">
@@ -397,113 +573,186 @@ export default function SwapPage() {
 
           {/* Swap Tab Content */}
           {tab === "swap" && (
-            <div className="flex flex-col gap-6">
-              {/* Token List & History */}
-              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    placeholder="Search tokens..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-2">Tokens & Rates</h3>
-                  <ul className="divide-y divide-gray-100">
-                    {filteredTokens.slice(0, 12).map(token => (
-                      <li key={token.symbol} className="py-2 flex items-center justify-between">
-                        <span className="font-medium">{token.symbol}</span>
-                        <span className="text-gray-500 text-sm">{token.name}</span>
-                        <span className="text-amber-600 font-semibold">1.0</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Transaction History</h3>
-                  <ul className="divide-y divide-gray-100">
-                    {MOCK_HISTORY.map(tx => (
-                      <li key={tx.hash} className="py-2 flex items-center justify-between">
-                        <span className="font-mono text-xs">{tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}</span>
-                        <span className="text-gray-500 text-xs">{tx.from} → {tx.to}</span>
-                        <a href={tx.explorer} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">View</a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="w-fit mb-[10rem]">
+              {/* <Card className="p-6 rounded-xl shadow-xl bg-white max-w-2xl mx-auto border-none"> */}
+              <h2 className="text-2xl font-bold mb-2">Swap Tokens</h2>
+              <div className="mb-10">
+                <p className="text-gray-500">Swap tokens across chains to participate in auctions or stake.</p>
               </div>
+              <CustomCoinbaseSwap />
+              {/* </Card> */}
             </div>
           )}
 
           {/* Yield Tab Content */}
           {tab === "yield" && (
-            <div className="flex flex-col gap-6">
-              {/* Yield Strategies */}
-              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-4">Yield Strategies</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">ETH-USDC LP</span>
-                        <span className="text-green-600 font-semibold">12.5% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">Liquidity provision on Uniswap V3</p>
-                    </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Staking Pool</span>
-                        <span className="text-green-600 font-semibold">8.2% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">Stake ETH for rewards</p>
-                    </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Lending Protocol</span>
-                        <span className="text-green-600 font-semibold">6.8% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">Lend assets for interest</p>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Yield Farming Card */}
+              <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold">Yield Farming</h2>
+                  <Badge className="bg-green-100 text-green-800">Active</Badge>
+                </div>
+                <p className="text-gray-600 mb-6">Lend your tokens to earn yield with optional NFT tokenization.</p>
+
+                {/* Token Selector */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Token to Lend</label>
+                  <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
+                    <img
+                      src={selectedYieldToken.image || ''}
+                      alt={selectedYieldToken.symbol}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="font-medium">{selectedYieldToken.symbol}</span>
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
                   </div>
                 </div>
-              </div>
+
+                {/* Amount Input */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Amount to Lend</label>
+                  <Input
+                    type="number"
+                    placeholder="0.0"
+                    value={yieldAmount}
+                    onChange={(e) => setYieldAmount(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* NFT Tokenization Option */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-gray-700">Use NFT Tokenization (Optional)</label>
+                    <input
+                      type="checkbox"
+                      checked={useNFTTokenization}
+                      onChange={(e) => setUseNFTTokenization(e.target.checked)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {useNFTTokenization && (
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-800 mb-3">
+                        Select your car NFTs to tokenize for additional yield:
+                      </p>
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {/* Mock NFTs - in real app, fetch from profile */}
+                        {[
+                          { id: "1", name: "Ferrari 488 GTB", year: 2019, image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" },
+                          { id: "2", name: "Tesla Model S", year: 2022, image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" }
+                        ].map((nft) => (
+                          <label key={nft.id} className="flex items-center space-x-3 p-2 bg-white rounded border hover:bg-gray-50 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedNFTs.includes(nft.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedNFTs([...selectedNFTs, nft.id]);
+                                } else {
+                                  setSelectedNFTs(selectedNFTs.filter(id => id !== nft.id));
+                                }
+                              }}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-gray-900 truncate">
+                                {nft.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {nft.year}
+                              </div>
+                            </div>
+                            <img
+                              src={nft.image}
+                              alt={nft.name}
+                              className="w-8 h-8 rounded object-cover"
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Stake Button */}
+                <StakeButton onStake={() => console.log("Staking for yield farming")} />
+              </Card>
             </div>
           )}
 
           {/* Vault Tab Content */}
           {tab === "vault" && (
-            <div className="flex flex-col gap-6">
-              {/* Vault Strategies */}
-              <div className="w-full bg-white shadow-lg rounded-2xl p-8">
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-4">Vault Strategies</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Conservative Vault</span>
-                        <span className="text-blue-600 font-semibold">5.2% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">Low risk, stable returns</p>
-                    </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Balanced Vault</span>
-                        <span className="text-orange-600 font-semibold">9.1% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">Moderate risk and returns</p>
-                    </div>
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Aggressive Vault</span>
-                        <span className="text-red-600 font-semibold">15.3% APY</span>
-                      </div>
-                      <p className="text-sm text-gray-600">High risk, high returns</p>
-                    </div>
-                  </div>
+            <div className="space-y-8">
+              {/* Vault Investment Card */}
+              <Card className="p-6 rounded-xl shadow-xl bg-white border-none">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold">Vault Investment</h2>
+                  <Badge className="bg-blue-100 text-blue-800">Euler Vaults</Badge>
                 </div>
-              </div>
+                <p className="text-gray-600 mb-6">Invest in Euler vaults with automated strategies.</p>
+
+                {/* Vault List */}
+                {vaultsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-gray-600">Loading vaults...</span>
+                  </div>
+                ) : vaultsError ? (
+                  <div className="text-center py-8">
+                    <p className="text-red-600 mb-2">Error loading vaults</p>
+                    <p className="text-sm text-gray-500">{vaultsError}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {vaults.map((vault, index) => (
+                      <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-lg">{vault.vaultName}</h3>
+                          <Badge className="bg-green-100 text-green-800">
+                            {vault.supplyAPY}% APY
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">
+                          Total Assets: {parseFloat(vault.totalAssets) / 1e18} |
+                          Total Borrows: {parseFloat(vault.totalBorrows) / 1e18}
+                        </p>
+
+                        {/* Strategy Dropdown */}
+                        <div className="mb-3">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Strategy</label>
+                          <select
+                            className="w-full p-2 border rounded-lg bg-white"
+                            value={selectedVaultStrategy}
+                            onChange={(e) => setSelectedVaultStrategy(e.target.value)}
+                          >
+                            <option value="Conservative Vault">Conservative Vault</option>
+                            <option value="Balanced Vault">Balanced Vault</option>
+                            <option value="Aggressive Vault">Aggressive Vault</option>
+                          </select>
+                        </div>
+
+                        {/* Investment Amount */}
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Investment Amount (ETH)</label>
+                          <Input
+                            type="number"
+                            placeholder="0.0"
+                            value={vaultAmount}
+                            onChange={(e) => setVaultAmount(e.target.value)}
+                            className="w-full"
+                          />
+                        </div>
+
+                        {/* Stake Button */}
+                        <StakeButton onStake={() => console.log(`Staking for vault: ${vault.vaultName}`)} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
             </div>
           )}
         </div>
