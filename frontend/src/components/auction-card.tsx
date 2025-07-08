@@ -65,7 +65,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
 
   useEffect(() => {
     setTime(breakdownCountdown(Math.max(0, secondsLeft)))
-  }, [auction])
+  }, [auction, secondsLeft])
 
   return (
     <Link href={`/listing/${auction.id}`} className="block group bg-transparent overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-none">
