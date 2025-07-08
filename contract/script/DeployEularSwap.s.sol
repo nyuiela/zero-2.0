@@ -6,8 +6,11 @@ import {console2} from "forge-std/console2.sol";
 import {FlashArbitrageEngine} from "../src/Euler/FlashArbitriageEngine.sol";
 import {EthereumVaultConnector} from "../src/Euler/vault/EthereumVaultConnector.sol";
 import {EulerRouterFactory} from "../src/Euler/vault/EulerRouterFactory.sol";
-
-import {ScriptUtils} from "./utils/ScriptUtils.s.sol";
+// evc/=lib/evk-periphery/lib/ethereum-vault-connector/src/
+// evk-periphery/=lib/evk-periphery/src/
+// evk-test/=lib/evk-periphery/lib/euler-vault-kit/test/
+// evk/=lib/evk-periphery/lib/euler-vault-kit/src/
+// import {ScriptUtils} from "./utils/ScriptUtils.s.sol";
 import {GenericFactory} from "evk/GenericFactory/GenericFactory.sol";
 import {EulerRouter} from "euler-price-oracle/EulerRouter.sol";
 import {IEVC} from "ethereum-vault-connector/interfaces/IEthereumVaultConnector.sol";
@@ -290,6 +293,7 @@ contract DeployEularSwap is Script {
     FlashArbitrageEngine flashArbitrageEngine;
     EthereumVaultConnector vault;
     EulerRouterFactory routerfactory;
+    EVaultDeployer evaultDeployer;
 
     // =========================
     // Token Addresses (Base)
@@ -321,6 +325,15 @@ contract DeployEularSwap is Script {
         vm.stopBroadcast();
         console2.log("egine was deployed at ", address(engine));
         setConfigurationNeeded /**evault address */();
+    }
+
+    // deploy oracle and evault
+    function deployEvault()
+        interal
+        returns (address oracleRouter, address evault)
+    {
+        evaultDeployer = new EVaultDeployer();
+        (oracleRouter, evault) = evaultDeployer.deploy();
     }
 
     function deployContractsNeededToDeployEngine() internal {
