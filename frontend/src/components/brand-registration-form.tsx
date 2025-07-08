@@ -33,8 +33,9 @@ import ValidationErrors from './ValidationErrors'
 import TransactionError from './TransactionError'
 import TransactionHash from './TransactionHash'
 import { toast } from "sonner"
+import { useBrandsData } from '@/hooks/useBrandsData'
 
-const validateFormData = (data: BrandRegistrationFormData): string[] => {
+const validateFormData = (data: BrandRegistrationFormData, existingBrands: any[]): string[] => {
   const errors: string[] = []
 
   // Brand name validation
@@ -43,6 +44,17 @@ const validateFormData = (data: BrandRegistrationFormData): string[] => {
   }
   if (data.brand && data.brand.length > 50) {
     errors.push("Brand name must be less than 50 characters")
+  }
+
+  // Check for duplicate brand names (case-insensitive)
+  if (data.brand && data.brand.trim().length > 0) {
+    const existingBrand = existingBrands.find(brand => 
+      brand.brand.toLowerCase() === data.brand.toLowerCase()
+    )
+    
+    if (existingBrand) {
+      errors.push(`Brand name "${data.brand}" already exists. Please choose a different name.`)
+    }
   }
 
   // Admin address validation
@@ -192,6 +204,34 @@ export type BrandRegistrationFormData = z.infer<typeof brandRegistrationSchema>
 
 export function BrandRegistrationForm() {
   const [argsArray, setArgsArray] = useState<string[]>([])
+  const { brands, isLoading: brandsLoading } = useBrandsData()
+  
+  // Real-time brand name validation function
+  const validateBrandName = (brandName: string): string | null => {
+    if (!brandName || brandName.trim().length === 0) {
+      return null // Let Zod handle required validation
+    }
+    
+    if (brandName.trim().length < 2) {
+      return "Brand name must be at least 2 characters long"
+    }
+    
+    if (brandName.length > 50) {
+      return "Brand name must be less than 50 characters"
+    }
+    
+    // Check for existing brands (case-insensitive)
+    const existingBrand = brands.find(brand => 
+      brand.brand.toLowerCase() === brandName.toLowerCase()
+    )
+    
+    if (existingBrand) {
+      return `Brand name "${brandName}" already exists. Please choose a different name.`
+    }
+    
+    return null
+  }
+
   const {
     data: hash,
     isPending,
@@ -317,6 +357,19 @@ export function BrandRegistrationForm() {
     setIsLoading(true)
     setError(null)
     setValidationErrors([])
+    
+    // Run custom validation before contract call
+    const validationErrors = validateFormData(data, brands)
+    if (validationErrors.length > 0) {
+      setValidationErrors(validationErrors)
+      setIsLoading(false)
+      toast.error("Validation failed", {
+        description: validationErrors.join(", "),
+        duration: 5000,
+      })
+      return
+    }
+    
     // Convert args string to array
     const argsArray = data.args.split(',').map(arg => arg.trim()).filter(arg => arg.length > 0)
     try {
@@ -544,10 +597,25 @@ export function BrandRegistrationForm() {
                   <FormItem>
                     <FormLabel>Brand Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter brand name (e.g., Toyota, BMW)" {...field} />
+                      <Input 
+                        placeholder="Enter brand name (e.g., Toyota, BMW)" 
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e)
+                          // Real-time validation
+                          const error = validateBrandName(e.target.value)
+                          if (error) {
+                            form.setError('brand', { message: error })
+                          } else {
+                            form.clearErrors('brand')
+                          }
+                        }}
+                        disabled={brandsLoading}
+                      />
                     </FormControl>
                     <FormDescription>
                       The name of the car brand to register
+                      {brandsLoading && " (Loading brand data...)"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -561,9 +629,9 @@ export function BrandRegistrationForm() {
                 <Button
                   type="submit"
                   className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6"
-                  disabled={showStakeActivateModal}
+                  disabled={showStakeActivateModal || brandsLoading}
                 >
-                  {showStakeActivateModal ? "Processing..." : "Register Brand"}
+                  {showStakeActivateModal ? "Processing..." : brandsLoading ? "Loading..." : "Register Brand"}
                 </Button>
                 <ValidationErrors errors={validationErrors} />
                 <TransactionError error={error} />
