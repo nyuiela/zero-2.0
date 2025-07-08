@@ -162,7 +162,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
   return (
     <>
       <ProofModalTransaction isOpen={isProofModalOpen} onClose={() => setIsProofModalOpen(false)} proof={proof} handleSubmit={handleSubmitBid} name="Create Auction onchain & submit proof" />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-muted-foreground mb-6">
@@ -184,241 +184,366 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
 
       <div className="container mx-auto px-4">{/* Main Content Container */}
 
-      {/* Bid Modal */}
-      {isBidModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in">
-            <button className="absolute top-3 right-3 text-gray-400 hover:text-black text-2xl" onClick={() => setIsBidModalOpen(false)}>&times;</button>
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Place Your Bid</h2>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1 font-medium">Bid Amount ({currency})</label>
-              <input
-                type="number"
-                min={minBid}
-                value={bidAmount}
-                onChange={handleBidAmountChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-            </div>
-            {bidError && (
-              <div className="text-red-600 text-sm mt-2 font-semibold bg-red-50 p-3 rounded-lg border-2 border-red-200 flex items-center">
-                <span className="mr-2">⚠️</span>
-                {bidError}
+        {/* Bid Modal */}
+        {isBidModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in">
+              <button className="absolute top-3 right-3 text-gray-400 hover:text-black text-2xl" onClick={() => setIsBidModalOpen(false)}>&times;</button>
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Place Your Bid</h2>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1 font-medium">Bid Amount ({currency})</label>
+                <input
+                  type="number"
+                  min={minBid}
+                  value={bidAmount}
+                  onChange={handleBidAmountChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                />
               </div>
-            )}
-            <div className="mb-4 text-sm text-gray-700">
-              <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
-            </div>
-            <Button
-              type="submit"
-              onClick={handlePlaceBid}
-              disabled={isSubmitting}
-              className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
-            >
-              {isSubmitting ? "Creating Bid..." : "Place Bid offchain"}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-        {/* Left Column - Images and Car Details */}
-        <div className="lg:col-span-8 space-y-8">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image - maximize within column, no overflow */}
-            <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card w-full max-w-full">
-              <Image
-                src={listing.image_url[selectedImage]}
-                alt={`${listing.year} ${listing.make} ${listing.model}`}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-6 gap-2">
-              {listing.image_url.map((image, index) => (
-                <button
-                  key={image}
-                  onClick={() => setSelectedImage(index)}
-                  className={`relative aspect-square rounded overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-brand' : 'border-border hover:border-muted-foreground'}`}
-                >
-                  <Image
-                    src={image}
-                    alt={`View ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    unoptimized={true}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Car Details Section */}
-          <div className="space-y-8">
-            {/* Title and Location */}
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                {listing.year} {listing.make} {listing.model}
-              </h1>
-              <div className="flex items-center space-x-4 text-muted-foreground">
-                <div className="flex items-center space-x-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>{listing.location}</span>
+              {bidError && (
+                <div className="text-red-600 text-sm mt-2 font-semibold bg-red-50 p-3 rounded-lg border-2 border-red-200 flex items-center">
+                  <span className="mr-2">⚠️</span>
+                  {bidError}
                 </div>
+              )}
+              <div className="mb-4 text-sm text-gray-700">
+                <span className="font-semibold">Stake Required:</span> {formatCurrency(stake, currency)} (5% of bid)
               </div>
-            </div>
-
-            {/* Description */}
-            <div className="bg-transparent rounded-none">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {listing.description}
-              </p>
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Vehicle Overview</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {listing.vehicale_overview}
-              </p>
-            </div>
-
-            {/* Report Section */}
-            {listing.report && (
-              <div className="">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">Condition Report</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-white rounded-[5px]">
-                    <div className="text-sm text-gray-600 mb-1">Condition</div>
-                    <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.condition}</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-[5px]">
-                    <div className="text-sm text-gray-600 mb-1">Inspection</div>
-                    <div className="text-lg font-semibold text-green-600 capitalize">{listing.report.inspection}</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-[5px]">
-                    <div className="text-sm text-gray-600 mb-1">Notes</div>
-                    <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.notes}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Key Features */}
-            <div className="bg-transparent rounded-none">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-foreground mb-2">Exterior</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
-                    {listing.features.exterior.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-2">Interior</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
-                    {listing.features.interior.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="md:col-span-2">
-                  <h4 className="font-semibold text-foreground mb-2">Mechanical</h4>
-                  <ul className="list-disc ml-5 text-muted-foreground space-y-1">
-                    {listing.features.mechanical.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Specifications */}
-            <div className="bg-transparent rounded-none">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Specifications</h2>
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-0">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Engine Size:</span>
-                  <span className="text-foreground font-medium">{listing.engine_size}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Transmission:</span>
-                  <span className="text-foreground font-medium">{listing.transmission}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Fuel Type:</span>
-                  <span className="text-foreground font-medium">{listing.fuel_type}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Exterior Color:</span>
-                  <span className="text-foreground font-medium">{listing.exterior_color}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Interior Color:</span>
-                  <span className="text-foreground font-medium">{listing.interior_color}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Mileage:</span>
-                  <span className="text-foreground font-medium">{listing.mileage.toLocaleString()} mi</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">VIN:</span>
-                  <span className="text-foreground font-medium font-mono text-sm">{listing.vin}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-muted-foreground">Lot Number:</span>
-                  <span className="text-foreground font-medium">{listing.lot}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
-        <div className="hidden lg:block space-y-6 lg:col-span-4">
-          {/* Action Buttons */}
-          <div className='flex flex-col space-y-4'>
-            <div className="bg-gradient-to-br border-none w-full">
-              <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-md font-normal text-gray-700">Current Price</div>
-                </div>
-                <Separator />
-                <div className="space-y-3">
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Starting Price:</span>
-                    <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-col gap-2 w-full'>
-              <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
-                Place Bid
-              </Button>
-              <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
-                <Link href={`/auctions/${listing.id}`}>
-                  Join Bidding Room
-                </Link>
+              <Button
+                type="submit"
+                onClick={handlePlaceBid}
+                disabled={isSubmitting}
+                className="w-full bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed py-6 cursor-pointer"
+              >
+                {isSubmitting ? "Creating Bid..." : "Place Bid offchain"}
               </Button>
             </div>
           </div>
+        )}
 
-          {/* Summary */}
-          <div className="bg-gradient-to-br border-none">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xl font-bold text-brand">Summary</div>
-            </div>
+        {/* Main Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          {/* Left Column - Images and Car Details */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Image Gallery */}
             <div className="space-y-4">
-              <div className="text-md text-brand">
-                {listing.summary}
+              {/* Main Image - maximize within column, no overflow */}
+              <div className="relative aspect-[16/9] rounded-xs overflow-hidden bg-card w-full max-w-full">
+                <Image
+                  src={listing.image_url[selectedImage]}
+                  alt={`${listing.year} ${listing.make} ${listing.model}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              {/* Thumbnail Gallery */}
+              <div className="grid grid-cols-6 gap-2">
+                {listing.image_url.map((image, index) => (
+                  <button
+                    key={image}
+                    onClick={() => setSelectedImage(index)}
+                    className={`relative aspect-square rounded overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-brand' : 'border-border hover:border-muted-foreground'}`}
+                  >
+                    <Image
+                      src={image}
+                      alt={`View ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      unoptimized={true}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Car Details Section */}
+            <div className="space-y-8">
+              {/* Action Buttons */}
+              <div className='flex flex-col space-y-4'>
+                <div className="bg-gradient-to-br border-none w-full">
+                  <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-md font-normal text-gray-700">Current Price</div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-3">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Starting Price:</span>
+                        <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className='flex flex-col gap-2 w-full'>
+                  <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
+                    Place Bid
+                  </Button>
+                  <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
+                    <Link href={`/auctions/${listing.id}`}>
+                      Join Bidding Room
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gradient-to-br border-none">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xl font-bold text-brand">Summary</div>
+                </div>
+                <div className="space-y-4">
+                  <div className="text-md text-brand">
+                    {listing.summary}
+                  </div>
+                </div>
+              </div>
+
+              {/* Title and Location */}
+              <div>
+                <h1 className="text-4xl font-bold text-foreground mb-2">
+                  {listing.year} {listing.make} {listing.model}
+                </h1>
+                <div className="flex items-center space-x-4 text-muted-foreground">
+                  <div className="flex items-center space-x-1">
+                    <MapPin className="w-4 h-4" />
+                    <span>{listing.location}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="bg-transparent rounded-none">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Description</h2>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {listing.description}
+                </p>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Vehicle Overview</h2>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {listing.vehicale_overview}
+                </p>
+              </div>
+
+              {/* Report Section */}
+              {listing.report && (
+                <div className="">
+                  <h2 className="text-2xl font-bold mb-4 text-gray-900">Condition Report</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-white rounded-[5px]">
+                      <div className="text-sm text-gray-600 mb-1">Condition</div>
+                      <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.condition}</div>
+                    </div>
+                    <div className="text-center p-4 bg-white rounded-[5px]">
+                      <div className="text-sm text-gray-600 mb-1">Inspection</div>
+                      <div className="text-lg font-semibold text-green-600 capitalize">{listing.report.inspection}</div>
+                    </div>
+                    <div className="text-center p-4 bg-white rounded-[5px]">
+                      <div className="text-sm text-gray-600 mb-1">Notes</div>
+                      <div className="text-lg font-semibold text-gray-900 capitalize">{listing.report.notes}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Key Features */}
+              <div className="bg-transparent rounded-none">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Key Features</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Exterior</h4>
+                    <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                      {listing.features.exterior.map((feature) => (
+                        <li key={feature}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Interior</h4>
+                    <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                      {listing.features.interior.map((feature) => (
+                        <li key={feature}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="md:col-span-2">
+                    <h4 className="font-semibold text-foreground mb-2">Mechanical</h4>
+                    <ul className="list-disc ml-5 text-muted-foreground space-y-1">
+                      {listing.features.mechanical.map((feature) => (
+                        <li key={feature}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Specifications */}
+              <div className="bg-transparent rounded-none">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">Specifications</h2>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-0">
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Engine Size:</span>
+                    <span className="text-foreground font-medium">{listing.engine_size}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Transmission:</span>
+                    <span className="text-foreground font-medium">{listing.transmission}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Fuel Type:</span>
+                    <span className="text-foreground font-medium">{listing.fuel_type}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Exterior Color:</span>
+                    <span className="text-foreground font-medium">{listing.exterior_color}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Interior Color:</span>
+                    <span className="text-foreground font-medium">{listing.interior_color}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Mileage:</span>
+                    <span className="text-foreground font-medium">{listing.mileage.toLocaleString()} mi</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">VIN:</span>
+                    <span className="text-foreground font-medium font-mono text-sm">{listing.vin}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-muted-foreground">Lot Number:</span>
+                    <span className="text-foreground font-medium">{listing.lot}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Right Column - Bidding Panel (Desktop) / Hidden on Mobile */}
+          <div className="hidden lg:block space-y-6 lg:col-span-4">
+            {/* Action Buttons */}
+            <div className=' flex-col space-y-4'>
+              <div className="bg-gradient-to-br border-none w-full">
+                <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-md font-normal text-gray-700">Current Price</div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-3">
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Starting Price:</span>
+                      <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 w-full'>
+                <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
+                  Place Bid
+                </Button>
+                <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
+                  <Link href={`/auctions/${listing.id}`}>
+                    Join Bidding Room
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="bg-gradient-to-br border-none">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xl font-bold text-brand">Summary</div>
+              </div>
+              <div className="space-y-4">
+                <div className="text-md text-brand">
+                  {listing.summary}
+                </div>
+              </div>
+            </div>
+
+            {/* Seller Info */}
+            <div className="bg-transparent shadow-none rounded-sm">
+              <div className="text-lg font-bold mb-2 flex items-center space-x-2">
+                <span>Brand Information</span>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <div className="font-normal text-foreground">{listing.seller}</div>
+                  <div className="text-sm text-muted-foreground flex items-center mt-1">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    {listing.location}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bids Section */}
+            <div className="bg-gradient-to-br border-none p-6 px-0">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-xl font-bold text-brand">Bids</div>
+              </div>
+              {displayBids?.map((bid, key) => (
+                <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
+                  <div className="text-lg font-bold flex items-center space-x-2">
+                    <span className='text-xl'>
+                      {formatCurrency(bid.amount, currency)}
+                    </span>
+                  </div>
+                  <div className="space-y-3 mt-2">
+                    <div className='flex justify-between'>
+                      <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
+                      <div className="text-sm text-muted-foreground flex items-center mt-1">
+                        <User className='w-4 h-3 mr-1 flex-shrink-0' />
+                        <span className="truncate max-w-[80px]">{bid.bidder_id}</span>
+                      </div>
+                    </div>
+                    <div className='flex justify-between'>
+                      <div></div>
+                      <div className="text-sm text-muted-foreground flex items-center mt-1">
+                        <span className="truncate max-w-[100px]">{bid.updated_at}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Horizontal Scrollable Bid Cards Carousel */}
+              {displayBids && displayBids.length > 0 && (
+                <div className="mt-6">
+                  <div className="text-lg font-bold text-brand mb-3">Recent Bidders</div>
+                  <div className="relative">
+                    <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+                      {displayBids.map((bid, index) => (
+                        <div
+                          key={`carousel-${bid.id}`}
+                          className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-[5px]"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
+                              {bid.bidder_id?.slice(0, 6)}...{bid.bidder_id?.slice(-4)}
+                            </div>
+                            <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
+                          </div>
+                          <div className="text-lg font-bold text-green-600 truncate">
+                            {formatCurrency(bid.amount, currency)}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1 truncate">
+                            {new Date(bid.updated_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Auto-scroll indicator */}
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Bidding Panel - Below Car Details */}
+        <div className="lg:hidden space-y-6 mb-8">
 
           {/* Seller Info */}
           <div className="bg-transparent shadow-none rounded-sm">
@@ -427,7 +552,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             </div>
             <div className="space-y-3">
               <div>
-                <div className="font-normal text-foreground">{listing.seller}</div>
+                <div className="font-semibold text-foreground">{listing.seller}</div>
                 <div className="text-sm text-muted-foreground flex items-center mt-1">
                   <MapPin className="w-3 h-3 mr-1" />
                   {listing.location}
@@ -475,7 +600,7 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
                     {displayBids.map((bid, index) => (
                       <div
                         key={`carousel-${bid.id}`}
-                        className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-[5px]"
+                        className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-sm"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
@@ -499,130 +624,6 @@ export default function ListingClient({ listing, relatedAuctions }: ListingClien
             )}
           </div>
         </div>
-      </div>
-
-      {/* Mobile Bidding Panel - Below Car Details */}
-      <div className="lg:hidden space-y-6 mb-8">
-        {/* Action Buttons */}
-        <div className='flex flex-col space-y-4'>
-          <div className="bg-gradient-to-br border-none w-full">
-            <div className="text-3xl font-bold text-brand">{formatCurrency(listing.current_price, currency)}</div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-md font-normal text-gray-700">Current Price</div>
-              </div>
-              <Separator />
-              <div className="space-y-3">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Starting Price:</span>
-                  <span className="ml-2 text-foreground">{formatCurrency(listing.starting_price, currency)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 w-full'>
-            <Button className="text-white font-bold text-md py-5 px-8 shadow-lg transition-all rounded-none bg-[#00296b]/90 hover:bg-[#00296b] cursor-pointer text-sm hover:shadow w-full" onClick={() => setIsBidModalOpen(true)}>
-              Place Bid
-            </Button>
-            <Button className="text-black py-5 px-8 rounded-none transition-all shadow-none text-md cursor-pointer text-sm underline bg-transparent" asChild>
-              <Link href={`/auctions/${listing.id}`}>
-                Join Bidding Room
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Summary */}
-        <div className="bg-gradient-to-br border-none">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-xl font-bold text-brand">Summary</div>
-          </div>
-          <div className="space-y-4">
-            <div className="text-md text-brand">
-              {listing.summary}
-            </div>
-          </div>
-        </div>
-
-        {/* Seller Info */}
-        <div className="bg-transparent shadow-none rounded-sm">
-          <div className="text-lg font-bold mb-2 flex items-center space-x-2">
-            <span>Brand Information</span>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div className="font-semibold text-foreground">{listing.seller}</div>
-              <div className="text-sm text-muted-foreground flex items-center mt-1">
-                <MapPin className="w-3 h-3 mr-1" />
-                {listing.location}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bids Section */}
-        <div className="bg-gradient-to-br border-none p-6 px-0">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-xl font-bold text-brand">Bids</div>
-          </div>
-          {displayBids?.map((bid, key) => (
-            <div key={key} className="bg-white rounded-[5px] mb-2 p-5">
-              <div className="text-lg font-bold flex items-center space-x-2">
-                <span className='text-xl'>
-                  {formatCurrency(bid.amount, currency)}
-                </span>
-              </div>
-              <div className="space-y-3 mt-2">
-                <div className='flex justify-between'>
-                  <div className="font-semibold text-gray-600 text-sm">Bid #{bid.id}</div>
-                  <div className="text-sm text-muted-foreground flex items-center mt-1">
-                    <User className='w-4 h-3 mr-1 flex-shrink-0' />
-                    <span className="truncate max-w-[80px]">{bid.bidder_id}</span>
-                  </div>
-                </div>
-                <div className='flex justify-between'>
-                  <div></div>
-                  <div className="text-sm text-muted-foreground flex items-center mt-1">
-                    <span className="truncate max-w-[100px]">{bid.updated_at}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Horizontal Scrollable Bid Cards Carousel */}
-          {displayBids && displayBids.length > 0 && (
-            <div className="mt-6">
-              <div className="text-lg font-bold text-brand mb-3">Recent Bidders</div>
-              <div className="relative">
-                <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
-                  {displayBids.map((bid, index) => (
-                    <div
-                      key={`carousel-${bid.id}`}
-                      className="flex-shrink-0 w-48 bg-white p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-sm"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
-                          {bid.bidder_id?.slice(0, 6)}...{bid.bidder_id?.slice(-4)}
-                        </div>
-                        <div className="text-xs text-gray-500 flex-shrink-0">#{index + 1}</div>
-                      </div>
-                      <div className="text-lg font-bold text-green-600 truncate">
-                        {formatCurrency(bid.amount, currency)}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 truncate">
-                        {new Date(bid.updated_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {/* Auto-scroll indicator */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-white to-transparent w-8 h-full pointer-events-none"></div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       </div> {/* Close main content container */}
 

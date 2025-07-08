@@ -122,7 +122,7 @@ export default function BrandsPage() {
               <div className="flex items-center gap-4">
                 <Filter className="h-5 w-5 text-gray-500" />
                 <span className="text-sm font-medium text-gray-700">Filters:</span>
-                
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Filter by status" />
@@ -149,9 +149,9 @@ export default function BrandsPage() {
                   </SelectContent>
                 </Select>
 
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     setStatusFilter('all')
                     setTypeFilter('all')
@@ -183,15 +183,15 @@ export default function BrandsPage() {
                 <Button variant="outline" size="sm" onClick={() => refetch()}>
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Refresh
-                      </Button>
+                </Button>
               </div>
-              
+
               {filteredBrands.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-lg border">
                   <Filter className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <p className="text-gray-600">No brands match your current filters</p>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="mt-4"
                     onClick={() => {
                       setStatusFilter('all')
@@ -346,12 +346,12 @@ function BrandCard({ brand }: { brand: BrandData }) {
             )}
           </div>
         </div>
-        
+
         <div className="mb-4">
           <p className="text-sm text-gray-500">Brand ID:</p>
           <p className="text-sm text-gray-500 mt-1 break-all font-mono">{brand.id}</p>
         </div>
-        
+
         <div className="space-y-2 text-sm text-gray-600">
           {brand.blockNumber && (
             <p>Block: <span className="font-mono text-xs">{brand.blockNumber}</span></p>
@@ -361,10 +361,10 @@ function BrandCard({ brand }: { brand: BrandData }) {
           )}
           {brand.transactionHash && (
             <p>
-              <a 
+              <a
                 href={`https://sepolia.basescan.org/tx/${brand.transactionHash}`}
-                target="_blank" 
-                rel="noopener noreferrer" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 underline text-xs"
               >
                 View Transaction
