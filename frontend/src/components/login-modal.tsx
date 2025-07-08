@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import { useAccount, useSignMessage } from 'wagmi'
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { fetchNonce, verifySignature } from '@/lib/api/auth'
@@ -34,22 +34,24 @@ export function LoginModal() {
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const { openConnectModal } = useConnectModal()
-  const { 
-    setUser, 
-    setOpen, 
-    open, 
-    authStep, 
-    setAuthStep, 
-    currentNonce, 
-    currentMessage, 
-    setNonceAndMessage, 
+  const {
+    setUser,
+    setOpen,
+    open,
+    authStep,
+    setAuthStep,
+    currentNonce,
+    currentMessage,
+    setNonceAndMessage,
     clearNonceAndMessage,
     currentUsername,
     setCurrentUsername,
     clearCurrentUsername,
     isConnectingFromModal,
-    setIsConnectingFromModal
+    setIsConnectingFromModal,
+    logout,
   } = useAuthStore()
+  // const { disconnect } = useDisconnect()
 
   // Use persisted username or empty string
   const [username, setUsername] = useState(currentUsername)
@@ -64,7 +66,7 @@ export function LoginModal() {
     console.log('Username changed:', newUsername)
     setIsTypingUsername(true) // Set typing flag
     setCurrentUsername(newUsername)
-    
+
     // Clear typing flag after a short delay
     setTimeout(() => {
       setIsTypingUsername(false)
@@ -92,7 +94,7 @@ export function LoginModal() {
       authStep,
       username: username?.slice(0, 10) + '...'
     })
-    
+
     if (isConnected && address && open === false && isConnectingFromModal) {
       console.log('🎯 Wallet connected from our modal, re-opening login modal')
       setOpen(true)
@@ -109,7 +111,7 @@ export function LoginModal() {
       authStep,
       username: username?.slice(0, 10) + '...'
     })
-    
+
     if (isConnected && address && open === false && authStep === 'connect') {
       console.log('🎯 Modal was closed during connect step, but wallet is now connected. Re-opening.')
       setOpen(true)
@@ -121,7 +123,7 @@ export function LoginModal() {
     if (open) {
       setLoading(false)
       setError(null)
-      
+
       console.log('Modal initialization:', {
         isConnected,
         address,
@@ -131,20 +133,20 @@ export function LoginModal() {
         authStep,
         isTypingUsername
       })
-      
+
       // Don't auto-advance if user is currently typing their username
       if (isTypingUsername) {
         console.log('User is typing username, preventing auto-advance during initialization')
         return
       }
-      
+
       // ALWAYS start at username step if no username is stored, regardless of wallet connection
       if (!username || username.trim().length === 0) {
         console.log('No username stored, starting at username step')
         setAuthStep('username')
         return
       }
-      
+
       // If we have a username and wallet is connected, go to sign step (nonce/message will be fetched)
       if (isConnected && address && username.trim().length > 0) {
         console.log('User has username and wallet connected, going to sign step')
@@ -187,7 +189,7 @@ export function LoginModal() {
       const timestamp = new Date().toISOString()
       const fallbackNonce = `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const fallbackMessage = `Login at ${timestamp}`
-      
+
       setNonceAndMessage(fallbackNonce, fallbackMessage)
       console.log('Using fallback authentication message:', fallbackMessage)
     }
@@ -200,7 +202,7 @@ export function LoginModal() {
       console.log('User is typing username, preventing auto-advance')
       return
     }
-    
+
     if (isConnected && currentMessage && username.trim().length > 0 && authStep === 'connect') {
       setAuthStep('sign')
     }
@@ -226,9 +228,11 @@ export function LoginModal() {
 
   // Manual advance from username to connect step when user clicks Connect Wallet
   const handleConnectWallet = useCallback(() => {
+    // disconnect();
+    // logout();
     console.log('Opening connect modal from our login modal')
     console.log('Current modal state before opening RainbowKit:', { open, authStep })
-    
+
     // If we're on username step and username is not empty, advance to connect step
     if (authStep === 'username' && username.trim().length > 0) {
       console.log('Advancing from username to connect step')
@@ -286,13 +290,13 @@ export function LoginModal() {
           jwt: jwtToken,
           verified: true
         })
-        
+
         // Clear stored nonce/message and username after successful auth
         clearNonceAndMessage()
         clearCurrentUsername()
         setIsConnectingFromModal(false) // Clear connecting flag
         setAuthStep('complete')
-        
+
         console.log("Login successful")
         toast.success('Login successful!', {
           description: 'Your account has been verified.',
@@ -351,7 +355,7 @@ export function LoginModal() {
 
   const handleCancel = () => {
     console.log('Cancel button clicked, current authStep:', authStep)
-    
+
     // Allow closing if we're at the beginning, end, or during connect step
     if (authStep === 'username' || authStep === 'complete' || authStep === 'connect') {
       console.log('Allowing modal to close')
@@ -373,12 +377,12 @@ export function LoginModal() {
 
   const handleOpenChange = (newOpen: boolean) => {
     console.log('Modal open change:', { newOpen, authStep })
-    
+
     if (!newOpen) {
       // Allow closing at any step - users should be able to close the modal
       console.log('Allowing modal to close')
       setOpen(false)
-      
+
       // Only clear nonce/message when closing, keep username stored
       if (authStep !== 'connect') {
         console.log('Clearing nonce/message but keeping username')
@@ -396,132 +400,132 @@ export function LoginModal() {
       case 'username':
         return (
           <AuthStepContent
-          inputPlaceholder="Enter username"
-          inputValue={username}
-          onInputChange={handleUsernameChange}
-          inputId="username"
-          primaryButton={{
-            text: "Connect Wallet",
-            onClick: handleConnectWallet,
-            disabled: username.trim().length === 0,
-            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
-          }}
-          secondaryButton={{
-            text: "cancel",
-            onClick: handleCancel,
-            isLink: true
-          }}
-        />
-      );
+            inputPlaceholder="Enter username"
+            inputValue={username}
+            onInputChange={handleUsernameChange}
+            inputId="username"
+            primaryButton={{
+              text: "Connect Wallet",
+              onClick: handleConnectWallet,
+              disabled: username.trim().length === 0,
+              className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+            }}
+            secondaryButton={{
+              text: "cancel",
+              onClick: handleCancel,
+              isLink: true
+            }}
+          />
+        );
 
       case 'connect':
         return (
           <AuthStepContent
-          infoBoxes={[
-            {
-              type: "green",
-              content: (
-                <p className="text-sm">
-                  <span className="font-semibold">Username:</span> {username}
-                </p>
-              )
-            },
-            ...(currentMessage ? [{
-              type: "blue" as const,
-              content: (
-                <>
+            infoBoxes={[
+              {
+                type: "green",
+                content: (
                   <p className="text-sm">
-                    <span className="font-semibold">Message you will sign:</span>
+                    <span className="font-semibold">Username:</span> {username}
                   </p>
-                  <p className="text-xs font-mono mt-1 break-all text-blue-700">
-                    {currentMessage}
+                )
+              },
+              ...(currentMessage ? [{
+                type: "blue" as const,
+                content: (
+                  <>
+                    <p className="text-sm">
+                      <span className="font-semibold">Message you will sign:</span>
+                    </p>
+                    <p className="text-xs font-mono mt-1 break-all text-blue-700">
+                      {currentMessage}
+                    </p>
+                  </>
+                )
+              }] : []),
+              ...(nonceError ? [{
+                type: "yellow" as const,
+                content: (
+                  <p className="text-sm">
+                    <span className="font-semibold">Note:</span> Using fallback authentication. Backend connection unavailable.
                   </p>
-                </>
-              )
-            }] : []),
-            ...(nonceError ? [{
-              type: "yellow" as const,
-              content: (
-                <p className="text-sm">
-                  <span className="font-semibold">Note:</span> Using fallback authentication. Backend connection unavailable.
-                </p>
-              )
-            }] : [])
-          ]}
-          primaryButton={{
-            text: "Connect Wallet",
-            onClick: handleConnectWallet,
-            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
-          }}
-          secondaryButton={{
-            text: "Cancel",
-            onClick: handleCancel,
-            variant: "outline"
-          }}
-        />
-      );
+                )
+              }] : [])
+            ]}
+            primaryButton={{
+              text: "Connect Wallet",
+              onClick: handleConnectWallet,
+              className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+            }}
+            secondaryButton={{
+              text: "Cancel",
+              onClick: handleCancel,
+              variant: "outline"
+            }}
+          />
+        );
 
       case 'sign':
         return (
           <AuthStepContent
-          infoBoxes={[
-            {
-              type: "green",
-              content: (
-                <>
-                  <p className="text-sm">
-                    <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold">Username:</span> {username}
-                  </p>
-                </>
-              )
-            },
-            ...(currentMessage ? [{
-              type: "blue" as const,
-              content: (
-                <>
-                  <p className="text-sm">
-                    <span className="font-semibold">Message to sign:</span>
-                  </p>
-                  <p className="text-xs font-mono mt-1 break-all text-blue-700">
-                    {currentMessage}
-                  </p>
-                </>
-              )
-            }] : [])
-          ]}
-          error={error ?? undefined}
-          primaryButton={{
-            text: loading ? 'Signing...' : 'Sign Message & Login',
-            onClick: handleSignAndVerify,
-            disabled: loading,
-            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
-          }}
-        />
-      );
+            infoBoxes={[
+              {
+                type: "green",
+                content: (
+                  <>
+                    <p className="text-sm">
+                      <span className="font-semibold">Connected:</span> {address?.slice(0, 6)}...{address?.slice(-4)}
+                    </p>
+                    <p className="text-sm">
+                      <span className="font-semibold">Username:</span> {username}
+                    </p>
+                  </>
+                )
+              },
+              ...(currentMessage ? [{
+                type: "blue" as const,
+                content: (
+                  <>
+                    <p className="text-sm">
+                      <span className="font-semibold">Message to sign:</span>
+                    </p>
+                    <p className="text-xs font-mono mt-1 break-all text-blue-700">
+                      {currentMessage}
+                    </p>
+                  </>
+                )
+              }] : [])
+            ]}
+            error={error ?? undefined}
+            primaryButton={{
+              text: loading ? 'Signing...' : 'Sign Message & Login',
+              onClick: handleSignAndVerify,
+              disabled: loading,
+              className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95 disabled:opacity-50 disabled:cursor-not-allowed"
+            }}
+          />
+        );
 
       case 'complete':
         return (
           <AuthStepContent
-          infoBoxes={[
-            {
-              type: "green",
-              content: (
-                <p className="text-sm">
-                  <span className="font-semibold">Authentication Complete!</span>
-                </p>
-              )
-            }
-          ]}
-          primaryButton={{
-            text: "Close",
-            onClick: () => setOpen(false),
-            className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95"
-          }}
-        />
-      );
+            infoBoxes={[
+              {
+                type: "green",
+                content: (
+                  <p className="text-sm">
+                    <span className="font-semibold">Authentication Complete!</span>
+                  </p>
+                )
+              }
+            ]}
+            primaryButton={{
+              text: "Close",
+              onClick: () => setOpen(false),
+              className: "bg-[#00296b] text-white text-md hover:bg-[#00296b]/95"
+            }}
+          />
+        );
     }
   }
 

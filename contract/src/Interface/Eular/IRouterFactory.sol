@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 interface IEulerRouterFactory {
-    error Factory_BadQuery();
+    //  error Factory_BadQuery();
 
     event ContractDeployed(
         address indexed deployedContract,
@@ -14,7 +14,7 @@ interface IEulerRouterFactory {
 
     function deploy(address governor) external returns (address);
 
-    function deployments(uint256) external view returns (address);
+    //  function deployments(uint256) external view returns (address);
 
     function getDeploymentInfo(
         address contractAddress

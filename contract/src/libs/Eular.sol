@@ -25,7 +25,7 @@ abstract contract EularLib is ReentrancyGuard {
     // Mapping to store requests
     mapping(uint256 => RequestConfig) public requests;
     mapping(uint256 => uint256) public requestIdToNFTId; // NFT ID to Request ID mapping
-    
+
     // =========================
     // Vault Management
     // =========================
@@ -33,7 +33,7 @@ abstract contract EularLib is ReentrancyGuard {
     mapping(address => mapping(address => bool)) public vaultAuthorized; // token => vault => authorized
     mapping(address => address) public tokenToBestVault; // Best vault for each token
     mapping(address => VaultInfo) public vaultInfo; // vault => info
-    
+
     struct VaultInfo {
         uint256 totalLiquidity;
         uint256 borrowRate;
@@ -88,12 +88,16 @@ abstract contract EularLib is ReentrancyGuard {
         uint256 indexed nftId,
         address indexed user
     );
-    
+
     // Vault management events
     event VaultAdded(address indexed token, address indexed vault);
     event VaultRemoved(address indexed token, address indexed vault);
     event BestVaultUpdated(address indexed token, address indexed vault);
-    event VaultInfoUpdated(address indexed vault, uint256 liquidity, uint256 borrowRate);
+    event VaultInfoUpdated(
+        address indexed vault,
+        uint256 liquidity,
+        uint256 borrowRate
+    );
 
     // Enum for request status
     enum RequestStatus {
@@ -180,7 +184,10 @@ abstract contract EularLib is ReentrancyGuard {
         );
 
         // Check if NFT is already locked using the NFT contract's locking mechanism
-        require(!IZeroNFT(zeroNFT).isTokenLocked(_ZeroNFTID), "EularLib: NFT already locked");
+        require(
+            !IZeroNFT(zeroNFT).isTokenLocked(_ZeroNFTID),
+            "EularLib: NFT already locked"
+        );
 
         // Validate parameters
         require(_requestedAmount > 0, "EularLib: invalid amount");
@@ -188,7 +195,7 @@ abstract contract EularLib is ReentrancyGuard {
         require(_borrowAmount > 0, "EularLib: invalid borrow amount");
 
         requestId = _requestIdCounter++;
-        
+
         requests[requestId] = RequestConfig({
             requesterUser: msg.sender,
             requestedToken: _requestedToken,
@@ -225,9 +232,15 @@ abstract contract EularLib is ReentrancyGuard {
      */
     function pickRequest(uint256 _requestId) external nonReentrant {
         RequestConfig storage request = requests[_requestId];
-        
-        require(request.status == RequestStatus.Pending, "EularLib: request not pending");
-        require(request.requesterUser != msg.sender, "EularLib: cannot fulfill own request");
+
+        require(
+            request.status == RequestStatus.Pending,
+            "EularLib: request not pending"
+        );
+        require(
+            request.requesterUser != msg.sender,
+            "EularLib: cannot fulfill own request"
+        );
 
         request.status = RequestStatus.Approved;
         request.requestFulfiller = msg.sender;
@@ -260,8 +273,11 @@ abstract contract EularLib is ReentrancyGuard {
         address _eulerVault
     ) public nonReentrant onlyRequester(_requestId) {
         RequestConfig storage request = requests[_requestId];
-        
-        require(request.status == RequestStatus.Approved, "EularLib: request not approved");
+
+        require(
+            request.status == RequestStatus.Approved,
+            "EularLib: request not approved"
+        );
         require(_eulerVault != address(0), "EularLib: invalid vault address");
 
         request.status = RequestStatus.Borrowed;
@@ -279,7 +295,10 @@ abstract contract EularLib is ReentrancyGuard {
 
         // Deposit collateral to Euler vault
         IEVault vault = IEVault(_eulerVault);
-        IERC20(request.requestedToken).approve(_eulerVault, request.requestedAmount);
+        IERC20(request.requestedToken).approve(
+            _eulerVault,
+            request.requestedAmount
+        );
         vault.deposit(request.requestedAmount, address(this));
 
         // Borrow from Euler vault
@@ -298,10 +317,15 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev User repays the fulfiller and handles Euler debt
      * @param _requestId ID of the request
      */
-    function repayToFulfiller(uint256 _requestId) external payable nonReentrant onlyRequester(_requestId) {
+    function repayToFulfiller(
+        uint256 _requestId
+    ) external payable nonReentrant onlyRequester(_requestId) {
         RequestConfig storage request = requests[_requestId];
-        
-        require(request.status == RequestStatus.Borrowed, "EularLib: request not borrowed");
+
+        require(
+            request.status == RequestStatus.Borrowed,
+            "EularLib: request not borrowed"
+        );
         require(
             block.timestamp <= request.borrowTime + request.repayPeriod,
             "EularLib: repayment period expired"
@@ -309,7 +333,7 @@ abstract contract EularLib is ReentrancyGuard {
 
         // Calculate how much to repay to fulfiller
         uint256 fulfillerRepayAmount = request.requestedAmount;
-        
+
         // Transfer repayment to fulfiller
         IERC20(request.requestedToken).safeTransferFrom(
             msg.sender,
@@ -319,7 +343,7 @@ abstract contract EularLib is ReentrancyGuard {
 
         // Handle Euler debt repayment
         uint256 eulerRepaidAmount = _repayEulerDebt(_requestId); //@todo
-        
+
         // Calculate remaining debt (if any)
         uint256 remainingDebt = request.eulerDebtAmount - eulerRepaidAmount;
 
@@ -346,24 +370,28 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Fulfiller liquidates when repayment period expires
      * @param _requestId ID of the request
      */
-    function liquidateByFulfiller(uint256 _requestId) external nonReentrant onlyFulfiller(_requestId) {
+    function liquidateByFulfiller(
+        uint256 _requestId
+    ) external nonReentrant onlyFulfiller(_requestId) {
         RequestConfig storage request = requests[_requestId];
-        
+
         require(
             block.timestamp > request.borrowTime + request.repayPeriod,
             "EularLib: repayment period not expired"
         );
         require(
-            request.status == RequestStatus.Borrowed || request.status == RequestStatus.AwaitingRepay,
+            request.status == RequestStatus.Borrowed ||
+                request.status == RequestStatus.AwaitingRepay,
             "EularLib: cannot liquidate"
         );
 
         // Repay Euler debt using collateral
         uint256 eulerRepaidAmount = _repayEulerDebt(_requestId);
-        
+
         // Calculate remaining collateral after Euler repayment
-        uint256 remainingCollateral = request.eulerCollateralAmount - eulerRepaidAmount;
-        
+        uint256 remainingCollateral = request.eulerCollateralAmount -
+            eulerRepaidAmount;
+
         // Transfer remaining collateral to fulfiller
         if (remainingCollateral > 0) {
             IERC20(request.requestedToken).safeTransfer(
@@ -394,10 +422,15 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Complete repayment of remaining Euler debt
      * @param _requestId ID of the request
      */
-    function completeRepayment(uint256 _requestId) external nonReentrant onlyRequester(_requestId) {
+    function completeRepayment(
+        uint256 _requestId
+    ) external nonReentrant onlyRequester(_requestId) {
         RequestConfig storage request = requests[_requestId];
-        
-        require(request.status == RequestStatus.AwaitingRepay, "EularLib: not awaiting repayment");
+
+        require(
+            request.status == RequestStatus.AwaitingRepay,
+            "EularLib: not awaiting repayment"
+        );
         require(request.eulerDebtAmount > 0, "EularLib: no debt to repay");
 
         // User pays the remaining Euler debt
@@ -409,11 +442,18 @@ abstract contract EularLib is ReentrancyGuard {
 
         // Repay to Euler vault
         IEVault vault = IEVault(request.eulerVault);
-        IERC20(request.borrowToken).approve(request.eulerVault, request.eulerDebtAmount);
+        IERC20(request.borrowToken).approve(
+            request.eulerVault,
+            request.eulerDebtAmount
+        );
         vault.repay(request.eulerDebtAmount, address(this));
 
         // Withdraw collateral from Euler vault
-        vault.withdraw(request.eulerCollateralAmount, address(this), address(this));
+        vault.withdraw(
+            request.eulerCollateralAmount,
+            address(this),
+            address(this)
+        );
 
         // Unlock NFT
         _unlockNFT(_requestId);
@@ -434,27 +474,34 @@ abstract contract EularLib is ReentrancyGuard {
      * @param _requestId ID of the request
      * @return amountRepaid Amount repaid to Euler
      */
-    function _repayEulerDebt(uint256 _requestId) internal returns (uint256 amountRepaid) {
+    function _repayEulerDebt(
+        uint256 _requestId
+    ) internal returns (uint256 amountRepaid) {
         RequestConfig storage request = requests[_requestId];
-        
+
         IEVault vault = IEVault(request.eulerVault);
-        
+
         // Calculate how much we can repay with the collateral
         uint256 collateralValue = request.eulerCollateralAmount;
         uint256 debtToRepay = request.eulerDebtAmount;
-        
+
         // We can only repay up to the debt amount
-        amountRepaid = collateralValue > debtToRepay ? debtToRepay : collateralValue;
-        
+        amountRepaid = collateralValue > debtToRepay
+            ? debtToRepay
+            : collateralValue;
+
         if (amountRepaid > 0) {
             // Withdraw collateral from vault
             vault.withdraw(amountRepaid, address(this), address(this));
-            
+
             // Repay debt to vault
-            IERC20(request.borrowToken).approve(request.eulerVault, amountRepaid);
+            IERC20(request.borrowToken).approve(
+                request.eulerVault,
+                amountRepaid
+            );
             vault.repay(amountRepaid, address(this));
         }
-        
+
         return amountRepaid;
     }
 
@@ -464,10 +511,10 @@ abstract contract EularLib is ReentrancyGuard {
      */
     function _unlockNFT(uint256 _requestId) internal {
         RequestConfig storage request = requests[_requestId];
-        
+
         // Unlock the NFT using the NFT contract's locking mechanism
         IZeroNFT(zeroNFT).setTokenLock(request.ZeroNFTID, false);
-        
+
         emit NFTUnlocked(_requestId, request.ZeroNFTID, request.requesterUser);
     }
 
@@ -483,7 +530,9 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Get request details
      * @param _requestId ID of the request
      */
-    function getRequest(uint256 _requestId) external view returns (RequestConfig memory) {
+    function getRequest(
+        uint256 _requestId
+    ) external view returns (RequestConfig memory) {
         require(_requestId < _requestIdCounter, "EularLib: request not found");
         return requests[_requestId];
     }
@@ -500,7 +549,9 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Get request ID for an NFT
      * @param _nftId ID of the NFT
      */
-    function getRequestIdForNFT(uint256 _nftId) external view returns (uint256) {
+    function getRequestIdForNFT(
+        uint256 _nftId
+    ) external view returns (uint256) {
         return requestIdToNFTId[_nftId];
     }
 
@@ -508,7 +559,9 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Check if repayment period has expired
      * @param _requestId ID of the request
      */
-    function isRepaymentExpired(uint256 _requestId) external view returns (bool) {
+    function isRepaymentExpired(
+        uint256 _requestId
+    ) external view returns (bool) {
         RequestConfig storage request = requests[_requestId];
         return block.timestamp > request.borrowTime + request.repayPeriod;
     }
@@ -517,13 +570,15 @@ abstract contract EularLib is ReentrancyGuard {
      * @dev Get remaining time until liquidation
      * @param _requestId ID of the request
      */
-    function getTimeUntilLiquidation(uint256 _requestId) external view returns (uint256) {
+    function getTimeUntilLiquidation(
+        uint256 _requestId
+    ) external view returns (uint256) {
         RequestConfig storage request = requests[_requestId];
         if (request.borrowTime == 0) return 0;
-        
+
         uint256 expirationTime = request.borrowTime + request.repayPeriod;
         if (block.timestamp >= expirationTime) return 0;
-        
+
         return expirationTime - block.timestamp;
     }
 }

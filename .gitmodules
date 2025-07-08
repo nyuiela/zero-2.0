@@ -13,3 +13,6 @@
 [submodule "contract/lib/openzeppelin-contracts"]
 	path = contract/lib/openzeppelin-contracts
 	url = https://github.com/Openzeppelin/openzeppelin-contracts
+[submodule "contract/lib/evk-periphery"]
+	path = contract/lib/evk-periphery
+	url = https://github.com/euler-xyz/evk-periphery
