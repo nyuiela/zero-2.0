@@ -94,5 +94,5 @@ register-brand:
 	@forge script script/interaction.s.sol:BrandInteraction  --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvvv
 
 deploy-euler:
-	@forge script script/DeployEular.s.sol:DeployFlashArbitrageEngine  --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast --verify -vvvv
+	@forge script script/DeployEularSWap.s.sol:DeployEularSwap --rpc-url $(BASE_URL) --private-key $(PRIVATE_KEY) --broadcast --verify -vvvv
 

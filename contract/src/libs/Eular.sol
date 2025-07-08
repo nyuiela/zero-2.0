@@ -18,6 +18,7 @@ abstract contract EularLib is ReentrancyGuard {
     address public treasury;
     address public owner;
     address public immutable zeroNFT;
+    address __eulerVault;
     IEthereumVaultConnector public immutable evc;
     IEulerSwap public immutable eulerSwap;
     IEulerRouter public immutable eulerRouter;
@@ -128,12 +129,12 @@ abstract contract EularLib is ReentrancyGuard {
 
     constructor(
         address payable _evc,
-        address _eulerSwap,
+        /* address _eulerSwap,*/
         address _eulerRouter,
         address _zeroNFT
     ) {
         evc = IEthereumVaultConnector(_evc);
-        eulerSwap = IEulerSwap(_eulerSwap);
+        /* eulerSwap = IEulerSwap(_eulerSwap);*/
         eulerRouter = IEulerRouter(_eulerRouter);
         zeroNFT = _zeroNFT;
         owner = msg.sender;
@@ -268,9 +269,9 @@ abstract contract EularLib is ReentrancyGuard {
      * @param _requestId ID of the request
      * @param _eulerVault Address of the Euler vault to use
      */
+
     function borrowFromEular(
-        uint256 _requestId,
-        address _eulerVault
+        uint256 _requestId
     ) public nonReentrant onlyRequester(_requestId) {
         RequestConfig storage request = requests[_requestId];
 
@@ -580,5 +581,9 @@ abstract contract EularLib is ReentrancyGuard {
         if (block.timestamp >= expirationTime) return 0;
 
         return expirationTime - block.timestamp;
+    }
+
+    function setEvaultAddress(address __evault) public {
+        __eulerVault = __evault;
     }
 }
