@@ -51,6 +51,8 @@ The system is composed of multiple core components, each playing a critical role
   - **Proof of Ownership**: Verifies asset ownership
   - **Proof of Execution**: Verifies actions like bid, buy, sell, and auction
 
+ - **Usuing Eular**:Using Euler was tricky at the start, but after reading the developer docs, I was able to grasp the concept of the protocol. We utilized EVC, EVault, and Router. The EVC was so great and interesting to learn about; it was useful for building an engine that helps users gain from arbitrage by performing multiple batch operations. Overall, it was just the right fit we needed for that mechanism (flashArbitrageEngine). Deployment was also a bit tricky at first, but the https://github.com/euler-xyz/evk-periphery was very well-structured and gave us all the information needed to deploy all the testnet addresses we wanted. Overall, it was a great learning experience.   
+
 ## 🛠️ Challenges & Solutions
 
 - **State Verification**: Ensuring the off-chain database state matches the on-chain proof. ZERO uses zkVM to prove the execution of state checks, returning a verifiable status that anyone can independently verify.
