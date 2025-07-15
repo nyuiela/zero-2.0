@@ -37,6 +37,11 @@ interface AuthState {
   // Add wallet connection tracking
   isConnectingFromModal: boolean
   setIsConnectingFromModal: (isConnecting: boolean) => void
+  // Add Civic user and wallet address to the store
+  civicUser: any | null;
+  civicWalletAddress: string | null;
+  setCivicUser: (user: any) => void;
+  setCivicWalletAddress: (address: string) => void;
 }
 
 // Helper function to save auth state to cookies
@@ -170,6 +175,11 @@ export const useAuthStore = create<AuthState>()(
           saveAuthToCookies(currentState.user, { ...currentState, isConnectingFromModal: isConnecting })
         }
       },
+      // Add Civic user and wallet address to the store
+      civicUser: null,
+      civicWalletAddress: null,
+      setCivicUser: (user) => set({ civicUser: user }),
+      setCivicWalletAddress: (address) => set({ civicWalletAddress: address }),
     }),
     {
       name: 'auth-storage', // unique name for localStorage key

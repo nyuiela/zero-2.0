@@ -4,10 +4,10 @@ import CarGrid from '@/components/cargrid'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white/90">
+    <main>
       <Hero />
       <CarGrid />
       <AuctionGrid />
-    </div>
+    </main>
   )
 }

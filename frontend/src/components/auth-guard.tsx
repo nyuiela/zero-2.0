@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { useAuthStore } from '@/lib/authStore'
+import { useUser } from '@civic/auth-web3/react';
+import { userHasWallet } from '@civic/auth-web3';
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -37,6 +39,11 @@ export default function AuthGuard({ children, requireAuth = true }: AuthGuardPro
   const { user } = useAuthStore()
   const [isChecking, setIsChecking] = useState(true)
 
+  // Civic Auth
+  const civicUserContext = useUser();
+  const civicUser = civicUserContext?.user;
+  const civicHasWallet = civicUser && userHasWallet(civicUserContext);
+
   useEffect(() => {
     // Add a small delay to allow auth state to settle
     const timer = setTimeout(() => {
@@ -49,17 +56,20 @@ export default function AuthGuard({ children, requireAuth = true }: AuthGuardPro
   useEffect(() => {
     if (!isChecking) {
       // Check if user meets the authentication requirements
-      const isAuthenticated = requireAuth ? (isConnected && user) : isConnected
+      // Allow access if: (wallet connect + user) OR (Civic user + Civic wallet)
+      const isWalletAuth = isConnected && user;
+      const isCivicAuth = civicUser && civicHasWallet;
+      const isAuthenticated = requireAuth ? (isWalletAuth || isCivicAuth) : (isConnected || isCivicAuth);
 
       if (!isAuthenticated) {
         // Redirect to home page if not authenticated
         router.push('/')
       }
     }
-  }, [isConnected, user, requireAuth, router, isChecking])
+  }, [isConnected, user, requireAuth, router, isChecking, civicUser, civicHasWallet])
 
   // Show loading while checking auth
-  if (isChecking || !isConnected || (requireAuth && !user)) {
+  if (isChecking || (!isConnected && !(civicUser && civicHasWallet)) || (requireAuth && !(user || (civicUser && civicHasWallet)))) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

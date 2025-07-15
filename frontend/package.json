@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@civic/auth": "^0.8.2",
+    "@civic/auth-web3": "^0.6.2",
     "@coinbase/onchainkit": "^0.38.15",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -42,6 +44,7 @@
     "lucide-react": "^0.515.0",
     "next": "15.3.3",
     "next-themes": "^0.4.6",
+    "oslo": "^1.2.1",
     "react": "^19.0.0",
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.0.0",

@@ -20,11 +20,28 @@ import { setJwtToken, getJwtToken } from '@/lib/utils'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import AuthStepContent from './connect-modal'
+import { useRouter } from 'next/navigation';
 
 // interface LoginModalProps {
 //   open: boolean
 //   setOpen: () => void
 // }
+
+// Helper to POST Civic session to API
+async function postCivicSession({ username, address }: { username: string; address: string }) {
+  await fetch('/api/civic-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, address, authenticated: true }),
+  });
+}
+
+// Helper to GET Civic session from API
+async function getCivicSession() {
+  const res = await fetch('/api/civic-session');
+  if (!res.ok) return null;
+  return res.json();
+}
 
 export function LoginModal() {
   const [loading, setLoading] = useState(false)
@@ -50,6 +67,8 @@ export function LoginModal() {
     isConnectingFromModal,
     setIsConnectingFromModal,
     logout,
+    setCivicUser,
+    setCivicWalletAddress,
   } = useAuthStore()
   // const { disconnect } = useDisconnect()
 
@@ -375,25 +394,107 @@ export function LoginModal() {
     }
   }
 
+  const router = useRouter();
+
+  // Remove all Civic-related logic and state
+  // Keep only the basic modal structure and wallet connect logic
+
+  const handleCivicLogin = () => {
+    router.push('/login');
+    setOpen(false); // Close modal when navigating to login
+  };
+
+  // Helper: is user fully authenticated (wallet connect only now)
+  const isFullyAuthenticated = (isConnected && !!address);
+
+  // When user closes modal, just close it (no dismissed state)
   const handleOpenChange = (newOpen: boolean) => {
-    console.log('Modal open change:', { newOpen, authStep })
-
     if (!newOpen) {
-      // Allow closing at any step - users should be able to close the modal
-      console.log('Allowing modal to close')
-      setOpen(false)
-
-      // Only clear nonce/message when closing, keep username stored
+      setOpen(false);
       if (authStep !== 'connect') {
-        console.log('Clearing nonce/message but keeping username')
-        clearNonceAndMessage()
-        setIsConnectingFromModal(false)
-        setAuthStep('username')
+        clearNonceAndMessage();
+        setIsConnectingFromModal(false);
+        setAuthStep('username');
       }
     } else {
-      setOpen(true)
+      setOpen(true);
     }
   }
+
+  // Restore Civic embedded wallet creation and sign-in logic
+  const [creatingWallet, setCreatingWallet] = useState(false);
+  const handleCreateCivicWallet = async () => {
+    setCreatingWallet(true);
+    try {
+      // This logic is no longer needed as Civic is handled on the login page
+      // if (civicUserContext.user && !userHasWallet(civicUserContext)) {
+      //   await civicUserContext.createWallet();
+      // }
+      toast.success('Embedded wallet created!');
+    } catch (err) {
+      toast.error('Failed to create wallet');
+    } finally {
+      setCreatingWallet(false);
+    }
+  };
+
+  const handleCivicSignAndVerify = async () => {
+    if (!isConnected || !address) {
+      setError('Missing wallet connection.');
+      return;
+    }
+    if (!username) {
+      setError('Missing username.');
+      return;
+    }
+    if (!currentMessage || !currentNonce) {
+      setError('Missing message or nonce.');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      // Fetch challenge message from backend (reuse fetchNonce logic, but with civic address)
+      const nonceRes = await fetchNonce();
+      if (!nonceRes || !('nonce' in nonceRes) || !('msg' in nonceRes)) {
+        throw new Error('Failed to fetch challenge message');
+      }
+      setNonceAndMessage(nonceRes.nonce, nonceRes.msg);
+      // Sign message with wallet
+      const signature = await signMessageAsync({ message: nonceRes.msg });
+      // Verify signature and get JWT token
+      const verifyRes = await verifySignature({
+        message: nonceRes.msg,
+        signature_bytes: signature,
+        expected_addr: address,
+        username: username ?? "",
+        nonce: nonceRes.nonce
+      });
+      const jwtToken = verifyRes.jwt || verifyRes.token;
+      if (!jwtToken) throw new Error('No JWT token received from verification');
+      setJwtToken(jwtToken);
+      setUser({
+        address: address,
+        username: username ?? "",
+        jwt: jwtToken,
+        verified: true
+      });
+      clearNonceAndMessage();
+      clearCurrentUsername();
+      setIsConnectingFromModal(false);
+      setAuthStep('complete');
+      toast.success('Login successful!', { description: 'Your account has been verified.' });
+      setOpen(false);
+    } catch (err: any) {
+      setError(
+        err && typeof err === 'object' && 'message' in err
+          ? (typeof err.message === 'string' ? err.message : 'An unknown error occurred')
+          : (typeof err === 'string' ? err : 'An unknown error occurred')
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStepContent = () => {
     switch (authStep) {
@@ -415,6 +516,10 @@ export function LoginModal() {
               onClick: handleCancel,
               isLink: true
             }}
+            civicButtonProps={{
+              onClick: handleCivicLogin,
+              className: "bg-blue-600 text-white text-md hover:bg-blue-700"
+            }}
           />
         );
 
@@ -433,22 +538,7 @@ export function LoginModal() {
               ...(currentMessage ? [{
                 type: "blue" as const,
                 content: (
-                  <>
-                    <p className="text-sm">
-                      <span className="font-semibold">Message you will sign:</span>
-                    </p>
-                    <p className="text-xs font-mono mt-1 break-all text-blue-700">
-                      {currentMessage}
-                    </p>
-                  </>
-                )
-              }] : []),
-              ...(nonceError ? [{
-                type: "yellow" as const,
-                content: (
-                  <p className="text-sm">
-                    <span className="font-semibold">Note:</span> Using fallback authentication. Backend connection unavailable.
-                  </p>
+                  <p className="text-sm">{currentMessage}</p>
                 )
               }] : [])
             ]}
@@ -461,6 +551,11 @@ export function LoginModal() {
               text: "Cancel",
               onClick: handleCancel,
               variant: "outline"
+            }}
+            error={error ?? undefined}
+            civicButtonProps={{
+              onClick: handleCivicLogin,
+              className: "bg-blue-600 text-white text-md hover:bg-blue-700"
             }}
           />
         );
@@ -554,6 +649,10 @@ export function LoginModal() {
         return 'Your authentication has been completed successfully.'
     }
   }
+
+  // --- DEBUG: Civic Auth Status Polling ---
+  // (Removed for production)
+  // --- END DEBUG ---
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

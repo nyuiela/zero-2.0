@@ -12,6 +12,7 @@ import { BrandStatusBadge } from '@/components/brand-status-badge'
 import { BrandRegistrationForm } from '@/components/brand-registration-form'
 import { useBrandsData, BrandData } from '@/hooks/useBrandsData'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export default function BrandsPage() {
    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false)
@@ -108,7 +109,9 @@ export default function BrandsPage() {
                   <button className="text-2xl font-light cursor-pointer" onClick={() => setIsBrandModalOpen(false)}>&times;</button>
                </div>
                <div className="h-full overflow-y-auto px-4 py-6">
-                  <BrandRegistrationForm />
+                  <ErrorBoundary>
+                     <BrandRegistrationForm />
+                  </ErrorBoundary>
                </div>
             </div>
          )}

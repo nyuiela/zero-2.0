@@ -41,17 +41,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={outfit.className}>
         <QueryProvider>
-
-          <ClientBody>
-            <Toaster />
-            <SwapWidget />
-            <AuthInitializer />
-            <Header />
-            <main>
-              {children}
-            </main>
-            <Footer />
-          </ClientBody>
+            <ClientBody>
+              <Toaster />
+              <SwapWidget />
+              <AuthInitializer />
+              <Header />
+              <main>
+                {children}
+              </main>
+              <Footer />
+            </ClientBody>
         </QueryProvider>
       </body>
     </html>

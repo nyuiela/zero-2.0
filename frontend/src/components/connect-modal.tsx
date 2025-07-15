@@ -1,7 +1,10 @@
+'use client'
 import React from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { UserButton } from '@civic/auth-web3/react';
+import { useRouter } from 'next/navigation';
 
 
 type InfoBoxType = 'green' | 'blue' | 'yellow' | 'red';
@@ -31,10 +34,22 @@ interface AuthStepContentProps {
   inputValue?: string;
   onInputChange?: (value: string) => void;
   inputId?: string;  
-  infoBoxes?: InfoBox[];  
-  primaryButton?: ButtonConfig;
-  secondaryButton?: ButtonConfig;
+  infoBoxes?: Array<{ type: InfoBoxType; content: React.ReactNode }>;  
+  primaryButton?: {
+    text: string;
+    onClick: () => void;
+    disabled?: boolean;
+    className?: string;
+  };
+  secondaryButton?: {
+    text: string;
+    onClick: () => void;
+    isLink?: boolean;
+    variant?: string;
+  };
   error?: string;
+  civicButtonProps?: React.ComponentProps<typeof Button>;
+  civicUserButton?: React.ReactNode; // New prop for Civic UserButton
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({ type, children }) => {
@@ -59,11 +74,28 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
     onInputChange,
     inputId,  
     infoBoxes = [],
-    
     primaryButton,
     secondaryButton,  
-    error
+    error,
+    civicButtonProps,
+    civicUserButton
   }) => {
+    const router = useRouter();
+
+    const handleConnectWallet = () => {
+      // Placeholder for actual wallet connection logic
+      console.log("Connecting wallet...");
+      // After successful connection, you might want to close the modal
+      // setOpen(false); 
+      // router.push('/dashboard'); // Example navigation
+    };
+
+    const handleCancel = () => {
+      // Placeholder for cancel logic
+      console.log("Cancelling...");
+      // setOpen(false); // Assuming setOpen is available in the parent component
+    };
+
     return (
       <div className="space-y-4">
         {/* Input field */}
@@ -96,30 +128,30 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
             {primaryButton.text}
           </Button>
         )}
+
+        {/* Divider and Civic Auth Button */}
+        <div className="flex items-center my-2 mb-6">
+          <div className="flex-grow border-t border-gray-300" />
+          <span className="mx-2 text-xs text-gray-500">or</span>
+          <div className="flex-grow border-t border-gray-300" />
+        </div>
+        {/* Render Civic UserButton if provided, else fallback to old button */}
+        {civicUserButton ? (
+          civicUserButton
+        ) : civicButtonProps && (
+          <Button variant={"default"} {...civicButtonProps} className="w-full py-6 rounded-sm text-white bg-[#00296b] hover:bg-[#00296b]/95 text-md font-semibold cursor-pointer mt-2"><Link href="/login">Sign in with Civic</Link></Button>
+        )}
   
         {/* Secondary button */}
         {secondaryButton && (
-          <>
-            {secondaryButton.isLink ? (
-              <div className="text-center -mt-4">
-                <Link
-                  onClick={secondaryButton.onClick}
-                  className="w-full text-[12px] text-center text-gray-600 hover:bg-gray-50 border-none hover:text-gray-600 py-1 bg-transparent shadow-none underline"
-                  href=""
-                >
-                  {secondaryButton.text}
-                </Link>
-              </div>
-            ) : (
-              <Button
-                onClick={secondaryButton.onClick}
-                variant={"default"}
-                className={`w-full ${secondaryButton.className || "border-gray-300 text-gray-600 hover:bg-gray-50"} py-2`}
-              >
-                {secondaryButton.text}
-              </Button>
-            )}
-          </>
+          <Button
+            onClick={secondaryButton.onClick}
+            variant={secondaryButton.variant as any}
+            className="w-full py-2 rounded-sm mt-2"
+            asChild={secondaryButton.isLink}
+          >
+            {secondaryButton.text}
+          </Button>
         )}
       </div>
     );

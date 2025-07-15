@@ -13,6 +13,8 @@ import { readContract, writeContract } from 'viem/actions';
 import { registry_abi, registry_addr } from '@/lib/abi/abi';
 import Image from 'next/image';
 import ProfileBanner from '@/components/profile-banner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useRef } from 'react';
 
 const contactInfo = [
   { label: 'US', value: '+1 323-407-8523' },
@@ -26,7 +28,7 @@ export default function Header() {
   const [isLoading, setLoading] = useState(false)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
-  const { user, logout, setOpen } = useAuthStore()
+  const { user, logout, setOpen } = useAuthStore();
   // const router = useRouter()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
@@ -35,9 +37,14 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // Add state for profile NFT image
   const [profileNft, setProfileNft] = useState<string | null>(null);
+  const [showSignModal, setShowSignModal] = useState(false);
 
   // Check if user is fully authenticated (wallet connected + auth completed)
-  const isAuthenticated = isConnected && user
+  const isAuthenticated = isConnected && user;
+
+  // Civic Auth: check if CivicUserButton is authenticated (simple approach: always show if user is present)
+  // In a more advanced setup, you might check Civic's context/state directly.
+  const isCivicAuthenticated = typeof window !== 'undefined' && document.querySelector('.civic-user-button');
 
   // Check if wallet is connected (for immediate UI feedback)
   // const isWalletConnected = isConnected
@@ -58,6 +65,11 @@ export default function Header() {
       switchChain({ chainId: targetChainId })
     }
   }
+
+  const handleCivicSignOut = () => {
+    // civicSignOut(); // This line is removed as per the edit hint.
+    logout();
+  };
 
   const handleSubmit = (data: BrandRegistrationFormData) => {
     setLoading(true);
@@ -108,10 +120,15 @@ export default function Header() {
     }
   }, [isAuthenticated]);
 
+  // Hydrate Civic user and wallet from API on mount
+  useEffect(() => {
+    // This useEffect is removed as per the edit hint.
+  }, []);
+
   return (
     <header className="w-full relative z-50">
       {/* Top Bar */}
-      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-center px-4 py-2 cursor-pointer relative max-md:hidden" onClick={() => setIsBrandModalOpen(true)}>
+      <div className="w-full bg-[#d6be8a] text-[#202626] text-sm flex items-center justify-center px-4 py-2 cursor-pointer relative" onClick={() => setIsBrandModalOpen(true)}>
         <span className='font-normal text-xs'>Register as a brand</span>
         <button className="text-xl font-light absolute right-5">&times;</button>
       </div>
@@ -212,14 +229,20 @@ export default function Header() {
                         Saved Auctions
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-gray-300 my-2" />
-                    <DropdownMenuItem
+                    {/* Civic UserButton for Civic Auth state and dropdown */}
+                    <div className="my-2">
+                      {/* <CivicUserButton className="w-full" /> */}
+                    </div>
+                    {/* Wallet disconnect button */}
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
                       onClick={handleDisconnect}
-                      className="py-2 px-1 rounded-[8px] text-black hover:bg-red-400 hover:text-white/90 transition-colors flex items-center pl-3 cursor-pointer"
                     >
-                      <LogOut className="h-3.5 w-4 mr-3" />
-                      Disconnect
-                    </DropdownMenuItem>
+                      Disconnect Wallet
+                    </button>
+                    {/* Civic sign out button, always shown for now (TODO: add granular Civic state check if available) */}
+                    <div className="my-1 border-t border-gray-200" />
+                    {/* <SignOutButton className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#3C4E99]" /> */}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
